@@ -48,19 +48,11 @@ public class InvView {
 		inv.setItem(38, p.getInventory().getLeggings());
 		inv.setItem(39, p.getInventory().getBoots());
 		
-		if (p.getHealth() > 0.0D) {
-			ItemStack vie = new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) p.getHealth()).intValue());
-			ItemMeta v = vie.getItemMeta();
-			v.setDisplayName(ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(p.getHealth() / 2.0D) + ChatColor.RED + " hp");
-			vie.setItemMeta(v);
-			inv.setItem(48, vie);
-		} else {
-			ItemStack vie = new ItemStack(Material.SKULL_ITEM, 1, (short)SkullType.SKELETON.ordinal());
-			ItemMeta v = vie.getItemMeta();
-			v.setDisplayName(ChatColor.DARK_AQUA + "Player Died");
-			vie.setItemMeta(v);
-			inv.setItem(48, vie);
-		}
+		ItemStack vie = new ItemStack((p.getHealth() > 0.0D ? Material.SPECKLED_MELON : Material.SKULL_ITEM), (p.getHealth() > 0.0D ? Integer.valueOf((int) p.getHealth()).intValue() : 1), (p.getHealth() > 0.0D ? null : (short)SkullType.SKELETON.ordinal()));
+		ItemMeta v = vie.getItemMeta();
+		v.setDisplayName((p.getHealth() > 0.0D ? ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(p.getHealth() / 2.0D) + ChatColor.RED + " hp" : ChatColor.DARK_AQUA + "Player Died"));
+		vie.setItemMeta(v);
+		inv.setItem(48, vie);
 		
 		ItemStack bouffe = new ItemStack(Material.COOKED_BEEF, p.getFoodLevel());
 		ItemMeta b = bouffe.getItemMeta();
