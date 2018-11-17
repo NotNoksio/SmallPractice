@@ -1,0 +1,19 @@
+main: us.noks.smallpractice.Main
+name: SmallPractice
+version: 1.0
+author: Noksio
+commands:
+  duel:
+  accept:
+  build:
+  ping:
+  random:
+    aliases: [anon]
+  cancel:
+  inventory:
+  spawn:
+  seeall:
+  report:
+  spectate:
+    aliases: [spec]
+  leave:
