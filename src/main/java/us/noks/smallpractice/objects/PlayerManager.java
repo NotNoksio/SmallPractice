@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import us.noks.smallpractice.utils.PlayerStatus;
 
@@ -19,14 +21,19 @@ public class PlayerManager {
 	private Player player;
 	private boolean canbuild;
 	private Player opponent;
+	private Player oldOpponent;
 	private Map<Player, Player> request = new HashMap<Player, Player>();
 	private PlayerStatus status;
+	private List<Player> spectators = new ArrayList<Player>();
+	private Player spectate;
 
 	public PlayerManager(Player p) {
 	    this.player = p;
-	    this.setCanbuild(false);
-	    this.setOpponent(null);
-	    this.setStatus(PlayerStatus.SPAWN);
+	    this.canbuild = false;
+	    this.opponent = null;
+	    this.oldOpponent = null;
+	    this.status = PlayerStatus.SPAWN;
+	    this.spectate = null;
 	}
 
 	public static PlayerManager get(Player p) {
@@ -65,6 +72,14 @@ public class PlayerManager {
 		this.opponent = opponent;
 	}
 	
+	public Player getOldOpponent() {
+		return oldOpponent;
+	}
+
+	public void setOldOpponent(Player oldOpponent) {
+		this.oldOpponent = oldOpponent;
+	}
+	
 	public boolean hasRequest(Player p) {
 		return this.request.containsValue(p) && this.request.containsKey(this.player) && this.request.get(this.player).equals(p);
 	}
@@ -85,11 +100,49 @@ public class PlayerManager {
 		this.status = status;
 	}
 	
+	public void addSpectator(Player p) {
+		this.spectators.add(p);
+	}
+	
+	public void removeSpectator(Player p) {
+		this.spectators.remove(p);
+	}
+	
+	public List<Player> getAllSpectators() {
+		return this.spectators;
+	}
+	
+	public void setSpectate(Player p) {
+		this.spectate = p;
+	}
+	
+	public Player getSpectate() {
+		return this.spectate;
+	}
+	
+	public void giveSpawnItem() {
+		Player p = getPlayer();
+		
+		p.getInventory().clear();
+		p.getInventory().setArmorContents(null);
+		p.setItemOnCursor(null);
+		
+		ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
+		ItemMeta rm = r.getItemMeta();
+		rm.setDisplayName(ChatColor.YELLOW + "Direct Queue");
+		rm.spigot().setUnbreakable(true);
+		r.setItemMeta(rm);
+		
+		p.getInventory().setItem(0, r);
+		p.updateInventory();
+	}
+	
 	public void giveKit() {
 		Player p = getPlayer();
 		
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(null);
+		p.setItemOnCursor(null);
 		
 		ItemStack swo = new ItemStack(Material.DIAMOND_SWORD, 1);
 		swo.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
