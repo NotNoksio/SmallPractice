@@ -2,6 +2,7 @@ package us.noks.smallpractice.commands;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import us.noks.smallpractice.objects.PlayerManager;
 import us.noks.smallpractice.utils.InvView;
 
 public class InventoryCommand implements CommandExecutor, Listener {
@@ -29,16 +31,28 @@ public class InventoryCommand implements CommandExecutor, Listener {
 					p.sendMessage(ChatColor.RED + "UUID not found!");
 					return false;
 				}
+				/*
+				if (args[0] != PlayerManager.get(p).getOldOpponent().getUniqueId().toString()) {
+					p.sendMessage(ChatColor.RED + "Inventory not found!");
+					return false;
+				}*/
 				InvView.getInstance().openInv(p, UUID.fromString(args[0]));
 			}
 		}
 		return true;
 	}
 
-	@EventHandler(priority=EventPriority.FIRST)
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInvsClick(InventoryClickEvent e) {
 		if (e.getInventory().getName().endsWith("'s Inventory")) {
 			e.setCancelled(true);
+			
+			/*
+			if (e.getCurrentItem() != null && e.getCurrentItem().getType() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
+				if (e.getCurrentItem().getItemMeta().getDisplayName().equals(PlayerManager.get(Bukkit.getPlayer(e.getInventory().getTitle().split("'")[0])).getOldOpponent().getName() + "'s Inventory")) {
+					InvView.getInstance().openInv((Player) e.getWhoClicked(), PlayerManager.get(Bukkit.getPlayer(e.getInventory().getTitle().split("'")[0])).getOldOpponent().getUniqueId());
+				}
+			}*/
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package us.noks.smallpractice;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,6 +33,7 @@ import us.noks.smallpractice.commands.ReportCommand;
 import us.noks.smallpractice.commands.SeeallCommand;
 import us.noks.smallpractice.commands.SpawnCommand;
 import us.noks.smallpractice.commands.SpectateCommand;
+import us.noks.smallpractice.listeners.ChatListener;
 import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
@@ -58,22 +60,23 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		
-		arena1Pos1 = new Location(Bukkit.getWorld("world"), -549.5, 4, 113.5, 90, 0);
-		arena1Pos2 = new Location(Bukkit.getWorld("world"), -608.5, 4, 115.5, -90, -1);
-		arena2Pos1 = new Location(Bukkit.getWorld("world"), 72.5, 4, 74.5, 0, 0);
-		arena2Pos2 = new Location(Bukkit.getWorld("world"), 70.5, 4, 154.5, 180, 0);
-		arena3Pos1 = new Location(Bukkit.getWorld("world"), 272.5, 4, -287.5, -6, 0);
-		arena3Pos2 = new Location(Bukkit.getWorld("world"), 281.5, 4, -202.5, 174, 0);
-		spawnLocation = new Location(Bukkit.getWorld("world"), -215.5, 6.5, 84.5, 180, 0);
+		arena1Pos1 = new Location(Bukkit.getWorld("world"), 1977.5, 49, -53.5, 59, 0);
+		arena1Pos2 = new Location(Bukkit.getWorld("world"), 1919.5, 49, -18.5, -123, -1);
+		arena2Pos1 = new Location(Bukkit.getWorld("world"), 2596.5, 51, -36.5, 90, 0);
+		arena2Pos2 = new Location(Bukkit.getWorld("world"), 2508.5, 51, -36.5, -90, 0);
+		arena3Pos1 = new Location(Bukkit.getWorld("world"), 3118.5, 51, -44.5, 90, 0);
+		arena3Pos2 = new Location(Bukkit.getWorld("world"), 3003.5, 51, -44.5, -90, 0);
+		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5, 100.5, 0.5, 180, 0);
 		
-		arenaList.put(1, new Location[] {arena1Pos1, arena1Pos2}); // Map Neuker (ClashRoyal)
-		arenaList.put(2, new Location[] {arena2Pos1, arena2Pos2}); // Map Noksio (Nimp)
-		arenaList.put(3, new Location[] {arena3Pos1, arena3Pos2}); // Map Neuker (EndLolz)
+		arenaList.put(1, new Location[] {arena1Pos1, arena1Pos2});
+		arenaList.put(2, new Location[] {arena2Pos1, arena2Pos2});
+		arenaList.put(3, new Location[] {arena3Pos1, arena3Pos2});
 		
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ServerListeners(), this);
 		Bukkit.getPluginManager().registerEvents(new EnderDelay(), this);
 		Bukkit.getPluginManager().registerEvents(new InventoryCommand(), this);
+		Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
 		
 		getCommand("duel").setExecutor(new DuelCommand());
 		getCommand("accept").setExecutor(new AcceptCommand());
@@ -142,6 +145,7 @@ public class Main extends JavaPlugin {
 		if (!this.queue.contains(p)) {
 			this.queue.add(p);
 			PlayerManager.get(p).setStatus(PlayerStatus.QUEUE);
+			p.getInventory().clear();
 			p.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player... " + ChatColor.YELLOW + "Do \"/cancel\" to leave the queue.");
 		}
 		if (this.queue.size() == 1 && this.queue.contains(p)) {
@@ -166,6 +170,7 @@ public class Main extends JavaPlugin {
 		if (this.queue.contains(p)) {
 			this.queue.remove(p);
 			PlayerManager.get(p).setStatus(PlayerStatus.SPAWN);
+			PlayerManager.get(p).giveSpawnItem();
 			p.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 		}
 	}
@@ -186,6 +191,7 @@ public class Main extends JavaPlugin {
 	
 	public void endDuel(Player p) {
 		PlayerManager pm = PlayerManager.get(p);
+		pm.setOldOpponent(pm.getOpponent());
 		
 		InvView.getInstance().saveInv(p);
 		
@@ -202,11 +208,38 @@ public class Main extends JavaPlugin {
 		
 		EnderDelay.getInstance().removeCooldown(p);
 		
+		Iterator<Player> it = pm.getAllSpectators().iterator();
+		
+		while (it.hasNext()) {
+			Player spec = it.next();
+			PlayerManager sm = PlayerManager.get(spec);
+			
+			spec.setAllowFlight(false);
+			spec.setFlying(false);
+			sm.setStatus(PlayerStatus.SPAWN);
+			sm.showAllPlayer();
+			sm.setSpectate(null);
+			spec.teleport(Main.getInstance().spawnLocation);
+			sm.giveSpawnItem();
+			
+			it.remove();
+		}
+		
 		if (!p.isDead()) {
-			p.teleport(spawnLocation);
 			p.setHealth(20.0D);
 			p.setFoodLevel(20);
 			p.setSaturation(10000f);
+			
+			new BukkitRunnable() {
+				
+				@Override
+				public void run() {
+					if (p != null) {
+						p.teleport(spawnLocation);
+						PlayerManager.get(p).giveSpawnItem();
+					}
+				}
+			}.runTaskLater(this, 40L);
 		}
 	}
 	

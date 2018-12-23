@@ -1,5 +1,6 @@
 package us.noks.smallpractice.utils;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.util.com.google.common.collect.Maps;
+import us.noks.smallpractice.objects.PlayerManager;
 
 public class InvView {
 
@@ -48,11 +50,21 @@ public class InvView {
 		inv.setItem(38, p.getInventory().getLeggings());
 		inv.setItem(39, p.getInventory().getBoots());
 		
-		ItemStack vie = new ItemStack((p.getHealth() > 0.0D ? Material.SPECKLED_MELON : Material.SKULL_ITEM), (p.getHealth() > 0.0D ? Integer.valueOf((int) p.getHealth()).intValue() : 1), (p.getHealth() > 0.0D ? null : (short)SkullType.SKELETON.ordinal()));
-		ItemMeta v = vie.getItemMeta();
-		v.setDisplayName((p.getHealth() > 0.0D ? ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(p.getHealth() / 2.0D) + ChatColor.RED + " hp" : ChatColor.DARK_AQUA + "Player Died"));
-		vie.setItemMeta(v);
-		inv.setItem(48, vie);
+		if (p.getHealth() > 0) {
+			ItemStack vie = new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) p.getHealth()).intValue());
+			ItemMeta v = vie.getItemMeta();
+			v.setDisplayName(ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(p.getHealth() / 2.0D) + ChatColor.RED + " hp");
+			vie.setItemMeta(v);
+			
+			inv.setItem(48, vie);
+		} else {
+			ItemStack vie = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.SKELETON.ordinal());
+			ItemMeta v = vie.getItemMeta();
+			v.setDisplayName(ChatColor.DARK_AQUA + "Player Died");
+			vie.setItemMeta(v);
+			
+			inv.setItem(48, vie);
+		}
 		
 		ItemStack bouffe = new ItemStack(Material.COOKED_BEEF, p.getFoodLevel());
 		ItemMeta b = bouffe.getItemMeta();
@@ -60,7 +72,7 @@ public class InvView {
 		bouffe.setItemMeta(b);
 		inv.setItem(49, bouffe);
       
-		ItemStack item2 = new ItemStack(Material.BREWING_STAND_ITEM);
+		ItemStack item2 = new ItemStack(Material.BREWING_STAND_ITEM, p.getActivePotionEffects().size());
 		ItemMeta itemm2 = item2.getItemMeta();
 		itemm2.setDisplayName(ChatColor.DARK_AQUA + "Potion Effects:");
 		List<String> lore = Lists.newArrayList();
@@ -85,6 +97,14 @@ public class InvView {
 		po.setDisplayName(ChatColor.RESET.toString() + amount + ChatColor.DARK_AQUA + " health pot(s) left");
 		pots.setItemMeta(po);
 		inv.setItem(45, pots);
+		
+		/*
+		ItemStack arrow = new ItemStack(Material.ARROW, 1);
+		ItemMeta arr = arrow.getItemMeta();
+		arr.setDisplayName(ChatColor.YELLOW + PlayerManager.get(Bukkit.getPlayer(inv.getTitle().split("'")[0])).getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory");
+		arrow.setItemMeta(arr);
+		inv.setItem(53, arrow);
+		*/
       
 		this.inventorymap.put(p.getUniqueId(), inv);
 	}
@@ -96,6 +116,11 @@ public class InvView {
 	}
     
 	public void deathMsg(Player winner, Player looser) {
+		List<Player> spectators = Lists.newArrayList();
+		
+		spectators.addAll(PlayerManager.get(winner).getAllSpectators());
+	    spectators.addAll(PlayerManager.get(looser).getAllSpectators());
+		
 	    TextComponent l1 = new TextComponent();
 	    l1.setText("Inventories (Click): ");
 	    l1.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
@@ -131,6 +156,15 @@ public class InvView {
 	    	looser.sendMessage(ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName());
 	    	looser.spigot().sendMessage(l1);
 	    }
+	    Iterator<Player> it = spectators.iterator();
+	    
+	    while (it.hasNext()) {
+			Player spectator = it.next();
+			
+			spectator.sendMessage(ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName());
+			spectator.spigot().sendMessage(l1);
+			it.remove();
+		}
 	}
     
 	private String convertToPotionFormat(long paramLong) {

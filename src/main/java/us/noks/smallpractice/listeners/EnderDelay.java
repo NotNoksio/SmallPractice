@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EnderpearlLandEvent;
@@ -30,13 +31,13 @@ public class EnderDelay implements Listener {
 		return instance;
 	}
 
-	@EventHandler
+	@EventHandler(priority=EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent e) {
-		if ((e.getPlayer() instanceof Player)) {
+		if (e.getPlayer() instanceof Player) {
 			Player p = e.getPlayer();
 			if (e.hasItem()) {
 				ItemStack item = e.getItem();
-				if (((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) && (item.getType() == Material.ENDER_PEARL) && (p.getGameMode() != GameMode.CREATIVE)) {
+				if ((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && p.getGameMode() != GameMode.CREATIVE) {
 					if (PlayerManager.get(p).getStatus() == PlayerStatus.DUEL) {
 						if (isEnderPearlCooldownActive(p)) {
 							e.setUseItemInHand(Result.DENY);
@@ -61,7 +62,7 @@ public class EnderDelay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onTeleport(EnderpearlLandEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player p = (Player) event.getEntity().getShooter();

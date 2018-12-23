@@ -28,12 +28,18 @@ public class LeaveCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You are not in spectator mode.");
 			return false;
 		}
+		Player spectatePlayer = pm.getSpectate();
+		PlayerManager tm = PlayerManager.get(spectatePlayer);
+		
+		tm.removeSpectator(player);
+		
 		player.setAllowFlight(false);
 		player.setFlying(false);
 		pm.setStatus(PlayerStatus.SPAWN);
 		pm.showAllPlayer();
-		player.getInventory().clear();
+		pm.setSpectate(null);
 		player.teleport(Main.getInstance().spawnLocation);
+		pm.giveSpawnItem();
 		return false;
 	}
 }
