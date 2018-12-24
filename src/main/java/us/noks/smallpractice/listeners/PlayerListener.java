@@ -18,7 +18,6 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -74,29 +73,6 @@ public class PlayerListener implements Listener {
 			if (pm1.getStatus() == PlayerStatus.WAITING || pm1.getStatus() == PlayerStatus.DUEL) {
 				allPlayers.hidePlayer(player);
 			}
-		}
-	}
-	
-	/*@EventHandler(priority=EventPriority.FIRST)
-	public void onChat(AsyncPlayerChatEvent event) {
-		event.setFormat((event.getPlayer().isOp() ? ChatColor.RED : ChatColor.GREEN) + "%1$s" + ChatColor.RESET + ": %2$s");
-	}*/
-	
-	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
-	public void onPlayerGetMentioned(AsyncPlayerChatEvent event) {
-		String message = event.getMessage();
-		Iterator<Player> iterator = event.getRecipients().iterator();
-		while (iterator.hasNext()) {
-			Player player = iterator.next();
-			if (!message.matches(".*\\b(?i)" + player.getName() + "\\b.*")) {
-				continue;
-			}
-			if (player.getName() == event.getPlayer().getName()) {
-				continue;
-			}
-			String mentionMessage = event.getMessage().replaceAll("\\b(?i)" + player.getName() + "\\b", ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + player.getName() + ChatColor.RESET);
-			player.sendMessage(String.format(event.getFormat(), event.getPlayer().getName(), mentionMessage));
-			iterator.remove();
 		}
 	}
 	
@@ -229,13 +205,21 @@ public class PlayerListener implements Listener {
 	public void onClickItem(PlayerInteractEvent event) {
 		Player p = event.getPlayer();
         ItemStack item = p.getItemInHand();
-        if (!p.getInventory().getItemInHand().hasItemMeta() || p.getInventory().getItemInHand() == null || p.getInventory().getItemInHand().getItemMeta().getDisplayName() == null) {
+        if (p.getInventory().getItemInHand() == null || !p.getInventory().getItemInHand().hasItemMeta() || !p.getInventory().getItemInHand().getItemMeta().hasDisplayName()) {
             return;
         }
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
             if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
                 event.setCancelled(true);
                 p.performCommand("random");
+            }
+            if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Queue")) {
+                event.setCancelled(true);
+                p.performCommand("cancel");
+            }
+            if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Spectate")) {
+                event.setCancelled(true);
+                p.performCommand("leave");
             }
         }
 	}

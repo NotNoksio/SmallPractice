@@ -121,11 +121,9 @@ public class PlayerManager {
 	}
 	
 	public void giveSpawnItem() {
-		Player p = getPlayer();
-		
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
-		p.setItemOnCursor(null);
+		getPlayer().getInventory().clear();
+		getPlayer().getInventory().setArmorContents(null);
+		getPlayer().setItemOnCursor(null);
 		
 		ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
 		ItemMeta rm = r.getItemMeta();
@@ -133,16 +131,42 @@ public class PlayerManager {
 		rm.spigot().setUnbreakable(true);
 		r.setItemMeta(rm);
 		
-		p.getInventory().setItem(0, r);
-		p.updateInventory();
+		getPlayer().getInventory().setItem(0, r);
+		getPlayer().updateInventory();
+	}
+	
+	public void giveQueueItem() {
+		getPlayer().getInventory().clear();
+		getPlayer().getInventory().setArmorContents(null);
+		getPlayer().setItemOnCursor(null);
+		
+		ItemStack r = new ItemStack(Material.REDSTONE, 1);
+		ItemMeta rm = r.getItemMeta();
+		rm.setDisplayName(ChatColor.RED + "Leave Queue");
+		r.setItemMeta(rm);
+		
+		getPlayer().getInventory().setItem(8, r);
+		getPlayer().updateInventory();
+	}
+	
+	public void giveSpectateItem() {
+		getPlayer().getInventory().clear();
+		getPlayer().getInventory().setArmorContents(null);
+		getPlayer().setItemOnCursor(null);
+		
+		ItemStack r = new ItemStack(Material.REDSTONE, 1);
+		ItemMeta rm = r.getItemMeta();
+		rm.setDisplayName(ChatColor.RED + "Leave Spectate");
+		r.setItemMeta(rm);
+		
+		getPlayer().getInventory().setItem(8, r);
+		getPlayer().updateInventory();
 	}
 	
 	public void giveKit() {
-		Player p = getPlayer();
-		
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
-		p.setItemOnCursor(null);
+		getPlayer().getInventory().clear();
+		getPlayer().getInventory().setArmorContents(null);
+		getPlayer().setItemOnCursor(null);
 		
 		ItemStack swo = new ItemStack(Material.DIAMOND_SWORD, 1);
 		swo.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
@@ -172,26 +196,26 @@ public class PlayerManager {
 		ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 		ItemStack fire = new ItemStack(Material.POTION, 1, (short) 8259);
 		
-		p.getInventory().setHelmet(hel);
-		p.getInventory().setChestplate(che);
-		p.getInventory().setLeggings(leg);
-		p.getInventory().setBoots(boo);
+		getPlayer().getInventory().setHelmet(hel);
+		getPlayer().getInventory().setChestplate(che);
+		getPlayer().getInventory().setLeggings(leg);
+		getPlayer().getInventory().setBoots(boo);
 		
 		for (int i = 0; i < 36; i++) {
-			p.getInventory().setItem(i, heal);
+			getPlayer().getInventory().setItem(i, heal);
 		}
 		
-		p.getInventory().setItem(0, swo);
-		p.getInventory().setItem(1, pearl);
-		p.getInventory().setItem(2, speed);
-		p.getInventory().setItem(3, fire);
-		p.getInventory().setItem(8, steak);
+		getPlayer().getInventory().setItem(0, swo);
+		getPlayer().getInventory().setItem(1, pearl);
+		getPlayer().getInventory().setItem(2, speed);
+		getPlayer().getInventory().setItem(3, fire);
+		getPlayer().getInventory().setItem(8, steak);
 		
-		p.getInventory().setItem(17, speed);
-		p.getInventory().setItem(26, speed);
-		p.getInventory().setItem(35, speed);
+		getPlayer().getInventory().setItem(17, speed);
+		getPlayer().getInventory().setItem(26, speed);
+		getPlayer().getInventory().setItem(35, speed);
 		
-		p.updateInventory();
+		getPlayer().updateInventory();
 	}
 	
 	public void hideAllPlayer() {

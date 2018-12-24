@@ -50,17 +50,15 @@ public class SpectateCommand implements CommandExecutor {
 		
 		tm.addSpectator(player);
 		
-		player.getInventory().clear();
 		player.setAllowFlight(true);
 		player.setFlying(true);
 		player.teleport(target.getLocation().add(0, 2, 0));
 		
-		if (target != null && tm.getOpponent() != null) {
-			player.showPlayer(target);
-			player.showPlayer(tm.getOpponent());
+		player.showPlayer(target);
+		player.showPlayer(tm.getOpponent());
 			
-			player.sendMessage(ChatColor.GREEN + "You are now in spectator! " + ChatColor.YELLOW + "Do \"/leave\" to leave spectator mode.");
-		}
+		pm.giveSpectateItem();
+		player.sendMessage(ChatColor.GREEN + "You are now in spectator! " + ChatColor.YELLOW + "Do \"/leave\" to leave spectator mode.");
 		return false;
 	}
 }

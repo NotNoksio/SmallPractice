@@ -51,7 +51,6 @@ public class Main extends JavaPlugin {
 	public Map<Integer, Location[]> arenaList = new HashMap<Integer, Location[]>();
 	
 	public static Main instance;
-	
 	public static Main getInstance() {
 		return instance;
 	}
@@ -60,17 +59,7 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		
-		arena1Pos1 = new Location(Bukkit.getWorld("world"), 1977.5, 49, -53.5, 59, 0);
-		arena1Pos2 = new Location(Bukkit.getWorld("world"), 1919.5, 49, -18.5, -123, -1);
-		arena2Pos1 = new Location(Bukkit.getWorld("world"), 2596.5, 51, -36.5, 90, 0);
-		arena2Pos2 = new Location(Bukkit.getWorld("world"), 2508.5, 51, -36.5, -90, 0);
-		arena3Pos1 = new Location(Bukkit.getWorld("world"), 3118.5, 51, -44.5, 90, 0);
-		arena3Pos2 = new Location(Bukkit.getWorld("world"), 3003.5, 51, -44.5, -90, 0);
-		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5, 100.5, 0.5, 180, 0);
-		
-		arenaList.put(1, new Location[] {arena1Pos1, arena1Pos2});
-		arenaList.put(2, new Location[] {arena2Pos1, arena2Pos2});
-		arenaList.put(3, new Location[] {arena3Pos1, arena3Pos2});
+		setupArena();
 		
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ServerListeners(), this);
@@ -95,6 +84,21 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		this.queue.clear();
+		this.arenaList.clear();
+	}
+	
+	public void setupArena() {
+		arena1Pos1 = new Location(Bukkit.getWorld("world"), 1977.5, 49, -53.5, 59, 0);
+		arena1Pos2 = new Location(Bukkit.getWorld("world"), 1919.5, 49, -18.5, -123, -1);
+		arena2Pos1 = new Location(Bukkit.getWorld("world"), 2596.5, 51, -36.5, 90, 0);
+		arena2Pos2 = new Location(Bukkit.getWorld("world"), 2508.5, 51, -36.5, -90, 0);
+		arena3Pos1 = new Location(Bukkit.getWorld("world"), 3118.5, 51, -44.5, 90, 0);
+		arena3Pos2 = new Location(Bukkit.getWorld("world"), 3003.5, 51, -44.5, -90, 0);
+		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5, 100.5, 0.5, 180, 0);
+		
+		arenaList.put(1, new Location[] {arena1Pos1, arena1Pos2});
+		arenaList.put(2, new Location[] {arena2Pos1, arena2Pos2});
+		arenaList.put(3, new Location[] {arena3Pos1, arena3Pos2});
 	}
 
 	public void sendDuelRequest(Player requester, Player requested) {
@@ -145,7 +149,9 @@ public class Main extends JavaPlugin {
 		if (!this.queue.contains(p)) {
 			this.queue.add(p);
 			PlayerManager.get(p).setStatus(PlayerStatus.QUEUE);
-			p.getInventory().clear();
+			if (this.queue.size() == 1) {
+				PlayerManager.get(p).giveQueueItem();
+			}
 			p.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player... " + ChatColor.YELLOW + "Do \"/cancel\" to leave the queue.");
 		}
 		if (this.queue.size() == 1 && this.queue.contains(p)) {

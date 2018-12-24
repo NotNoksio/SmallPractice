@@ -2,7 +2,6 @@ package us.noks.smallpractice.commands;
 
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,7 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import us.noks.smallpractice.objects.PlayerManager;
 import us.noks.smallpractice.utils.InvView;
 
 public class InventoryCommand implements CommandExecutor, Listener {

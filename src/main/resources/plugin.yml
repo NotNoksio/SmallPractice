@@ -18,4 +18,3 @@ commands:
   spectate:
     aliases: [spec]
   leave:
-  
