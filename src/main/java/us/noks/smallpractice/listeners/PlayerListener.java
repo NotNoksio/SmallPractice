@@ -66,7 +66,7 @@ public class PlayerListener implements Listener {
 		player.sendMessage(ChatColor.RED + "-> Keep in mind this is a beta ^^");
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
 		
-		player.setPlayerListName(ChatListener.getInstance().getColorPrefix(player) + player.getName());
+		player.setPlayerListName(PlayerManager.get(player).getColorPrefix() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			PlayerManager pm1 = PlayerManager.get(allPlayers);

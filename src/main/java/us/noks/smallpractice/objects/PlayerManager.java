@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class PlayerManager {
@@ -233,5 +234,61 @@ public class PlayerManager {
 				allPlayers.showPlayer(getPlayer());
 			}
 		}
+	}
+	
+	public String getPrefix() {
+		return ChatColor.translateAlternateColorCodes('&', PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix()) + "";
+	}
+	
+	public String getColorPrefix() {
+		String prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
+		if (prefix.isEmpty()) {
+			return "";
+		}
+
+		ChatColor color;
+		ChatColor magicColor;
+
+		char code = 'f';
+		char magic = 'f';
+		int count = 0;
+
+		for (String string : prefix.split("&")) {
+			if (!(string.isEmpty())) {
+				if (ChatColor.getByChar(string.toCharArray()[0]) != null) {
+					if (count == 0) {
+						code = string.toCharArray()[0];
+						count++;
+					} else if (count == 1 && isMagicColor(string.toCharArray()[0])) {
+						magic = string.toCharArray()[0];
+						count++;
+					}
+				}
+			}
+		}
+
+		color = ChatColor.getByChar(code);
+		magicColor = ChatColor.getByChar(magic);
+		return count == 1 ? color.toString() : color.toString() + magicColor.toString();
+	}
+	
+	private boolean isMagicColor(char letter) {
+		switch (letter) {
+		case 'k':
+			return true;
+		case 'l':
+			return true;
+		case 'm':
+			return true;
+		case 'n':
+			return true;
+		case 'o':
+			return true;
+		case 'r':
+			return true;
+		default:
+			break;
+		}
+		return false;
 	}
 }
