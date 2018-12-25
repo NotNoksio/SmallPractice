@@ -66,7 +66,7 @@ public class PlayerListener implements Listener {
 		player.sendMessage(ChatColor.RED + "-> Keep in mind this is a beta ^^");
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
 		
-		player.setPlayerListName((player.isOp() ? ChatColor.RED : ChatColor.GREEN) + player.getName());
+		player.setPlayerListName(ChatListener.getInstance().getColorPrefix(player) + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			PlayerManager pm1 = PlayerManager.get(allPlayers);
@@ -209,18 +209,28 @@ public class PlayerListener implements Listener {
             return;
         }
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-            if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
-                event.setCancelled(true);
-                p.performCommand("random");
-            }
-            if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Queue")) {
-                event.setCancelled(true);
-                p.performCommand("cancel");
-            }
-            if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Spectate")) {
-                event.setCancelled(true);
-                p.performCommand("leave");
-            }
+        	switch (PlayerManager.get(p).getStatus()) {
+			case SPAWN:
+				if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
+	                event.setCancelled(true);
+	                p.performCommand("random");
+	            }
+				break;
+			case QUEUE:
+				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Queue")) {
+	                event.setCancelled(true);
+	                p.performCommand("cancel");
+	            }
+				break;
+			case SPECTATE:
+				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Spectate")) {
+	                event.setCancelled(true);
+	                p.performCommand("leave");
+	            }
+				break;
+			default:
+				break;
+			}
         }
 	}
 	
