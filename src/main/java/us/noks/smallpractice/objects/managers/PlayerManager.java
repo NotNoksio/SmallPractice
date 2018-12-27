@@ -20,7 +20,7 @@ public class PlayerManager {
 
 	public static List<PlayerManager> players = new ArrayList<PlayerManager>();
 	private Player player;
-	private boolean canbuild;
+	private boolean canBuild;
 	private Player opponent;
 	private Player oldOpponent;
 	private Map<Player, Player> request = new HashMap<Player, Player>();
@@ -28,9 +28,9 @@ public class PlayerManager {
 	private Player spectate;
 	private String prefix;
 
-	public PlayerManager(Player p) {
-	    this.player = p;
-	    this.canbuild = false;
+	public PlayerManager(Player player) {
+	    this.player = player;
+	    this.canBuild = false;
 	    this.opponent = null;
 	    this.oldOpponent = null;
 	    this.status = PlayerStatus.SPAWN;
@@ -58,12 +58,12 @@ public class PlayerManager {
 		return this.player;
 	}
 
-	public boolean isCanbuild() {
-		return canbuild;
+	public boolean isCanBuild() {
+		return canBuild;
 	}
 
-	public void setCanbuild(boolean canbuild) {
-		this.canbuild = canbuild;
+	public void setCanBuild(boolean canBuild) {
+		this.canBuild = canBuild;
 	}
 
 	public Player getOpponent() {

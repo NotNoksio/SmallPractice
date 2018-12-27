@@ -23,8 +23,8 @@ public class BuildCommand implements CommandExecutor {
 				return false;
 			}
 			
-			PlayerManager.get(p).setCanbuild(!PlayerManager.get(p).isCanbuild());
-			p.sendMessage(ChatColor.DARK_AQUA + "Build state updated: " + ChatColor.YELLOW + PlayerManager.get(p).isCanbuild());
+			PlayerManager.get(p).setCanBuild(!PlayerManager.get(p).isCanBuild());
+			p.sendMessage(ChatColor.DARK_AQUA + "Build state updated: " + ChatColor.YELLOW + PlayerManager.get(p).isCanBuild());
 		}
 		return true;
 	}

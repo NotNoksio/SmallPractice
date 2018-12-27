@@ -63,8 +63,8 @@ public class DuelManager {
 		pm1.setOpponent(null);
 		pm2.setOpponent(null);
 		
-		pm1.setCanbuild(false);
-		pm2.setCanbuild(false);
+		pm1.setCanBuild(false);
+		pm2.setCanBuild(false);
 		
 		pm1.showAllPlayer();
 		pm2.showAllPlayer();
@@ -185,8 +185,8 @@ public class DuelManager {
 		PlayerManager pm1 = PlayerManager.get(p1);
 		PlayerManager pm2 = PlayerManager.get(p2);
 		
-		pm1.setCanbuild(false);
-		pm2.setCanbuild(false);
+		pm1.setCanBuild(false);
+		pm2.setCanBuild(false);
 		
 		pm1.setStatus(PlayerStatus.WAITING);
 		pm2.setStatus(PlayerStatus.WAITING);
@@ -206,8 +206,8 @@ public class DuelManager {
 		p2.setFoodLevel(20);
 		p2.setSaturation(20f);
 		
-		p1.setNoDamageTicks(40);
-		p2.setNoDamageTicks(40);
+		p1.setNoDamageTicks(50);
+		p2.setNoDamageTicks(50);
 		
 		pm1.hideAllPlayer();
 		pm2.hideAllPlayer();

@@ -19,18 +19,18 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlace(BlockPlaceEvent event) {
-		Player p = event.getPlayer();
+		Player player = event.getPlayer();
 		
-		if (!PlayerManager.get(p).isCanbuild()) {
+		if (!PlayerManager.get(player).isCanBuild()) {
 			event.setCancelled(true);
 		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBreak(BlockBreakEvent event) {
-		Player p = event.getPlayer();
+		Player player = event.getPlayer();
 		
-		if (!PlayerManager.get(p).isCanbuild()) {
+		if (!PlayerManager.get(player).isCanBuild()) {
 			event.setCancelled(true);
 		}
 	}

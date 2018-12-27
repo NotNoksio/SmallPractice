@@ -68,8 +68,8 @@ public class PlayerListener implements Listener {
 		player.setPlayerListName(PlayerManager.get(player).getColorPrefix() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
-			PlayerManager pm1 = PlayerManager.get(allPlayers);
-			if (pm1.getStatus() == PlayerStatus.WAITING || pm1.getStatus() == PlayerStatus.DUEL) {
+			PlayerManager pmAll = PlayerManager.get(allPlayers);
+			if (pmAll.getStatus() == PlayerStatus.WAITING || pmAll.getStatus() == PlayerStatus.DUEL) {
 				allPlayers.hidePlayer(player);
 			}
 		}
@@ -88,7 +88,7 @@ public class PlayerListener implements Listener {
 			if (killer != null) {
 				InvView.getInstance().deathMsg(killer, player);
 				
-				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(player));
+				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(killer));
 				//DuelManager.getInstance().endDuel(killer);
 			}
 		}
@@ -238,7 +238,7 @@ public class PlayerListener implements Listener {
 	public void onDrag(InventoryClickEvent event) {
 		Player p = (Player) event.getWhoClicked();
 		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
-			if (PlayerManager.get(p).getStatus() != PlayerStatus.DUEL && PlayerManager.get(p).getStatus() != PlayerStatus.WAITING && !PlayerManager.get(p).isCanbuild()) {
+			if (PlayerManager.get(p).getStatus() != PlayerStatus.DUEL && PlayerManager.get(p).getStatus() != PlayerStatus.WAITING && !PlayerManager.get(p).isCanBuild()) {
 				event.setCancelled(true);
 				p.updateInventory();
 			}

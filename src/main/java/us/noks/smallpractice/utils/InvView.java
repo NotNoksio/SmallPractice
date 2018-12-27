@@ -156,8 +156,8 @@ public class InvView {
 	    	looser.sendMessage(winnerMessage);
 	    	looser.spigot().sendMessage(l1);
 	    }
-	    Iterator<Player> it = spectators.iterator();
 	    
+	    Iterator<Player> it = spectators.iterator();
 	    while (it.hasNext()) {
 			Player spectator = it.next();
 			
