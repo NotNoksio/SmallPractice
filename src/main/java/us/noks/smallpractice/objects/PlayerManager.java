@@ -27,6 +27,7 @@ public class PlayerManager {
 	private PlayerStatus status;
 	private List<Player> spectators = new ArrayList<Player>();
 	private Player spectate;
+	private String prefix;
 
 	public PlayerManager(Player p) {
 	    this.player = p;
@@ -35,6 +36,7 @@ public class PlayerManager {
 	    this.oldOpponent = null;
 	    this.status = PlayerStatus.SPAWN;
 	    this.spectate = null;
+	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
 	}
 
 	public static PlayerManager get(Player p) {
@@ -237,12 +239,19 @@ public class PlayerManager {
 	}
 	
 	public String getPrefix() {
-		return ChatColor.translateAlternateColorCodes('&', PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix()) + "";
+		if (this.prefix != PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix()) {
+			this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
+			getPlayer().setPlayerListName(getColorPrefix() + getPlayer().getName());
+		}
+		return this.prefix;
+	}
+	
+	public String getColoredPrefix() {
+		return ChatColor.translateAlternateColorCodes('&', getPrefix()) + "";
 	}
 	
 	public String getColorPrefix() {
-		String prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
-		if (prefix.isEmpty()) {
+		if (getPrefix().isEmpty()) {
 			return "";
 		}
 
@@ -253,10 +262,10 @@ public class PlayerManager {
 		char magic = 'f';
 		int count = 0;
 
-		for (String string : prefix.split("&")) {
+		for (String string : getPrefix().split("&")) {
 			if (!(string.isEmpty())) {
 				if (ChatColor.getByChar(string.toCharArray()[0]) != null) {
-					if (count == 0) {
+					if (count == 0 && !isMagicColor(string.toCharArray()[0])) {
 						code = string.toCharArray()[0];
 						count++;
 					} else if (count == 1 && isMagicColor(string.toCharArray()[0])) {

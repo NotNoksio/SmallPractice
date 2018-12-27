@@ -1,7 +1,8 @@
 main: us.noks.smallpractice.Main
-name: SmallPractice
-version: 1.0
+name: VitaPot
+version: 1.25
 author: Noksio
+depend: [PermissionsEx]
 commands:
   duel:
   accept:
@@ -17,3 +18,4 @@ commands:
   spectate:
     aliases: [spec]
   leave:
+  

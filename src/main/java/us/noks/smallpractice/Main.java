@@ -109,24 +109,24 @@ public class Main extends JavaPlugin {
 		PlayerManager.get(requester).setRequestTo(requested);
 		
 		TextComponent l1 = new TextComponent();
-	    l1.setText(requester.getName());
-	    l1.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+		l1.setText(requester.getName());
+		l1.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 	    
-	    TextComponent l1a = new TextComponent();
-	    l1a.setText(" has requested to duel you! ");
-	    l1a.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+		TextComponent l1a = new TextComponent();
+		l1a.setText(" has requested to duel you! ");
+		l1a.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
-	    TextComponent l1b = new TextComponent();
-	    l1b.setText("Click here to accept.");
-	    l1b.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-	    l1b.setBold(true);
-	    l1b.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
-	    l1b.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + requester.getName()));
+		TextComponent l1b = new TextComponent();
+		l1b.setText("Click here to accept.");
+		l1b.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+		l1b.setBold(true);
+		l1b.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
+		l1b.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + requester.getName()));
 	    
-	    l1.addExtra(l1a);
-	    l1.addExtra(l1b);
+		l1.addExtra(l1a);
+		l1.addExtra(l1b);
 	    
-	    requested.spigot().sendMessage(l1);
+		requested.spigot().sendMessage(l1);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
 	}
 	
