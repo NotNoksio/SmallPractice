@@ -7,7 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.objects.PlayerManager;
+import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class SpectateCommand implements CommandExecutor {
@@ -48,7 +49,7 @@ public class SpectateCommand implements CommandExecutor {
 		pm.hideAllPlayer();
 		pm.setSpectate(target);
 		
-		tm.addSpectator(player);
+		DuelManager.getInstance().getDuelByPlayer(target).addSpectator(player);
 		
 		player.setAllowFlight(true);
 		player.setFlying(true);

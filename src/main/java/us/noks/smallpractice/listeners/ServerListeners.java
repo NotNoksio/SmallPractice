@@ -13,7 +13,7 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 
 import net.md_5.bungee.api.ChatColor;
 import us.noks.smallpractice.Main;
-import us.noks.smallpractice.objects.PlayerManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ServerListeners implements Listener {
 	
@@ -42,7 +42,7 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler
 	public void onMotd(ServerListPingEvent event) {
-		event.setMotd(ChatColor.translateAlternateColorCodes('&', "&c&lVitaPot &7(Practice " + Main.getInstance().getDescription().getVersion() + ")") + "\n" + ChatColor.translateAlternateColorCodes('&', (!Bukkit.getServer().hasWhitelist() ? "&eHome of the pots pvp" : "&eHome of the pots pvp &cWhitelisted... ")));
+		event.setMotd(ChatColor.translateAlternateColorCodes('&', "&3&lHalka &7(Practice " + Main.getInstance().getDescription().getVersion() + ")") + "\n" + ChatColor.translateAlternateColorCodes('&', (!Bukkit.getServer().hasWhitelist() ? "&eHome of the pots pvp" : "&eHome of the pots pvp &cWhitelisted... ")));
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)

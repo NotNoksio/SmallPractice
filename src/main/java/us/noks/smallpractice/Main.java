@@ -1,19 +1,14 @@
 package us.noks.smallpractice;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Lists;
 
@@ -37,14 +32,14 @@ import us.noks.smallpractice.listeners.ChatListener;
 import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
-import us.noks.smallpractice.objects.PlayerManager;
-import us.noks.smallpractice.utils.InvView;
+import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class Main extends JavaPlugin {
 	
-	private Location arena1Pos1, arena2Pos1, arena3Pos1;
-	private Location arena1Pos2, arena2Pos2, arena3Pos2;
+	public Location arena1Pos1, arena2Pos1, arena3Pos1;
+	public Location arena1Pos2, arena2Pos2, arena3Pos2;
 	public Location spawnLocation;
 	
 	public List<Player> queue = Lists.newArrayList();
@@ -139,7 +134,7 @@ public class Main extends JavaPlugin {
 			requested.sendMessage(ChatColor.RED + "This player doesnt request you to duel!");
 			return;
 		}
-		startDuel(requester, requested);
+		DuelManager.getInstance().startDuel(requester, requested);
 	}
 	
 	public void addQueue(Player p) {
@@ -166,7 +161,7 @@ public class Main extends JavaPlugin {
 				return;
 			}
 			
-			startDuel(p1, p2);
+			DuelManager.getInstance().startDuel(p1, p2);
 			this.queue.remove(p1);
 			this.queue.remove(p2);
 		}
@@ -179,164 +174,5 @@ public class Main extends JavaPlugin {
 			PlayerManager.get(p).giveSpawnItem();
 			p.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 		}
-	}
-	
-	private void startDuel(Player p1, Player p2) {
-		PlayerManager pm1 = PlayerManager.get(p1);
-		
-		pm1.removeRequest();
-		
-		p1.setGameMode(GameMode.SURVIVAL);
-		p2.setGameMode(GameMode.SURVIVAL);
-		
-		p1.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + p2.getName());
-		p2.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + p1.getName());
-		
-		teleportRandomArena(p1, p2);
-	}
-	
-	public void endDuel(Player p) {
-		PlayerManager pm = PlayerManager.get(p);
-		pm.setOldOpponent(pm.getOpponent());
-		
-		InvView.getInstance().saveInv(p);
-		
-		pm.setStatus(PlayerStatus.SPAWN);
-		pm.setOpponent(null);
-		pm.setCanbuild(false);
-		pm.showAllPlayer();
-		
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
-		
-		p.extinguish();
-		p.clearPotionEffect();
-		
-		EnderDelay.getInstance().removeCooldown(p);
-		
-		Iterator<Player> it = pm.getAllSpectators().iterator();
-		
-		while (it.hasNext()) {
-			Player spec = it.next();
-			PlayerManager sm = PlayerManager.get(spec);
-			
-			spec.setAllowFlight(false);
-			spec.setFlying(false);
-			sm.setStatus(PlayerStatus.SPAWN);
-			sm.showAllPlayer();
-			sm.setSpectate(null);
-			spec.teleport(Main.getInstance().spawnLocation);
-			sm.giveSpawnItem();
-			
-			it.remove();
-		}
-		
-		if (!p.isDead()) {
-			p.setHealth(20.0D);
-			p.setFoodLevel(20);
-			p.setSaturation(10000f);
-			
-			new BukkitRunnable() {
-				
-				@Override
-				public void run() {
-					if (p != null) {
-						p.teleport(spawnLocation);
-						PlayerManager.get(p).giveSpawnItem();
-					}
-				}
-			}.runTaskLater(this, 40L);
-		}
-	}
-	
-	public void sendWaitingMessage(final Player p1, final Player p2) {
-		final Map<Player, Integer> cooldown = new HashMap<Player, Integer>();
-		
-		cooldown.put(p1, 5);
-		
-		new BukkitRunnable() {
-			int num = cooldown.get(p1);
-			
-			@Override
-			public void run() {
-				if (p1 == null || p2 == null) {
-					cooldown.remove(p1);
-					this.cancel();
-				}
-				if(p1.isDead() || p2.isDead()) {
-					cooldown.remove(p1);
-					this.cancel();
-				}
-				if (PlayerManager.get(p1).getStatus() != PlayerStatus.WAITING || PlayerManager.get(p2).getStatus() != PlayerStatus.WAITING) {
-					cooldown.remove(p1);
-					this.cancel();
-				}
-				if (num <= 0) {
-					p1.sendMessage(ChatColor.GREEN + "Duel has stated!");
-					p2.sendMessage(ChatColor.GREEN + "Duel has stated!");
-					p1.playSound(p1.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
-					p2.playSound(p2.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
-					cooldown.remove(p1);
-					PlayerManager.get(p1).setStatus(PlayerStatus.DUEL);
-					PlayerManager.get(p2).setStatus(PlayerStatus.DUEL);
-					p1.showPlayer(p2);
-					p2.showPlayer(p1);
-					this.cancel();
-				}
-				if (num > 0) {
-					p1.sendMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."));
-					p2.sendMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."));
-					p1.playSound(p1.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
-					p2.playSound(p2.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
-					cooldown.put(p1, num--);
-				}
-			}
-		}.runTaskTimer(this, 20L, 20L);
-	}
-	
-	private void teleportRandomArena(Player p1, Player p2) {
-		PlayerManager pm1 = PlayerManager.get(p1);
-		PlayerManager pm2 = PlayerManager.get(p2);
-		
-		pm1.setCanbuild(false);
-		pm2.setCanbuild(false);
-		
-		pm1.setStatus(PlayerStatus.WAITING);
-		pm2.setStatus(PlayerStatus.WAITING);
-		
-		pm1.setOpponent(p2);
-		pm2.setOpponent(p1);
-		
-		p1.setHealth(20.0D);
-		p2.setHealth(20.0D);
-		
-		p1.clearPotionEffect();
-		p2.clearPotionEffect();
-		
-		p1.setFoodLevel(20);
-		p1.setSaturation(20f);
-		
-		p2.setFoodLevel(20);
-		p2.setSaturation(20f);
-		
-		p1.setNoDamageTicks(40);
-		p2.setNoDamageTicks(40);
-		
-		pm1.hideAllPlayer();
-		pm2.hideAllPlayer();
-		
-		Random random = new Random();
-		int pickedArena = random.nextInt(arenaList.size()) + 1;
-		
-		p1.teleport(arenaList.get(pickedArena)[0]);
-		p2.teleport(arenaList.get(pickedArena)[1]);
-		
-		p1.setSneaking(false);
-		p2.setSneaking(false);
-		
-		pm1.giveKit();
-		pm2.giveKit();
-		
-		sendWaitingMessage(p1, p2);
 	}
 }

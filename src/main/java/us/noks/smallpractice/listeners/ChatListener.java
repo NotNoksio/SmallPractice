@@ -9,7 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import us.noks.smallpractice.objects.PlayerManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ChatListener implements Listener {
 

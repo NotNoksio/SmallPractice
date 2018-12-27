@@ -18,7 +18,7 @@ import org.bukkit.event.entity.EnderpearlLandEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import us.noks.smallpractice.objects.PlayerManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class EnderDelay implements Listener {

@@ -1,5 +1,5 @@
 main: us.noks.smallpractice.Main
-name: VitaPot
+name: SmallPractice
 version: 1.25
 author: Noksio
 depend: [PermissionsEx]

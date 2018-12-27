@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.objects.PlayerManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class BuildCommand implements CommandExecutor {
 

@@ -6,10 +6,11 @@ C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\sma
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\utils\InvView.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\RandomCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\SpectateCommand.java
-C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\PlayerManager.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\DuelCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\PingCommand.java
+C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\Duel.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\Main.java
+C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\managers\DuelManager.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\listeners\ServerListeners.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\listeners\ChatListener.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\LeaveCommand.java
@@ -19,3 +20,4 @@ C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\sma
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\SeeallCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\CancelCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\DayCommand.java
+C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\managers\PlayerManager.java

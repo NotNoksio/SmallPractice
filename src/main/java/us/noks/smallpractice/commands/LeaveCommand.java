@@ -7,7 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import us.noks.smallpractice.Main;
-import us.noks.smallpractice.objects.PlayerManager;
+import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class LeaveCommand implements CommandExecutor {
@@ -29,9 +30,7 @@ public class LeaveCommand implements CommandExecutor {
 			return false;
 		}
 		Player spectatePlayer = pm.getSpectate();
-		PlayerManager tm = PlayerManager.get(spectatePlayer);
-		
-		tm.removeSpectator(player);
+		DuelManager.getInstance().getDuelByPlayer(spectatePlayer).removeSpectator(player);
 		
 		player.setAllowFlight(false);
 		player.setFlying(false);

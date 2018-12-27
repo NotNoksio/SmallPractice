@@ -1,7 +1,5 @@
 package us.noks.smallpractice.listeners;
 
-import java.util.Iterator;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -28,7 +26,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import us.noks.smallpractice.Main;
-import us.noks.smallpractice.objects.PlayerManager;
+import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.InvView;
 import us.noks.smallpractice.utils.PlayerStatus;
 
@@ -59,7 +58,7 @@ public class PlayerListener implements Listener {
 		PlayerManager.get(player).giveSpawnItem();
 		
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
-		player.sendMessage(ChatColor.YELLOW + "Welcome on the " + ChatColor.RED.toString() + ChatColor.BOLD + "VitaPot" + ChatColor.YELLOW + " practice 1.0 server");
+		player.sendMessage(ChatColor.YELLOW + "Welcome on the " + ChatColor.RED.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice 1.0 server");
 		player.sendMessage("   ");
 		player.sendMessage(ChatColor.YELLOW + "Our Twitter -> " + ChatColor.DARK_AQUA + "Soon...");
 		player.sendMessage(ChatColor.YELLOW + "Our Discord -> " + ChatColor.DARK_AQUA + "Soon...");
@@ -89,8 +88,8 @@ public class PlayerListener implements Listener {
 			if (killer != null) {
 				InvView.getInstance().deathMsg(killer, player);
 				
-				Main.getInstance().endDuel(player);
-				Main.getInstance().endDuel(killer);
+				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(player));
+				//DuelManager.getInstance().endDuel(killer);
 			}
 		}
 	}
@@ -125,6 +124,7 @@ public class PlayerListener implements Listener {
 			Player op = PlayerManager.get(event.getPlayer()).getOpponent();
 			
 			InvView.getInstance().deathMsg(op, event.getPlayer());
+			/*
 			PlayerManager.get(event.getPlayer()).setOldOpponent(op);
 			InvView.getInstance().saveInv(event.getPlayer());
 			
@@ -144,8 +144,8 @@ public class PlayerListener implements Listener {
 				
 				it.remove();
 			}
-			
-			Main.getInstance().endDuel(op);
+			*/
+			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(op));
 		}
 		PlayerManager.remove(event.getPlayer());
 	}

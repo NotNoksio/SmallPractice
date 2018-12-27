@@ -23,7 +23,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.util.com.google.common.collect.Maps;
-import us.noks.smallpractice.objects.PlayerManager;
+import us.noks.smallpractice.objects.managers.DuelManager;
 
 public class InvView {
 
@@ -116,10 +116,10 @@ public class InvView {
 	}
     
 	public void deathMsg(Player winner, Player looser) {
+		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName();
 		List<Player> spectators = Lists.newArrayList();
 		
-		spectators.addAll(PlayerManager.get(winner).getAllSpectators());
-	    spectators.addAll(PlayerManager.get(looser).getAllSpectators());
+		spectators.addAll(DuelManager.getInstance().getDuelByPlayer(winner).getAllSpectators());
 		
 	    TextComponent l1 = new TextComponent();
 	    l1.setText("Inventories (Click): ");
@@ -150,10 +150,10 @@ public class InvView {
 	    l1.addExtra(l1c);
 	    l1.addExtra(l1d);
 	    
-	    winner.sendMessage(ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName());
+	    winner.sendMessage(winnerMessage);
 	    winner.spigot().sendMessage(l1);
 	    if (looser != null) {
-	    	looser.sendMessage(ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName());
+	    	looser.sendMessage(winnerMessage);
 	    	looser.spigot().sendMessage(l1);
 	    }
 	    Iterator<Player> it = spectators.iterator();
@@ -161,7 +161,7 @@ public class InvView {
 	    while (it.hasNext()) {
 			Player spectator = it.next();
 			
-			spectator.sendMessage(ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName());
+			spectator.sendMessage(winnerMessage);
 			spectator.spigot().sendMessage(l1);
 			it.remove();
 		}
