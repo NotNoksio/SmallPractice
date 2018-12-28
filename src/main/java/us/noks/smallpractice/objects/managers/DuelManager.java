@@ -44,25 +44,25 @@ public class DuelManager {
 		p2.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + p1.getName());
 		
 		Scoreboard firstPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
-        Team red1 = firstPlayerScoreboard.registerNewTeam("red");
-        red1.setPrefix(ChatColor.RED.toString());
-        Team green1 = firstPlayerScoreboard.registerNewTeam("green");
-        green1.setPrefix(ChatColor.GREEN.toString());
+		Team red1 = firstPlayerScoreboard.registerNewTeam("red");
+		red1.setPrefix(ChatColor.RED.toString());
+		Team green1 = firstPlayerScoreboard.registerNewTeam("green");
+		green1.setPrefix(ChatColor.GREEN.toString());
         
-        Scoreboard secondPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
-        Team red2 = secondPlayerScoreboard.registerNewTeam("red");
-        red2.setPrefix(ChatColor.RED.toString());
-        Team green2 = secondPlayerScoreboard.registerNewTeam("green");
-        green2.setPrefix(ChatColor.GREEN.toString());
+		Scoreboard secondPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
+		Team red2 = secondPlayerScoreboard.registerNewTeam("red");
+		red2.setPrefix(ChatColor.RED.toString());
+		Team green2 = secondPlayerScoreboard.registerNewTeam("green");
+		green2.setPrefix(ChatColor.GREEN.toString());
         
-        green1.addEntry(p1.getName());
-        red2.addEntry(p1.getName());
+		green1.addEntry(p1.getName());
+		red2.addEntry(p1.getName());
         
-        green2.addEntry(p2.getName());
-        red1.addEntry(p2.getName());
+		green2.addEntry(p2.getName());
+		red1.addEntry(p2.getName());
         
-        p1.setScoreboard(firstPlayerScoreboard);
-        p2.setScoreboard(secondPlayerScoreboard);
+		p1.setScoreboard(firstPlayerScoreboard);
+		p2.setScoreboard(secondPlayerScoreboard);
 		
 		teleportRandomArena(new Duel(p1, p2));
 	}
@@ -156,26 +156,31 @@ public class DuelManager {
 		this.playerIdentifierToDuel.remove(p2);
 	}
 	
-	public void sendWaitingMessage(final Player p1, final Player p2) {
-		final Map<Player, Integer> cooldown = new HashMap<Player, Integer>();
+	public void sendWaitingMessage(Duel duel) {
+		Map<Duel, Integer> cooldown = new HashMap<Duel, Integer>();
+		Player p1 = duel.getFirstPlayer();
+		Player p2 = duel.getSecondPlayer();
 		
-		cooldown.put(p1, 5);
+		cooldown.put(duel, 5);
 		
 		new BukkitRunnable() {
-			int num = cooldown.get(p1);
+			int num = cooldown.get(duel);
 			
 			@Override
 			public void run() {
+				if (!cooldown.containsKey(duel)) {
+					this.cancel();
+				}
 				if (p1 == null || p2 == null) {
-					cooldown.remove(p1);
+					cooldown.remove(duel);
 					this.cancel();
 				}
 				if(p1.isDead() || p2.isDead()) {
-					cooldown.remove(p1);
+					cooldown.remove(duel);
 					this.cancel();
 				}
 				if (PlayerManager.get(p1).getStatus() != PlayerStatus.WAITING || PlayerManager.get(p2).getStatus() != PlayerStatus.WAITING) {
-					cooldown.remove(p1);
+					cooldown.remove(duel);
 					this.cancel();
 				}
 				if (num <= 0) {
@@ -183,11 +188,11 @@ public class DuelManager {
 					p2.sendMessage(ChatColor.GREEN + "Duel has stated!");
 					p1.playSound(p1.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
 					p2.playSound(p2.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
-					cooldown.remove(p1);
 					PlayerManager.get(p1).setStatus(PlayerStatus.DUEL);
 					PlayerManager.get(p2).setStatus(PlayerStatus.DUEL);
 					p1.showPlayer(p2);
 					p2.showPlayer(p1);
+					cooldown.remove(duel);
 					this.cancel();
 				}
 				if (num > 0) {
@@ -195,7 +200,7 @@ public class DuelManager {
 					p2.sendMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."));
 					p1.playSound(p1.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 					p2.playSound(p2.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
-					cooldown.put(p1, num--);
+					cooldown.put(duel, num--);
 				}
 			}
 		}.runTaskTimer(Main.getInstance(), 20L, 20L);
@@ -250,6 +255,6 @@ public class DuelManager {
 		pm1.giveKit();
 		pm2.giveKit();
 		
-		sendWaitingMessage(p1, p2);
+		sendWaitingMessage(duel);
 	}
 }

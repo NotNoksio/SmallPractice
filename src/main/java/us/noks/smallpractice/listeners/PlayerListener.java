@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
 		PlayerManager.get(player).giveSpawnItem();
 		
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
-		player.sendMessage(ChatColor.YELLOW + "Welcome on the " + ChatColor.RED.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice 1.0 server");
+		player.sendMessage(ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + Main.getInstance().getDescription().getVersion() + " server");
 		player.sendMessage("   ");
 		player.sendMessage(ChatColor.YELLOW + "Noksio (Creator) Twitter -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio");
 		player.sendMessage(ChatColor.YELLOW + "Noksio (Creator) Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/TZhyPnB");
