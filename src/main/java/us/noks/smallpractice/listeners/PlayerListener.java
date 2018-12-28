@@ -52,7 +52,7 @@ public class PlayerListener implements Listener {
 		
 		player.setGameMode(GameMode.SURVIVAL);
 		
-		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 		
 		player.teleport(Main.getInstance().spawnLocation);
 		PlayerManager.get(player).giveSpawnItem();
@@ -60,8 +60,8 @@ public class PlayerListener implements Listener {
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
 		player.sendMessage(ChatColor.YELLOW + "Welcome on the " + ChatColor.RED.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice 1.0 server");
 		player.sendMessage("   ");
-		player.sendMessage(ChatColor.YELLOW + "Our Twitter -> " + ChatColor.DARK_AQUA + "Soon...");
-		player.sendMessage(ChatColor.YELLOW + "Our Discord -> " + ChatColor.DARK_AQUA + "Soon...");
+		player.sendMessage(ChatColor.YELLOW + "Noksio (Creator) Twitter -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio");
+		player.sendMessage(ChatColor.YELLOW + "Noksio (Creator) Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/TZhyPnB");
 		player.sendMessage(ChatColor.RED + "-> Keep in mind this is a beta ^^");
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
 		

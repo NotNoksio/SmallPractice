@@ -7,14 +7,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 
 import us.noks.smallpractice.utils.InvView;
 
-public class InventoryCommand implements CommandExecutor, Listener {
+public class InventoryCommand implements CommandExecutor {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -38,19 +34,5 @@ public class InventoryCommand implements CommandExecutor, Listener {
 			}
 		}
 		return true;
-	}
-
-	@EventHandler(priority=EventPriority.LOWEST)
-	public void onInvsClick(InventoryClickEvent e) {
-		if (e.getInventory().getName().endsWith("'s Inventory")) {
-			e.setCancelled(true);
-			
-			/*
-			if (e.getCurrentItem() != null && e.getCurrentItem().getType() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
-				if (e.getCurrentItem().getItemMeta().getDisplayName().equals(PlayerManager.get(Bukkit.getPlayer(e.getInventory().getTitle().split("'")[0])).getOldOpponent().getName() + "'s Inventory")) {
-					InvView.getInstance().openInv((Player) e.getWhoClicked(), PlayerManager.get(Bukkit.getPlayer(e.getInventory().getTitle().split("'")[0])).getOldOpponent().getUniqueId());
-				}
-			}*/
-		}
 	}
 }

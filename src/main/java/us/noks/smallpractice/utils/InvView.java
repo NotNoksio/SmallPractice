@@ -11,6 +11,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,7 +29,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.objects.managers.DuelManager;
 
-public class InvView {
+public class InvView implements Listener {
 
 	static InvView instance = new InvView();
 	  
@@ -164,6 +168,20 @@ public class InvView {
 			spectator.sendMessage(winnerMessage);
 			spectator.spigot().sendMessage(l1);
 			it.remove();
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onInvsClick(InventoryClickEvent e) {
+		if (e.getInventory().getName().endsWith("'s Inventory")) {
+			e.setCancelled(true);
+			
+			/*
+			if (e.getCurrentItem() != null && e.getCurrentItem().getType() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
+				if (e.getCurrentItem().getItemMeta().getDisplayName().equals(PlayerManager.get(Bukkit.getPlayer(e.getInventory().getTitle().split("'")[0])).getOldOpponent().getName() + "'s Inventory")) {
+					InvView.getInstance().openInv((Player) e.getWhoClicked(), PlayerManager.get(Bukkit.getPlayer(e.getInventory().getTitle().split("'")[0])).getOldOpponent().getUniqueId());
+				}
+			}*/
 		}
 	}
     

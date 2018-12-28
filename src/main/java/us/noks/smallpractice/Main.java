@@ -1,6 +1,5 @@
 package us.noks.smallpractice;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -34,6 +34,7 @@ import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.utils.InvView;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class Main extends JavaPlugin {
@@ -43,7 +44,7 @@ public class Main extends JavaPlugin {
 	public Location spawnLocation;
 	
 	public List<Player> queue = Lists.newArrayList();
-	public Map<Integer, Location[]> arenaList = new HashMap<Integer, Location[]>();
+	public Map<Integer, Location[]> arenaList = Maps.newHashMap();
 	
 	public static Main instance;
 	public static Main getInstance() {
@@ -59,7 +60,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ServerListeners(), this);
 		Bukkit.getPluginManager().registerEvents(new EnderDelay(), this);
-		Bukkit.getPluginManager().registerEvents(new InventoryCommand(), this);
+		Bukkit.getPluginManager().registerEvents(new InvView(), this);
 		Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
 		
 		getCommand("duel").setExecutor(new DuelCommand());

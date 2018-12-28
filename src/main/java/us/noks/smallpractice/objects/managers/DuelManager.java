@@ -10,6 +10,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.Main;
@@ -41,6 +43,27 @@ public class DuelManager {
 		p1.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + p2.getName());
 		p2.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + p1.getName());
 		
+		Scoreboard firstPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
+        Team red1 = firstPlayerScoreboard.registerNewTeam("red");
+        red1.setPrefix(ChatColor.RED.toString());
+        Team green1 = firstPlayerScoreboard.registerNewTeam("green");
+        green1.setPrefix(ChatColor.GREEN.toString());
+        
+        Scoreboard secondPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
+        Team red2 = secondPlayerScoreboard.registerNewTeam("red");
+        red2.setPrefix(ChatColor.RED.toString());
+        Team green2 = secondPlayerScoreboard.registerNewTeam("green");
+        green2.setPrefix(ChatColor.GREEN.toString());
+        
+        green1.addEntry(p1.getName());
+        red2.addEntry(p1.getName());
+        
+        green2.addEntry(p2.getName());
+        red1.addEntry(p2.getName());
+        
+        p1.setScoreboard(firstPlayerScoreboard);
+        p2.setScoreboard(secondPlayerScoreboard);
+		
 		teleportRandomArena(new Duel(p1, p2));
 	}
 	
@@ -53,6 +76,9 @@ public class DuelManager {
 		
 		pm1.setOldOpponent(p2);
 		pm2.setOldOpponent(p1);
+		
+		p1.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
+		p2.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 		
 		InvView.getInstance().saveInv(p1);
 		InvView.getInstance().saveInv(p2);
