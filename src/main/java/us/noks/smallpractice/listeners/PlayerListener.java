@@ -82,14 +82,23 @@ public class PlayerListener implements Listener {
 		event.setDroppedExp(0);
 		
 		if (event.getEntity() instanceof Player) {
-			Player player = event.getEntity();
-			Player killer = PlayerManager.get(player).getOpponent();
+			Player killed = event.getEntity();
+			Player killer = PlayerManager.get(killed).getOpponent();
 			
 			if (killer != null) {
-				InvView.getInstance().deathMsg(killer, player);
+				InvView.getInstance().deathMsg(killer, killed);
 				
 				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(killer));
-				//DuelManager.getInstance().endDuel(killer);
+				
+				new BukkitRunnable() {
+					
+					@Override
+					public void run() {
+						if (killed.isDead() && killed != null) {
+							killed.spigot().respawn();
+						}
+					}
+				}.runTaskLater(Main.getInstance(), 50L);
 			}
 		}
 	}

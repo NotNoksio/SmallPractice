@@ -17,6 +17,7 @@ us\noks\smallpractice\commands\AcceptCommand.class
 us\noks\smallpractice\listeners\EnderDelay.class
 us\noks\smallpractice\listeners\ServerListeners.class
 us\noks\smallpractice\objects\managers\DuelManager.class
+us\noks\smallpractice\listeners\PlayerListener$3.class
 us\noks\smallpractice\listeners\PlayerListener$1.class
 us\noks\smallpractice\objects\managers\DuelManager$1.class
 us\noks\smallpractice\commands\SpectateCommand.class

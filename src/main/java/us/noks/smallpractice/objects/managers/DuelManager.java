@@ -44,7 +44,7 @@ public class DuelManager {
 		teleportRandomArena(new Duel(p1, p2));
 	}
 	
-	public void endDuel(Duel duel/*Player p*/) {
+	public void endDuel(Duel duel) {
 		Player p1 = duel.getFirstPlayer();
 		Player p2 = duel.getSecondPlayer();
 		
