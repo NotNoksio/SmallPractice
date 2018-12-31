@@ -25,11 +25,6 @@ public class InventoryCommand implements CommandExecutor {
 					p.sendMessage(ChatColor.RED + "UUID not found!");
 					return false;
 				}
-				/*
-				if (args[0] != PlayerManager.get(p).getOldOpponent().getUniqueId().toString()) {
-					p.sendMessage(ChatColor.RED + "Inventory not found!");
-					return false;
-				}*/
 				InvView.getInstance().openInv(p, UUID.fromString(args[0]));
 			}
 		}

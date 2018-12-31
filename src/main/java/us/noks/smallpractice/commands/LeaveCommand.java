@@ -31,6 +31,7 @@ public class LeaveCommand implements CommandExecutor {
 		}
 		Player spectatePlayer = pm.getSpectate();
 		DuelManager.getInstance().getDuelByPlayer(spectatePlayer).removeSpectator(player);
+		DuelManager.getInstance().getDuelByPlayer(spectatePlayer).sendDuelMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
 		
 		player.setAllowFlight(false);
 		player.setFlying(false);

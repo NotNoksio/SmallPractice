@@ -1,5 +1,6 @@
 package us.noks.smallpractice.objects;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.entity.Player;
@@ -55,5 +56,16 @@ public class Duel {
 	
 	public List<Player> getAllSpectators() {
 		return this.spectators;
+	}
+	
+	public void sendDuelMessage(String message) {
+		getFirstPlayer().sendMessage(message);
+		getSecondPlayer().sendMessage(message);
+		
+		Iterator<Player> iterator = getAllSpectators().iterator();
+		while (iterator.hasNext()) {
+			Player spec = iterator.next();
+			spec.sendMessage(message);
+		}
 	}
 }

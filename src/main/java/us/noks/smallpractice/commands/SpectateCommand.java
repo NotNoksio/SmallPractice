@@ -60,6 +60,7 @@ public class SpectateCommand implements CommandExecutor {
 			
 		pm.giveSpectateItem();
 		player.sendMessage(ChatColor.GREEN + "You are now in spectator! " + ChatColor.YELLOW + "Do \"/leave\" to leave spectator mode.");
+		DuelManager.getInstance().getDuelByPlayer(target).sendDuelMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 		return false;
 	}
 }

@@ -184,8 +184,7 @@ public class DuelManager {
 					this.cancel();
 				}
 				if (num <= 0) {
-					p1.sendMessage(ChatColor.GREEN + "Duel has stated!");
-					p2.sendMessage(ChatColor.GREEN + "Duel has stated!");
+					duel.sendDuelMessage(ChatColor.GREEN + "Duel has stated!");
 					p1.playSound(p1.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
 					p2.playSound(p2.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
 					PlayerManager.get(p1).setStatus(PlayerStatus.DUEL);
@@ -196,8 +195,7 @@ public class DuelManager {
 					this.cancel();
 				}
 				if (num > 0) {
-					p1.sendMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."));
-					p2.sendMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."));
+					duel.sendDuelMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."));
 					p1.playSound(p1.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 					p2.playSound(p2.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 					cooldown.put(duel, num--);

@@ -28,6 +28,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class InvView implements Listener {
 
@@ -102,13 +103,11 @@ public class InvView implements Listener {
 		pots.setItemMeta(po);
 		inv.setItem(45, pots);
 		
-		/*
 		ItemStack arrow = new ItemStack(Material.ARROW, 1);
 		ItemMeta arr = arrow.getItemMeta();
-		arr.setDisplayName(ChatColor.YELLOW + PlayerManager.get(Bukkit.getPlayer(inv.getTitle().split("'")[0])).getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory");
+		arr.setDisplayName(ChatColor.YELLOW + PlayerManager.get(p).getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory");
 		arrow.setItemMeta(arr);
 		inv.setItem(53, arrow);
-		*/
       
 		this.inventorymap.put(p.getUniqueId(), inv);
 	}
@@ -176,12 +175,14 @@ public class InvView implements Listener {
 		if (e.getInventory().getName().endsWith("'s Inventory")) {
 			e.setCancelled(true);
 			
-			/*
 			if (e.getCurrentItem() != null && e.getCurrentItem().getType() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
-				if (e.getCurrentItem().getItemMeta().getDisplayName().equals(PlayerManager.get(Bukkit.getPlayer(e.getInventory().getTitle().split("'")[0])).getOldOpponent().getName() + "'s Inventory")) {
-					InvView.getInstance().openInv((Player) e.getWhoClicked(), PlayerManager.get(Bukkit.getPlayer(e.getInventory().getTitle().split("'")[0])).getOldOpponent().getUniqueId());
+				String titlePlayerName = e.getInventory().getTitle().split("'")[0];
+				Player realTitlePlayer = Bukkit.getPlayer(titlePlayerName.substring(2, titlePlayerName.length()));
+				
+				if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + PlayerManager.get(realTitlePlayer).getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory")) {
+					InvView.getInstance().openInv((Player) e.getWhoClicked(), PlayerManager.get(realTitlePlayer).getOldOpponent().getUniqueId());
 				}
-			}*/
+			}
 		}
 	}
     
