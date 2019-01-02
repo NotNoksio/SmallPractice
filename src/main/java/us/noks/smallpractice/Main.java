@@ -84,17 +84,14 @@ public class Main extends JavaPlugin {
 	}
 	
 	public void setupArena() {
-		arena1Pos1 = new Location(Bukkit.getWorld("world"), 1977.5, 49, -53.5, 59, 0);
-		arena1Pos2 = new Location(Bukkit.getWorld("world"), 1919.5, 49, -18.5, -123, -1);
-		arena2Pos1 = new Location(Bukkit.getWorld("world"), 2596.5, 51, -36.5, 90, 0);
-		arena2Pos2 = new Location(Bukkit.getWorld("world"), 2508.5, 51, -36.5, -90, 0);
-		arena3Pos1 = new Location(Bukkit.getWorld("world"), 3118.5, 51, -44.5, 90, 0);
-		arena3Pos2 = new Location(Bukkit.getWorld("world"), 3003.5, 51, -44.5, -90, 0);
-		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5, 100.5, 0.5, 180, 0);
+		arena1Pos1 = new Location(Bukkit.getWorld("world"), -549.5D, 4.0D, 113.5D, 90.0F, 0.0F);
+	    arena1Pos2 = new Location(Bukkit.getWorld("world"), -608.5D, 4.0D, 115.5D, -90.0F, -1.0F);
+	    arena2Pos1 = new Location(Bukkit.getWorld("world"), 72.5D, 4.0D, 74.5D, 0.0F, 0.0F);
+	    arena2Pos2 = new Location(Bukkit.getWorld("world"), 70.5D, 4.0D, 154.5D, 180.0F, 0.0F);
+		spawnLocation = new Location(Bukkit.getWorld("world"), -215.5D, 6.5D, 84.5D, 180.0F, 0.0F);
 		
 		arenaList.put(1, new Location[] {arena1Pos1, arena1Pos2});
 		arenaList.put(2, new Location[] {arena2Pos1, arena2Pos2});
-		arenaList.put(3, new Location[] {arena3Pos1, arena3Pos2});
 	}
 
 	public void sendDuelRequest(Player requester, Player requested) {

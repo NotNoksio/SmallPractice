@@ -3,6 +3,7 @@ package us.noks.smallpractice.objects;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
@@ -58,9 +59,17 @@ public class Duel {
 		return this.spectators;
 	}
 	
-	public void sendDuelMessage(String message) {
+	public void sendMessage(String message) {
+		sendSoundedMessage(message, null);
+	}
+	
+	public void sendSoundedMessage(String message, Sound sound) {
 		getFirstPlayer().sendMessage(message);
 		getSecondPlayer().sendMessage(message);
+		if (sound != null) {
+			getFirstPlayer().playSound(getFirstPlayer().getLocation(), sound, 1.0f, 1.0f);
+			getSecondPlayer().playSound(getSecondPlayer().getLocation(), sound, 1.0f, 1.0f);
+		}
 		
 		Iterator<Player> iterator = getAllSpectators().iterator();
 		while (iterator.hasNext()) {

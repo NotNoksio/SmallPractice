@@ -27,7 +27,8 @@ public class PlayerManager {
 	private PlayerStatus status;
 	private Player spectate;
 	private String prefix;
-
+	private int elo;
+	
 	public PlayerManager(Player player) {
 	    this.player = player;
 	    this.canBuild = false;
@@ -36,6 +37,7 @@ public class PlayerManager {
 	    this.status = PlayerStatus.SPAWN;
 	    this.spectate = null;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
+	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
 	}
 
 	public static PlayerManager get(Player p) {
@@ -108,6 +110,18 @@ public class PlayerManager {
 
 	public void setStatus(PlayerStatus status) {
 		this.status = status;
+	}
+	
+	public int getElo() {
+		return elo;
+	}
+	
+	public void addElo(int elo) {
+		this.elo += elo;
+	}
+	
+	public void removeElo(int elo) {
+		this.elo -= elo;
 	}
 	
 	public void giveSpawnItem() {

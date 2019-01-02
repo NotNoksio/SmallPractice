@@ -13,6 +13,7 @@ us\noks\smallpractice\objects\Duel.class
 us\noks\smallpractice\commands\SeeallCommand.class
 us\noks\smallpractice\listeners\PlayerListener.class
 us\noks\smallpractice\commands\InventoryCommand.class
+us\noks\smallpractice\objects\managers\EloManager.class
 us\noks\smallpractice\commands\AcceptCommand.class
 us\noks\smallpractice\listeners\EnderDelay.class
 us\noks\smallpractice\listeners\ServerListeners.class
@@ -25,5 +26,4 @@ us\noks\smallpractice\commands\CancelCommand.class
 us\noks\smallpractice\utils\InvView.class
 us\noks\smallpractice\commands\ReportCommand.class
 us\noks\smallpractice\commands\DayCommand.class
-us\noks\smallpractice\objects\managers\DuelManager$3.class
 us\noks\smallpractice\commands\BuildCommand.class

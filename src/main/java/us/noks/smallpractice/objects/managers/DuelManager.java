@@ -71,6 +71,9 @@ public class DuelManager {
 		Player p1 = duel.getFirstPlayer();
 		Player p2 = duel.getSecondPlayer();
 		
+		Player winner = (!p1.isDead() && p1.isOnline() ? p1 : (!p2.isDead() && p2.isOnline() ? p2 : p1));
+		Player loser = (winner != p1 ? p1 : (winner != p2 ? p2 : p1));
+		
 		PlayerManager pm1 = PlayerManager.get(p1);
 		PlayerManager pm2 = PlayerManager.get(p2);
 		
@@ -79,6 +82,10 @@ public class DuelManager {
 		
 		p1.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 		p2.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
+		
+		if (duel.isRanked()) {
+			EloManager.getInstance().tranferElo(winner, loser);
+		}
 		
 		InvView.getInstance().saveInv(p1);
 		InvView.getInstance().saveInv(p2);
@@ -120,34 +127,18 @@ public class DuelManager {
 			it.remove();
 		}
 		
-		if (!p1.isDead() && p1.isOnline()) {
-			p1.setHealth(20.0D);
-			p1.setFoodLevel(20);
-			p1.setSaturation(10000f);
+		if (winner != null) {
+			winner.setHealth(20.0D);
+			winner.setFoodLevel(20);
+			winner.setSaturation(10000f);
 			
 			new BukkitRunnable() {
 				
 				@Override
 				public void run() {
-					if (p1 != null) {
-						p1.teleport(Main.getInstance().spawnLocation);
-						pm1.giveSpawnItem();
-					}
-				}
-			}.runTaskLater(Main.getInstance(), 40L);
-		}
-		if (!p2.isDead() && p2.isOnline()) {
-			p2.setHealth(20.0D);
-			p2.setFoodLevel(20);
-			p2.setSaturation(10000f);
-			
-			new BukkitRunnable() {
-				
-				@Override
-				public void run() {
-					if (p2 != null) {
-						p2.teleport(Main.getInstance().spawnLocation);
-						pm2.giveSpawnItem();
+					if (winner != null) {
+						winner.teleport(Main.getInstance().spawnLocation);
+						PlayerManager.get(winner).giveSpawnItem();
 					}
 				}
 			}.runTaskLater(Main.getInstance(), 40L);
@@ -184,9 +175,7 @@ public class DuelManager {
 					this.cancel();
 				}
 				if (num <= 0) {
-					duel.sendDuelMessage(ChatColor.GREEN + "Duel has stated!");
-					p1.playSound(p1.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
-					p2.playSound(p2.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
+					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has stated!", Sound.FIREWORK_BLAST);
 					PlayerManager.get(p1).setStatus(PlayerStatus.DUEL);
 					PlayerManager.get(p2).setStatus(PlayerStatus.DUEL);
 					p1.showPlayer(p2);
@@ -195,9 +184,7 @@ public class DuelManager {
 					this.cancel();
 				}
 				if (num > 0) {
-					duel.sendDuelMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."));
-					p1.playSound(p1.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
-					p2.playSound(p2.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+					duel.sendSoundedMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."), Sound.NOTE_PLING);
 					cooldown.put(duel, num--);
 				}
 			}

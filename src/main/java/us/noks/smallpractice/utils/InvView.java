@@ -3,6 +3,7 @@ package us.noks.smallpractice.utils;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.apache.commons.lang.WordUtils;
@@ -27,6 +28,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.util.com.google.common.collect.Maps;
+import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
@@ -121,8 +123,9 @@ public class InvView implements Listener {
 	public void deathMsg(Player winner, Player looser) {
 		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName();
 		List<Player> spectators = Lists.newArrayList();
+		Duel duel = DuelManager.getInstance().getDuelByPlayer(winner);
 		
-		spectators.addAll(DuelManager.getInstance().getDuelByPlayer(winner).getAllSpectators());
+		spectators.addAll(duel.getAllSpectators());
 		
 	    TextComponent l1 = new TextComponent();
 	    l1.setText("Inventories (Click): ");
@@ -153,20 +156,31 @@ public class InvView implements Listener {
 	    l1.addExtra(l1c);
 	    l1.addExtra(l1d);
 	    
+	    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
+	    if (duel.hasSpectator()) {
+	    	for (Player spec : spectators) {
+	    		spect.add(ChatColor.GRAY + spec.getName());
+	    	}
+	    }
+	    String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (spectators.size() > 1 ? "s: " : ": ") + spect.toString();
+	    
 	    winner.sendMessage(winnerMessage);
 	    winner.spigot().sendMessage(l1);
+	    if (duel.hasSpectator()) winner.sendMessage(spectatorMessage);
 	    if (looser != null) {
 	    	looser.sendMessage(winnerMessage);
 	    	looser.spigot().sendMessage(l1);
+	    	if (duel.hasSpectator()) looser.sendMessage(spectatorMessage);
 	    }
 	    
-	    Iterator<Player> it = spectators.iterator();
-	    while (it.hasNext()) {
-			Player spectator = it.next();
+	    Iterator<Player> its = spectators.iterator();
+	    while (its.hasNext()) {
+			Player spectator = its.next();
 			
 			spectator.sendMessage(winnerMessage);
 			spectator.spigot().sendMessage(l1);
-			it.remove();
+			if (duel.hasSpectator()) spectator.sendMessage(spectatorMessage);
+			its.remove();
 		}
 	}
 	
