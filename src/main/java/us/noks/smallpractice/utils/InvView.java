@@ -190,11 +190,13 @@ public class InvView implements Listener {
 			e.setCancelled(true);
 			
 			if (e.getCurrentItem() != null && e.getCurrentItem().getType() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
-				String titlePlayerName = e.getInventory().getTitle().split("'")[0];
-				Player realTitlePlayer = Bukkit.getPlayer(titlePlayerName.substring(2, titlePlayerName.length()));
-				
-				if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + PlayerManager.get(realTitlePlayer).getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory")) {
-					InvView.getInstance().openInv((Player) e.getWhoClicked(), PlayerManager.get(realTitlePlayer).getOldOpponent().getUniqueId());
+				if (e.getCurrentItem().getItemMeta().getDisplayName().endsWith("'s Inventory")) {
+					String oldOpponentItemName = e.getCurrentItem().getItemMeta().getDisplayName().split("'")[0];
+					String semiRealOldOpponentItemName = oldOpponentItemName.substring(2, oldOpponentItemName.length());
+					String realOldOpponentItemName = semiRealOldOpponentItemName.substring(0, semiRealOldOpponentItemName.length() - 2);
+					UUID realOldOpponentItemUUID = Bukkit.getOfflinePlayer(realOldOpponentItemName).getUniqueId();
+					
+					openInv((Player) e.getWhoClicked(), realOldOpponentItemUUID);
 				}
 			}
 		}

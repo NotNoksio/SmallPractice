@@ -67,12 +67,11 @@ public class DuelManager {
 		teleportRandomArena(new Duel(p1, p2));
 	}
 	
-	public void endDuel(Duel duel) {
+	public void endDuel(Duel duel, Player winner) {
 		Player p1 = duel.getFirstPlayer();
 		Player p2 = duel.getSecondPlayer();
 		
-		Player winner = (!p1.isDead() && p1.isOnline() ? p1 : (!p2.isDead() && p2.isOnline() ? p2 : p1));
-		Player loser = (winner != p1 ? p1 : (winner != p2 ? p2 : p1));
+		Player loser = (winner != p1 ? p1 : p2);
 		
 		PlayerManager pm1 = PlayerManager.get(p1);
 		PlayerManager pm2 = PlayerManager.get(p2);

@@ -88,7 +88,7 @@ public class PlayerListener implements Listener {
 			if (killer != null) {
 				InvView.getInstance().deathMsg(killer, killed);
 				
-				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(killer));
+				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(killer), killer);
 				
 				new BukkitRunnable() {
 					
@@ -154,7 +154,7 @@ public class PlayerListener implements Listener {
 				it.remove();
 			}
 			*/
-			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(op));
+			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(op), op);
 		}
 		PlayerManager.remove(event.getPlayer());
 	}
@@ -222,13 +222,13 @@ public class PlayerListener implements Listener {
 			case SPAWN:
 				if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
 	                event.setCancelled(true);
-	                p.performCommand("random");
+	                Main.getInstance().addQueue(p);
 	            }
 				break;
 			case QUEUE:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Queue")) {
 	                event.setCancelled(true);
-	                p.performCommand("cancel");
+	                Main.getInstance().quitQueue(p);
 	            }
 				break;
 			case SPECTATE:

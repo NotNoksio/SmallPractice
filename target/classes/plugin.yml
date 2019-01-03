@@ -8,9 +8,6 @@ commands:
   accept:
   build:
   ping:
-  random:
-    aliases: [anon]
-  cancel:
   inventory:
   spawn:
   seeall:

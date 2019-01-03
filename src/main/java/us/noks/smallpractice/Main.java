@@ -18,12 +18,10 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.commands.AcceptCommand;
 import us.noks.smallpractice.commands.BuildCommand;
-import us.noks.smallpractice.commands.CancelCommand;
 import us.noks.smallpractice.commands.DuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
 import us.noks.smallpractice.commands.LeaveCommand;
 import us.noks.smallpractice.commands.PingCommand;
-import us.noks.smallpractice.commands.RandomCommand;
 import us.noks.smallpractice.commands.ReportCommand;
 import us.noks.smallpractice.commands.SeeallCommand;
 import us.noks.smallpractice.commands.SpawnCommand;
@@ -67,8 +65,6 @@ public class Main extends JavaPlugin {
 		getCommand("accept").setExecutor(new AcceptCommand());
 		getCommand("build").setExecutor(new BuildCommand());
 		getCommand("ping").setExecutor(new PingCommand());
-		getCommand("random").setExecutor(new RandomCommand());
-		getCommand("cancel").setExecutor(new CancelCommand());
 		getCommand("inventory").setExecutor(new InventoryCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
 		getCommand("seeall").setExecutor(new SeeallCommand());
@@ -145,7 +141,7 @@ public class Main extends JavaPlugin {
 			if (this.queue.size() == 1) {
 				PlayerManager.get(p).giveQueueItem();
 			}
-			p.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player... " + ChatColor.YELLOW + "Do \"/cancel\" to leave the queue.");
+			p.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
 		}
 		if (this.queue.size() == 1 && this.queue.contains(p)) {
 			addQueue(p);
@@ -153,7 +149,7 @@ public class Main extends JavaPlugin {
 			Player p1 = this.queue.get(0);
 			Player p2 = this.queue.get(1);
 			
-			if (p1 == p && p2 == p) {
+			if (p1 == p && p2 == p1) {
 				this.queue.clear();
 				addQueue(p);
 				return;
