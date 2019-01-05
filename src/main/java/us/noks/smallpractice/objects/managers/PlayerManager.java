@@ -28,6 +28,11 @@ public class PlayerManager {
 	private Player spectate;
 	private String prefix;
 	private int elo;
+	private int failedPotions;
+	private int lastFailedPotions;
+	private int hit;
+	private int combo;
+	private int longestCombo;
 	
 	public PlayerManager(Player player) {
 	    this.player = player;
@@ -38,6 +43,11 @@ public class PlayerManager {
 	    this.spectate = null;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
+	    this.failedPotions = 0;
+	    this.lastFailedPotions = 0;
+	    this.hit = 0;
+	    this.combo = 0;
+	    this.longestCombo = 0;
 	}
 
 	public static PlayerManager get(Player p) {
@@ -122,6 +132,22 @@ public class PlayerManager {
 	
 	public void removeElo(int elo) {
 		this.elo -= elo;
+	}
+	
+	public int getFailedPotions() {
+		return failedPotions;
+	}
+	
+	public void setFailedPotions(int pots) {
+		this.failedPotions = pots;
+	}
+	
+	public int getLastFailedPotions() {
+		return lastFailedPotions;
+	}
+	
+	public void setLastFailedPotions(int pots) {
+		this.lastFailedPotions = pots;
 	}
 	
 	public void giveSpawnItem() {
@@ -300,5 +326,36 @@ public class PlayerManager {
 			break;
 		}
 		return false;
+	}
+	
+	public void resetDuelStats() {
+		this.failedPotions = 0;
+		this.hit = 0;
+		this.combo = 0;
+		this.longestCombo = 0;
+	}
+
+	public int getHit() {
+		return hit;
+	}
+
+	public void setHit(int hit) {
+		this.hit = hit;
+	}
+
+	public int getCombo() {
+		return combo;
+	}
+
+	public void setCombo(int combo) {
+		this.combo = combo;
+	}
+
+	public int getLongestCombo() {
+		return longestCombo;
+	}
+
+	public void setLongestCombo(int longestCombo) {
+		this.longestCombo = longestCombo;
 	}
 }

@@ -101,6 +101,9 @@ public class DuelManager {
 		pm1.showAllPlayer();
 		pm2.showAllPlayer();
 		
+		pm1.resetDuelStats();
+		pm2.resetDuelStats();
+		
 		p1.extinguish();
 		p2.extinguish();
 		

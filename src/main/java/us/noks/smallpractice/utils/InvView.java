@@ -1,5 +1,6 @@
 package us.noks.smallpractice.utils;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -99,15 +100,31 @@ public class InvView implements Listener {
       
 		int amount = (p.getInventory().contains(new ItemStack(Material.POTION, 1, (short)16421)) ? Integer.valueOf(p.getInventory().all(new ItemStack(Material.POTION, 1, (short)16421)).size()).intValue() : 0);
       
+		PlayerManager pm = PlayerManager.get(p);
+		pm.setLastFailedPotions(pm.getFailedPotions());
+		pm.setFailedPotions(0);
+		if(pm.getCombo() > pm.getLongestCombo()) {
+    		pm.setLongestCombo(pm.getCombo());
+    	}
+		pm.setCombo(0);
+		
 		ItemStack pots = new ItemStack(Material.POTION, amount > 64 ? 64 : amount, (short)16421);
 		ItemMeta po = pots.getItemMeta();
-		po.setDisplayName(ChatColor.RESET.toString() + amount + ChatColor.DARK_AQUA + " health pot(s) left");
+		po.setDisplayName(ChatColor.YELLOW.toString() + amount + ChatColor.DARK_AQUA + " health pot(s) left");
+		po.setLore(Arrays.asList(ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + pm.getLastFailedPotions()));
 		pots.setItemMeta(po);
 		inv.setItem(45, pots);
 		
+		ItemStack stats = new ItemStack(Material.DIAMOND_SWORD, 1);
+		ItemMeta sm = stats.getItemMeta();
+		sm.setDisplayName(ChatColor.DARK_AQUA + "Stats");
+		sm.setLore(Arrays.asList(ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + pm.getHit(), ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + pm.getLongestCombo()));
+		stats.setItemMeta(sm);
+		inv.setItem(46, stats);
+		
 		ItemStack arrow = new ItemStack(Material.ARROW, 1);
 		ItemMeta arr = arrow.getItemMeta();
-		arr.setDisplayName(ChatColor.YELLOW + PlayerManager.get(p).getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory");
+		arr.setDisplayName(ChatColor.YELLOW + pm.getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory");
 		arrow.setItemMeta(arr);
 		inv.setItem(53, arrow);
       
@@ -184,7 +201,7 @@ public class InvView implements Listener {
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.LOWEST)
+	@EventHandler(priority=EventPriority.LOW)
 	public void onInvsClick(InventoryClickEvent e) {
 		if (e.getInventory().getName().endsWith("'s Inventory")) {
 			e.setCancelled(true);

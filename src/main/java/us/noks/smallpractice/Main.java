@@ -27,6 +27,7 @@ import us.noks.smallpractice.commands.SeeallCommand;
 import us.noks.smallpractice.commands.SpawnCommand;
 import us.noks.smallpractice.commands.SpectateCommand;
 import us.noks.smallpractice.listeners.ChatListener;
+import us.noks.smallpractice.listeners.DuelListener;
 import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
@@ -60,6 +61,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new EnderDelay(), this);
 		Bukkit.getPluginManager().registerEvents(new InvView(), this);
 		Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
+		Bukkit.getPluginManager().registerEvents(new DuelListener(), this);
 		
 		getCommand("duel").setExecutor(new DuelCommand());
 		getCommand("accept").setExecutor(new AcceptCommand());
