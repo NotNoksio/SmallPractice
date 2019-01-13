@@ -1,6 +1,6 @@
 main: us.noks.smallpractice.Main
 name: SmallPractice
-version: 1.25
+version: 1.35
 author: Noksio
 depend: [PermissionsEx]
 commands:
@@ -15,4 +15,5 @@ commands:
   spectate:
     aliases: [spec]
   leave:
+  mod:
   

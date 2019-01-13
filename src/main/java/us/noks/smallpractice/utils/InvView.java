@@ -36,7 +36,6 @@ import us.noks.smallpractice.objects.managers.PlayerManager;
 public class InvView implements Listener {
 
 	static InvView instance = new InvView();
-	  
 	public static InvView getInstance() {
 		return instance;
 	}
@@ -91,7 +90,7 @@ public class InvView implements Listener {
 				int realtime = pe.getDuration() / 20;
 				String emp = convertToRoman(pe.getAmplifier() + 1);
           
-				lore.add(ChatColor.RED + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.RESET + convertToPotionFormat(realtime));
+				lore.add(ChatColor.GRAY + "-> " + ChatColor.RED + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.RESET + convertToPotionFormat(realtime));
 			}
 		}
 		itemm2.setLore(lore);
@@ -111,20 +110,20 @@ public class InvView implements Listener {
 		ItemStack pots = new ItemStack(Material.POTION, amount > 64 ? 64 : amount, (short)16421);
 		ItemMeta po = pots.getItemMeta();
 		po.setDisplayName(ChatColor.YELLOW.toString() + amount + ChatColor.DARK_AQUA + " health pot(s) left");
-		po.setLore(Arrays.asList(ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + pm.getLastFailedPotions()));
+		po.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + pm.getLastFailedPotions()));
 		pots.setItemMeta(po);
 		inv.setItem(45, pots);
 		
 		ItemStack stats = new ItemStack(Material.DIAMOND_SWORD, 1);
 		ItemMeta sm = stats.getItemMeta();
-		sm.setDisplayName(ChatColor.DARK_AQUA + "Stats");
-		sm.setLore(Arrays.asList(ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + pm.getHit(), ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + pm.getLongestCombo()));
+		sm.setDisplayName(ChatColor.GOLD + "Statistics");
+		sm.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + pm.getHit(), ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + pm.getLongestCombo()));
 		stats.setItemMeta(sm);
 		inv.setItem(46, stats);
 		
 		ItemStack arrow = new ItemStack(Material.ARROW, 1);
 		ItemMeta arr = arrow.getItemMeta();
-		arr.setDisplayName(ChatColor.YELLOW + pm.getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory");
+		arr.setDisplayName(ChatColor.YELLOW + pm.getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory" + ChatColor.RED + "(DOESNT WORK)");
 		arrow.setItemMeta(arr);
 		inv.setItem(53, arrow);
       
@@ -176,7 +175,7 @@ public class InvView implements Listener {
 	    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
 	    if (duel.hasSpectator()) {
 	    	for (Player spec : spectators) {
-	    		spect.add(ChatColor.GRAY + spec.getName());
+	    		spect.add(ChatColor.YELLOW + spec.getName());
 	    	}
 	    }
 	    String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (spectators.size() > 1 ? "s: " : ": ") + spect.toString();
@@ -206,7 +205,7 @@ public class InvView implements Listener {
 		if (e.getInventory().getName().endsWith("'s Inventory")) {
 			e.setCancelled(true);
 			
-			if (e.getCurrentItem() != null && e.getCurrentItem().getType() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
+			/*if (e.getCurrentItem() != null && e.getCurrentItem().getType() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
 				if (e.getCurrentItem().getItemMeta().getDisplayName().endsWith("'s Inventory")) {
 					String oldOpponentItemName = e.getCurrentItem().getItemMeta().getDisplayName().split("'")[0];
 					String semiRealOldOpponentItemName = oldOpponentItemName.substring(2, oldOpponentItemName.length());
@@ -215,7 +214,7 @@ public class InvView implements Listener {
 					
 					openInv((Player) e.getWhoClicked(), realOldOpponentItemUUID);
 				}
-			}
+			}*/
 		}
 	}
     
@@ -226,7 +225,7 @@ public class InvView implements Listener {
 		return String.format("%01dm %02ds", new Object[] { Long.valueOf(paramLong / 60L), Long.valueOf(paramLong % 60L) });
 	}
 	
-	public static String convertToRoman(int N) {
+	private String convertToRoman(int N) {
 		String roman = "";
 		for (int i = 0; i < numbers.length; i++) {
 			while (N >= numbers[i]) {
@@ -236,9 +235,7 @@ public class InvView implements Listener {
 		}
 		return roman;
 	}
-	  
-	static final char[] symbol = { 'M', 'D', 'C', 'L', 'X', 'V', 'I' };
-	static final int[] value = { 1000, 500, 100, 50, 10, 5, 1 };
-	private static int[] numbers = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
-	private static String[] letters = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
+	
+	private int[] numbers = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+	private String[] letters = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
 }

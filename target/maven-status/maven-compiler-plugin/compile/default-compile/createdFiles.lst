@@ -1,5 +1,6 @@
 us\noks\smallpractice\listeners\DuelListener.class
 us\noks\smallpractice\objects\managers\PlayerManager.class
+us\noks\smallpractice\party\Party.class
 us\noks\smallpractice\objects\managers\DuelManager$2.class
 us\noks\smallpractice\commands\SpawnCommand.class
 us\noks\smallpractice\listeners\ChatListener.class
@@ -9,11 +10,13 @@ us\noks\smallpractice\commands\DuelCommand.class
 us\noks\smallpractice\Main.class
 us\noks\smallpractice\listeners\PlayerListener$2.class
 us\noks\smallpractice\utils\PlayerStatus.class
+us\noks\smallpractice\party\PartyState.class
 us\noks\smallpractice\objects\Duel.class
 us\noks\smallpractice\commands\SeeallCommand.class
 us\noks\smallpractice\listeners\PlayerListener.class
 us\noks\smallpractice\commands\InventoryCommand.class
 us\noks\smallpractice\objects\managers\EloManager.class
+us\noks\smallpractice\commands\ModerationCommand.class
 us\noks\smallpractice\commands\AcceptCommand.class
 us\noks\smallpractice\listeners\EnderDelay.class
 us\noks\smallpractice\listeners\ServerListeners.class

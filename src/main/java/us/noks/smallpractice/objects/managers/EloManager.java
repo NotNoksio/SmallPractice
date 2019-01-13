@@ -18,11 +18,8 @@ public class EloManager {
 	private int DEFAULT_ELO = 1000;
 	
 	public void tranferElo(Player winner, Player loser) {
-		double eloWin = PlayerManager.get(winner).getElo();
-		double eloLose = PlayerManager.get(loser).getElo();
-
 		int scoreChange = 0;
-		double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (eloWin - eloLose) / 400.0D));
+		double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (PlayerManager.get(winner).getElo() - PlayerManager.get(loser).getElo()) / 400.0D));
 
 		scoreChange = (int) (expectedp * 32.0D);
 		scoreChange = scoreChange > 25 ? 25 : scoreChange;
@@ -44,7 +41,7 @@ public class EloManager {
 		return playersElo.get(uuid);
 	}
 	
-	public void updatePlayerElo(Player player) {
+	private void updatePlayerElo(Player player) {
 		playersElo.put(player.getUniqueId(), PlayerManager.get(player).getElo());
 	}
 }

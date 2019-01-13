@@ -38,7 +38,7 @@ public class LeaveCommand implements CommandExecutor {
 		pm.setStatus(PlayerStatus.SPAWN);
 		pm.showAllPlayer();
 		pm.setSpectate(null);
-		player.teleport(Main.getInstance().spawnLocation);
+		player.teleport(Main.getInstance().getSpawnLocation());
 		pm.giveSpawnItem();
 		return false;
 	}

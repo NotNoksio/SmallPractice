@@ -54,7 +54,7 @@ public class PlayerListener implements Listener {
 		
 		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 		
-		player.teleport(Main.getInstance().spawnLocation);
+		player.teleport(Main.getInstance().getSpawnLocation());
 		PlayerManager.get(player).giveSpawnItem();
 		
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
@@ -116,7 +116,7 @@ public class PlayerListener implements Listener {
 				p.setHealth(20.0D);
 				p.setFoodLevel(20);
 				p.setSaturation(10000f);
-				p.teleport(Main.getInstance().spawnLocation);
+				p.teleport(Main.getInstance().getSpawnLocation());
 				PlayerManager.get(p).giveSpawnItem();
 			}
 		}.runTaskLater(Main.getInstance(), 1L);
@@ -170,7 +170,7 @@ public class PlayerListener implements Listener {
 			}
 			if (event.getCause() == DamageCause.VOID && (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE)) {
 				event.setCancelled(true);
-				player.teleport(Main.getInstance().spawnLocation);
+				player.teleport(Main.getInstance().getSpawnLocation());
 			}
 		}
 	}
@@ -181,6 +181,10 @@ public class PlayerListener implements Listener {
 			Player rec = (Player) event.getEntity();
 			Player attacker = (Player) event.getDamager();
 				
+			if (PlayerManager.get(attacker).getStatus() == PlayerStatus.MODERATION) {
+				event.setDamage(0.0D);
+				return;
+			}
 			if (PlayerManager.get(attacker).getStatus() == PlayerStatus.SPECTATE) {
 				event.setCancelled(true);
 				return;
@@ -237,6 +241,14 @@ public class PlayerListener implements Listener {
 	                p.performCommand("leave");
 	            }
 				break;
+			case MODERATION:
+				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Moderation")) {
+	                event.setCancelled(true);
+	                p.teleport(Main.getInstance().getSpawnLocation());
+	                PlayerManager.get(p).setStatus(PlayerStatus.SPAWN);
+	                PlayerManager.get(p).giveSpawnItem();
+	            }
+				break;
 			default:
 				break;
 			}
@@ -248,6 +260,10 @@ public class PlayerListener implements Listener {
 		Player p = (Player) event.getWhoClicked();
 		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
 			if (PlayerManager.get(p).getStatus() != PlayerStatus.DUEL && PlayerManager.get(p).getStatus() != PlayerStatus.WAITING && !PlayerManager.get(p).isCanBuild()) {
+				event.setCancelled(true);
+				p.updateInventory();
+			}
+			if (PlayerManager.get(p).getStatus() == PlayerStatus.MODERATION) {
 				event.setCancelled(true);
 				p.updateInventory();
 			}

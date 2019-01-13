@@ -123,7 +123,7 @@ public class DuelManager {
 			sm.setStatus(PlayerStatus.SPAWN);
 			sm.showAllPlayer();
 			sm.setSpectate(null);
-			spec.teleport(Main.getInstance().spawnLocation);
+			spec.teleport(Main.getInstance().getSpawnLocation());
 			sm.giveSpawnItem();
 			
 			it.remove();
@@ -139,7 +139,7 @@ public class DuelManager {
 				@Override
 				public void run() {
 					if (winner != null) {
-						winner.teleport(Main.getInstance().spawnLocation);
+						winner.teleport(Main.getInstance().getSpawnLocation());
 						PlayerManager.get(winner).giveSpawnItem();
 					}
 				}

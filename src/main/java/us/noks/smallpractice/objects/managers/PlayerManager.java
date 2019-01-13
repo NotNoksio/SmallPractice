@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -155,6 +156,8 @@ public class PlayerManager {
 		getPlayer().getInventory().setArmorContents(null);
 		getPlayer().setItemOnCursor(null);
 		
+		getPlayer().setGameMode(GameMode.SURVIVAL);
+		
 		ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
 		ItemMeta rm = r.getItemMeta();
 		rm.setDisplayName(ChatColor.YELLOW + "Direct Queue");
@@ -190,6 +193,30 @@ public class PlayerManager {
 		r.setItemMeta(rm);
 		
 		getPlayer().getInventory().setItem(8, r);
+		getPlayer().updateInventory();
+	}
+	
+	public void giveModerationItem() {
+		getPlayer().getInventory().clear();
+		getPlayer().getInventory().setArmorContents(null);
+		getPlayer().setItemOnCursor(null);
+		
+		getPlayer().setGameMode(GameMode.CREATIVE);
+		
+		ItemStack s = new ItemStack(Material.WOOD_SWORD, 1);
+		ItemMeta sm = s.getItemMeta();
+		sm.setDisplayName(ChatColor.RED + "Knockback V");
+		sm.spigot().setUnbreakable(true);
+		s.setItemMeta(sm);
+		s.addUnsafeEnchantment(Enchantment.KNOCKBACK, 5);
+		
+		ItemStack r = new ItemStack(Material.REDSTONE, 1);
+		ItemMeta rm = r.getItemMeta();
+		rm.setDisplayName(ChatColor.RED + "Leave Moderation");
+		r.setItemMeta(rm);
+		
+		getPlayer().getInventory().setItem(8, r);
+		getPlayer().getInventory().setItem(0, s);
 		getPlayer().updateInventory();
 	}
 	
@@ -251,7 +278,9 @@ public class PlayerManager {
 	public void hideAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			getPlayer().hidePlayer(allPlayers);
-			allPlayers.hidePlayer(getPlayer());
+			if (PlayerManager.get(allPlayers).getStatus() != PlayerStatus.MODERATION) {
+				allPlayers.hidePlayer(getPlayer());
+			}
 		}
 	}
 	
@@ -261,6 +290,10 @@ public class PlayerManager {
 			getPlayer().showPlayer(allPlayers);
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
 				allPlayers.showPlayer(getPlayer());
+			}
+			if (pm.getStatus() == PlayerStatus.MODERATION) {
+				allPlayers.showPlayer(getPlayer());
+				getPlayer().hidePlayer(allPlayers);
 			}
 		}
 	}

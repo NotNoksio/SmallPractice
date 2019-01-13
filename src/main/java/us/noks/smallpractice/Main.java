@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.Lists;
@@ -21,6 +22,7 @@ import us.noks.smallpractice.commands.BuildCommand;
 import us.noks.smallpractice.commands.DuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
 import us.noks.smallpractice.commands.LeaveCommand;
+import us.noks.smallpractice.commands.ModerationCommand;
 import us.noks.smallpractice.commands.PingCommand;
 import us.noks.smallpractice.commands.ReportCommand;
 import us.noks.smallpractice.commands.SeeallCommand;
@@ -38,9 +40,9 @@ import us.noks.smallpractice.utils.PlayerStatus;
 
 public class Main extends JavaPlugin {
 	
-	public Location arena1Pos1, arena2Pos1, arena3Pos1;
-	public Location arena1Pos2, arena2Pos2, arena3Pos2;
-	public Location spawnLocation;
+	private Location arena1Pos1, arena2Pos1;
+	private Location arena1Pos2, arena2Pos2;
+	private Location spawnLocation;
 	
 	public List<Player> queue = Lists.newArrayList();
 	public Map<Integer, Location[]> arenaList = Maps.newHashMap();
@@ -55,14 +57,28 @@ public class Main extends JavaPlugin {
 		instance = this;
 		
 		setupArena();
+		registerCommands();
+		registerListers();
+	}
+	
+	@Override
+	public void onDisable() {
+		this.queue.clear();
+		this.arenaList.clear();
+	}
+	
+	private void setupArena() {
+		arena1Pos1 = new Location(Bukkit.getWorld("world"), -549.5D, 4.0D, 113.5D, 90.0F, 0.0F);
+	    arena1Pos2 = new Location(Bukkit.getWorld("world"), -608.5D, 4.0D, 115.5D, -90.0F, -1.0F);
+	    arena2Pos1 = new Location(Bukkit.getWorld("world"), 72.5D, 4.0D, 74.5D, 0.0F, 0.0F);
+	    arena2Pos2 = new Location(Bukkit.getWorld("world"), 70.5D, 4.0D, 154.5D, 180.0F, 0.0F);
+		spawnLocation = new Location(Bukkit.getWorld("world"), -215.5D, 6.5D, 84.5D, 180.0F, 0.0F);
 		
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
-		Bukkit.getPluginManager().registerEvents(new ServerListeners(), this);
-		Bukkit.getPluginManager().registerEvents(new EnderDelay(), this);
-		Bukkit.getPluginManager().registerEvents(new InvView(), this);
-		Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
-		Bukkit.getPluginManager().registerEvents(new DuelListener(), this);
-		
+		arenaList.put(1, new Location[] {arena1Pos1, arena1Pos2});
+		arenaList.put(2, new Location[] {arena2Pos1, arena2Pos2});
+	}
+	
+	private void registerCommands() {
 		getCommand("duel").setExecutor(new DuelCommand());
 		getCommand("accept").setExecutor(new AcceptCommand());
 		getCommand("build").setExecutor(new BuildCommand());
@@ -73,23 +89,18 @@ public class Main extends JavaPlugin {
 		getCommand("report").setExecutor(new ReportCommand());
 		getCommand("spectate").setExecutor(new SpectateCommand());
 		getCommand("leave").setExecutor(new LeaveCommand());
+		getCommand("mod").setExecutor(new ModerationCommand());
 	}
 	
-	@Override
-	public void onDisable() {
-		this.queue.clear();
-		this.arenaList.clear();
-	}
-	
-	public void setupArena() {
-		arena1Pos1 = new Location(Bukkit.getWorld("world"), -549.5D, 4.0D, 113.5D, 90.0F, 0.0F);
-	    arena1Pos2 = new Location(Bukkit.getWorld("world"), -608.5D, 4.0D, 115.5D, -90.0F, -1.0F);
-	    arena2Pos1 = new Location(Bukkit.getWorld("world"), 72.5D, 4.0D, 74.5D, 0.0F, 0.0F);
-	    arena2Pos2 = new Location(Bukkit.getWorld("world"), 70.5D, 4.0D, 154.5D, 180.0F, 0.0F);
-		spawnLocation = new Location(Bukkit.getWorld("world"), -215.5D, 6.5D, 84.5D, 180.0F, 0.0F);
+	private void registerListers() {
+		PluginManager pm = Bukkit.getPluginManager();
 		
-		arenaList.put(1, new Location[] {arena1Pos1, arena1Pos2});
-		arenaList.put(2, new Location[] {arena2Pos1, arena2Pos2});
+		pm.registerEvents(new PlayerListener(), this);
+		pm.registerEvents(new ServerListeners(), this);
+		pm.registerEvents(new EnderDelay(), this);
+		pm.registerEvents(new InvView(), this);
+		pm.registerEvents(new ChatListener(), this);
+		pm.registerEvents(new DuelListener(), this);
 	}
 
 	public void sendDuelRequest(Player requester, Player requested) {
@@ -170,5 +181,9 @@ public class Main extends JavaPlugin {
 			PlayerManager.get(p).giveSpawnItem();
 			p.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 		}
+	}
+	
+	public Location getSpawnLocation() {
+		return this.spawnLocation;
 	}
 }

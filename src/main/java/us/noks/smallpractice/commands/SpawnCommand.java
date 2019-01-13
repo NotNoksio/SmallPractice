@@ -31,7 +31,7 @@ public class SpawnCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return false;
 		}
-		player.teleport(Main.getInstance().spawnLocation);
+		player.teleport(Main.getInstance().getSpawnLocation());
 		player.sendMessage(ChatColor.GREEN + "Teleportation..");
 		return false;
 	}
