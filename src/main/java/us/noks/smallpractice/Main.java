@@ -167,7 +167,6 @@ public class Main extends JavaPlugin {
 				addQueue(p);
 				return;
 			}
-			
 			DuelManager.getInstance().startDuel(p1, p2);
 			this.queue.remove(p1);
 			this.queue.remove(p2);

@@ -1,5 +1,8 @@
 package us.noks.smallpractice.listeners;
 
+import java.util.List;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -25,6 +28,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import net.minecraft.util.com.google.common.collect.Lists;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
@@ -35,9 +39,8 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		
 		event.setJoinMessage(null);
+		Player player = event.getPlayer();
 		
 		player.setExp(0.0F);
 		player.setLevel(0);
@@ -69,7 +72,7 @@ public class PlayerListener implements Listener {
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			PlayerManager pmAll = PlayerManager.get(allPlayers);
-			if (pmAll.getStatus() == PlayerStatus.WAITING || pmAll.getStatus() == PlayerStatus.DUEL) {
+			if (pmAll.getStatus() == PlayerStatus.WAITING || pmAll.getStatus() == PlayerStatus.DUEL || pmAll.getStatus() == PlayerStatus.MODERATION) {
 				allPlayers.hidePlayer(player);
 			}
 		}
@@ -87,7 +90,6 @@ public class PlayerListener implements Listener {
 			
 			if (killer != null) {
 				InvView.getInstance().deathMsg(killer, killed);
-				
 				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(killer), killer);
 				
 				new BukkitRunnable() {
@@ -156,7 +158,8 @@ public class PlayerListener implements Listener {
 			*/
 			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(op), op);
 		}
-		PlayerManager.remove(event.getPlayer());
+		//PlayerManager.remove(event.getPlayer());
+		PlayerManager.get(event.getPlayer()).remove();
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
@@ -200,9 +203,7 @@ public class PlayerListener implements Listener {
 		if (event.getItem().getOwner() instanceof Player) {
 			Player owner = (Player) event.getItem().getOwner();
 			
-			if (!event.getPlayer().canSee(owner)) {
-				event.setCancelled(true);
-			}
+			if (!event.getPlayer().canSee(owner)) event.setCancelled(true);
 		}
 	}
 	
@@ -248,6 +249,16 @@ public class PlayerListener implements Listener {
 	                PlayerManager.get(p).setStatus(PlayerStatus.SPAWN);
 	                PlayerManager.get(p).giveSpawnItem();
 	            }
+				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "See Random Player")) {
+	                event.setCancelled(true);
+	                List<Player> online = Lists.newArrayList();
+	                online.addAll(Bukkit.getOnlinePlayers());
+	                
+	                Player tooked = online.get(new Random().nextInt(Bukkit.getOnlinePlayers().size()));
+	                
+	                p.teleport(tooked.getLocation().add(0, 2, 0));
+	                p.sendMessage(ChatColor.GREEN + "Teleport to " + tooked.getName());
+	            }
 				break;
 			default:
 				break;
@@ -259,11 +270,13 @@ public class PlayerListener implements Listener {
 	public void onDrag(InventoryClickEvent event) {
 		Player p = (Player) event.getWhoClicked();
 		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
-			if (PlayerManager.get(p).getStatus() != PlayerStatus.DUEL && PlayerManager.get(p).getStatus() != PlayerStatus.WAITING && !PlayerManager.get(p).isCanBuild()) {
+			PlayerManager pm = PlayerManager.get(p);
+			
+			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
 				event.setCancelled(true);
 				p.updateInventory();
 			}
-			if (PlayerManager.get(p).getStatus() == PlayerStatus.MODERATION) {
+			if (pm.getStatus() == PlayerStatus.MODERATION) {
 				event.setCancelled(true);
 				p.updateInventory();
 			}
@@ -275,7 +288,7 @@ public class PlayerListener implements Listener {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			
-			if (PlayerManager.get(player).getStatus() == PlayerStatus.SPAWN || PlayerManager.get(player).getStatus() == PlayerStatus.QUEUE || PlayerManager.get(player).getStatus() == PlayerStatus.SPECTATE) {
+			if (PlayerManager.get(player).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 			}
 		}

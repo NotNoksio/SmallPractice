@@ -20,7 +20,6 @@ public class AcceptCommand implements CommandExecutor {
 				p.sendMessage(ChatColor.RED + "Usage: /accept <player>");
 				return false;
 			}
-			
 			Player dueler = Bukkit.getPlayer(args[0]);
 			
 			if (dueler == null) {

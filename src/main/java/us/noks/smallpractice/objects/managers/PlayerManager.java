@@ -62,9 +62,9 @@ public class PlayerManager {
 		return ip;
 	}
 
-	public static void remove(Player p) {
-		PlayerManager m = new PlayerManager(p);
-		players.remove(m);
+	public void remove() {
+		//PlayerManager m = new PlayerManager(this.player);
+		players.remove(this);
 	}
 
 	public Player getPlayer() {
@@ -103,8 +103,8 @@ public class PlayerManager {
 		this.spectate = spec;
 	}
 	
-	public boolean hasRequest(Player p) {
-		return this.request.containsValue(p) && this.request.containsKey(this.player) && this.request.get(this.player).equals(p);
+	public boolean hasRequest(Player requested) {
+		return this.request.containsValue(requested) && this.request.containsKey(this.player) && this.request.get(this.player) == requested;
 	}
 	
 	public void setRequestTo(Player target) {
@@ -210,6 +210,11 @@ public class PlayerManager {
 		s.setItemMeta(sm);
 		s.addUnsafeEnchantment(Enchantment.KNOCKBACK, 5);
 		
+		ItemStack a = new ItemStack(Material.WATCH, 1);
+		ItemMeta am = a.getItemMeta();
+		am.setDisplayName(ChatColor.RED + "See Random Player");
+		a.setItemMeta(am);
+		
 		ItemStack r = new ItemStack(Material.REDSTONE, 1);
 		ItemMeta rm = r.getItemMeta();
 		rm.setDisplayName(ChatColor.RED + "Leave Moderation");
@@ -217,6 +222,7 @@ public class PlayerManager {
 		
 		getPlayer().getInventory().setItem(8, r);
 		getPlayer().getInventory().setItem(0, s);
+		getPlayer().getInventory().setItem(1, a);
 		getPlayer().updateInventory();
 	}
 	
@@ -278,16 +284,14 @@ public class PlayerManager {
 	public void hideAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			getPlayer().hidePlayer(allPlayers);
-			if (PlayerManager.get(allPlayers).getStatus() != PlayerStatus.MODERATION) {
-				allPlayers.hidePlayer(getPlayer());
-			}
+			if (get(allPlayers).getStatus() != PlayerStatus.MODERATION) allPlayers.hidePlayer(getPlayer());
 		}
 	}
 	
 	public void showAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			PlayerManager pm = PlayerManager.get(allPlayers);
-			getPlayer().showPlayer(allPlayers);
+			if (pm.getStatus() != PlayerStatus.MODERATION) getPlayer().showPlayer(allPlayers);
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
 				allPlayers.showPlayer(getPlayer());
 			}

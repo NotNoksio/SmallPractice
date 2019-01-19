@@ -18,7 +18,7 @@ public class DuelListener implements Listener {
 			Player shooter = (Player) event.getEntity().getShooter();
 			PlayerManager sm = PlayerManager.get(shooter);
 			
-			if (sm.getStatus() == PlayerStatus.DUEL && !event.getAffectedEntities().contains(shooter)) {
+			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
 				sm.setFailedPotions(sm.getFailedPotions() + 1);
 			}
 		}
