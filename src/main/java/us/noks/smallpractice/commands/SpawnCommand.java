@@ -19,7 +19,7 @@ public class SpawnCommand implements CommandExecutor {
 		}
 		Player player = (Player) sender;
 		
-		if (!player.isOp()) {
+		if (!player.hasPermission("command.spawn")) {
 			player.sendMessage(ChatColor.RED + "No permission.");
 			return false;
 		}

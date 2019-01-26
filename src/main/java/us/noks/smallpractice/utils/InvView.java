@@ -43,6 +43,14 @@ public class InvView implements Listener {
     private Map<UUID, Inventory> inventorymap = Maps.newHashMap();
     
 	public void saveInv(Player p) {
+		PlayerManager pm = PlayerManager.get(p);
+		pm.setLastFailedPotions(pm.getFailedPotions());
+		pm.setFailedPotions(0);
+		if(pm.getCombo() > pm.getLongestCombo()) {
+    		pm.setLongestCombo(pm.getCombo());
+    	}
+		pm.setCombo(0);
+		
 		Inventory inv = Bukkit.createInventory(null, 54, ChatColor.RED + p.getName() + "'s Inventory");
 		
 		for (int i = 0; i < 9; i++) {
@@ -98,14 +106,6 @@ public class InvView implements Listener {
 		inv.setItem(50, item2);
       
 		int amount = (p.getInventory().contains(new ItemStack(Material.POTION, 1, (short)16421)) ? Integer.valueOf(p.getInventory().all(new ItemStack(Material.POTION, 1, (short)16421)).size()).intValue() : 0);
-      
-		PlayerManager pm = PlayerManager.get(p);
-		pm.setLastFailedPotions(pm.getFailedPotions());
-		pm.setFailedPotions(0);
-		if(pm.getCombo() > pm.getLongestCombo()) {
-    		pm.setLongestCombo(pm.getCombo());
-    	}
-		pm.setCombo(0);
 		
 		ItemStack pots = new ItemStack(Material.POTION, amount > 64 ? 64 : amount, (short)16421);
 		ItemMeta po = pots.getItemMeta();
@@ -123,7 +123,7 @@ public class InvView implements Listener {
 		
 		ItemStack arrow = new ItemStack(Material.ARROW, 1);
 		ItemMeta arr = arrow.getItemMeta();
-		arr.setDisplayName(ChatColor.YELLOW + pm.getOldOpponent().getName() + ChatColor.DARK_AQUA + "'s Inventory" + ChatColor.RED + "(DOESNT WORK)");
+		arr.setDisplayName(ChatColor.YELLOW + Bukkit.getPlayer(pm.getOldOpponentUUID()).getName() + ChatColor.DARK_AQUA + "'s Inventory" + ChatColor.RED + "(DOESNT WORK)");
 		arrow.setItemMeta(arr);
 		inv.setItem(53, arrow);
       
@@ -138,10 +138,10 @@ public class InvView implements Listener {
     
 	public void deathMsg(Player winner, Player looser) {
 		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName();
-		List<Player> spectators = Lists.newArrayList();
-		Duel duel = DuelManager.getInstance().getDuelByPlayer(winner);
+		List<UUID> spectators = Lists.newArrayList();
+		Duel duel = DuelManager.getInstance().getDuelByUUID(winner.getUniqueId());
 		
-		spectators.addAll(duel.getAllSpectators());
+		spectators.addAll(duel.getAllSpectatorsUUID());
 		
 	    TextComponent l1 = new TextComponent();
 	    l1.setText("Inventories (Click): ");
@@ -174,7 +174,8 @@ public class InvView implements Listener {
 	    
 	    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
 	    if (duel.hasSpectator()) {
-	    	for (Player spec : spectators) {
+	    	for (UUID specs : spectators) {
+	    		Player spec = Bukkit.getPlayer(specs);
 	    		spect.add(ChatColor.YELLOW + spec.getName());
 	    	}
 	    }
@@ -189,9 +190,9 @@ public class InvView implements Listener {
 	    	if (duel.hasSpectator()) looser.sendMessage(spectatorMessage);
 	    }
 	    
-	    Iterator<Player> its = spectators.iterator();
+	    Iterator<UUID> its = spectators.iterator();
 	    while (its.hasNext()) {
-			Player spectator = its.next();
+			Player spectator = Bukkit.getPlayer(its.next());
 			
 			spectator.sendMessage(winnerMessage);
 			spectator.spigot().sendMessage(l1);

@@ -15,7 +15,8 @@ public class BuildCommand implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
 			
-			if (!p.hasPermission("this.build")) {
+			if (!p.hasPermission("command.build")) {
+				p.sendMessage(ChatColor.RED + "No permission.");
 				return false;
 			}
 			if (args.length != 0) {

@@ -16,14 +16,14 @@ public class ModerationCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
-			if (args.length > 0) {
-				sender.sendMessage(ChatColor.RED + "Usage: /mod");
-				return false;
-			}
 			Player player = (Player) sender;
 			
 			if (!player.hasPermission("command.moderation")) {
 				player.sendMessage(ChatColor.RED + "No permission.");
+				return false;
+			}
+			if (args.length > 0) {
+				sender.sendMessage(ChatColor.RED + "Usage: /mod");
 				return false;
 			}
 			PlayerManager pm = PlayerManager.get(player);

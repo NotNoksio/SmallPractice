@@ -49,7 +49,7 @@ public class SpectateCommand implements CommandExecutor {
 		pm.hideAllPlayer();
 		pm.setSpectate(target);
 		
-		DuelManager.getInstance().getDuelByPlayer(target).addSpectator(player);
+		DuelManager.getInstance().getDuelByUUID(target.getUniqueId()).addSpectator(player.getUniqueId());
 		
 		player.setAllowFlight(true);
 		player.setFlying(true);
@@ -59,8 +59,8 @@ public class SpectateCommand implements CommandExecutor {
 		player.showPlayer(tm.getOpponent());
 			
 		pm.giveSpectateItem();
-		player.sendMessage(ChatColor.GREEN + "You are now in spectator! " + ChatColor.YELLOW + "Do \"/leave\" to leave spectator mode.");
-		DuelManager.getInstance().getDuelByPlayer(target).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
+		player.sendMessage(ChatColor.GREEN + "You are now spectating " + ChatColor.YELLOW + target.getName());
+		DuelManager.getInstance().getDuelByUUID(target.getUniqueId()).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 		return false;
 	}
 }

@@ -15,7 +15,7 @@ public class SeeallCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
-		if (!player.isOp()) {
+		if (!player.hasPermission("command.seeall")) {
 			player.sendMessage(ChatColor.RED + "No permission.");
 			return false;
 		}

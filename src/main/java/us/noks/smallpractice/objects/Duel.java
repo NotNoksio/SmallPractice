@@ -2,7 +2,9 @@ package us.noks.smallpractice.objects;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -10,29 +12,29 @@ import com.google.common.collect.Lists;
 
 public class Duel {
 	
-	private Player firstPlayer;
-	private Player secondPlayer;
+	private UUID firstPlayerUUID;
+	private UUID secondPlayerUUID;
 	private boolean ranked;
-	private List<Player> spectators = Lists.newArrayList();
+	private List<UUID> spectators = Lists.newArrayList();
 	
-	public Duel(Player firstPlayer, Player secondPlayer) {
-		this.firstPlayer = firstPlayer;
-		this.secondPlayer = secondPlayer;
+	public Duel(UUID firstPlayer, UUID secondPlayer) {
+		this.firstPlayerUUID = firstPlayer;
+		this.secondPlayerUUID = secondPlayer;
 		this.ranked = false;
 	}
 	
-	public Duel(Player firstPlayer, Player secondPlayer, boolean ranked) {
-		this.firstPlayer = firstPlayer;
-		this.secondPlayer = secondPlayer;
+	public Duel(UUID firstPlayer, UUID secondPlayer, boolean ranked) {
+		this.firstPlayerUUID = firstPlayer;
+		this.secondPlayerUUID = secondPlayer;
 		this.ranked = ranked;
 	}
 	
-	public Player getFirstPlayer() {
-		return firstPlayer;
+	public UUID getFirstPlayerUUID() {
+		return firstPlayerUUID;
 	}
 	
-	public Player getSecondPlayer() {
-		return secondPlayer;
+	public UUID getSecondPlayerUUID() {
+		return secondPlayerUUID;
 	}
 
 	public boolean isRanked() {
@@ -43,11 +45,11 @@ public class Duel {
 		this.ranked = ranked;
 	}
 	
-	public void addSpectator(Player spec) {
+	public void addSpectator(UUID spec) {
 		this.spectators.add(spec);
 	}
 	
-	public void removeSpectator(Player spec) {
+	public void removeSpectator(UUID spec) {
 		this.spectators.remove(spec);
 	}
 	
@@ -55,7 +57,7 @@ public class Duel {
 		return !this.spectators.isEmpty();
 	}
 	
-	public List<Player> getAllSpectators() {
+	public List<UUID> getAllSpectatorsUUID() {
 		return this.spectators;
 	}
 	
@@ -64,16 +66,18 @@ public class Duel {
 	}
 	
 	public void sendSoundedMessage(String message, Sound sound) {
-		getFirstPlayer().sendMessage(message);
-		getSecondPlayer().sendMessage(message);
+		Player firstPlayer = Bukkit.getPlayer(getFirstPlayerUUID());
+		Player secondPlayer = Bukkit.getPlayer(getSecondPlayerUUID());
+		firstPlayer.sendMessage(message);
+		secondPlayer.sendMessage(message);
 		if (sound != null) {
-			getFirstPlayer().playSound(getFirstPlayer().getLocation(), sound, 1.0f, 1.0f);
-			getSecondPlayer().playSound(getSecondPlayer().getLocation(), sound, 1.0f, 1.0f);
+			firstPlayer.playSound(firstPlayer.getLocation(), sound, 1.0f, 1.0f);
+			secondPlayer.playSound(secondPlayer.getLocation(), sound, 1.0f, 1.0f);
 		}
 		
-		Iterator<Player> iterator = getAllSpectators().iterator();
+		Iterator<UUID> iterator = getAllSpectatorsUUID().iterator();
 		while (iterator.hasNext()) {
-			Player spec = iterator.next();
+			Player spec = Bukkit.getPlayer(iterator.next());
 			spec.sendMessage(message);
 		}
 	}

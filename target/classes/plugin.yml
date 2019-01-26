@@ -14,6 +14,5 @@ commands:
   report:
   spectate:
     aliases: [spec]
-  leave:
   mod:
   

@@ -21,7 +21,6 @@ import us.noks.smallpractice.commands.AcceptCommand;
 import us.noks.smallpractice.commands.BuildCommand;
 import us.noks.smallpractice.commands.DuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
-import us.noks.smallpractice.commands.LeaveCommand;
 import us.noks.smallpractice.commands.ModerationCommand;
 import us.noks.smallpractice.commands.PingCommand;
 import us.noks.smallpractice.commands.ReportCommand;
@@ -40,12 +39,12 @@ import us.noks.smallpractice.utils.PlayerStatus;
 
 public class Main extends JavaPlugin {
 	
-	private Location arena1Pos1, arena2Pos1;
-	private Location arena1Pos2, arena2Pos2;
+	private Location arena1_Pos1, arena2_Pos1;
+	private Location arena1_Pos2, arena2_Pos2;
 	private Location spawnLocation;
 	
 	public List<Player> queue = Lists.newArrayList();
-	public Map<Integer, Location[]> arenaList = Maps.newHashMap();
+	public Map<Integer, Location[]> arenaList = Maps.newConcurrentMap();
 	
 	public static Main instance;
 	public static Main getInstance() {
@@ -68,14 +67,14 @@ public class Main extends JavaPlugin {
 	}
 	
 	private void setupArena() {
-		arena1Pos1 = new Location(Bukkit.getWorld("world"), -549.5D, 4.0D, 113.5D, 90.0F, 0.0F);
-	    arena1Pos2 = new Location(Bukkit.getWorld("world"), -608.5D, 4.0D, 115.5D, -90.0F, -1.0F);
-	    arena2Pos1 = new Location(Bukkit.getWorld("world"), 72.5D, 4.0D, 74.5D, 0.0F, 0.0F);
-	    arena2Pos2 = new Location(Bukkit.getWorld("world"), 70.5D, 4.0D, 154.5D, 180.0F, 0.0F);
+		arena1_Pos1 = new Location(Bukkit.getWorld("world"), -549.5D, 4.0D, 113.5D, 90.0F, 0.0F);
+	    arena1_Pos2 = new Location(Bukkit.getWorld("world"), -608.5D, 4.0D, 115.5D, -90.0F, -1.0F);
+	    arena2_Pos1 = new Location(Bukkit.getWorld("world"), 72.5D, 4.0D, 74.5D, 0.0F, 0.0F);
+	    arena2_Pos2 = new Location(Bukkit.getWorld("world"), 70.5D, 4.0D, 154.5D, 180.0F, 0.0F);
 		spawnLocation = new Location(Bukkit.getWorld("world"), -215.5D, 6.5D, 84.5D, 180.0F, 0.0F);
 		
-		arenaList.put(1, new Location[] {arena1Pos1, arena1Pos2});
-		arenaList.put(2, new Location[] {arena2Pos1, arena2Pos2});
+		arenaList.put(1, new Location[] {arena1_Pos1, arena1_Pos2});
+		arenaList.put(2, new Location[] {arena2_Pos1, arena2_Pos2});
 	}
 	
 	private void registerCommands() {
@@ -88,7 +87,6 @@ public class Main extends JavaPlugin {
 		getCommand("seeall").setExecutor(new SeeallCommand());
 		getCommand("report").setExecutor(new ReportCommand());
 		getCommand("spectate").setExecutor(new SpectateCommand());
-		getCommand("leave").setExecutor(new LeaveCommand());
 		getCommand("mod").setExecutor(new ModerationCommand());
 	}
 	
@@ -134,11 +132,11 @@ public class Main extends JavaPlugin {
 	
 	public void acceptDuelRequest(Player requested, Player requester) {
 		if (PlayerManager.get(requester).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested).getStatus() != PlayerStatus.SPAWN) {
-			requester.sendMessage(ChatColor.RED + "Either you or that player is not in spawn!");
+			requester.sendMessage(ChatColor.RED + "Either you or this player is not in spawn!");
 			return;
 		}
 		if (!PlayerManager.get(requester).hasRequest(requested)) {
-			requested.sendMessage(ChatColor.RED + "This player doesnt request you to duel!");
+			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
 			return;
 		}
 		DuelManager.getInstance().startDuel(requester, requested);

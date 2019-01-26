@@ -1,6 +1,5 @@
 package us.noks.smallpractice.commands;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -11,12 +10,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.Main;
 
 public class DuelCommand implements CommandExecutor {
 	
 	private int cooldownTime = 5;
-	private Map<UUID, Long> cooldowns = new HashMap<UUID, Long>();
+	private Map<UUID, Long> cooldowns = Maps.newConcurrentMap();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

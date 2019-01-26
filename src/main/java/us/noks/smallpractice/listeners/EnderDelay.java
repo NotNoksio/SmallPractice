@@ -3,7 +3,6 @@ package us.noks.smallpractice.listeners;
 import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -18,12 +17,13 @@ import org.bukkit.event.entity.EnderpearlLandEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class EnderDelay implements Listener {
 
-	private Map<UUID, Long> enderpearlCooldown = new WeakHashMap<UUID, Long>();
+	private Map<UUID, Long> enderpearlCooldown = Maps.newConcurrentMap();
 	private int cooldowntime = 14;
 	static EnderDelay instance = new EnderDelay();
 

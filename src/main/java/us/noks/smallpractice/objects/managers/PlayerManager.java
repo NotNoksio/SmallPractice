@@ -1,9 +1,8 @@
 package us.noks.smallpractice.objects.managers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,17 +13,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.google.common.collect.Maps;
+
+import net.minecraft.util.com.google.common.collect.Lists;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class PlayerManager {
 
-	public static List<PlayerManager> players = new ArrayList<PlayerManager>();
+	public static List<PlayerManager> players = Lists.newArrayList();
 	private Player player;
 	private boolean canBuild;
 	private Player opponent;
-	private Player oldOpponent;
-	private Map<Player, Player> request = new HashMap<Player, Player>();
+	private UUID oldOpponentUUID;
+	private Map<Player, Player> request = Maps.newHashMap();
 	private PlayerStatus status;
 	private Player spectate;
 	private String prefix;
@@ -39,7 +41,7 @@ public class PlayerManager {
 	    this.player = player;
 	    this.canBuild = false;
 	    this.opponent = null;
-	    this.oldOpponent = null;
+	    this.oldOpponentUUID = null;
 	    this.status = PlayerStatus.SPAWN;
 	    this.spectate = null;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
@@ -52,14 +54,14 @@ public class PlayerManager {
 	}
 
 	public static PlayerManager get(Player p) {
-		for (PlayerManager ip : players) {
-			if (ip.getPlayer().equals(p)) {
-				return ip;
+		for (PlayerManager pm : players) {
+			if (pm.getPlayer().equals(p)) {
+				return pm;
 			}
 		}
-		PlayerManager ip = new PlayerManager(p);
-		players.add(ip);
-		return ip;
+		PlayerManager pm = new PlayerManager(p);
+		players.add(pm);
+		return pm;
 	}
 
 	public void remove() {
@@ -87,12 +89,12 @@ public class PlayerManager {
 		this.opponent = opponent;
 	}
 	
-	public Player getOldOpponent() {
-		return oldOpponent;
+	public UUID getOldOpponentUUID() {
+		return oldOpponentUUID;
 	}
 
-	public void setOldOpponent(Player oldOpponent) {
-		this.oldOpponent = oldOpponent;
+	public void setOldOpponentUUID(UUID oldOpponentUUID) {
+		this.oldOpponentUUID = oldOpponentUUID;
 	}
 	
 	public Player getSpectate() {
@@ -290,11 +292,9 @@ public class PlayerManager {
 	
 	public void showAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
-			PlayerManager pm = PlayerManager.get(allPlayers);
+			PlayerManager pm = get(allPlayers);
 			if (pm.getStatus() != PlayerStatus.MODERATION) getPlayer().showPlayer(allPlayers);
-			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
-				allPlayers.showPlayer(getPlayer());
-			}
+			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) allPlayers.showPlayer(getPlayer());
 			if (pm.getStatus() == PlayerStatus.MODERATION) {
 				allPlayers.showPlayer(getPlayer());
 				getPlayer().hidePlayer(allPlayers);

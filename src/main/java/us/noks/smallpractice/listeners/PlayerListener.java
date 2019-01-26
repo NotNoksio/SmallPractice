@@ -90,7 +90,7 @@ public class PlayerListener implements Listener {
 			
 			if (killer != null) {
 				InvView.getInstance().deathMsg(killer, killed);
-				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(killer), killer);
+				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByUUID(killer.getUniqueId()), killer);
 				
 				new BukkitRunnable() {
 					
@@ -156,7 +156,7 @@ public class PlayerListener implements Listener {
 				it.remove();
 			}
 			*/
-			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByPlayer(op), op);
+			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByUUID(op.getUniqueId()), op);
 		}
 		//PlayerManager.remove(event.getPlayer());
 		PlayerManager.get(event.getPlayer()).remove();
@@ -217,37 +217,49 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onClickItem(PlayerInteractEvent event) {
-		Player p = event.getPlayer();
-        ItemStack item = p.getItemInHand();
-        if (p.getInventory().getItemInHand() == null || !p.getInventory().getItemInHand().hasItemMeta() || !p.getInventory().getItemInHand().getItemMeta().hasDisplayName()) {
+		Player player = event.getPlayer();
+        ItemStack item = player.getItemInHand();
+        if (player.getInventory().getItemInHand() == null || !player.getInventory().getItemInHand().hasItemMeta() || !player.getInventory().getItemInHand().getItemMeta().hasDisplayName()) {
             return;
         }
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-        	switch (PlayerManager.get(p).getStatus()) {
+        	PlayerManager pm = PlayerManager.get(player);
+        	
+        	switch (pm.getStatus()) {
 			case SPAWN:
 				if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
 	                event.setCancelled(true);
-	                Main.getInstance().addQueue(p);
+	                Main.getInstance().addQueue(player);
 	            }
 				break;
 			case QUEUE:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Queue")) {
 	                event.setCancelled(true);
-	                Main.getInstance().quitQueue(p);
+	                Main.getInstance().quitQueue(player);
 	            }
 				break;
 			case SPECTATE:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Spectate")) {
 	                event.setCancelled(true);
-	                p.performCommand("leave");
+	                Player spectatePlayer = pm.getSpectate();
+	        		DuelManager.getInstance().getDuelByUUID(spectatePlayer.getUniqueId()).removeSpectator(player.getUniqueId());
+	        		DuelManager.getInstance().getDuelByUUID(spectatePlayer.getUniqueId()).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
+	        		
+	        		player.setAllowFlight(false);
+	        		player.setFlying(false);
+	        		pm.setStatus(PlayerStatus.SPAWN);
+	        		pm.showAllPlayer();
+	        		pm.setSpectate(null);
+	        		player.teleport(Main.getInstance().getSpawnLocation());
+	        		pm.giveSpawnItem();
 	            }
 				break;
 			case MODERATION:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Moderation")) {
 	                event.setCancelled(true);
-	                p.teleport(Main.getInstance().getSpawnLocation());
-	                PlayerManager.get(p).setStatus(PlayerStatus.SPAWN);
-	                PlayerManager.get(p).giveSpawnItem();
+	                player.teleport(Main.getInstance().getSpawnLocation());
+	                pm.setStatus(PlayerStatus.SPAWN);
+	                pm.giveSpawnItem();
 	            }
 				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "See Random Player")) {
 	                event.setCancelled(true);
@@ -256,8 +268,8 @@ public class PlayerListener implements Listener {
 	                
 	                Player tooked = online.get(new Random().nextInt(Bukkit.getOnlinePlayers().size()));
 	                
-	                p.teleport(tooked.getLocation().add(0, 2, 0));
-	                p.sendMessage(ChatColor.GREEN + "Teleport to " + tooked.getName());
+	                player.teleport(tooked.getLocation().add(0, 2, 0));
+	                player.sendMessage(ChatColor.GREEN + "Teleport to " + tooked.getName());
 	            }
 				break;
 			default:

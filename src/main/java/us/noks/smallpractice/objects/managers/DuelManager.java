@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -27,9 +29,9 @@ public class DuelManager {
 		return instance;
 	}
 	
-	private Map<Player, Duel> playerIdentifierToDuel = Maps.newHashMap();
-	public Duel getDuelByPlayer(Player player) {
-        return this.playerIdentifierToDuel.get(player);
+	private Map<UUID, Duel> uuidIdentifierToDuel = Maps.newHashMap();
+	public Duel getDuelByUUID(UUID uuid) {
+        return this.uuidIdentifierToDuel.get(uuid);
     }
 	
 	public void startDuel(Player p1, Player p2) {
@@ -64,20 +66,20 @@ public class DuelManager {
 		p1.setScoreboard(firstPlayerScoreboard);
 		p2.setScoreboard(secondPlayerScoreboard);
 		
-		teleportRandomArena(new Duel(p1, p2));
+		teleportRandomArena(new Duel(p1.getUniqueId(), p2.getUniqueId()));
 	}
 	
 	public void endDuel(Duel duel, Player winner) {
-		Player p1 = duel.getFirstPlayer();
-		Player p2 = duel.getSecondPlayer();
+		Player p1 = Bukkit.getPlayer(duel.getFirstPlayerUUID());
+		Player p2 = Bukkit.getPlayer(duel.getSecondPlayerUUID());
 		
 		Player loser = (winner != p1 ? p1 : p2);
 		
 		PlayerManager pm1 = PlayerManager.get(p1);
 		PlayerManager pm2 = PlayerManager.get(p2);
 		
-		pm1.setOldOpponent(p2);
-		pm2.setOldOpponent(p1);
+		pm1.setOldOpponentUUID(p2.getUniqueId());
+		pm2.setOldOpponentUUID(p1.getUniqueId());
 		
 		p1.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 		p2.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
@@ -113,9 +115,9 @@ public class DuelManager {
 		EnderDelay.getInstance().removeCooldown(p1);
 		EnderDelay.getInstance().removeCooldown(p2);
 		
-		Iterator<Player> it = duel.getAllSpectators().iterator();
+		Iterator<UUID> it = duel.getAllSpectatorsUUID().iterator();
 		while (it.hasNext()) {
-			Player spec = it.next();
+			Player spec = Bukkit.getPlayer(it.next());
 			PlayerManager sm = PlayerManager.get(spec);
 			
 			spec.setAllowFlight(false);
@@ -145,14 +147,14 @@ public class DuelManager {
 				}
 			}.runTaskLater(Main.getInstance(), 40L);
 		}
-		this.playerIdentifierToDuel.remove(p1);
-		this.playerIdentifierToDuel.remove(p2);
+		this.uuidIdentifierToDuel.remove(p1.getUniqueId());
+		this.uuidIdentifierToDuel.remove(p2.getUniqueId());
 	}
 	
 	public void sendWaitingMessage(Duel duel) {
 		Map<Duel, Integer> cooldown = new HashMap<Duel, Integer>();
-		Player p1 = duel.getFirstPlayer();
-		Player p2 = duel.getSecondPlayer();
+		Player p1 = Bukkit.getPlayer(duel.getFirstPlayerUUID());
+		Player p2 = Bukkit.getPlayer(duel.getSecondPlayerUUID());
 		
 		cooldown.put(duel, 5);
 		
@@ -194,11 +196,11 @@ public class DuelManager {
 	}
 	
 	private void teleportRandomArena(Duel duel) {
-		Player p1 = duel.getFirstPlayer();
-		Player p2 = duel.getSecondPlayer();
+		Player p1 = Bukkit.getPlayer(duel.getFirstPlayerUUID());
+		Player p2 = Bukkit.getPlayer(duel.getSecondPlayerUUID());
 		
-		this.playerIdentifierToDuel.put(p1, duel);
-		this.playerIdentifierToDuel.put(p2, duel);
+		this.uuidIdentifierToDuel.put(p1.getUniqueId(), duel);
+		this.uuidIdentifierToDuel.put(p2.getUniqueId(), duel);
 		
 		PlayerManager pm1 = PlayerManager.get(p1);
 		PlayerManager pm2 = PlayerManager.get(p2);

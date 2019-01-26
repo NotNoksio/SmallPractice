@@ -1,6 +1,5 @@
 package us.noks.smallpractice.commands;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -11,6 +10,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.Maps;
+
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -20,7 +21,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class ReportCommand implements CommandExecutor {
 	
 	private int cooldownTime = 30;
-	private Map<UUID, Long> cooldowns = new HashMap<UUID, Long>();
+	private Map<UUID, Long> cooldowns = Maps.newConcurrentMap();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -41,10 +42,10 @@ public class ReportCommand implements CommandExecutor {
 				p.sendMessage(org.bukkit.ChatColor.RED + "You can't report yourself!");
 				return false;
 			}
-			if (cooldowns.containsKey(((Player) sender).getUniqueId())) {
-				long secondsLeft = ((cooldowns.get(((Player) sender).getUniqueId()) / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);
+			if (cooldowns.containsKey(p.getUniqueId())) {
+				long secondsLeft = ((cooldowns.get(p.getUniqueId()) / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);
 	            if (secondsLeft > 0) {
-	                sender.sendMessage(org.bukkit.ChatColor.RED + "You cant report for another " + secondsLeft + " seconds!");
+	                p.sendMessage(org.bukkit.ChatColor.RED + "You cant report for another " + secondsLeft + " seconds!");
 	                return false;
 	            }
 			}
@@ -120,11 +121,11 @@ public class ReportCommand implements CommandExecutor {
 			l1.addExtra(l1j);
 			l1.addExtra(l1k);
 			for (Player staff : Bukkit.getOnlinePlayers()) {
-				if (staff.hasPermission("report.rec")) {
+				if (staff.hasPermission("report.receive")) {
 					staff.spigot().sendMessage(l1);
 				}
 			}
-			cooldowns.put(((Player) sender).getUniqueId(), System.currentTimeMillis());
+			cooldowns.put(p.getUniqueId(), System.currentTimeMillis());
 			p.sendMessage(org.bukkit.ChatColor.GREEN + "You have reported " + target.getName() + " for " + reason.toString() + ".");
 		}
 		return true;
