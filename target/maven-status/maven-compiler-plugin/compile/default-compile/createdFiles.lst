@@ -3,7 +3,6 @@ us\noks\smallpractice\objects\managers\PlayerManager.class
 us\noks\smallpractice\party\Party.class
 us\noks\smallpractice\objects\managers\DuelManager$2.class
 us\noks\smallpractice\commands\SpawnCommand.class
-us\noks\smallpractice\utils\NameLookup$PreviousPlayerNameEntry.class
 us\noks\smallpractice\listeners\ChatListener.class
 us\noks\smallpractice\commands\PingCommand.class
 us\noks\smallpractice\commands\DuelCommand.class
@@ -28,5 +27,4 @@ us\noks\smallpractice\commands\SpectateCommand.class
 us\noks\smallpractice\utils\InvView.class
 us\noks\smallpractice\commands\ReportCommand.class
 us\noks\smallpractice\commands\DayCommand.class
-us\noks\smallpractice\utils\NameLookup.class
 us\noks\smallpractice\commands\BuildCommand.class

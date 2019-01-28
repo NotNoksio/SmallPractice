@@ -73,7 +73,7 @@ public class PlayerListener implements Listener {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			PlayerManager pmAll = PlayerManager.get(allPlayers);
 			if (pmAll.getStatus() == PlayerStatus.WAITING || pmAll.getStatus() == PlayerStatus.DUEL || pmAll.getStatus() == PlayerStatus.MODERATION) {
-				allPlayers.hidePlayer(player);
+				player.hidePlayer(allPlayers);
 			}
 		}
 	}
@@ -107,19 +107,19 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onRespawn(PlayerRespawnEvent event) {
-		Player p = event.getPlayer();
+		Player player = event.getPlayer();
 		
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
+		player.getInventory().clear();
+		player.getInventory().setArmorContents(null);
 		new BukkitRunnable() {
 			
 			@Override
 			public void run() {
-				p.setHealth(20.0D);
-				p.setFoodLevel(20);
-				p.setSaturation(10000f);
-				p.teleport(Main.getInstance().getSpawnLocation());
-				PlayerManager.get(p).giveSpawnItem();
+				player.setHealth(20.0D);
+				player.setFoodLevel(20);
+				player.setSaturation(10000f);
+				player.teleport(Main.getInstance().getSpawnLocation());
+				PlayerManager.get(player).giveSpawnItem();
 			}
 		}.runTaskLater(Main.getInstance(), 1L);
 	}
@@ -132,31 +132,10 @@ public class PlayerListener implements Listener {
 			Main.getInstance().queue.remove(event.getPlayer());
 		}
 		if ((PlayerManager.get(event.getPlayer()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(event.getPlayer()).getStatus() == PlayerStatus.WAITING) && PlayerManager.get(event.getPlayer()).getOpponent() != null) {
-			Player op = PlayerManager.get(event.getPlayer()).getOpponent();
+			Player opponent = PlayerManager.get(event.getPlayer()).getOpponent();
 			
-			InvView.getInstance().deathMsg(op, event.getPlayer());
-			/*
-			PlayerManager.get(event.getPlayer()).setOldOpponent(op);
-			InvView.getInstance().saveInv(event.getPlayer());
-			
-			Iterator<Player> it = PlayerManager.get(event.getPlayer()).getAllSpectators().iterator();
-			
-			while (it.hasNext()) {
-				Player spec = it.next();
-				PlayerManager sm = PlayerManager.get(spec);
-				
-				spec.setAllowFlight(false);
-				spec.setFlying(false);
-				sm.setStatus(PlayerStatus.SPAWN);
-				sm.showAllPlayer();
-				sm.setSpectate(null);
-				spec.getInventory().clear();
-				spec.teleport(Main.getInstance().spawnLocation);
-				
-				it.remove();
-			}
-			*/
-			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByUUID(op.getUniqueId()), op);
+			InvView.getInstance().deathMsg(opponent, event.getPlayer());
+			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByUUID(opponent.getUniqueId()), opponent);
 		}
 		//PlayerManager.remove(event.getPlayer());
 		PlayerManager.get(event.getPlayer()).remove();
@@ -264,12 +243,24 @@ public class PlayerListener implements Listener {
 				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "See Random Player")) {
 	                event.setCancelled(true);
 	                List<Player> online = Lists.newArrayList();
-	                online.addAll(Bukkit.getOnlinePlayers());
 	                
-	                Player tooked = online.get(new Random().nextInt(Bukkit.getOnlinePlayers().size()));
+	                for (Player onlinePlayers : Bukkit.getOnlinePlayers()) {
+	                	if (onlinePlayers == player) continue;
+	                	
+	                	PlayerManager om = PlayerManager.get(onlinePlayers);
+	                	if (om.getStatus() == PlayerStatus.MODERATION) continue;
+	                	
+	                	online.add(onlinePlayers);
+	                }
+	                if (online.isEmpty()) {
+	                	player.sendMessage(ChatColor.RED + "No player to agree.");
+	                	return;
+	                }
+	                Player tooked = online.get(new Random().nextInt(online.size()));
 	                
 	                player.teleport(tooked.getLocation().add(0, 2, 0));
 	                player.sendMessage(ChatColor.GREEN + "Teleport to " + tooked.getName());
+	                online.clear();
 	            }
 				break;
 			default:
@@ -280,17 +271,13 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDrag(InventoryClickEvent event) {
-		Player p = (Player) event.getWhoClicked();
 		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
-			PlayerManager pm = PlayerManager.get(p);
+			Player player = (Player) event.getWhoClicked();
+			PlayerManager pm = PlayerManager.get(player);
 			
-			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
+			if (pm.getStatus() == PlayerStatus.MODERATION || pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
 				event.setCancelled(true);
-				p.updateInventory();
-			}
-			if (pm.getStatus() == PlayerStatus.MODERATION) {
-				event.setCancelled(true);
-				p.updateInventory();
+				player.updateInventory();
 			}
 		}
 	}

@@ -53,13 +53,13 @@ public class PlayerManager {
 	    this.longestCombo = 0;
 	}
 
-	public static PlayerManager get(Player p) {
+	public static PlayerManager get(Player player) {
 		for (PlayerManager pm : players) {
-			if (pm.getPlayer().equals(p)) {
+			if (pm.getPlayer().equals(player)) {
 				return pm;
 			}
 		}
-		PlayerManager pm = new PlayerManager(p);
+		PlayerManager pm = new PlayerManager(player);
 		players.add(pm);
 		return pm;
 	}
@@ -293,6 +293,7 @@ public class PlayerManager {
 	public void showAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			PlayerManager pm = get(allPlayers);
+			
 			if (pm.getStatus() != PlayerStatus.MODERATION) getPlayer().showPlayer(allPlayers);
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) allPlayers.showPlayer(getPlayer());
 			if (pm.getStatus() == PlayerStatus.MODERATION) {
