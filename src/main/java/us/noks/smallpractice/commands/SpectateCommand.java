@@ -1,5 +1,8 @@
 package us.noks.smallpractice.commands;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -7,6 +10,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.Lists;
+
+import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.PlayerStatus;
@@ -49,18 +55,24 @@ public class SpectateCommand implements CommandExecutor {
 		pm.hideAllPlayer();
 		pm.setSpectate(target);
 		
-		DuelManager.getInstance().getDuelByUUID(target.getUniqueId()).addSpectator(player.getUniqueId());
+		Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(target.getUniqueId());
+		duel.addSpectator(player.getUniqueId());
 		
 		player.setAllowFlight(true);
 		player.setFlying(true);
 		player.teleport(target.getLocation().add(0, 2, 0));
 		
-		player.showPlayer(target);
-		player.showPlayer(tm.getOpponent());
+		List<UUID> duelPlayers = Lists.newArrayList();
+		duelPlayers.addAll(duel.getFirstTeamAlive());
+		duelPlayers.addAll(duel.getSecondTeamAlive());
 			
+		for (UUID uuid : duelPlayers) {
+			Player dplayers = Bukkit.getPlayer(uuid);
+			player.showPlayer(dplayers);
+		}
 		pm.giveSpectateItem();
 		player.sendMessage(ChatColor.GREEN + "You are now spectating " + ChatColor.YELLOW + target.getName());
-		DuelManager.getInstance().getDuelByUUID(target.getUniqueId()).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
+		DuelManager.getInstance().getDuelFromPlayerUUID(target.getUniqueId()).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 		return false;
 	}
 }

@@ -2,7 +2,6 @@ package us.noks.smallpractice.objects.managers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,8 +23,6 @@ public class PlayerManager {
 	public static List<PlayerManager> players = Lists.newArrayList();
 	private Player player;
 	private boolean canBuild;
-	private Player opponent;
-	private UUID oldOpponentUUID;
 	private Map<Player, Player> request = Maps.newHashMap();
 	private PlayerStatus status;
 	private Player spectate;
@@ -40,8 +37,6 @@ public class PlayerManager {
 	public PlayerManager(Player player) {
 	    this.player = player;
 	    this.canBuild = false;
-	    this.opponent = null;
-	    this.oldOpponentUUID = null;
 	    this.status = PlayerStatus.SPAWN;
 	    this.spectate = null;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
@@ -79,22 +74,6 @@ public class PlayerManager {
 
 	public void setCanBuild(boolean canBuild) {
 		this.canBuild = canBuild;
-	}
-
-	public Player getOpponent() {
-		return opponent;
-	}
-
-	public void setOpponent(Player opponent) {
-		this.opponent = opponent;
-	}
-	
-	public UUID getOldOpponentUUID() {
-		return oldOpponentUUID;
-	}
-
-	public void setOldOpponentUUID(UUID oldOpponentUUID) {
-		this.oldOpponentUUID = oldOpponentUUID;
 	}
 	
 	public Player getSpectate() {

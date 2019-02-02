@@ -3,6 +3,7 @@ package us.noks.smallpractice.objects.managers;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.minecraft.util.com.google.common.collect.Maps;
@@ -17,7 +18,10 @@ public class EloManager {
 	public Map<UUID, Integer> playersElo = Maps.newHashMap();
 	private int DEFAULT_ELO = 1000;
 	
-	public void tranferElo(Player winner, Player loser) {
+	public void tranferElo(UUID winnerUUID, UUID loserUUID) {
+		Player winner = Bukkit.getPlayer(winnerUUID);
+		Player loser = Bukkit.getPlayer(loserUUID);
+		
 		int scoreChange = 0;
 		double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (PlayerManager.get(winner).getElo() - PlayerManager.get(loser).getElo()) / 400.0D));
 

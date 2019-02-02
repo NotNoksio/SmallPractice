@@ -2,6 +2,7 @@ package us.noks.smallpractice;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -139,7 +140,12 @@ public class Main extends JavaPlugin {
 			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
 			return;
 		}
-		DuelManager.getInstance().startDuel(requester, requested);
+		List<UUID> firstTeam = Lists.newArrayList();
+		firstTeam.add(requester.getUniqueId());
+		List<UUID> secondTeam = Lists.newArrayList();
+		secondTeam.add(requested.getUniqueId());
+		
+		DuelManager.getInstance().startDuel(firstTeam, secondTeam);
 	}
 	
 	public void addQueue(Player p) {
@@ -165,7 +171,12 @@ public class Main extends JavaPlugin {
 				addQueue(p);
 				return;
 			}
-			DuelManager.getInstance().startDuel(p1, p2);
+			List<UUID> firstTeam = Lists.newArrayList();
+			firstTeam.add(p1.getUniqueId());
+			List<UUID> secondTeam = Lists.newArrayList();
+			secondTeam.add(p2.getUniqueId());
+			
+			DuelManager.getInstance().startDuel(firstTeam, secondTeam);
 			this.queue.remove(p1);
 			this.queue.remove(p2);
 		}

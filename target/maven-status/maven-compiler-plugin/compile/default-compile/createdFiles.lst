@@ -27,4 +27,5 @@ us\noks\smallpractice\commands\SpectateCommand.class
 us\noks\smallpractice\utils\InvView.class
 us\noks\smallpractice\commands\ReportCommand.class
 us\noks\smallpractice\commands\DayCommand.class
+us\noks\smallpractice\objects\managers\DuelManager$3.class
 us\noks\smallpractice\commands\BuildCommand.class
