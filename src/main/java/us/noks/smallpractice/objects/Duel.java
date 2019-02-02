@@ -12,29 +12,51 @@ import com.google.common.collect.Lists;
 
 public class Duel {
 	
-	private UUID firstPlayerUUID;
-	private UUID secondPlayerUUID;
+	private List<UUID> firstTeamUUID;
+	private List<UUID> secondTeamUUID;
+	private List<UUID> firstTeamAlive;
+	private List<UUID> secondTeamAlive;
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
 	
-	public Duel(UUID firstPlayer, UUID secondPlayer) {
-		this.firstPlayerUUID = firstPlayer;
-		this.secondPlayerUUID = secondPlayer;
+	public Duel(List<UUID> firstTeamUUID, List<UUID> secondTeamUUID) {
+		this.firstTeamUUID = firstTeamUUID;
+		this.secondTeamUUID = secondTeamUUID;
+		this.firstTeamAlive = Lists.newArrayList(firstTeamUUID);
+		this.secondTeamAlive = Lists.newArrayList(secondTeamUUID);
 		this.ranked = false;
 	}
 	
-	public Duel(UUID firstPlayer, UUID secondPlayer, boolean ranked) {
-		this.firstPlayerUUID = firstPlayer;
-		this.secondPlayerUUID = secondPlayer;
+	public Duel(List<UUID> firstTeamUUID, List<UUID> secondTeamUUID, boolean ranked) {
+		this.firstTeamUUID = firstTeamUUID;
+		this.secondTeamUUID = secondTeamUUID;
+		this.firstTeamAlive = Lists.newArrayList(firstTeamUUID);
+		this.secondTeamAlive = Lists.newArrayList(secondTeamUUID);
 		this.ranked = ranked;
 	}
 	
-	public UUID getFirstPlayerUUID() {
-		return firstPlayerUUID;
+	public List<UUID> getFirstTeamUUID() {
+		return firstTeamUUID;
 	}
 	
-	public UUID getSecondPlayerUUID() {
-		return secondPlayerUUID;
+	public List<UUID> getSecondTeamUUID() {
+		return secondTeamUUID;
+	}
+	
+	public List<UUID> getFirstTeamAlive() {
+		return firstTeamAlive;
+	}
+	
+	public List<UUID> getSecondTeamAlive() {
+		return secondTeamAlive;
+	}
+	
+	public void killFirstTeamPlayer(UUID killedUUID) {
+		this.firstTeamAlive.remove(killedUUID);
+	}
+	
+	public void killSecondTeamPlayer(UUID killedUUID) {
+		this.secondTeamAlive.remove(killedUUID);
 	}
 
 	public boolean isRanked() {
@@ -66,13 +88,20 @@ public class Duel {
 	}
 	
 	public void sendSoundedMessage(String message, Sound sound) {
-		Player firstPlayer = Bukkit.getPlayer(getFirstPlayerUUID());
-		Player secondPlayer = Bukkit.getPlayer(getSecondPlayerUUID());
-		firstPlayer.sendMessage(message);
-		secondPlayer.sendMessage(message);
-		if (sound != null) {
-			firstPlayer.playSound(firstPlayer.getLocation(), sound, 1.0f, 1.0f);
-			secondPlayer.playSound(secondPlayer.getLocation(), sound, 1.0f, 1.0f);
+		List<UUID> duelPlayers = Lists.newArrayList(getFirstTeamUUID());
+		duelPlayers.addAll(getSecondTeamUUID());
+		
+		for (UUID uuid : duelPlayers) {
+			Player player = Bukkit.getPlayer(uuid);
+			
+			if (player == null) {
+                continue;
+            }
+			
+			player.sendMessage(message);
+			if (sound != null) {
+				player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+			}
 		}
 		
 		Iterator<UUID> iterator = getAllSpectatorsUUID().iterator();

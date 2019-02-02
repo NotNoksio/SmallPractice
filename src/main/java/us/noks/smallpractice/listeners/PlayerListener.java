@@ -32,7 +32,6 @@ import net.minecraft.util.com.google.common.collect.Lists;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.InvView;
 import us.noks.smallpractice.utils.PlayerStatus;
 
 public class PlayerListener implements Listener {
@@ -86,22 +85,18 @@ public class PlayerListener implements Listener {
 		
 		if (event.getEntity() instanceof Player) {
 			Player killed = event.getEntity();
-			Player killer = PlayerManager.get(killed).getOpponent();
 			
-			if (killer != null) {
-				InvView.getInstance().deathMsg(killer, killed);
-				DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByUUID(killer.getUniqueId()), killer);
+			DuelManager.getInstance().removePlayerFromDuel(killed);
 				
-				new BukkitRunnable() {
+			new BukkitRunnable() {
 					
-					@Override
-					public void run() {
-						if (killed.isDead() && killed != null) {
-							killed.spigot().respawn();
-						}
+				@Override
+				public void run() {
+					if (killed.isDead() && killed != null) {
+						killed.spigot().respawn();
 					}
-				}.runTaskLater(Main.getInstance(), 50L);
-			}
+				}
+			}.runTaskLater(Main.getInstance(), 50L);
 		}
 	}
 	
@@ -131,13 +126,9 @@ public class PlayerListener implements Listener {
 		if (Main.getInstance().queue.contains(event.getPlayer())) {
 			Main.getInstance().queue.remove(event.getPlayer());
 		}
-		if ((PlayerManager.get(event.getPlayer()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(event.getPlayer()).getStatus() == PlayerStatus.WAITING) && PlayerManager.get(event.getPlayer()).getOpponent() != null) {
-			Player opponent = PlayerManager.get(event.getPlayer()).getOpponent();
-			
-			InvView.getInstance().deathMsg(opponent, event.getPlayer());
-			DuelManager.getInstance().endDuel(DuelManager.getInstance().getDuelByUUID(opponent.getUniqueId()), opponent);
+		if ((PlayerManager.get(event.getPlayer()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(event.getPlayer()).getStatus() == PlayerStatus.WAITING)) {
+			DuelManager.getInstance().removePlayerFromDuel(event.getPlayer());
 		}
-		//PlayerManager.remove(event.getPlayer());
 		PlayerManager.get(event.getPlayer()).remove();
 	}
 	
@@ -181,7 +172,12 @@ public class PlayerListener implements Listener {
 	public void onReceiveDrop(PlayerPickupItemEvent event) {
 		if (event.getItem().getOwner() instanceof Player) {
 			Player owner = (Player) event.getItem().getOwner();
+			PlayerManager pm = PlayerManager.get(event.getPlayer());
 			
+			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
+				event.setCancelled(true);
+				return;
+			}
 			if (!event.getPlayer().canSee(owner)) event.setCancelled(true);
 		}
 	}
@@ -221,8 +217,8 @@ public class PlayerListener implements Listener {
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Spectate")) {
 	                event.setCancelled(true);
 	                Player spectatePlayer = pm.getSpectate();
-	        		DuelManager.getInstance().getDuelByUUID(spectatePlayer.getUniqueId()).removeSpectator(player.getUniqueId());
-	        		DuelManager.getInstance().getDuelByUUID(spectatePlayer.getUniqueId()).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
+	        		DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId()).removeSpectator(player.getUniqueId());
+	        		DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId()).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
 	        		
 	        		player.setAllowFlight(false);
 	        		player.setFlying(false);

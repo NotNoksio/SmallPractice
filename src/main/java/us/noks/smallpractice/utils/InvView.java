@@ -30,7 +30,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.objects.Duel;
-import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class InvView implements Listener {
@@ -120,12 +119,6 @@ public class InvView implements Listener {
 		sm.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + pm.getHit(), ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + pm.getLongestCombo()));
 		stats.setItemMeta(sm);
 		inv.setItem(46, stats);
-		
-		ItemStack arrow = new ItemStack(Material.ARROW, 1);
-		ItemMeta arr = arrow.getItemMeta();
-		arr.setDisplayName(ChatColor.YELLOW + Bukkit.getPlayer(pm.getOldOpponentUUID()).getName() + ChatColor.DARK_AQUA + "'s Inventory" + ChatColor.RED + "(DOESNT WORK)");
-		arrow.setItemMeta(arr);
-		inv.setItem(53, arrow);
       
 		this.inventorymap.put(p.getUniqueId(), inv);
 	}
@@ -136,10 +129,26 @@ public class InvView implements Listener {
 		}
 	}
     
-	public void deathMsg(Player winner, Player looser) {
+	public void deathMsg(Duel duel, int teamNumber) {
+		List<UUID> winnerTeam = null;
+		List<UUID> loserTeam = null;
+		switch (teamNumber) {
+		case 1:
+			winnerTeam = duel.getFirstTeamUUID();
+			loserTeam = duel.getSecondTeamUUID();
+			break;
+		case 2:
+			winnerTeam = duel.getSecondTeamUUID();
+			loserTeam = duel.getFirstTeamUUID();
+			break;
+		default:
+			break;
+		}
+		Player winner = Bukkit.getPlayer(winnerTeam.get(0));
+		Player loser = Bukkit.getPlayer(loserTeam.get(0));
+		
 		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName();
 		List<UUID> spectators = Lists.newArrayList();
-		Duel duel = DuelManager.getInstance().getDuelByUUID(winner.getUniqueId());
 		
 		spectators.addAll(duel.getAllSpectatorsUUID());
 		
@@ -158,10 +167,10 @@ public class InvView implements Listener {
 	    l1b.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
 	    TextComponent l1c = new TextComponent();
-	    l1c.setText(looser.getName());
+	    l1c.setText(loser.getName());
 	    l1c.setColor(net.md_5.bungee.api.ChatColor.RED);
-	    l1c.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + looser.getName() + "'s inventory").create()));
-	    l1c.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + looser.getUniqueId()));
+	    l1c.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + loser.getName() + "'s inventory").create()));
+	    l1c.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + loser.getUniqueId()));
 	    
 	    TextComponent l1d = new TextComponent();
 	    l1d.setText(".");
@@ -184,10 +193,10 @@ public class InvView implements Listener {
 	    winner.sendMessage(winnerMessage);
 	    winner.spigot().sendMessage(l1);
 	    if (duel.hasSpectator()) winner.sendMessage(spectatorMessage);
-	    if (looser != null) {
-	    	looser.sendMessage(winnerMessage);
-	    	looser.spigot().sendMessage(l1);
-	    	if (duel.hasSpectator()) looser.sendMessage(spectatorMessage);
+	    if (loser != null) {
+	    	loser.sendMessage(winnerMessage);
+	    	loser.spigot().sendMessage(l1);
+	    	if (duel.hasSpectator()) loser.sendMessage(spectatorMessage);
 	    }
 	    
 	    Iterator<UUID> its = spectators.iterator();
@@ -205,17 +214,6 @@ public class InvView implements Listener {
 	public void onInvsClick(InventoryClickEvent e) {
 		if (e.getInventory().getName().endsWith("'s Inventory")) {
 			e.setCancelled(true);
-			
-			/*if (e.getCurrentItem() != null && e.getCurrentItem().getType() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
-				if (e.getCurrentItem().getItemMeta().getDisplayName().endsWith("'s Inventory")) {
-					String oldOpponentItemName = e.getCurrentItem().getItemMeta().getDisplayName().split("'")[0];
-					String semiRealOldOpponentItemName = oldOpponentItemName.substring(2, oldOpponentItemName.length());
-					String realOldOpponentItemName = semiRealOldOpponentItemName.substring(0, semiRealOldOpponentItemName.length() - 2);
-					UUID realOldOpponentItemUUID = Bukkit.getOfflinePlayer(realOldOpponentItemName).getUniqueId();
-					
-					openInv((Player) e.getWhoClicked(), realOldOpponentItemUUID);
-				}
-			}*/
 		}
 	}
     
