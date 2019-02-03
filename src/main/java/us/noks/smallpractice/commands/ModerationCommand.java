@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.PlayerStatus;
 
 public class ModerationCommand implements CommandExecutor {
 

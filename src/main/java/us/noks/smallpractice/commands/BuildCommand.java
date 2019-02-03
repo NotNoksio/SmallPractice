@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class BuildCommand implements CommandExecutor {
@@ -24,7 +25,7 @@ public class BuildCommand implements CommandExecutor {
 				return false;
 			}
 			
-			PlayerManager.get(p).setCanBuild(!PlayerManager.get(p).isCanBuild());
+			PlayerManager.get(p).setStatus((PlayerManager.get(p).isCanBuild() ? PlayerStatus.SPAWN : PlayerStatus.BUILD));
 			p.sendMessage(ChatColor.DARK_AQUA + "Build state updated: " + ChatColor.YELLOW + PlayerManager.get(p).isCanBuild());
 		}
 		return true;

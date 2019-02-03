@@ -30,9 +30,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.minecraft.util.com.google.common.collect.Lists;
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.PlayerStatus;
 
 public class PlayerListener implements Listener {
 	
@@ -171,14 +172,15 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onReceiveDrop(PlayerPickupItemEvent event) {
 		if (event.getItem().getOwner() instanceof Player) {
+			Player receiver = event.getPlayer();
 			Player owner = (Player) event.getItem().getOwner();
-			PlayerManager pm = PlayerManager.get(event.getPlayer());
+			PlayerManager pm = PlayerManager.get(receiver);
 			
-			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
+			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
 				event.setCancelled(true);
 				return;
 			}
-			if (!event.getPlayer().canSee(owner)) event.setCancelled(true);
+			if (!receiver.canSee(owner)) event.setCancelled(true);
 		}
 	}
 	
@@ -217,8 +219,10 @@ public class PlayerListener implements Listener {
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Spectate")) {
 	                event.setCancelled(true);
 	                Player spectatePlayer = pm.getSpectate();
-	        		DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId()).removeSpectator(player.getUniqueId());
-	        		DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId()).sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
+	                Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
+	                
+	        		spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
+	        		spectatedDuel.removeSpectator(player.getUniqueId());
 	        		
 	        		player.setAllowFlight(false);
 	        		player.setFlying(false);

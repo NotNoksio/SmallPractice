@@ -18,8 +18,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import net.minecraft.util.com.google.common.collect.Maps;
+import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.PlayerStatus;
 
 public class EnderDelay implements Listener {
 

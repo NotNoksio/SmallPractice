@@ -19,10 +19,10 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.utils.InvView;
-import us.noks.smallpractice.utils.PlayerStatus;
 
 public class DuelManager {
 	
@@ -225,7 +225,6 @@ public class DuelManager {
 			Player first = Bukkit.getPlayer(firstUUID);
 			PlayerManager pmf = PlayerManager.get(first);
 			
-			pmf.setCanBuild(false);
 			pmf.setStatus(PlayerStatus.WAITING);
 			pmf.hideAllPlayer();
 			pmf.giveKit();
@@ -243,7 +242,6 @@ public class DuelManager {
 			Player second = Bukkit.getPlayer(secondUUID);
 			PlayerManager pms = PlayerManager.get(second);
 			
-			pms.setCanBuild(false);
 			pms.setStatus(PlayerStatus.WAITING);
 			pms.hideAllPlayer();
 			pms.giveKit();

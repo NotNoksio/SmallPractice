@@ -16,13 +16,12 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.util.com.google.common.collect.Lists;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-import us.noks.smallpractice.utils.PlayerStatus;
+import us.noks.smallpractice.enums.PlayerStatus;
 
 public class PlayerManager {
 
 	public static List<PlayerManager> players = Lists.newArrayList();
 	private Player player;
-	private boolean canBuild;
 	private Map<Player, Player> request = Maps.newHashMap();
 	private PlayerStatus status;
 	private Player spectate;
@@ -36,7 +35,6 @@ public class PlayerManager {
 	
 	public PlayerManager(Player player) {
 	    this.player = player;
-	    this.canBuild = false;
 	    this.status = PlayerStatus.SPAWN;
 	    this.spectate = null;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
@@ -60,7 +58,6 @@ public class PlayerManager {
 	}
 
 	public void remove() {
-		//PlayerManager m = new PlayerManager(this.player);
 		players.remove(this);
 	}
 
@@ -69,11 +66,7 @@ public class PlayerManager {
 	}
 
 	public boolean isCanBuild() {
-		return canBuild;
-	}
-
-	public void setCanBuild(boolean canBuild) {
-		this.canBuild = canBuild;
+		return getStatus() == PlayerStatus.BUILD;
 	}
 	
 	public Player getSpectate() {
@@ -139,13 +132,15 @@ public class PlayerManager {
 		
 		getPlayer().setGameMode(GameMode.SURVIVAL);
 		
-		ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
-		ItemMeta rm = r.getItemMeta();
-		rm.setDisplayName(ChatColor.YELLOW + "Direct Queue");
-		rm.spigot().setUnbreakable(true);
-		r.setItemMeta(rm);
-		
-		getPlayer().getInventory().setItem(0, r);
+		if (!PartyManager.getInstance().hasParty(getPlayer().getUniqueId())) {
+			ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
+			ItemMeta rm = r.getItemMeta();
+			rm.setDisplayName(ChatColor.YELLOW + "Direct Queue");
+			rm.spigot().setUnbreakable(true);
+			r.setItemMeta(rm);
+			
+			getPlayer().getInventory().setItem(0, r);
+		}
 		getPlayer().updateInventory();
 	}
 	

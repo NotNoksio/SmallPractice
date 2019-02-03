@@ -28,6 +28,7 @@ import us.noks.smallpractice.commands.ReportCommand;
 import us.noks.smallpractice.commands.SeeallCommand;
 import us.noks.smallpractice.commands.SpawnCommand;
 import us.noks.smallpractice.commands.SpectateCommand;
+import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.listeners.ChatListener;
 import us.noks.smallpractice.listeners.DuelListener;
 import us.noks.smallpractice.listeners.EnderDelay;
@@ -36,7 +37,6 @@ import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.InvView;
-import us.noks.smallpractice.utils.PlayerStatus;
 
 public class Main extends JavaPlugin {
 	
