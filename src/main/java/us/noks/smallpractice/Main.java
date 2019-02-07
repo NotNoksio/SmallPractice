@@ -145,7 +145,7 @@ public class Main extends JavaPlugin {
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(requested.getUniqueId());
 		
-		DuelManager.getInstance().startDuel(firstTeam, secondTeam);
+		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam);
 	}
 	
 	public void addQueue(Player p) {
@@ -176,7 +176,7 @@ public class Main extends JavaPlugin {
 			List<UUID> secondTeam = Lists.newArrayList();
 			secondTeam.add(p2.getUniqueId());
 			
-			DuelManager.getInstance().startDuel(firstTeam, secondTeam);
+			DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam);
 			this.queue.remove(p1);
 			this.queue.remove(p2);
 		}

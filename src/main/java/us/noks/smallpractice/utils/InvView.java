@@ -59,10 +59,15 @@ public class InvView implements Listener {
 			inv.setItem(i, p.getInventory().getItem(i + 9));
 		}
 		
-		inv.setItem(36, p.getInventory().getHelmet());
-		inv.setItem(37, p.getInventory().getChestplate());
-		inv.setItem(38, p.getInventory().getLeggings());
-		inv.setItem(39, p.getInventory().getBoots());
+		ItemStack noarmor = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+		ItemMeta nm = noarmor.getItemMeta();
+		nm.setDisplayName(ChatColor.RED + "No Armor");
+		noarmor.setItemMeta(nm);
+		
+		inv.setItem(36, (p.getInventory().getHelmet() != null ? p.getInventory().getHelmet() : noarmor));
+		inv.setItem(37, (p.getInventory().getChestplate() != null ? p.getInventory().getChestplate() : noarmor));
+		inv.setItem(38, (p.getInventory().getLeggings() != null ? p.getInventory().getLeggings() : noarmor));
+		inv.setItem(39, (p.getInventory().getBoots() != null ? p.getInventory().getBoots() : noarmor));
 		
 		if (p.getHealth() > 0) {
 			ItemStack vie = new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) p.getHealth()).intValue());

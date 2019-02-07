@@ -65,9 +65,9 @@ public class EnderDelay implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onTeleport(EnderpearlLandEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
-			Player p = (Player) event.getEntity().getShooter();
+			Player player = (Player) event.getEntity().getShooter();
 			
-			if (PlayerManager.get(p).getStatus() != PlayerStatus.DUEL) {
+			if (PlayerManager.get(player).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 			}
 		}

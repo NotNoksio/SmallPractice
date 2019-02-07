@@ -33,6 +33,7 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class PlayerListener implements Listener {
@@ -62,9 +63,10 @@ public class PlayerListener implements Listener {
 		
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
 		player.sendMessage(ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + Main.getInstance().getDescription().getVersion() + " server");
-		player.sendMessage("   ");
-		player.sendMessage(ChatColor.YELLOW + "Noksio (Creator) Twitter -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio");
-		player.sendMessage(ChatColor.YELLOW + "Noksio (Creator) Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/TZhyPnB");
+		player.sendMessage("  ");
+		player.sendMessage(ChatColor.AQUA + "Noksio (Creator) Twitter -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio");
+		player.sendMessage(ChatColor.BLUE + "Noksio (Creator) Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/TZhyPnB");
+		player.sendMessage(ChatColor.DARK_PURPLE + "xelo_o (Server Owner) Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o");
 		player.sendMessage(ChatColor.RED + "-> Keep in mind this is a beta ^^");
 		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
 		
@@ -204,10 +206,12 @@ public class PlayerListener implements Listener {
         	
         	switch (pm.getStatus()) {
 			case SPAWN:
-				if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
-	                event.setCancelled(true);
-	                Main.getInstance().addQueue(player);
-	            }
+				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
+					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
+		                event.setCancelled(true);
+		                Main.getInstance().addQueue(player);
+		            }
+				}
 				break;
 			case QUEUE:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Queue")) {
@@ -236,9 +240,7 @@ public class PlayerListener implements Listener {
 			case MODERATION:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Moderation")) {
 	                event.setCancelled(true);
-	                player.teleport(Main.getInstance().getSpawnLocation());
-	                pm.setStatus(PlayerStatus.SPAWN);
-	                pm.giveSpawnItem();
+	                player.performCommand("mod");
 	            }
 				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "See Random Player")) {
 	                event.setCancelled(true);

@@ -27,7 +27,7 @@ public class SpawnCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "Usage: /spawn");
 			return false;
 		}
-		if (PlayerManager.get(player).getStatus() != PlayerStatus.SPAWN) {
+		if (PlayerManager.get(player).getStatus() != PlayerStatus.SPAWN && PlayerManager.get(player).getStatus() != PlayerStatus.MODERATION && !PlayerManager.get(player).isCanBuild()) {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return false;
 		}

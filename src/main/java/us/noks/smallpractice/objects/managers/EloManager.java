@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import net.minecraft.util.com.google.common.collect.Maps;
@@ -32,7 +33,8 @@ public class EloManager {
 		PlayerManager.get(winner).addElo(scoreChange);
 		PlayerManager.get(loser).removeElo(scoreChange);
 
-		// MESSAGE ELO HERE
+		winner.sendMessage(ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + winner.getName() + " (+" + scoreChange + ") " + ChatColor.RED + loser.getName() + " (-" + scoreChange + ")");
+		loser.sendMessage(ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + winner.getName() + " (+" + scoreChange + ") " + ChatColor.RED + loser.getName() + " (-" + scoreChange + ")");
 		
 		updatePlayerElo(winner);
 		updatePlayerElo(loser);

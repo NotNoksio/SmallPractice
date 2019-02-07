@@ -103,7 +103,7 @@ public class Duel {
 				player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
 			}
 		}
-		
+		duelPlayers.clear();
 		Iterator<UUID> iterator = getAllSpectatorsUUID().iterator();
 		while (iterator.hasNext()) {
 			Player spec = Bukkit.getPlayer(iterator.next());
