@@ -21,16 +21,6 @@ public class Duel {
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
 	
-	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeamUUID, List<UUID> secondTeamUUID) {
-		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
-		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
-		this.firstTeamUUID = firstTeamUUID;
-		this.secondTeamUUID = secondTeamUUID;
-		this.firstTeamAlive = Lists.newArrayList(firstTeamUUID);
-		this.secondTeamAlive = Lists.newArrayList(secondTeamUUID);
-		this.ranked = false;
-	}
-	
 	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeamUUID, List<UUID> secondTeamUUID, boolean ranked) {
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
