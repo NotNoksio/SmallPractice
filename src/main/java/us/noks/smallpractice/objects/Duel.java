@@ -12,6 +12,8 @@ import com.google.common.collect.Lists;
 
 public class Duel {
 	
+	private UUID firstTeamPartyLeaderUUID;
+    private UUID secondTeamPartyLeaderUUID;
 	private List<UUID> firstTeamUUID;
 	private List<UUID> secondTeamUUID;
 	private List<UUID> firstTeamAlive;
@@ -19,7 +21,9 @@ public class Duel {
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
 	
-	public Duel(List<UUID> firstTeamUUID, List<UUID> secondTeamUUID) {
+	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeamUUID, List<UUID> secondTeamUUID) {
+		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
+		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
 		this.firstTeamUUID = firstTeamUUID;
 		this.secondTeamUUID = secondTeamUUID;
 		this.firstTeamAlive = Lists.newArrayList(firstTeamUUID);
@@ -27,7 +31,9 @@ public class Duel {
 		this.ranked = false;
 	}
 	
-	public Duel(List<UUID> firstTeamUUID, List<UUID> secondTeamUUID, boolean ranked) {
+	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeamUUID, List<UUID> secondTeamUUID, boolean ranked) {
+		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
+		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
 		this.firstTeamUUID = firstTeamUUID;
 		this.secondTeamUUID = secondTeamUUID;
 		this.firstTeamAlive = Lists.newArrayList(firstTeamUUID);
@@ -109,5 +115,21 @@ public class Duel {
 			Player spec = Bukkit.getPlayer(iterator.next());
 			spec.sendMessage(message);
 		}
+	}
+
+	public UUID getFirstTeamPartyLeaderUUID() {
+		return firstTeamPartyLeaderUUID;
+	}
+
+	public void setFirstTeamPartyLeaderUUID(UUID firstTeamPartyLeaderUUID) {
+		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
+	}
+
+	public UUID getSecondTeamPartyLeaderUUID() {
+		return secondTeamPartyLeaderUUID;
+	}
+
+	public void setSecondTeamPartyLeaderUUID(UUID secondTeamPartyLeaderUUID) {
+		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
 	}
 }

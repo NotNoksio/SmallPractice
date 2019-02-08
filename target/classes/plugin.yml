@@ -15,4 +15,5 @@ commands:
   spectate:
     aliases: [spec]
   mod:
+  party:
   

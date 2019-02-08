@@ -35,6 +35,8 @@ import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.party.Party;
+import us.noks.smallpractice.party.PartyState;
 
 public class PlayerListener implements Listener {
 	
@@ -154,7 +156,7 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDamage(EntityDamageByEntityEvent event) {
 		if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-			Player rec = (Player) event.getEntity();
+			Player attacked = (Player) event.getEntity();
 			Player attacker = (Player) event.getDamager();
 				
 			if (PlayerManager.get(attacker).getStatus() == PlayerStatus.MODERATION) {
@@ -165,7 +167,7 @@ public class PlayerListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-			if (PlayerManager.get(attacker).getStatus() != PlayerStatus.DUEL && PlayerManager.get(rec).getStatus() != PlayerStatus.DUEL) {
+			if (PlayerManager.get(attacker).getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 			}
 		}
@@ -209,8 +211,39 @@ public class PlayerListener implements Listener {
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
 		                event.setCancelled(true);
-		                Main.getInstance().addQueue(player);
+		                Main.getInstance().addQueue(player, false);
 		            }
+					if (item.getType() == Material.NAME_TAG && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Create Party")) {
+		                event.setCancelled(true);
+		                PartyManager.getInstance().createParty(player.getUniqueId(), player.getName());
+		                pm.giveSpawnItem();
+		            }
+				} else {
+					Party currentParty = PartyManager.getInstance().getParty(player.getUniqueId());
+					boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
+					
+					if (item.getType() == Material.ARROW && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Split Teams")) {
+						if (!isPartyLeader) {
+							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
+							break;
+						}
+						if (currentParty.getPartyState() == PartyState.DUELING) {
+                            player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight");
+                            break;
+                        }
+		                player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+		            }
+					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Fight Other Parties")) {
+						player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+					}
+					if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Disband Party")) {
+						PartyManager.getInstance().destroyParty(player.getUniqueId());
+						pm.giveSpawnItem();
+					}
+					if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Party")) {
+						currentParty.removeMember(player.getUniqueId());
+						pm.giveSpawnItem();
+					}
 				}
 				break;
 			case QUEUE:

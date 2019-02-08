@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
 import net.minecraft.util.com.google.common.collect.Lists;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.party.Party;
 
 public class PlayerManager {
 
@@ -139,7 +140,35 @@ public class PlayerManager {
 			rm.spigot().setUnbreakable(true);
 			r.setItemMeta(rm);
 			
+			ItemStack n = new ItemStack(Material.NAME_TAG, 1);
+			ItemMeta nm = n.getItemMeta();
+			nm.setDisplayName(ChatColor.YELLOW + "Create Party");
+			n.setItemMeta(nm);
+			
 			getPlayer().getInventory().setItem(0, r);
+			getPlayer().getInventory().setItem(8, n);
+		} else {
+			Party currentParty = PartyManager.getInstance().getParty(getPlayer().getUniqueId());
+			boolean isPartyLeader = currentParty.getLeader() == getPlayer().getUniqueId();
+			
+			ItemStack a = new ItemStack(Material.ARROW, 1);
+			ItemMeta am = a.getItemMeta();
+			am.setDisplayName(ChatColor.YELLOW + "Split Teams");
+			a.setItemMeta(am);
+			
+			ItemStack b = new ItemStack(Material.BOOK, 1);
+			ItemMeta bm = b.getItemMeta();
+			bm.setDisplayName(ChatColor.YELLOW + "Fight Other Parties");
+			b.setItemMeta(bm);
+			
+			ItemStack r = new ItemStack(Material.REDSTONE, 1);
+			ItemMeta rm = r.getItemMeta();
+			rm.setDisplayName(ChatColor.RED + (isPartyLeader ? "Disband Party" : "Leave Party"));
+			r.setItemMeta(rm);
+			
+			getPlayer().getInventory().setItem(0, a);
+			getPlayer().getInventory().setItem(2, b);
+			getPlayer().getInventory().setItem(8, r);
 		}
 		getPlayer().updateInventory();
 	}

@@ -23,6 +23,7 @@ import us.noks.smallpractice.commands.BuildCommand;
 import us.noks.smallpractice.commands.DuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
 import us.noks.smallpractice.commands.ModerationCommand;
+import us.noks.smallpractice.commands.PartyCommand;
 import us.noks.smallpractice.commands.PingCommand;
 import us.noks.smallpractice.commands.ReportCommand;
 import us.noks.smallpractice.commands.SeeallCommand;
@@ -35,7 +36,9 @@ import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.utils.InvView;
 
 public class Main extends JavaPlugin {
@@ -89,6 +92,7 @@ public class Main extends JavaPlugin {
 		getCommand("report").setExecutor(new ReportCommand());
 		getCommand("spectate").setExecutor(new SpectateCommand());
 		getCommand("mod").setExecutor(new ModerationCommand());
+		getCommand("party").setExecutor(new PartyCommand());
 	}
 	
 	private void registerListers() {
@@ -140,45 +144,51 @@ public class Main extends JavaPlugin {
 			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
 			return;
 		}
+		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
+        Party requestedParty = PartyManager.getInstance().getParty(requested.getUniqueId());
+		if (requestedParty != null && requesterParty != null) {
+			DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
+			return;
+		}
 		List<UUID> firstTeam = Lists.newArrayList();
 		firstTeam.add(requester.getUniqueId());
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(requested.getUniqueId());
 		
-		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam);
+		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, false);
 	}
 	
-	public void addQueue(Player p) {
-		if (PlayerManager.get(p).getStatus() != PlayerStatus.SPAWN) {
+	public void addQueue(Player player, boolean ranked) {
+		if (PlayerManager.get(player).getStatus() != PlayerStatus.SPAWN) {
 			return;
 		}
-		if (!this.queue.contains(p)) {
-			this.queue.add(p);
-			PlayerManager.get(p).setStatus(PlayerStatus.QUEUE);
+		if (!this.queue.contains(player)) {
+			this.queue.add(player);
+			PlayerManager.get(player).setStatus(PlayerStatus.QUEUE);
 			if (this.queue.size() == 1) {
-				PlayerManager.get(p).giveQueueItem();
+				PlayerManager.get(player).giveQueueItem();
 			}
-			p.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
+			player.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
 		}
-		if (this.queue.size() == 1 && this.queue.contains(p)) {
-			addQueue(p);
+		if (this.queue.size() == 1 && this.queue.contains(player)) {
+			addQueue(player, ranked);
 		} else if (this.queue.size() == 2) {
-			Player p1 = this.queue.get(0);
-			Player p2 = this.queue.get(1);
+			Player first = this.queue.get(0);
+			Player second = this.queue.get(1);
 			
-			if (p1 == p && p2 == p1) {
+			if (first == player && second == first) {
 				this.queue.clear();
-				addQueue(p);
+				addQueue(player, ranked);
 				return;
 			}
 			List<UUID> firstTeam = Lists.newArrayList();
-			firstTeam.add(p1.getUniqueId());
+			firstTeam.add(first.getUniqueId());
 			List<UUID> secondTeam = Lists.newArrayList();
-			secondTeam.add(p2.getUniqueId());
+			secondTeam.add(second.getUniqueId());
 			
-			DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam);
-			this.queue.remove(p1);
-			this.queue.remove(p2);
+			DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, ranked);
+			this.queue.remove(first);
+			this.queue.remove(second);
 		}
 	}
 	

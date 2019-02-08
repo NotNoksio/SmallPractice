@@ -38,19 +38,23 @@ public class DuelManager {
         return this.uuidIdentifierToDuel.get(uuid);
     }
 	
-	public void startDuel(UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam) {
+	public void startDuel(UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		Scoreboard firstPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
 		Team red1 = firstPlayerScoreboard.registerNewTeam("red");
 		red1.setPrefix(ChatColor.RED.toString());
 		Team green1 = firstPlayerScoreboard.registerNewTeam("green");
 		green1.setPrefix(ChatColor.GREEN.toString());
+		green1.setAllowFriendlyFire(false);
         
 		Scoreboard secondPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
 		Team red2 = secondPlayerScoreboard.registerNewTeam("red");
 		red2.setPrefix(ChatColor.RED.toString());
 		Team green2 = secondPlayerScoreboard.registerNewTeam("green");
 		green2.setPrefix(ChatColor.GREEN.toString());
+		green2.setAllowFriendlyFire(false);
         
+		List<Player> duelPlayers = Lists.newArrayList();
+		
 		for (UUID firstUUID : firstTeam) {
 			Player first = Bukkit.getPlayer(firstUUID);
 			
@@ -68,6 +72,7 @@ public class DuelManager {
 			green1.addEntry(first.getName());
 			red2.addEntry(first.getName());
 			first.setScoreboard(firstPlayerScoreboard);
+			duelPlayers.add(first);
 		}
 		for (UUID secondUUID : secondTeam) {
 			Player second = Bukkit.getPlayer(secondUUID);
@@ -86,6 +91,7 @@ public class DuelManager {
 			green2.addEntry(second.getName());
 			red1.addEntry(second.getName());
 			second.setScoreboard(secondPlayerScoreboard);
+			duelPlayers.add(second);
 		}
 		if (firstPartyLeaderUUID != null) {
             Party party = PartyManager.getInstance().getParty(firstPartyLeaderUUID);
@@ -99,8 +105,14 @@ public class DuelManager {
                 party.setPartyState(PartyState.DUELING);
             }
         }
-		
-		teleportRandomArena(new Duel(firstTeam, secondTeam));
+        for (Player team : duelPlayers) {
+            for (Player ally : duelPlayers) {
+                team.showPlayer(ally);
+                ally.showPlayer(team);
+            }
+        }
+		duelPlayers.clear();
+		teleportRandomArena(new Duel(firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
@@ -128,7 +140,18 @@ public class DuelManager {
 			
 			it.remove();
 		}
-		
+		if (duel.getFirstTeamPartyLeaderUUID() != null) {
+            Party firstTeamParty = PartyManager.getInstance().getParty(duel.getFirstTeamPartyLeaderUUID());
+            if (firstTeamParty != null) {
+                firstTeamParty.setPartyState(PartyState.LOBBY);
+            }
+        }
+        if (duel.getSecondTeamPartyLeaderUUID() != null) {
+            Party secondTeamParty = PartyManager.getInstance().getParty(duel.getSecondTeamPartyLeaderUUID());
+            if (secondTeamParty != null) {
+                secondTeamParty.setPartyState(PartyState.LOBBY);
+            }
+        }
 		for (UUID firstUUID : duel.getFirstTeamUUID()) {
 			Player first = Bukkit.getPlayer(firstUUID);
 			PlayerManager pmf = PlayerManager.get(first);
