@@ -1,5 +1,6 @@
 package us.noks.smallpractice.objects.managers;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,16 @@ public class DuelManager {
         }
 		duelPlayers.clear();
 		teleportRandomArena(new Duel(firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
+	}
+	
+	public void createSplitTeamsDuel(Party party) {
+		List<UUID> shuffle = Lists.newArrayList(party.getAllMembersOnline());
+        Collections.shuffle(shuffle);
+        
+        List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
+        List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
+        
+        startDuel(party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
@@ -283,6 +294,7 @@ public class DuelManager {
 		Duel currentDuel = getDuelFromPlayerUUID(player.getUniqueId());
 		
 		if (currentDuel == null) return;
+		this.uuidIdentifierToDuel.remove(player.getUniqueId());
 		
 		InvView.getInstance().saveInv(player);
 		currentDuel.sendMessage(player.getName() + " has been killed" + ((player.getKiller() != null) ? (" by " + player.getKiller().getName()) : ""));

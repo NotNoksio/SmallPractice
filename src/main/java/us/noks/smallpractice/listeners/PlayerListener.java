@@ -40,6 +40,16 @@ import us.noks.smallpractice.party.PartyState;
 
 public class PlayerListener implements Listener {
 	
+	private String[] WELCOME_MESSAGE = new String[] {
+			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
+			ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + Main.getInstance().getDescription().getVersion() + " server",
+			"",
+			ChatColor.AQUA + "Noksio (Creator) Twitter -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio",
+			ChatColor.BLUE + "Noksio (Creator) Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/TZhyPnB",
+			ChatColor.DARK_PURPLE + "xelo_o (Server Owner) Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o",
+			ChatColor.RED + "-> Keep in mind this is a beta ^^",
+			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
+	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
@@ -55,7 +65,6 @@ public class PlayerListener implements Listener {
 		player.clearPotionEffect();
 		player.setAllowFlight(false);
 		player.setFlying(false);
-		
 		player.setGameMode(GameMode.SURVIVAL);
 		
 		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
@@ -63,15 +72,7 @@ public class PlayerListener implements Listener {
 		player.teleport(Main.getInstance().getSpawnLocation());
 		PlayerManager.get(player).giveSpawnItem();
 		
-		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
-		player.sendMessage(ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + Main.getInstance().getDescription().getVersion() + " server");
-		player.sendMessage("  ");
-		player.sendMessage(ChatColor.AQUA + "Noksio (Creator) Twitter -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio");
-		player.sendMessage(ChatColor.BLUE + "Noksio (Creator) Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/TZhyPnB");
-		player.sendMessage(ChatColor.DARK_PURPLE + "xelo_o (Server Owner) Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o");
-		player.sendMessage(ChatColor.RED + "-> Keep in mind this is a beta ^^");
-		player.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------------------------------------");
-		
+		player.sendMessage(this.WELCOME_MESSAGE);
 		player.setPlayerListName(PlayerManager.get(player).getColorPrefix() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
@@ -80,6 +81,28 @@ public class PlayerListener implements Listener {
 				player.hidePlayer(allPlayers);
 			}
 		}
+	}
+	
+	@EventHandler(priority=EventPriority.HIGH)
+	public void onQuit(PlayerQuitEvent event) {
+		event.setQuitMessage(null);
+		Player player = event.getPlayer();
+		
+        if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+        	Party party = PartyManager.getInstance().getParty(player.getUniqueId());
+            if (party.getLeader().equals(player.getUniqueId())) {
+            	PartyManager.getInstance().transferLeader(player.getUniqueId());
+            } else {
+            	PartyManager.getInstance().leaveParty(player.getUniqueId());
+            }
+        }
+		if (Main.getInstance().queue.contains(player)) {
+			Main.getInstance().queue.remove(player);
+		}
+		if ((PlayerManager.get(player).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player).getStatus() == PlayerStatus.WAITING)) {
+			DuelManager.getInstance().removePlayerFromDuel(player);
+		}
+		PlayerManager.get(player).remove();
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
@@ -122,19 +145,6 @@ public class PlayerListener implements Listener {
 				PlayerManager.get(player).giveSpawnItem();
 			}
 		}.runTaskLater(Main.getInstance(), 1L);
-	}
-	
-	@EventHandler(priority=EventPriority.HIGH)
-	public void onQuit(PlayerQuitEvent event) {
-		event.setQuitMessage(null);
-		
-		if (Main.getInstance().queue.contains(event.getPlayer())) {
-			Main.getInstance().queue.remove(event.getPlayer());
-		}
-		if ((PlayerManager.get(event.getPlayer()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(event.getPlayer()).getStatus() == PlayerStatus.WAITING)) {
-			DuelManager.getInstance().removePlayerFromDuel(event.getPlayer());
-		}
-		PlayerManager.get(event.getPlayer()).remove();
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
@@ -184,7 +194,14 @@ public class PlayerListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-			if (!receiver.canSee(owner)) event.setCancelled(true);
+			if (DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
+				Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId());
+				
+				if (!currentDuel.getFirstTeamUUID().contains(owner.getUniqueId()) && !currentDuel.getSecondTeamUUID().contains(owner.getUniqueId())) {
+					event.setCancelled(true);
+				}
+			}
+			//if (!receiver.canSee(owner)) event.setCancelled(true);
 		}
 	}
 	
@@ -212,11 +229,13 @@ public class PlayerListener implements Listener {
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
 		                event.setCancelled(true);
 		                Main.getInstance().addQueue(player, false);
+		                break;
 		            }
 					if (item.getType() == Material.NAME_TAG && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Create Party")) {
 		                event.setCancelled(true);
 		                PartyManager.getInstance().createParty(player.getUniqueId(), player.getName());
 		                pm.giveSpawnItem();
+		                break;
 		            }
 				} else {
 					Party currentParty = PartyManager.getInstance().getParty(player.getUniqueId());
@@ -228,20 +247,27 @@ public class PlayerListener implements Listener {
 							break;
 						}
 						if (currentParty.getPartyState() == PartyState.DUELING) {
-                            player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight");
+                            player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
                             break;
                         }
-		                player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+                        if (currentParty.getMembers().size() == 0) {
+                            player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
+                            break;
+                        }
+                        DuelManager.getInstance().createSplitTeamsDuel(currentParty);
+                        break;
 		            }
 					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Fight Other Parties")) {
 						player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
-					}
-					if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Disband Party")) {
-						PartyManager.getInstance().destroyParty(player.getUniqueId());
-						pm.giveSpawnItem();
+						break;
 					}
 					if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Party")) {
-						currentParty.removeMember(player.getUniqueId());
+						event.setCancelled(true);
+						if (isPartyLeader) {
+							PartyManager.getInstance().transferLeader(player.getUniqueId());
+						} else {
+							currentParty.removeMember(player.getUniqueId());
+						}
 						pm.giveSpawnItem();
 					}
 				}
@@ -274,6 +300,7 @@ public class PlayerListener implements Listener {
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Moderation")) {
 	                event.setCancelled(true);
 	                player.performCommand("mod");
+	                break;
 	            }
 				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "See Random Player")) {
 	                event.setCancelled(true);

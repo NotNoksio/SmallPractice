@@ -146,6 +146,10 @@ public class Main extends JavaPlugin {
 		}
 		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
         Party requestedParty = PartyManager.getInstance().getParty(requested.getUniqueId());
+        if ((requesterParty != null && requestedParty == null) || (requestedParty != null && requesterParty == null)) {
+            requester.sendMessage(ChatColor.RED + "Either you or this player is in a party!");
+            return;
+        }
 		if (requestedParty != null && requesterParty != null) {
 			DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;

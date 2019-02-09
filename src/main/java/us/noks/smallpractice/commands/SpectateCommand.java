@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class SpectateCommand implements CommandExecutor {
@@ -29,6 +30,10 @@ public class SpectateCommand implements CommandExecutor {
 		
 		if (args.length > 1 || args.length < 1) {
 			player.sendMessage(ChatColor.RED + "Usage: /spectate <player>");
+			return false;
+		}
+		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+			player.sendMessage(ChatColor.RED + "You are in party!");
 			return false;
 		}
 		if (pm.getStatus() != PlayerStatus.SPAWN) {

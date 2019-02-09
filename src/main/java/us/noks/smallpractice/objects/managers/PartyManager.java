@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import net.minecraft.util.com.google.common.collect.Maps;
@@ -42,6 +43,23 @@ public class PartyManager {
         Party party = new Party(leader, leadername);
         this.leaderUUIDtoParty.put(leader, party);
         return party;
+    }
+    
+    public void transferLeader(UUID actualLeader) {
+    	Party party = this.leaderUUIDtoParty.get(actualLeader);
+    	if (party.getSize() > 1) {
+    		UUID newLeader = party.getMembers().get(0);
+    		
+    		party.setNewLeader(newLeader, Bukkit.getPlayer(newLeader).getName());
+    		this.leaderUUIDtoParty.remove(actualLeader);
+    		
+    		this.leaderUUIDtoParty.put(newLeader, party);
+    		party = this.leaderUUIDtoParty.get(newLeader);
+    		
+    		notifyParty(party, ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
+    		return;
+    	}
+    	destroyParty(actualLeader);
     }
     
     public void destroyParty(UUID leader) {

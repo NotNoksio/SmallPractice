@@ -17,13 +17,13 @@ import com.google.common.collect.Maps;
 import net.minecraft.util.com.google.common.collect.Lists;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.enums.PlayerStatus;
-import us.noks.smallpractice.party.Party;
 
 public class PlayerManager {
 
 	public static List<PlayerManager> players = Lists.newArrayList();
 	private Player player;
 	private Map<Player, Player> request = Maps.newHashMap();
+	private Map<Player, Player> invite = Maps.newHashMap();
 	private PlayerStatus status;
 	private Player spectate;
 	private String prefix;
@@ -76,6 +76,18 @@ public class PlayerManager {
 	
 	public void setSpectate(Player spec) {
 		this.spectate = spec;
+	}
+	
+	public boolean hasInvited(Player invited) {
+		return this.invite.containsValue(invited) && this.invite.containsKey(this.player) && this.invite.get(this.player) == invited;
+	}
+	
+	public void setInviteTo(Player target) {
+		this.invite.put(this.player, target);
+	}
+	
+	public void removePartyInvite() {
+		this.invite.remove(this.player);
 	}
 	
 	public boolean hasRequest(Player requested) {
@@ -148,9 +160,6 @@ public class PlayerManager {
 			getPlayer().getInventory().setItem(0, r);
 			getPlayer().getInventory().setItem(8, n);
 		} else {
-			Party currentParty = PartyManager.getInstance().getParty(getPlayer().getUniqueId());
-			boolean isPartyLeader = currentParty.getLeader() == getPlayer().getUniqueId();
-			
 			ItemStack a = new ItemStack(Material.ARROW, 1);
 			ItemMeta am = a.getItemMeta();
 			am.setDisplayName(ChatColor.YELLOW + "Split Teams");
@@ -163,7 +172,7 @@ public class PlayerManager {
 			
 			ItemStack r = new ItemStack(Material.REDSTONE, 1);
 			ItemMeta rm = r.getItemMeta();
-			rm.setDisplayName(ChatColor.RED + (isPartyLeader ? "Disband Party" : "Leave Party"));
+			rm.setDisplayName(ChatColor.RED + "Leave Party");
 			r.setItemMeta(rm);
 			
 			getPlayer().getInventory().setItem(0, a);

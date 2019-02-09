@@ -43,6 +43,11 @@ public class Party {
         return this.memberUUIDs;
     }
     
+    public void setNewLeader(UUID newLeader, String newLeaderName) {
+    	this.partyLeader = newLeader;
+    	this.leaderName = newLeaderName;
+    }
+    
     public UUID getLeader() {
         return this.partyLeader;
     }
