@@ -42,7 +42,9 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler
 	public void onMotd(ServerListPingEvent event) {
-		event.setMotd(ChatColor.translateAlternateColorCodes('&', "&3&lHalka &7(Practice " + Main.getInstance().getDescription().getVersion() + ")") + "\n" + ChatColor.translateAlternateColorCodes('&', (!Bukkit.getServer().hasWhitelist() ? "&eHome of the pots pvp" : "&eHome of the pots pvp &cWhitelisted... ")));
+		String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka " + ChatColor.GRAY + "(Practice "  + Main.getInstance().getDescription().getVersion() + ")\n";
+		String line2 = ChatColor.YELLOW + "Home of the pots pvp";
+		event.setMotd(line1 + line2 + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : ""));
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)

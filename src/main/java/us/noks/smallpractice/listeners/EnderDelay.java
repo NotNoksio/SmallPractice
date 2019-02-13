@@ -23,39 +23,35 @@ import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class EnderDelay implements Listener {
 
-	private Map<UUID, Long> enderpearlCooldown = Maps.newConcurrentMap();
-	private int cooldowntime = 14;
 	static EnderDelay instance = new EnderDelay();
-
 	public static EnderDelay getInstance() {
 		return instance;
 	}
+	
+	private Map<UUID, Long> enderpearlCooldown = Maps.newConcurrentMap();
+	private int cooldowntime = 14;
 
 	@EventHandler(priority=EventPriority.NORMAL)
-	public void onPlayerInteract(PlayerInteractEvent e) {
-		if (e.getPlayer() instanceof Player) {
-			Player p = e.getPlayer();
-			if (e.hasItem()) {
-				ItemStack item = e.getItem();
-				if ((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && p.getGameMode() != GameMode.CREATIVE) {
-					if (PlayerManager.get(p).getStatus() == PlayerStatus.DUEL) {
-						if (isEnderPearlCooldownActive(p)) {
-							e.setUseItemInHand(Result.DENY);
-							double time = getEnderPearlCooldown(p) / 1000.0D;
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (event.getPlayer() instanceof Player) {
+			Player player = event.getPlayer();
+			if (event.hasItem()) {
+				ItemStack item = event.getItem();
+				if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && player.getGameMode() != GameMode.CREATIVE) {
+					if (PlayerManager.get(player).getStatus() == PlayerStatus.DUEL) {
+						if (isEnderPearlCooldownActive(player)) {
+							event.setUseItemInHand(Result.DENY);
+							double time = getEnderPearlCooldown(player) / 1000.0D;
 							DecimalFormat df = new DecimalFormat("0.0");
-							String text = ChatColor.DARK_AQUA + "Pearl cooldown: " + ChatColor.YELLOW + df.format(time) + " second";
-							if (time > 1.0D) {
-								text = text + "s";
-							}
-							p.sendMessage(text);
-							p.updateInventory();
+							player.sendMessage(ChatColor.DARK_AQUA + "Pearl cooldown: " + ChatColor.YELLOW + df.format(time) + " second" + (time > 1.0D ? "s" : ""));
+							player.updateInventory();
 						} else {
-							applyCooldown(p);
+							applyCooldown(player);
 						}
 					} else {
-						e.setUseItemInHand(Result.DENY);
-						p.sendMessage(ChatColor.RED + "You cannot use enderpearl here!");
-						p.updateInventory();
+						event.setUseItemInHand(Result.DENY);
+						player.sendMessage(ChatColor.RED + "You cannot use enderpearl here!");
+						player.updateInventory();
 					}
 				}
 			}
@@ -73,27 +69,27 @@ public class EnderDelay implements Listener {
 		}
 	}
 
-	public boolean isEnderPearlCooldownActive(Player p) {
-		if (!this.enderpearlCooldown.containsKey(p.getUniqueId())) {
+	public boolean isEnderPearlCooldownActive(Player player) {
+		if (!this.enderpearlCooldown.containsKey(player.getUniqueId())) {
 			return false;
 		}
-		return this.enderpearlCooldown.get(p.getUniqueId()).longValue() > System.currentTimeMillis();
+		return this.enderpearlCooldown.get(player.getUniqueId()).longValue() > System.currentTimeMillis();
 	}
 
-	public long getEnderPearlCooldown(Player p) {
-		if (this.enderpearlCooldown.containsKey(p.getUniqueId())) {
-			return Math.max(0L, this.enderpearlCooldown.get(p.getUniqueId()).longValue() - System.currentTimeMillis());
+	public long getEnderPearlCooldown(Player player) {
+		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) {
+			return Math.max(0L, this.enderpearlCooldown.get(player.getUniqueId()).longValue() - System.currentTimeMillis());
 		}
 		return 0L;
 	}
 
-	public void applyCooldown(Player p) {
-		this.enderpearlCooldown.put(p.getUniqueId(), Long.valueOf(System.currentTimeMillis() + this.cooldowntime * 1000));
+	public void applyCooldown(Player player) {
+		this.enderpearlCooldown.put(player.getUniqueId(), Long.valueOf(System.currentTimeMillis() + this.cooldowntime * 1000));
 	}
 
-	public void removeCooldown(Player p) {
-		if (this.enderpearlCooldown.containsKey(p.getUniqueId())) {
-			this.enderpearlCooldown.remove(p.getUniqueId());
+	public void removeCooldown(Player player) {
+		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) {
+			this.enderpearlCooldown.remove(player.getUniqueId());
 		}
 	}
 }

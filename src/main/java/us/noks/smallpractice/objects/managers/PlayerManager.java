@@ -23,6 +23,7 @@ public class PlayerManager {
 	public static List<PlayerManager> players = Lists.newArrayList();
 	private Player player;
 	private Map<Player, Player> request = Maps.newHashMap();
+	private int requestedRound = 0;
 	private Map<Player, Player> invite = Maps.newHashMap();
 	private PlayerStatus status;
 	private Player spectate;
@@ -65,6 +66,14 @@ public class PlayerManager {
 	public Player getPlayer() {
 		return this.player;
 	}
+	
+	public int getRequestedRound() {
+		return this.requestedRound;
+	}
+	
+	public void setRequestedRound(int round) {
+		this.requestedRound = round;
+	}
 
 	public boolean isCanBuild() {
 		return getStatus() == PlayerStatus.BUILD;
@@ -96,6 +105,10 @@ public class PlayerManager {
 	
 	public void setRequestTo(Player target) {
 		this.request.put(this.player, target);
+	}
+	
+	public Player getRequestTo() {
+		return this.request.get(this.player);
 	}
 	
 	public void removeRequest() {

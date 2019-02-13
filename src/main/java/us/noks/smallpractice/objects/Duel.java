@@ -20,15 +20,17 @@ public class Duel {
 	private List<UUID> secondTeamAlive;
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
+	private int round;
 	
-	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeamUUID, List<UUID> secondTeamUUID, boolean ranked) {
+	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeamUUID, List<UUID> secondTeamUUID, boolean ranked, int round) {
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
-		this.firstTeamUUID = firstTeamUUID;
-		this.secondTeamUUID = secondTeamUUID;
+		this.firstTeamUUID = Lists.newArrayList(firstTeamUUID);
+		this.secondTeamUUID = Lists.newArrayList(secondTeamUUID);
 		this.firstTeamAlive = Lists.newArrayList(firstTeamUUID);
 		this.secondTeamAlive = Lists.newArrayList(secondTeamUUID);
 		this.ranked = ranked;
+		this.round = round;
 	}
 	
 	public List<UUID> getFirstTeamUUID() {
@@ -121,5 +123,17 @@ public class Duel {
 
 	public void setSecondTeamPartyLeaderUUID(UUID secondTeamPartyLeaderUUID) {
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
+	}
+	
+	public int getRound() {
+		return this.round;
+	}
+	
+	public void setRound(int newRound) {
+		this.round = newRound;
+	}
+	
+	public boolean hasRemainingRound() {
+		return this.round > 0;
 	}
 }

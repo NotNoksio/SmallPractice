@@ -217,7 +217,7 @@ public class InvView implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOW)
 	public void onInvsClick(InventoryClickEvent e) {
-		if (e.getInventory().getName().endsWith("'s Inventory")) {
+		if (e.getInventory().getName().toLowerCase().endsWith("'s inventory")) {
 			e.setCancelled(true);
 		}
 	}

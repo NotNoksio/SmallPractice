@@ -39,7 +39,7 @@ public class DuelManager {
         return this.uuidIdentifierToDuel.get(uuid);
     }
 	
-	public void startDuel(UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
+	public void startDuel(UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked, int round) {
 		Scoreboard firstPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
 		Team red1 = firstPlayerScoreboard.registerNewTeam("red");
 		red1.setPrefix(ChatColor.RED.toString());
@@ -59,9 +59,7 @@ public class DuelManager {
 		for (UUID firstUUID : firstTeam) {
 			Player first = Bukkit.getPlayer(firstUUID);
 			
-			if (first == null) {
-                continue;
-            }
+			if (first == null) continue;
 			
 			PlayerManager fm = PlayerManager.get(first);
 			fm.removeRequest();
@@ -78,9 +76,7 @@ public class DuelManager {
 		for (UUID secondUUID : secondTeam) {
 			Player second = Bukkit.getPlayer(secondUUID);
 			
-			if (second == null) {
-                continue;
-            }
+			if (second == null) continue;
 			
 			PlayerManager sm = PlayerManager.get(second);
 			sm.removeRequest();
@@ -107,23 +103,25 @@ public class DuelManager {
             }
         }
         for (Player team : duelPlayers) {
+        	if (team == null) continue;
             for (Player ally : duelPlayers) {
+            	if (ally == null) continue;
                 team.showPlayer(ally);
                 ally.showPlayer(team);
             }
         }
 		duelPlayers.clear();
-		teleportRandomArena(new Duel(firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
+		teleportRandomArena(new Duel(firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked, round));
 	}
 	
-	public void createSplitTeamsDuel(Party party) {
+	public void createSplitTeamsDuel(Party party, int round) {
 		List<UUID> shuffle = Lists.newArrayList(party.getAllMembersOnline());
         Collections.shuffle(shuffle);
         
         List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         
-        startDuel(party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
+        startDuel(party.getLeader(), party.getLeader(), firstTeam, secondTeam, false, round);
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
@@ -165,6 +163,7 @@ public class DuelManager {
         }
 		for (UUID firstUUID : duel.getFirstTeamUUID()) {
 			Player first = Bukkit.getPlayer(firstUUID);
+			if (first == null) continue;
 			PlayerManager pmf = PlayerManager.get(first);
 			
 			first.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
@@ -180,6 +179,7 @@ public class DuelManager {
 		}
 		for (UUID secondUUID : duel.getSecondTeamUUID()) {
 			Player second = Bukkit.getPlayer(secondUUID);
+			if (second == null) continue;
 			PlayerManager pms = PlayerManager.get(second);
 			
 			second.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
@@ -192,6 +192,9 @@ public class DuelManager {
 			
 			EnderDelay.getInstance().removeCooldown(second);
 			this.uuidIdentifierToDuel.remove(second.getUniqueId());
+		}
+		if (duel.hasRemainingRound() && !duel.getFirstTeamUUID().isEmpty() && !duel.getSecondTeamUUID().isEmpty()) {
+			startDuel(duel.getFirstTeamPartyLeaderUUID(), duel.getSecondTeamPartyLeaderUUID(), duel.getFirstTeamUUID(), duel.getSecondTeamUUID(), duel.isRanked(), duel.getRound());
 		}
 	}
 	
@@ -215,25 +218,36 @@ public class DuelManager {
 					
 					if (player == null) {
 						this.cancel();
+						continue;
 					}
 					if(player.isDead()) {
 						this.cancel();
+						continue;
 					}
 					if (PlayerManager.get(player).getStatus() != PlayerStatus.WAITING) {
 						this.cancel();
+						continue;
 					}
 				}
 				if (num <= 0) {
 					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has stated!", Sound.FIREWORK_BLAST);
 					for (UUID uuid : duelPlayers) {
 						Player player = Bukkit.getPlayer(uuid);
+						if (player == null) {
+							this.cancel();
+							continue;
+						}
 						PlayerManager.get(player).setStatus(PlayerStatus.DUEL);
 					}
 					for (UUID firstUUID : duel.getFirstTeamAlive()) {
 						Player first = Bukkit.getPlayer(firstUUID);
+						
+						if (first == null) continue;
 							
 						for (UUID secondUUID : duel.getSecondTeamAlive()) {
 							Player second = Bukkit.getPlayer(secondUUID);
+							
+							if (second == null) continue;
 								
 							first.showPlayer(second);
 							second.showPlayer(first);
@@ -252,38 +266,48 @@ public class DuelManager {
 	}
 	
 	private void teleportRandomArena(Duel duel) {
+		duel.setRound(duel.getRound() - 1);
+		
 		Random random = new Random();
 		int pickedArena = random.nextInt(Main.getInstance().arenaList.size()) + 1;
 		
 		for (UUID firstUUID : duel.getFirstTeamUUID()) {
-			this.uuidIdentifierToDuel.put(firstUUID, duel);
 			Player first = Bukkit.getPlayer(firstUUID);
-			PlayerManager pmf = PlayerManager.get(first);
 			
-			pmf.hideAllPlayer();
-			pmf.giveKit();
+			if (first == null) continue;
+			
+			this.uuidIdentifierToDuel.put(firstUUID, duel);
+			PlayerManager pmf = PlayerManager.get(first);
 			
 			first.setHealth(20.0D);
 			first.clearPotionEffect();
 			first.setFoodLevel(20);
 			first.setSaturation(20f);
 			first.setNoDamageTicks(50);
+			
+			pmf.hideAllPlayer();
+			pmf.giveKit();
+			
 			first.teleport(Main.getInstance().arenaList.get(pickedArena)[0]);
 			first.setSneaking(false);
 		}
 		for (UUID secondUUID : duel.getSecondTeamUUID()) {
-			this.uuidIdentifierToDuel.put(secondUUID, duel);
 			Player second = Bukkit.getPlayer(secondUUID);
-			PlayerManager pms = PlayerManager.get(second);
 			
-			pms.hideAllPlayer();
-			pms.giveKit();
+			if (second == null) continue;
+			
+			this.uuidIdentifierToDuel.put(secondUUID, duel);
+			PlayerManager pms = PlayerManager.get(second);
 			
 			second.setHealth(20.0D);
 			second.clearPotionEffect();
 			second.setFoodLevel(20);
 			second.setSaturation(20f);
 			second.setNoDamageTicks(50);
+			
+			pms.hideAllPlayer();
+			pms.giveKit();
+			
 			second.teleport(Main.getInstance().arenaList.get(pickedArena)[1]);
 			second.setSneaking(false);
 		}
@@ -305,51 +329,79 @@ public class DuelManager {
 			currentDuel.killSecondTeamPlayer(player.getUniqueId());
 		}
 		
+		if (!currentDuel.hasRemainingRound()) {
+			new BukkitRunnable() {
+				
+				@Override
+				public void run() {
+					if (player.isDead() && player != null) {
+						player.spigot().respawn();
+					}
+				}
+			}.runTaskLater(Main.getInstance(), 50L);
+		}
+		
 		if (currentDuel.getFirstTeamAlive().size() == 0) {
 			for (UUID lastPlayersUUID : currentDuel.getSecondTeamAlive()) {
                 Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
                 InvView.getInstance().saveInv(lastPlayers);
                 
-                if (lastPlayers != null) {
-                	lastPlayers.setHealth(20.0D);
-                	lastPlayers.setFoodLevel(20);
-                	lastPlayers.setSaturation(10000f);
+                if (lastPlayers == null) continue;
+                
+                lastPlayers.setHealth(20.0D);
+                lastPlayers.setFoodLevel(20);
+                lastPlayers.setSaturation(10000f);
         			
-        			new BukkitRunnable() {
+                if (currentDuel.hasRemainingRound() && !currentDuel.getFirstTeamUUID().isEmpty() && !currentDuel.getSecondTeamUUID().isEmpty()) {
+                	endDuel(currentDuel, 2);
+                	continue;
+                }
+                	
+                new BukkitRunnable() {
         				
-        				@Override
-        				public void run() {
-        					if (lastPlayers != null) {
-        						lastPlayers.teleport(Main.getInstance().getSpawnLocation());
-        						PlayerManager.get(lastPlayers).giveSpawnItem();
-        					}
-        				}
-        			}.runTaskLater(Main.getInstance(), 40L);
-        		}
+                	@Override
+                	public void run() {
+                		if (lastPlayers != null) {
+                			lastPlayers.teleport(Main.getInstance().getSpawnLocation());
+                			PlayerManager.get(lastPlayers).giveSpawnItem();
+                		}
+                	}
+                }.runTaskLater(Main.getInstance(), 40L);
             }
+			if (currentDuel.hasRemainingRound()) {
+				return;
+			}
 			endDuel(currentDuel, 2);
 		} else if (currentDuel.getSecondTeamAlive().size() == 0) {
 			for (UUID lastPlayersUUID : currentDuel.getFirstTeamAlive()) {
                 Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
                 InvView.getInstance().saveInv(lastPlayers);
                 
-                if (lastPlayers != null) {
-                	lastPlayers.setHealth(20.0D);
-                	lastPlayers.setFoodLevel(20);
-                	lastPlayers.setSaturation(10000f);
+                if (lastPlayers == null) continue;
+                
+                lastPlayers.setHealth(20.0D);
+                lastPlayers.setFoodLevel(20);
+                lastPlayers.setSaturation(10000f);
         			
-        			new BukkitRunnable() {
+                if (currentDuel.hasRemainingRound() && !currentDuel.getFirstTeamUUID().isEmpty() && !currentDuel.getSecondTeamUUID().isEmpty()) {
+                	endDuel(currentDuel, 1);
+                	continue;
+                }
+                	
+                new BukkitRunnable() {
         				
-        				@Override
-        				public void run() {
-        					if (lastPlayers != null) {
-        						lastPlayers.teleport(Main.getInstance().getSpawnLocation());
-        						PlayerManager.get(lastPlayers).giveSpawnItem();
-        					}
-        				}
-        			}.runTaskLater(Main.getInstance(), 40L);
-        		}
+                	@Override
+                	public void run() {
+                		if (lastPlayers != null) {
+                			lastPlayers.teleport(Main.getInstance().getSpawnLocation());
+                			PlayerManager.get(lastPlayers).giveSpawnItem();
+                		}
+                	}
+                }.runTaskLater(Main.getInstance(), 40L);
             }
+			if (currentDuel.hasRemainingRound()) {
+				return;
+			}
 			endDuel(currentDuel, 1);
 		}
 	}

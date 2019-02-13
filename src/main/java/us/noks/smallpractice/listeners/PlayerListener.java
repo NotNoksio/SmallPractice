@@ -115,16 +115,6 @@ public class PlayerListener implements Listener {
 			Player killed = event.getEntity();
 			
 			DuelManager.getInstance().removePlayerFromDuel(killed);
-				
-			new BukkitRunnable() {
-					
-				@Override
-				public void run() {
-					if (killed.isDead() && killed != null) {
-						killed.spigot().respawn();
-					}
-				}
-			}.runTaskLater(Main.getInstance(), 50L);
 		}
 	}
 	
@@ -132,19 +122,22 @@ public class PlayerListener implements Listener {
 	public void onRespawn(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
 		
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				player.setHealth(20.0D);
-				player.setFoodLevel(20);
-				player.setSaturation(10000f);
-				player.teleport(Main.getInstance().getSpawnLocation());
-				PlayerManager.get(player).giveSpawnItem();
-			}
-		}.runTaskLater(Main.getInstance(), 1L);
+		Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId());
+		if (currentDuel == null || !currentDuel.hasRemainingRound()) {
+			player.getInventory().clear();
+			player.getInventory().setArmorContents(null);
+			new BukkitRunnable() {
+				
+				@Override
+				public void run() {
+					player.setHealth(20.0D);
+					player.setFoodLevel(20);
+					player.setSaturation(10000f);
+					player.teleport(Main.getInstance().getSpawnLocation());
+					PlayerManager.get(player).giveSpawnItem();
+				}
+			}.runTaskLater(Main.getInstance(), 1L);
+		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
@@ -200,8 +193,9 @@ public class PlayerListener implements Listener {
 				if (!currentDuel.getFirstTeamUUID().contains(owner.getUniqueId()) && !currentDuel.getSecondTeamUUID().contains(owner.getUniqueId())) {
 					event.setCancelled(true);
 				}
+				return;
 			}
-			//if (!receiver.canSee(owner)) event.setCancelled(true);
+			if (!receiver.canSee(owner)) event.setCancelled(true);
 		}
 	}
 	
@@ -254,7 +248,7 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
-                        DuelManager.getInstance().createSplitTeamsDuel(currentParty);
+                        DuelManager.getInstance().createSplitTeamsDuel(currentParty, 1);
                         break;
 		            }
 					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Fight Other Parties")) {
