@@ -36,7 +36,7 @@ public class PingCommand implements CommandExecutor {
 					return true;
 				}
 				
-				player.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.DARK_AQUA + " ping: " + ChatColor.YELLOW + target.spigot().getPing() + "ms");
+				player.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.DARK_AQUA + "'s ping: " + ChatColor.YELLOW + target.spigot().getPing() + "ms");
 				player.sendMessage(ChatColor.DARK_AQUA + "Ping difference: " + ChatColor.YELLOW + Math.abs(player.spigot().getPing() - target.spigot().getPing()) + "ms");
 			}
 		}

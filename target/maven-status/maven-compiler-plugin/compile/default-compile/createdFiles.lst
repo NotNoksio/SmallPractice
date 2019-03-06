@@ -25,6 +25,7 @@ us\noks\smallpractice\listeners\ServerListeners.class
 us\noks\smallpractice\objects\managers\DuelManager.class
 us\noks\smallpractice\listeners\PlayerListener$1.class
 us\noks\smallpractice\objects\managers\DuelManager$1.class
+us\noks\smallpractice\commands\ForceDuelCommand.class
 us\noks\smallpractice\commands\SpectateCommand.class
 us\noks\smallpractice\utils\InvView.class
 us\noks\smallpractice\enums\PlayerStatus.class

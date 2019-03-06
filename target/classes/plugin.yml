@@ -16,4 +16,5 @@ commands:
     aliases: [spec]
   mod:
   party:
+  forceduel:
   

@@ -54,6 +54,7 @@ public class DuelManager {
 		green2.setPrefix(ChatColor.GREEN.toString());
 		green2.setAllowFriendlyFire(false);
         
+		round--;
 		List<Player> duelPlayers = Lists.newArrayList();
 		
 		for (UUID firstUUID : firstTeam) {
@@ -66,7 +67,8 @@ public class DuelManager {
 			fm.setStatus(PlayerStatus.WAITING);
 			
 			first.setGameMode(GameMode.SURVIVAL);
-			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + Bukkit.getPlayer(secondTeam.get(0)).getName());
+			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()) + (round != 0 ? " (Round " + round + ")" : ""));
+			fm.heal();
 			
 			green1.addEntry(first.getName());
 			red2.addEntry(first.getName());
@@ -83,7 +85,8 @@ public class DuelManager {
 			sm.setStatus(PlayerStatus.WAITING);
 			
 			second.setGameMode(GameMode.SURVIVAL);
-			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + Bukkit.getPlayer(firstTeam.get(0)).getName());
+			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()) + (round != 0 ? " (Round " + round + ")" : ""));
+			sm.heal();
 			
 			green2.addEntry(second.getName());
 			red1.addEntry(second.getName());
@@ -146,7 +149,6 @@ public class DuelManager {
 			sm.setSpectate(null);
 			spec.teleport(Main.getInstance().getSpawnLocation());
 			sm.giveSpawnItem();
-			
 			it.remove();
 		}
 		if (duel.getFirstTeamPartyLeaderUUID() != null) {
@@ -266,8 +268,6 @@ public class DuelManager {
 	}
 	
 	private void teleportRandomArena(Duel duel) {
-		duel.setRound(duel.getRound() - 1);
-		
 		Random random = new Random();
 		int pickedArena = random.nextInt(Main.getInstance().arenaList.size()) + 1;
 		
@@ -279,10 +279,7 @@ public class DuelManager {
 			this.uuidIdentifierToDuel.put(firstUUID, duel);
 			PlayerManager pmf = PlayerManager.get(first);
 			
-			first.setHealth(20.0D);
-			first.clearPotionEffect();
-			first.setFoodLevel(20);
-			first.setSaturation(20f);
+			pmf.heal();
 			first.setNoDamageTicks(50);
 			
 			pmf.hideAllPlayer();
@@ -299,10 +296,7 @@ public class DuelManager {
 			this.uuidIdentifierToDuel.put(secondUUID, duel);
 			PlayerManager pms = PlayerManager.get(second);
 			
-			second.setHealth(20.0D);
-			second.clearPotionEffect();
-			second.setFoodLevel(20);
-			second.setSaturation(20f);
+			pms.heal();
 			second.setNoDamageTicks(50);
 			
 			pms.hideAllPlayer();
@@ -314,7 +308,7 @@ public class DuelManager {
 		sendWaitingMessage(duel);
 	}
 	
-	public void removePlayerFromDuel(Player player) {
+	public void removePlayerFromDuel(Player player, boolean disconnect) {
 		Duel currentDuel = getDuelFromPlayerUUID(player.getUniqueId());
 		
 		if (currentDuel == null) return;
@@ -325,8 +319,10 @@ public class DuelManager {
 		
 		if (currentDuel.getFirstTeamUUID().contains(player.getUniqueId())) {
 			currentDuel.killFirstTeamPlayer(player.getUniqueId());
+			if (disconnect) currentDuel.removeFirstTeamPlayer(player.getUniqueId());
 		} else {
 			currentDuel.killSecondTeamPlayer(player.getUniqueId());
+			if (disconnect) currentDuel.removeSecondTeamPlayer(player.getUniqueId());
 		}
 		
 		if (!currentDuel.hasRemainingRound()) {

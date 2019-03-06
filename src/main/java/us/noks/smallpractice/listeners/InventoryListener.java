@@ -1,9 +1,11 @@
 package us.noks.smallpractice.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -16,7 +18,7 @@ import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class InventoryListener implements Listener {
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
@@ -24,9 +26,9 @@ public class InventoryListener implements Listener {
 		if (item == null || item.getType() == null || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null) {
 			return;
 		}
-		if (event.getInventory().getName().toLowerCase().equals("how many rounds?")) {
+		if (event.getInventory().getTitle().toLowerCase().equals("how many rounds?")) {
 			PlayerManager pm = PlayerManager.get(player);
-			Player requested = pm.getRequestTo();
+			Player requested = Bukkit.getPlayer(pm.getRequestTo());
 			
 			if (item.getType() == Material.ARROW) {
 				player.closeInventory();

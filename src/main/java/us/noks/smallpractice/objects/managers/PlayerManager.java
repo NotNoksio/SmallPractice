@@ -2,6 +2,7 @@ package us.noks.smallpractice.objects.managers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,9 +23,9 @@ public class PlayerManager {
 
 	public static List<PlayerManager> players = Lists.newArrayList();
 	private Player player;
-	private Map<Player, Player> request = Maps.newHashMap();
-	private int requestedRound = 0;
-	private Map<Player, Player> invite = Maps.newHashMap();
+	private Map<UUID, UUID> request = Maps.newHashMap();
+	private int requestedRound;
+	private Map<UUID, UUID> invite = Maps.newHashMap();
 	private PlayerStatus status;
 	private Player spectate;
 	private String prefix;
@@ -38,8 +39,9 @@ public class PlayerManager {
 	public PlayerManager(Player player) {
 	    this.player = player;
 	    this.status = PlayerStatus.SPAWN;
-	    this.spectate = null;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
+	    this.requestedRound = 0;
+	    this.spectate = null;
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
 	    this.failedPotions = 0;
 	    this.lastFailedPotions = 0;
@@ -87,32 +89,40 @@ public class PlayerManager {
 		this.spectate = spec;
 	}
 	
-	public boolean hasInvited(Player invited) {
-		return this.invite.containsValue(invited) && this.invite.containsKey(this.player) && this.invite.get(this.player) == invited;
+	public boolean hasInvited(UUID invitedUUID) {
+		return this.invite.containsValue(invitedUUID) && this.invite.containsKey(this.player.getUniqueId()) && this.invite.get(this.player.getUniqueId()) == invitedUUID;
 	}
 	
-	public void setInviteTo(Player target) {
-		this.invite.put(this.player, target);
+	public void setInviteTo(UUID targetUUID) {
+		this.invite.put(this.player.getUniqueId(), targetUUID);
+	}
+	
+	public UUID getInviteTo() {
+		return this.invite.get(this.player.getUniqueId());
 	}
 	
 	public void removePartyInvite() {
-		this.invite.remove(this.player);
+		if (this.invite.containsKey(this.player.getUniqueId())) {
+			this.invite.remove(this.player.getUniqueId());
+		}
 	}
 	
-	public boolean hasRequest(Player requested) {
-		return this.request.containsValue(requested) && this.request.containsKey(this.player) && this.request.get(this.player) == requested;
+	public boolean hasRequest(UUID requestedUUID) {
+		return this.request.containsValue(requestedUUID) && this.request.containsKey(this.player.getUniqueId()) && this.request.get(this.player.getUniqueId()) == requestedUUID;
 	}
 	
-	public void setRequestTo(Player target) {
-		this.request.put(this.player, target);
+	public void setRequestTo(UUID targetUUID) {
+		this.request.put(this.player.getUniqueId(), targetUUID);
 	}
 	
-	public Player getRequestTo() {
-		return this.request.get(this.player);
+	public UUID getRequestTo() {
+		return this.request.get(this.player.getUniqueId());
 	}
 	
 	public void removeRequest() {
-		this.request.remove(this.player);
+		if (this.request.containsKey(this.player.getUniqueId())) {
+			this.request.remove(this.player.getUniqueId());
+		}
 	}
 
 	public PlayerStatus getStatus() {
@@ -420,5 +430,13 @@ public class PlayerManager {
 
 	public void setLongestCombo(int longestCombo) {
 		this.longestCombo = longestCombo;
+	}
+	
+	public void heal() {
+		getPlayer().setHealth(20.0D);
+		getPlayer().clearPotionEffect();
+		getPlayer().extinguish();
+		getPlayer().setFoodLevel(20);
+		getPlayer().setSaturation(20f);
 	}
 }

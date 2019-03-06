@@ -153,9 +153,6 @@ public class InvView implements Listener {
 		Player loser = Bukkit.getPlayer(loserTeam.get(0));
 		
 		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName();
-		List<UUID> spectators = Lists.newArrayList();
-		
-		spectators.addAll(duel.getAllSpectatorsUUID());
 		
 	    TextComponent l1 = new TextComponent();
 	    l1.setText("Inventories (Click): ");
@@ -188,12 +185,12 @@ public class InvView implements Listener {
 	    
 	    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
 	    if (duel.hasSpectator()) {
-	    	for (UUID specs : spectators) {
+	    	for (UUID specs : duel.getAllSpectatorsUUID()) {
 	    		Player spec = Bukkit.getPlayer(specs);
 	    		spect.add(ChatColor.YELLOW + spec.getName());
 	    	}
 	    }
-	    String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (spectators.size() > 1 ? "s: " : ": ") + spect.toString();
+	    String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectatorsUUID().size() > 1 ? "s: " : ": ") + spect.toString();
 	    
 	    winner.sendMessage(winnerMessage);
 	    winner.spigot().sendMessage(l1);
@@ -204,20 +201,19 @@ public class InvView implements Listener {
 	    	if (duel.hasSpectator()) loser.sendMessage(spectatorMessage);
 	    }
 	    
-	    Iterator<UUID> its = spectators.iterator();
+	    Iterator<UUID> its = duel.getAllSpectatorsUUID().iterator();
 	    while (its.hasNext()) {
 			Player spectator = Bukkit.getPlayer(its.next());
 			
 			spectator.sendMessage(winnerMessage);
 			spectator.spigot().sendMessage(l1);
 			if (duel.hasSpectator()) spectator.sendMessage(spectatorMessage);
-			its.remove();
 		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOW)
 	public void onInvsClick(InventoryClickEvent e) {
-		if (e.getInventory().getName().toLowerCase().endsWith("'s inventory")) {
+		if (e.getInventory().getTitle().toLowerCase().endsWith("'s inventory")) {
 			e.setCancelled(true);
 		}
 	}

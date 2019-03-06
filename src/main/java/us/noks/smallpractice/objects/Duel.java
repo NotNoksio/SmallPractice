@@ -56,6 +56,14 @@ public class Duel {
 	public void killSecondTeamPlayer(UUID killedUUID) {
 		this.secondTeamAlive.remove(killedUUID);
 	}
+	
+	public void removeFirstTeamPlayer(UUID player) {
+		this.firstTeamUUID.remove(player);
+	}
+	
+	public void removeSecondTeamPlayer(UUID player) {
+		this.secondTeamUUID.remove(player);
+	}
 
 	public boolean isRanked() {
 		return ranked;

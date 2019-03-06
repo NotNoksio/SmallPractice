@@ -15,8 +15,8 @@ import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.party.Party;
 
-public class PartyCommand implements CommandExecutor
-{
+public class PartyCommand implements CommandExecutor {
+	
     private String[] HELP_COMMAND = new String[] {
             ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
             ChatColor.RED.toString() + ChatColor.BOLD + "Party Commands:",

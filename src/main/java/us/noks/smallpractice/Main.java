@@ -22,6 +22,7 @@ import com.google.common.collect.Maps;
 import us.noks.smallpractice.commands.AcceptCommand;
 import us.noks.smallpractice.commands.BuildCommand;
 import us.noks.smallpractice.commands.DuelCommand;
+import us.noks.smallpractice.commands.ForceDuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
 import us.noks.smallpractice.commands.ModerationCommand;
 import us.noks.smallpractice.commands.PartyCommand;
@@ -100,6 +101,7 @@ public class Main extends JavaPlugin {
 		getCommand("spectate").setExecutor(new SpectateCommand());
 		getCommand("mod").setExecutor(new ModerationCommand());
 		getCommand("party").setExecutor(new PartyCommand());
+		getCommand("forceduel").setExecutor(new ForceDuelCommand());
 	}
 	
 	private void registerListers() {
@@ -119,7 +121,7 @@ public class Main extends JavaPlugin {
 			requester.sendMessage(ChatColor.RED + "Either you or that player is not in spawn!");
 			return;
 		}
-		PlayerManager.get(requester).setRequestTo(requested);
+		PlayerManager.get(requester).setRequestTo(requested.getUniqueId());
 		requester.openInventory(Main.getInstance().getRoundInventory());
 	}
 	
@@ -128,7 +130,7 @@ public class Main extends JavaPlugin {
 			requested.sendMessage(ChatColor.RED + "Either you or this player is not in spawn!");
 			return;
 		}
-		if (!PlayerManager.get(requester).hasRequest(requested)) {
+		if (!PlayerManager.get(requester).hasRequest(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
 			return;
 		}

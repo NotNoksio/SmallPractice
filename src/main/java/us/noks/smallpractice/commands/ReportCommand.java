@@ -56,7 +56,7 @@ public class ReportCommand implements CommandExecutor {
 				
 			TextComponent l1 = new TextComponent();
 			l1.setText("(");
-			l1.setColor(ChatColor.GRAY);
+			l1.setColor(ChatColor.GOLD);
 
 			TextComponent l1a = new TextComponent();
 			l1a.setText("REPORT");
@@ -65,14 +65,14 @@ public class ReportCommand implements CommandExecutor {
 
 			TextComponent l1b = new TextComponent();
 			l1b.setText(") ");
-			l1b.setColor(ChatColor.GRAY);
+			l1b.setColor(ChatColor.GOLD);
 
 			TextComponent l1c = new TextComponent();
 			l1c.setText(p.getName());
 			l1c.setColor(ChatColor.YELLOW);
 
 			TextComponent l1d = new TextComponent();
-			l1d.setText(" -> ");
+			l1d.setText(" has reported ");
 			l1d.setColor(ChatColor.GRAY);
 
 			TextComponent l1e = new TextComponent();
@@ -80,34 +80,26 @@ public class ReportCommand implements CommandExecutor {
 			l1e.setColor(ChatColor.RED);
 
 			TextComponent l1f = new TextComponent();
-			l1f.setText(" : ");
+			l1f.setText(" for ");
 			l1f.setColor(ChatColor.GRAY);
 
 			TextComponent l1g = new TextComponent();
-			l1g.setText("\"");
+			l1g.setText("\"" + reason.toString() + "\" ");
 			l1g.setColor(ChatColor.GREEN);
 
 			TextComponent l1h = new TextComponent();
-			l1h.setText(reason.toString());
-			l1h.setColor(ChatColor.GREEN);
+			l1h.setText("[Teleport] ");
+			l1h.setColor(ChatColor.BLUE);
+			l1h.setBold(Boolean.valueOf(true));
+			l1h.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "Click to teleport you to " + target.getName()).create()));
+			l1h.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + target.getName()));
 
 			TextComponent l1i = new TextComponent();
-			l1i.setText("\" ");
-			l1i.setColor(ChatColor.GREEN);
-
-			TextComponent l1j = new TextComponent();
-			l1j.setText("[TP] ");
-			l1j.setColor(ChatColor.BLUE);
-			l1j.setBold(Boolean.valueOf(true));
-			l1j.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "Click to teleport you to " + target.getName()).create()));
-			l1j.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + target.getName()));
-
-			TextComponent l1k = new TextComponent();
-			l1k.setText("[Inspect]");
-			l1k.setColor(ChatColor.GOLD);
-			l1k.setBold(Boolean.valueOf(true));
-			l1k.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "Click to inspect " + target.getName()).create()));
-			l1k.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/verif " + target.getName()));
+			l1i.setText("[Inspect]");
+			l1i.setColor(ChatColor.GOLD);
+			l1i.setBold(Boolean.valueOf(true));
+			l1i.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "Click to inspect " + target.getName()).create()));
+			l1i.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/verif " + target.getName()));
 
 			l1.addExtra(l1a);
 			l1.addExtra(l1b);
@@ -118,8 +110,6 @@ public class ReportCommand implements CommandExecutor {
 			l1.addExtra(l1g);
 			l1.addExtra(l1h);
 			l1.addExtra(l1i);
-			l1.addExtra(l1j);
-			l1.addExtra(l1k);
 			for (Player staff : Bukkit.getOnlinePlayers()) {
 				if (staff.hasPermission("report.receive")) {
 					staff.spigot().sendMessage(l1);

@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.PotionEffectAddEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -100,7 +101,7 @@ public class PlayerListener implements Listener {
 			Main.getInstance().queue.remove(player);
 		}
 		if ((PlayerManager.get(player).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player).getStatus() == PlayerStatus.WAITING)) {
-			DuelManager.getInstance().removePlayerFromDuel(player);
+			DuelManager.getInstance().removePlayerFromDuel(player, true);
 		}
 		PlayerManager.get(player).remove();
 	}
@@ -114,7 +115,7 @@ public class PlayerListener implements Listener {
 		if (event.getEntity() instanceof Player) {
 			Player killed = event.getEntity();
 			
-			DuelManager.getInstance().removePlayerFromDuel(killed);
+			DuelManager.getInstance().removePlayerFromDuel(killed, false);
 		}
 	}
 	
@@ -315,7 +316,7 @@ public class PlayerListener implements Listener {
 	                Player tooked = online.get(new Random().nextInt(online.size()));
 	                
 	                player.teleport(tooked.getLocation().add(0, 2, 0));
-	                player.sendMessage(ChatColor.GREEN + "Teleport to " + tooked.getName());
+	                player.sendMessage(ChatColor.GREEN + "You've been teleported to " + tooked.getName());
 	                online.clear();
 	            }
 				break;
@@ -344,6 +345,18 @@ public class PlayerListener implements Listener {
 			Player player = (Player) event.getEntity();
 			
 			if (PlayerManager.get(player).getStatus() != PlayerStatus.DUEL) {
+				event.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onPotionEffectAdd(PotionEffectAddEvent event) {
+		if (event.getEntity() instanceof Player) {
+			Player affected = (Player) event.getEntity();
+			PlayerManager pm = PlayerManager.get(affected);
+			
+			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
 				event.setCancelled(true);
 			}
 		}
