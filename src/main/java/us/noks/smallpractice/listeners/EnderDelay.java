@@ -88,8 +88,6 @@ public class EnderDelay implements Listener {
 	}
 
 	public void removeCooldown(Player player) {
-		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) {
-			this.enderpearlCooldown.remove(player.getUniqueId());
-		}
+		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) this.enderpearlCooldown.remove(player.getUniqueId());
 	}
 }

@@ -17,6 +17,7 @@ import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.utils.Messages;
 
 public class SpectateCommand implements CommandExecutor {
 
@@ -43,7 +44,7 @@ public class SpectateCommand implements CommandExecutor {
 		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
-			player.sendMessage(ChatColor.RED + "Invalid target!");
+			player.sendMessage(Messages.PLAYER_NOT_ONLINE);
 			return false;
 		}
 		if (target == player) {

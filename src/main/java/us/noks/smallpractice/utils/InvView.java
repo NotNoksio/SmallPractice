@@ -139,20 +139,22 @@ public class InvView implements Listener {
 		List<UUID> loserTeam = null;
 		switch (teamNumber) {
 		case 1:
-			winnerTeam = duel.getFirstTeamUUID();
-			loserTeam = duel.getSecondTeamUUID();
+			winnerTeam = duel.getFirstTeam();
+			loserTeam = duel.getSecondTeam();
 			break;
 		case 2:
-			winnerTeam = duel.getSecondTeamUUID();
-			loserTeam = duel.getFirstTeamUUID();
+			winnerTeam = duel.getSecondTeam();
+			loserTeam = duel.getFirstTeam();
 			break;
 		default:
 			break;
 		}
+		boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
+		
 		Player winner = Bukkit.getPlayer(winnerTeam.get(0));
 		Player loser = Bukkit.getPlayer(loserTeam.get(0));
 		
-		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName();
+		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName() + (partyFight ? "'s party" : "");
 		
 	    TextComponent l1 = new TextComponent();
 	    l1.setText("Inventories (Click): ");
@@ -185,12 +187,12 @@ public class InvView implements Listener {
 	    
 	    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
 	    if (duel.hasSpectator()) {
-	    	for (UUID specs : duel.getAllSpectatorsUUID()) {
+	    	for (UUID specs : duel.getAllSpectators()) {
 	    		Player spec = Bukkit.getPlayer(specs);
 	    		spect.add(ChatColor.YELLOW + spec.getName());
 	    	}
 	    }
-	    String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectatorsUUID().size() > 1 ? "s: " : ": ") + spect.toString();
+	    String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
 	    
 	    winner.sendMessage(winnerMessage);
 	    winner.spigot().sendMessage(l1);
@@ -201,7 +203,7 @@ public class InvView implements Listener {
 	    	if (duel.hasSpectator()) loser.sendMessage(spectatorMessage);
 	    }
 	    
-	    Iterator<UUID> its = duel.getAllSpectatorsUUID().iterator();
+	    Iterator<UUID> its = duel.getAllSpectators().iterator();
 	    while (its.hasNext()) {
 			Player spectator = Bukkit.getPlayer(its.next());
 			

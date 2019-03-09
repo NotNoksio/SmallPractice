@@ -7,6 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.utils.Messages;
+
 public class PingCommand implements CommandExecutor {
 
 	@Override
@@ -28,7 +30,7 @@ public class PingCommand implements CommandExecutor {
 				Player target = Bukkit.getPlayer(args[0]);
 				
 				if (target == null) {
-					player.sendMessage(ChatColor.RED + "That player is not online!");
+					player.sendMessage(Messages.PLAYER_NOT_ONLINE);
 					return false;
 				}
 				if (target == player) {

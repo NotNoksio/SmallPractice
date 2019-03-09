@@ -15,6 +15,7 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
+import us.noks.smallpractice.utils.Messages;
 
 public class DuelCommand implements CommandExecutor {
 	
@@ -33,7 +34,7 @@ public class DuelCommand implements CommandExecutor {
 			Player target = Bukkit.getPlayer(args[0]);
 			
 			if (target == null) {
-				player.sendMessage(ChatColor.RED + "That player is not online!");
+				player.sendMessage(Messages.PLAYER_NOT_ONLINE);
 				return false;
 			}
 			if (target == player) {
@@ -45,23 +46,23 @@ public class DuelCommand implements CommandExecutor {
 	        if (party != null) {
 	            if (!party.getLeader().equals(player.getUniqueId())) {
 	                player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
-	                return true;
+	                return false;
 	            }
 	            if (targetParty == null) {
 	                player.sendMessage(ChatColor.RED + "This player is not in a party!");
-	                return true;
+	                return false;
 	            }
 	            if (!targetParty.getLeader().equals(target.getUniqueId())) {
 	                player.sendMessage(ChatColor.RED + "This player is not the leader of that party!");
-	                return true;
+	                return false;
 	            }
 	            if (targetParty.getPartyState() == PartyState.DUELING) {
 	                player.sendMessage(ChatColor.RED + "This party is currently busy.");
-	                return true;
+	                return false;
 	            }
 	        } else if (targetParty != null) {
 	            player.sendMessage(ChatColor.RED + "This player is in a party!");
-	            return true;
+	            return false;
 	        }
 			if (cooldowns.containsKey(player.getUniqueId())) {
 				long secondsLeft = ((cooldowns.get(player.getUniqueId()) / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);

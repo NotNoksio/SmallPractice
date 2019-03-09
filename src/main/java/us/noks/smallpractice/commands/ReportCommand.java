@@ -17,6 +17,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import us.noks.smallpractice.utils.Messages;
 
 public class ReportCommand implements CommandExecutor {
 	
@@ -35,7 +36,7 @@ public class ReportCommand implements CommandExecutor {
 			Player target = Bukkit.getPlayer(args[0]);
 			
 			if (target == null) {
-				p.sendMessage(org.bukkit.ChatColor.RED + "Player not found!");
+				p.sendMessage(Messages.PLAYER_NOT_ONLINE);
 				return false;
 			}
 			if (target == p) {

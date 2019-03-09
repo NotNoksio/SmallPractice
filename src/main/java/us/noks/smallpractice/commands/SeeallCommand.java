@@ -7,6 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.utils.Messages;
+
 public class SeeallCommand implements CommandExecutor {
 
 	@Override
@@ -16,7 +18,7 @@ public class SeeallCommand implements CommandExecutor {
 		}
 		Player player = (Player) sender;
 		if (!player.hasPermission("command.seeall")) {
-			player.sendMessage(ChatColor.RED + "No permission.");
+			player.sendMessage(Messages.NO_PERMISSION);
 			return false;
 		}
 		if (args.length != 0) {

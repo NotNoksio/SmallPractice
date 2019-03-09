@@ -67,7 +67,7 @@ public class DuelManager {
 			fm.setStatus(PlayerStatus.WAITING);
 			
 			first.setGameMode(GameMode.SURVIVAL);
-			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()) + (round != 0 ? " (Round " + round + ")" : ""));
+			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()) + (round != 0 ? " (Round left: " + round + ")" : ""));
 			fm.heal();
 			
 			green1.addEntry(first.getName());
@@ -85,7 +85,7 @@ public class DuelManager {
 			sm.setStatus(PlayerStatus.WAITING);
 			
 			second.setGameMode(GameMode.SURVIVAL);
-			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()) + (round != 0 ? " (Round " + round + ")" : ""));
+			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()) + (round != 0 ? " (Round left: " + round + ")" : ""));
 			sm.heal();
 			
 			green2.addEntry(second.getName());
@@ -117,29 +117,29 @@ public class DuelManager {
 		teleportRandomArena(new Duel(firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked, round));
 	}
 	
-	public void createSplitTeamsDuel(Party party, int round) {
+	public void createSplitTeamsDuel(Party party) {
 		List<UUID> shuffle = Lists.newArrayList(party.getAllMembersOnline());
         Collections.shuffle(shuffle);
         
         List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         
-        startDuel(party.getLeader(), party.getLeader(), firstTeam, secondTeam, false, round);
+        startDuel(party.getLeader(), party.getLeader(), firstTeam, secondTeam, false, 1);
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
 		InvView.getInstance().deathMsg(duel, winningTeamNumber);
 		
 		if (duel.isRanked()) {
-			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeamUUID().get(0) : duel.getSecondTeamUUID().get(0));
-			UUID loserUUID = (winnerUUID == duel.getFirstTeamUUID().get(0) ? duel.getSecondTeamUUID().get(0) : duel.getFirstTeamUUID().get(0));
+			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeam().get(0) : duel.getSecondTeam().get(0));
+			UUID loserUUID = (winnerUUID == duel.getFirstTeam().get(0) ? duel.getSecondTeam().get(0) : duel.getFirstTeam().get(0));
 			
 			EloManager.getInstance().tranferElo(winnerUUID, loserUUID);
 		}
 		
-		Iterator<UUID> it = duel.getAllSpectatorsUUID().iterator();
-		while (it.hasNext()) {
-			Player spec = Bukkit.getPlayer(it.next());
+		Iterator<UUID> specIt = duel.getAllSpectators().iterator();
+		while (specIt.hasNext()) {
+			Player spec = Bukkit.getPlayer(specIt.next());
 			PlayerManager sm = PlayerManager.get(spec);
 			
 			spec.setAllowFlight(false);
@@ -149,7 +149,7 @@ public class DuelManager {
 			sm.setSpectate(null);
 			spec.teleport(Main.getInstance().getSpawnLocation());
 			sm.giveSpawnItem();
-			it.remove();
+			specIt.remove();
 		}
 		if (duel.getFirstTeamPartyLeaderUUID() != null) {
             Party firstTeamParty = PartyManager.getInstance().getParty(duel.getFirstTeamPartyLeaderUUID());
@@ -163,8 +163,10 @@ public class DuelManager {
                 secondTeamParty.setPartyState(PartyState.LOBBY);
             }
         }
-		for (UUID firstUUID : duel.getFirstTeamUUID()) {
-			Player first = Bukkit.getPlayer(firstUUID);
+        
+        Iterator<UUID> firstIt = duel.getFirstTeam().iterator(); 
+		while (firstIt.hasNext()) {
+			Player first = Bukkit.getPlayer(firstIt.next());
 			if (first == null) continue;
 			PlayerManager pmf = PlayerManager.get(first);
 			
@@ -179,8 +181,10 @@ public class DuelManager {
 			EnderDelay.getInstance().removeCooldown(first);
 			this.uuidIdentifierToDuel.remove(first.getUniqueId());
 		}
-		for (UUID secondUUID : duel.getSecondTeamUUID()) {
-			Player second = Bukkit.getPlayer(secondUUID);
+		
+		Iterator<UUID> secondIt = duel.getSecondTeam().iterator(); 
+		while (secondIt.hasNext()) {
+			Player second = Bukkit.getPlayer(secondIt.next());
 			if (second == null) continue;
 			PlayerManager pms = PlayerManager.get(second);
 			
@@ -195,8 +199,12 @@ public class DuelManager {
 			EnderDelay.getInstance().removeCooldown(second);
 			this.uuidIdentifierToDuel.remove(second.getUniqueId());
 		}
-		if (duel.hasRemainingRound() && !duel.getFirstTeamUUID().isEmpty() && !duel.getSecondTeamUUID().isEmpty()) {
-			startDuel(duel.getFirstTeamPartyLeaderUUID(), duel.getSecondTeamPartyLeaderUUID(), duel.getFirstTeamUUID(), duel.getSecondTeamUUID(), duel.isRanked(), duel.getRound());
+		if (duel.hasRemainingRound() && (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty())) {
+			duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
+			return;
+		}
+		if (duel.hasRemainingRound() && !duel.getFirstTeam().isEmpty() && !duel.getSecondTeam().isEmpty()) {
+			startDuel(duel.getFirstTeamPartyLeaderUUID(), duel.getSecondTeamPartyLeaderUUID(), duel.getFirstTeam(), duel.getSecondTeam(), duel.isRanked(), duel.getRound());
 		}
 	}
 	
@@ -215,46 +223,19 @@ public class DuelManager {
 				if (!cooldown.containsKey(duel)) {
 					this.cancel();
 				}
-				for (UUID uuid : duelPlayers) {
-					Player player = Bukkit.getPlayer(uuid);
-					
-					if (player == null) {
-						this.cancel();
-						continue;
-					}
-					if(player.isDead()) {
-						this.cancel();
-						continue;
-					}
-					if (PlayerManager.get(player).getStatus() != PlayerStatus.WAITING) {
-						this.cancel();
-						continue;
-					}
+				if (!duel.isValid()) {
+					this.cancel();
+					duel.sendMessage(ChatColor.RED + "The current duel has been cancelled due to his invalidity.");
+					endDuel(duel, (duel.getFirstTeamAlive().isEmpty() ? 2 : 1));
 				}
 				if (num <= 0) {
 					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has stated!", Sound.FIREWORK_BLAST);
 					for (UUID uuid : duelPlayers) {
 						Player player = Bukkit.getPlayer(uuid);
-						if (player == null) {
-							this.cancel();
-							continue;
-						}
+						if (player == null) continue;
 						PlayerManager.get(player).setStatus(PlayerStatus.DUEL);
 					}
-					for (UUID firstUUID : duel.getFirstTeamAlive()) {
-						Player first = Bukkit.getPlayer(firstUUID);
-						
-						if (first == null) continue;
-							
-						for (UUID secondUUID : duel.getSecondTeamAlive()) {
-							Player second = Bukkit.getPlayer(secondUUID);
-							
-							if (second == null) continue;
-								
-							first.showPlayer(second);
-							second.showPlayer(first);
-						}
-					}
+					duel.showDuelPlayer();
 					cooldown.remove(duel);
 					duelPlayers.clear();
 					this.cancel();
@@ -264,14 +245,14 @@ public class DuelManager {
 					cooldown.put(duel, num--);
 				}
 			}
-		}.runTaskTimer(Main.getInstance(), 20L, 20L);
+		}.runTaskTimer(Main.getInstance(), 15L, 20L);
 	}
 	
 	private void teleportRandomArena(Duel duel) {
 		Random random = new Random();
 		int pickedArena = random.nextInt(Main.getInstance().arenaList.size()) + 1;
 		
-		for (UUID firstUUID : duel.getFirstTeamUUID()) {
+		for (UUID firstUUID : duel.getFirstTeam()) {
 			Player first = Bukkit.getPlayer(firstUUID);
 			
 			if (first == null) continue;
@@ -288,7 +269,7 @@ public class DuelManager {
 			first.teleport(Main.getInstance().arenaList.get(pickedArena)[0]);
 			first.setSneaking(false);
 		}
-		for (UUID secondUUID : duel.getSecondTeamUUID()) {
+		for (UUID secondUUID : duel.getSecondTeam()) {
 			Player second = Bukkit.getPlayer(secondUUID);
 			
 			if (second == null) continue;
@@ -317,27 +298,7 @@ public class DuelManager {
 		InvView.getInstance().saveInv(player);
 		currentDuel.sendMessage(player.getName() + " has been killed" + ((player.getKiller() != null) ? (" by " + player.getKiller().getName()) : ""));
 		
-		if (currentDuel.getFirstTeamUUID().contains(player.getUniqueId())) {
-			currentDuel.killFirstTeamPlayer(player.getUniqueId());
-			if (disconnect) currentDuel.removeFirstTeamPlayer(player.getUniqueId());
-		} else {
-			currentDuel.killSecondTeamPlayer(player.getUniqueId());
-			if (disconnect) currentDuel.removeSecondTeamPlayer(player.getUniqueId());
-		}
-		
-		if (!currentDuel.hasRemainingRound()) {
-			new BukkitRunnable() {
-				
-				@Override
-				public void run() {
-					if (player.isDead() && player != null) {
-						player.spigot().respawn();
-					}
-				}
-			}.runTaskLater(Main.getInstance(), 50L);
-		}
-		
-		if (currentDuel.getFirstTeamAlive().size() == 0) {
+		if (currentDuel.getFirstTeamAlive().isEmpty()) {
 			for (UUID lastPlayersUUID : currentDuel.getSecondTeamAlive()) {
                 Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
                 InvView.getInstance().saveInv(lastPlayers);
@@ -348,8 +309,7 @@ public class DuelManager {
                 lastPlayers.setFoodLevel(20);
                 lastPlayers.setSaturation(10000f);
         			
-                if (currentDuel.hasRemainingRound() && !currentDuel.getFirstTeamUUID().isEmpty() && !currentDuel.getSecondTeamUUID().isEmpty()) {
-                	endDuel(currentDuel, 2);
+                if (currentDuel.hasRemainingRound()) {
                 	continue;
                 }
                 	
@@ -364,11 +324,8 @@ public class DuelManager {
                 	}
                 }.runTaskLater(Main.getInstance(), 40L);
             }
-			if (currentDuel.hasRemainingRound()) {
-				return;
-			}
 			endDuel(currentDuel, 2);
-		} else if (currentDuel.getSecondTeamAlive().size() == 0) {
+		} else if (currentDuel.getSecondTeamAlive().isEmpty()) {
 			for (UUID lastPlayersUUID : currentDuel.getFirstTeamAlive()) {
                 Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
                 InvView.getInstance().saveInv(lastPlayers);
@@ -379,8 +336,7 @@ public class DuelManager {
                 lastPlayers.setFoodLevel(20);
                 lastPlayers.setSaturation(10000f);
         			
-                if (currentDuel.hasRemainingRound() && !currentDuel.getFirstTeamUUID().isEmpty() && !currentDuel.getSecondTeamUUID().isEmpty()) {
-                	endDuel(currentDuel, 1);
+                if (currentDuel.hasRemainingRound()) {
                 	continue;
                 }
                 	
@@ -395,10 +351,14 @@ public class DuelManager {
                 	}
                 }.runTaskLater(Main.getInstance(), 40L);
             }
-			if (currentDuel.hasRemainingRound()) {
-				return;
-			}
 			endDuel(currentDuel, 1);
+		}
+		if (currentDuel.getFirstTeam().contains(player.getUniqueId())) {
+			currentDuel.killFirstTeamPlayer(player.getUniqueId());
+			if (disconnect) currentDuel.removeFirstTeamPlayer(player.getUniqueId());
+		} else {
+			currentDuel.killSecondTeamPlayer(player.getUniqueId());
+			if (disconnect) currentDuel.removeSecondTeamPlayer(player.getUniqueId());
 		}
 	}
 }

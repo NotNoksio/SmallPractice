@@ -2,6 +2,7 @@ package us.noks.smallpractice.listeners;
 
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,14 +15,14 @@ import us.noks.smallpractice.objects.managers.PlayerManager;
 public class ChatListener implements Listener {
 
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onChat(AsyncPlayerChatEvent e) {
-		if (e.isCancelled()) {
+	public void onChat(AsyncPlayerChatEvent event) {
+		if (event.isCancelled()) {
 			return;
 		}
 		String prefix = "";
-		prefix = PlayerManager.get(e.getPlayer()).getColoredPrefix() + "%1$s" + ChatColor.RESET;
+		prefix = PlayerManager.get(event.getPlayer()).getColoredPrefix() + "%1$s" + ChatColor.RESET;
 
-		e.setFormat(prefix + ChatColor.WHITE + ": %2$s");
+		event.setFormat(prefix + ChatColor.WHITE + ": %2$s");
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
@@ -39,6 +40,25 @@ public class ChatListener implements Listener {
 			String mentionMessage = event.getMessage().replaceAll("\\b(?i)" + player.getName() + "\\b", ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + player.getName() + ChatColor.RESET);
 			player.sendMessage(String.format(event.getFormat(), event.getPlayer().getName(), mentionMessage));
 			iterator.remove();
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.FIRST)
+	public void onStaffChat(AsyncPlayerChatEvent event) {
+		Player player = event.getPlayer();
+		if (event.getMessage().charAt(0) == '@') {
+			String message = event.getMessage();
+	      
+			message = message.replaceFirst("@", "");
+			if (player.hasPermission("chat.staff")) {
+				PlayerManager pm = PlayerManager.get(player);
+				for (Player staff : Bukkit.getOnlinePlayers()) {
+					if (staff.hasPermission("chat.staff")) {
+						event.setCancelled(true);
+						staff.sendMessage(ChatColor.GREEN + "(" + ChatColor.DARK_AQUA + "Staff" + ChatColor.GREEN + ") " + pm.getPrefixColors() + player.getName() + ChatColor.GOLD + " » " + message);
+					}
+				}
+			}
 		}
 	}
 }

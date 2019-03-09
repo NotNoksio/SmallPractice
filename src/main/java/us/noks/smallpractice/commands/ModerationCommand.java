@@ -11,6 +11,7 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.utils.Messages;
 
 public class ModerationCommand implements CommandExecutor {
 
@@ -20,7 +21,7 @@ public class ModerationCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			
 			if (!player.hasPermission("command.moderation")) {
-				player.sendMessage(ChatColor.RED + "No permission.");
+				player.sendMessage(Messages.NO_PERMISSION);
 				return false;
 			}
 			if (args.length > 0) {

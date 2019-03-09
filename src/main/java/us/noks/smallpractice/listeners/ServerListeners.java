@@ -37,7 +37,7 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onWeather(WeatherChangeEvent event) {
-		event.setCancelled(true);
+		if (event.toWeatherState()) event.setCancelled(true);
 	}
 	
 	@EventHandler

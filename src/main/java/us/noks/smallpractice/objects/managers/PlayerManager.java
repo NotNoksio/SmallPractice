@@ -169,9 +169,15 @@ public class PlayerManager {
 		getPlayer().setGameMode(GameMode.SURVIVAL);
 		
 		if (!PartyManager.getInstance().hasParty(getPlayer().getUniqueId())) {
+			ItemStack u = new ItemStack(Material.IRON_SWORD, 1);
+			ItemMeta um = u.getItemMeta();
+			um.setDisplayName(ChatColor.YELLOW + "Unranked Direct Queue");
+			um.spigot().setUnbreakable(true);
+			u.setItemMeta(um);
+			
 			ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
 			ItemMeta rm = r.getItemMeta();
-			rm.setDisplayName(ChatColor.YELLOW + "Direct Queue");
+			rm.setDisplayName(ChatColor.YELLOW + "Ranked Direct Queue");
 			rm.spigot().setUnbreakable(true);
 			r.setItemMeta(rm);
 			
@@ -180,7 +186,8 @@ public class PlayerManager {
 			nm.setDisplayName(ChatColor.YELLOW + "Create Party");
 			n.setItemMeta(nm);
 			
-			getPlayer().getInventory().setItem(0, r);
+			getPlayer().getInventory().setItem(0, u);
+			getPlayer().getInventory().setItem(1, r);
 			getPlayer().getInventory().setItem(8, n);
 		} else {
 			ItemStack a = new ItemStack(Material.ARROW, 1);
@@ -341,7 +348,7 @@ public class PlayerManager {
 	public String getPrefix() {
 		if (this.prefix != PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix()) {
 			this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
-			getPlayer().setPlayerListName(getColorPrefix() + getPlayer().getName());
+			getPlayer().setPlayerListName(getPrefixColors() + getPlayer().getName());
 		}
 		return this.prefix;
 	}
@@ -350,7 +357,7 @@ public class PlayerManager {
 		return ChatColor.translateAlternateColorCodes('&', getPrefix()) + "";
 	}
 	
-	public String getColorPrefix() {
+	public String getPrefixColors() {
 		if (getPrefix().isEmpty()) {
 			return "";
 		}

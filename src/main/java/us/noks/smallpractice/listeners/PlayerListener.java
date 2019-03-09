@@ -27,7 +27,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import net.minecraft.util.com.google.common.collect.Lists;
 import us.noks.smallpractice.Main;
@@ -38,18 +37,9 @@ import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
+import us.noks.smallpractice.utils.Messages;
 
 public class PlayerListener implements Listener {
-	
-	private String[] WELCOME_MESSAGE = new String[] {
-			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
-			ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + Main.getInstance().getDescription().getVersion() + " server",
-			"",
-			ChatColor.AQUA + "Noksio (Creator) Twitter -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio",
-			ChatColor.BLUE + "Noksio (Creator) Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/TZhyPnB",
-			ChatColor.DARK_PURPLE + "xelo_o (Server Owner) Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o",
-			ChatColor.RED + "-> Keep in mind this is a beta ^^",
-			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
@@ -73,8 +63,8 @@ public class PlayerListener implements Listener {
 		player.teleport(Main.getInstance().getSpawnLocation());
 		PlayerManager.get(player).giveSpawnItem();
 		
-		player.sendMessage(this.WELCOME_MESSAGE);
-		player.setPlayerListName(PlayerManager.get(player).getColorPrefix() + player.getName());
+		player.sendMessage(Messages.WELCOME_MESSAGE);
+		player.setPlayerListName(PlayerManager.get(player).getPrefixColors() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			PlayerManager pmAll = PlayerManager.get(allPlayers);
@@ -119,25 +109,19 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.LOWEST)
+	@EventHandler(priority=EventPriority.HIGH)
 	public void onRespawn(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
 		
-		Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId());
-		if (currentDuel == null || !currentDuel.hasRemainingRound()) {
+		if (DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()) == null || !DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()).hasRemainingRound()) {
 			player.getInventory().clear();
 			player.getInventory().setArmorContents(null);
-			new BukkitRunnable() {
-				
-				@Override
-				public void run() {
-					player.setHealth(20.0D);
-					player.setFoodLevel(20);
-					player.setSaturation(10000f);
-					player.teleport(Main.getInstance().getSpawnLocation());
-					PlayerManager.get(player).giveSpawnItem();
-				}
-			}.runTaskLater(Main.getInstance(), 1L);
+
+			player.setHealth(20.0D);
+			player.setFoodLevel(20);
+			player.setSaturation(10000f);
+			player.teleport(Main.getInstance().getSpawnLocation());
+			PlayerManager.get(player).giveSpawnItem();
 		}
 	}
 	
@@ -191,7 +175,7 @@ public class PlayerListener implements Listener {
 			if (DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
 				Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId());
 				
-				if (!currentDuel.getFirstTeamUUID().contains(owner.getUniqueId()) && !currentDuel.getSecondTeamUUID().contains(owner.getUniqueId())) {
+				if (!currentDuel.getFirstTeam().contains(owner.getUniqueId()) && !currentDuel.getSecondTeam().contains(owner.getUniqueId())) {
 					event.setCancelled(true);
 				}
 				return;
@@ -221,9 +205,14 @@ public class PlayerListener implements Listener {
         	switch (pm.getStatus()) {
 			case SPAWN:
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
-					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Direct Queue")) {
+					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Unranked Direct Queue")) {
 		                event.setCancelled(true);
 		                Main.getInstance().addQueue(player, false);
+		                break;
+		            }
+					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Ranked Direct Queue")) {
+		                event.setCancelled(true);
+		                player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
 		                break;
 		            }
 					if (item.getType() == Material.NAME_TAG && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Create Party")) {
@@ -249,7 +238,7 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
-                        DuelManager.getInstance().createSplitTeamsDuel(currentParty, 1);
+                        DuelManager.getInstance().createSplitTeamsDuel(currentParty);
                         break;
 		            }
 					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Fight Other Parties")) {
@@ -332,7 +321,7 @@ public class PlayerListener implements Listener {
 			Player player = (Player) event.getWhoClicked();
 			PlayerManager pm = PlayerManager.get(player);
 			
-			if (pm.getStatus() == PlayerStatus.MODERATION || pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
+			if (pm.getStatus() == PlayerStatus.MODERATION || (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild())) {
 				event.setCancelled(true);
 				player.updateInventory();
 			}

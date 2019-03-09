@@ -16,6 +16,7 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.utils.Messages;
 
 public class ForceDuelCommand implements CommandExecutor {
 
@@ -25,19 +26,24 @@ public class ForceDuelCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
+		PlayerManager pm = PlayerManager.get(player);
 		
 		if (!player.hasPermission("command.forceduel")) {
-			player.sendMessage(ChatColor.RED + "No permission.");
+			player.sendMessage(Messages.NO_PERMISSION);
 			return false;
 		}
 		if (args.length != 1) {
 			player.sendMessage(ChatColor.RED + "Usage: /forceduel <player>");
 			return false;
 		}
+		if (pm.getStatus() != PlayerStatus.SPAWN) {
+			player.sendMessage(ChatColor.RED + "You are not in the spawn.");
+			return false;
+		}
 		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
-			player.sendMessage(ChatColor.RED + "That player is not online!");
+			player.sendMessage(Messages.PLAYER_NOT_ONLINE);
 			return false;
 		}
 		if (target == player) {

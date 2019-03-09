@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.utils.Messages;
 
 public class AcceptCommand implements CommandExecutor {
 
@@ -23,7 +24,7 @@ public class AcceptCommand implements CommandExecutor {
 			Player dueler = Bukkit.getPlayer(args[0]);
 			
 			if (dueler == null) {
-				p.sendMessage(ChatColor.RED + "That player is not online!");
+				p.sendMessage(Messages.PLAYER_NOT_ONLINE);
 				return false;
 			}
 			if (dueler == p) {
