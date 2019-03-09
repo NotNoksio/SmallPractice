@@ -38,7 +38,7 @@ public class DuelCommand implements CommandExecutor {
 				return false;
 			}
 			if (target == player) {
-				player.sendMessage(ChatColor.RED + "You can't duel yourself!");
+				player.sendMessage(Messages.NOT_YOURSELF);
 				return false;
 			}
 			Party party = PartyManager.getInstance().getParty(player.getUniqueId());

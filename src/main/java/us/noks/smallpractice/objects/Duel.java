@@ -1,6 +1,5 @@
 package us.noks.smallpractice.objects;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -96,6 +95,7 @@ public class Duel {
 	public void sendSoundedMessage(String message, Sound sound) {
 		List<UUID> duelPlayers = Lists.newArrayList(getFirstTeam());
 		duelPlayers.addAll(getSecondTeam());
+		duelPlayers.addAll(getAllSpectators());
 		
 		for (UUID uuid : duelPlayers) {
 			Player player = Bukkit.getPlayer(uuid);
@@ -105,15 +105,7 @@ public class Duel {
             }
 			
 			player.sendMessage(message);
-			if (sound != null) {
-				player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
-			}
-		}
-		duelPlayers.clear();
-		Iterator<UUID> iterator = getAllSpectators().iterator();
-		while (iterator.hasNext()) {
-			Player spec = Bukkit.getPlayer(iterator.next());
-			spec.sendMessage(message);
+			if (sound != null) player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
 		}
 	}
 	
@@ -121,14 +113,23 @@ public class Duel {
 		if (!isValid()) {
 			return;
 		}
+		List<Player> firstTeamPlayer = Lists.newArrayList();
+		List<Player> secondTeamPlayer = Lists.newArrayList();
 		for (UUID firstTeamUUID : this.firstTeamAlive) {
-			for (UUID secondTeamUUID : this.secondTeamAlive) {
-				Player first = Bukkit.getPlayer(firstTeamUUID);
-				Player second = Bukkit.getPlayer(secondTeamUUID);
-				
-				first.showPlayer(second);
-				second.showPlayer(first);
-				if (!first.canSee(first)) first.showPlayer(first);
+			Player first = Bukkit.getPlayer(firstTeamUUID);
+			if (first == null) continue;
+			firstTeamPlayer.add(first);
+		}
+		for (UUID secondTeamUUID : this.secondTeamAlive) {
+			Player second = Bukkit.getPlayer(secondTeamUUID);
+			if (second == null) continue;
+			secondTeamPlayer.add(second);
+		}
+		for (Player first : firstTeamPlayer) {
+			if (!first.canSee(first)) first.showPlayer(first);
+			for (Player second : secondTeamPlayer) {
+				if (!first.canSee(second)) first.showPlayer(second);
+				if (!second.canSee(first)) second.showPlayer(first);
 				if (!second.canSee(second)) second.showPlayer(second);
 			}
 		}

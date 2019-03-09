@@ -48,7 +48,7 @@ public class SpectateCommand implements CommandExecutor {
 			return false;
 		}
 		if (target == player) {
-			player.sendMessage(ChatColor.RED + "You can't spectate yourself.");
+			player.sendMessage(Messages.NOT_YOURSELF);
 			return false;
 		}
 		PlayerManager tm = PlayerManager.get(target);

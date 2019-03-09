@@ -40,7 +40,7 @@ public class ReportCommand implements CommandExecutor {
 				return false;
 			}
 			if (target == p) {
-				p.sendMessage(org.bukkit.ChatColor.RED + "You can't report yourself!");
+				p.sendMessage(Messages.NOT_YOURSELF);
 				return false;
 			}
 			if (cooldowns.containsKey(p.getUniqueId())) {
@@ -89,7 +89,7 @@ public class ReportCommand implements CommandExecutor {
 			l1g.setColor(ChatColor.GREEN);
 
 			TextComponent l1h = new TextComponent();
-			l1h.setText("[Teleport] ");
+			l1h.setText("[Teleport]");
 			l1h.setColor(ChatColor.BLUE);
 			l1h.setBold(Boolean.valueOf(true));
 			l1h.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "Click to teleport you to " + target.getName()).create()));
@@ -110,6 +110,7 @@ public class ReportCommand implements CommandExecutor {
 			l1.addExtra(l1f);
 			l1.addExtra(l1g);
 			l1.addExtra(l1h);
+			l1.addExtra(" ");
 			l1.addExtra(l1i);
 			for (Player staff : Bukkit.getOnlinePlayers()) {
 				if (staff.hasPermission("report.receive")) {

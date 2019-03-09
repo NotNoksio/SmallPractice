@@ -43,7 +43,7 @@ public class ChatListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.FIRST)
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onStaffChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		if (event.getMessage().charAt(0) == '@') {

@@ -15,23 +15,23 @@ public class AcceptCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player) {
-			Player p = (Player) sender;
+			Player player = (Player) sender;
 			
 			if (args.length != 1) {
-				p.sendMessage(ChatColor.RED + "Usage: /accept <player>");
+				player.sendMessage(ChatColor.RED + "Usage: /accept <player>");
 				return false;
 			}
 			Player dueler = Bukkit.getPlayer(args[0]);
 			
 			if (dueler == null) {
-				p.sendMessage(Messages.PLAYER_NOT_ONLINE);
+				player.sendMessage(Messages.PLAYER_NOT_ONLINE);
 				return false;
 			}
-			if (dueler == p) {
-				p.sendMessage(ChatColor.RED + "You can't accept yourself!");
+			if (dueler == player) {
+				player.sendMessage(Messages.NOT_YOURSELF);
 				return false;
 			}
-			Main.getInstance().acceptDuelRequest(p, dueler);
+			Main.getInstance().acceptDuelRequest(player, dueler);
 		}
 		return true;
 	}

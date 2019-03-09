@@ -122,7 +122,7 @@ public class Main extends JavaPlugin {
 			return;
 		}
 		PlayerManager.get(requester).setRequestTo(requested.getUniqueId());
-		requester.openInventory(Main.getInstance().getRoundInventory());
+		requester.openInventory(getRoundInventory());
 	}
 	
 	public void acceptDuelRequest(Player requested, Player requester) {
@@ -186,12 +186,12 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
-	public void quitQueue(Player p) {
-		if (this.queue.contains(p)) {
-			this.queue.remove(p);
-			PlayerManager.get(p).setStatus(PlayerStatus.SPAWN);
-			PlayerManager.get(p).giveSpawnItem();
-			p.sendMessage(ChatColor.RED + "You have been removed from the queue.");
+	public void quitQueue(Player player) {
+		if (this.queue.contains(player)) {
+			this.queue.remove(player);
+			PlayerManager.get(player).setStatus(PlayerStatus.SPAWN);
+			PlayerManager.get(player).giveSpawnItem();
+			player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 		}
 	}
 	

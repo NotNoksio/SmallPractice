@@ -1,10 +1,8 @@
 package us.noks.smallpractice.utils;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.apache.commons.lang.WordUtils;
@@ -24,12 +22,7 @@ import org.bukkit.potion.PotionEffect;
 
 import com.google.common.collect.Lists;
 
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.util.com.google.common.collect.Maps;
-import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class InvView implements Listener {
@@ -131,85 +124,6 @@ public class InvView implements Listener {
 	public void openInv(Player p, UUID t) {
 		if (this.inventorymap.containsKey(t)) {
 			p.openInventory(this.inventorymap.get(t));
-		}
-	}
-    
-	public void deathMsg(Duel duel, int teamNumber) {
-		List<UUID> winnerTeam = null;
-		List<UUID> loserTeam = null;
-		switch (teamNumber) {
-		case 1:
-			winnerTeam = duel.getFirstTeam();
-			loserTeam = duel.getSecondTeam();
-			break;
-		case 2:
-			winnerTeam = duel.getSecondTeam();
-			loserTeam = duel.getFirstTeam();
-			break;
-		default:
-			break;
-		}
-		boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
-		
-		Player winner = Bukkit.getPlayer(winnerTeam.get(0));
-		Player loser = Bukkit.getPlayer(loserTeam.get(0));
-		
-		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + winner.getName() + (partyFight ? "'s party" : "");
-		
-	    TextComponent l1 = new TextComponent();
-	    l1.setText("Inventories (Click): ");
-	    l1.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
-	    
-	    TextComponent l1a = new TextComponent();
-	    l1a.setText(winner.getName());
-	    l1a.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-	    l1a.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winner.getName() + "'s inventory").create()));
-	    l1a.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winner.getUniqueId()));
-	    
-	    TextComponent l1b = new TextComponent();
-	    l1b.setText(", ");
-	    l1b.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
-	    
-	    TextComponent l1c = new TextComponent();
-	    l1c.setText(loser.getName());
-	    l1c.setColor(net.md_5.bungee.api.ChatColor.RED);
-	    l1c.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + loser.getName() + "'s inventory").create()));
-	    l1c.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + loser.getUniqueId()));
-	    
-	    TextComponent l1d = new TextComponent();
-	    l1d.setText(".");
-	    l1d.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
-	    
-	    l1.addExtra(l1a);
-	    l1.addExtra(l1b);
-	    l1.addExtra(l1c);
-	    l1.addExtra(l1d);
-	    
-	    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
-	    if (duel.hasSpectator()) {
-	    	for (UUID specs : duel.getAllSpectators()) {
-	    		Player spec = Bukkit.getPlayer(specs);
-	    		spect.add(ChatColor.YELLOW + spec.getName());
-	    	}
-	    }
-	    String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
-	    
-	    winner.sendMessage(winnerMessage);
-	    winner.spigot().sendMessage(l1);
-	    if (duel.hasSpectator()) winner.sendMessage(spectatorMessage);
-	    if (loser != null) {
-	    	loser.sendMessage(winnerMessage);
-	    	loser.spigot().sendMessage(l1);
-	    	if (duel.hasSpectator()) loser.sendMessage(spectatorMessage);
-	    }
-	    
-	    Iterator<UUID> its = duel.getAllSpectators().iterator();
-	    while (its.hasNext()) {
-			Player spectator = Bukkit.getPlayer(its.next());
-			
-			spectator.sendMessage(winnerMessage);
-			spectator.spigot().sendMessage(l1);
-			if (duel.hasSpectator()) spectator.sendMessage(spectatorMessage);
 		}
 	}
 	

@@ -14,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionEffectAddEvent;
@@ -131,12 +130,18 @@ public class PlayerListener implements Listener {
 			Player player = (Player) event.getEntity();
 			PlayerManager pm = PlayerManager.get(player);
 			
-			if (event.getCause() == DamageCause.FALL && (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE)) {
-				event.setCancelled(true);
-			}
-			if (event.getCause() == DamageCause.VOID && (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE)) {
-				event.setCancelled(true);
-				player.teleport(Main.getInstance().getSpawnLocation());
+			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
+				switch (event.getCause()) {
+				case FALL:
+					event.setCancelled(true);
+					break;
+				case VOID:
+					event.setCancelled(true);
+					player.teleport(Main.getInstance().getSpawnLocation());
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}
@@ -234,7 +239,7 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
                             break;
                         }
-                        if (currentParty.getMembers().size() == 0) {
+                        if (currentParty.getMembers().isEmpty()) {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
