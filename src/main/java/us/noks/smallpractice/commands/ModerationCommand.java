@@ -32,13 +32,13 @@ public class ModerationCommand implements CommandExecutor {
 				player.sendMessage(ChatColor.RED + "You are in party!");
 				return false;
 			}
-			PlayerManager pm = PlayerManager.get(player);
+			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
 			if (pm.getStatus() == PlayerStatus.MODERATION) {
 				player.teleport(Main.getInstance().getSpawnLocation());
-                PlayerManager.get(player).setStatus(PlayerStatus.SPAWN);
-                PlayerManager.get(player).giveSpawnItem();
-                PlayerManager.get(player).showAllPlayer();
+                PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
+                PlayerManager.get(player.getUniqueId()).giveSpawnItem();
+                PlayerManager.get(player.getUniqueId()).showAllPlayer();
                 return true;
 			}
 			if (pm.getStatus() != PlayerStatus.SPAWN) {

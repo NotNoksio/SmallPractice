@@ -34,8 +34,9 @@ public class InvView implements Listener {
 	  
     private Map<UUID, Inventory> inventorymap = Maps.newHashMap();
     
-	public void saveInv(Player p) {
-		PlayerManager pm = PlayerManager.get(p);
+	public void saveInv(Player player) {
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		
 		pm.setLastFailedPotions(pm.getFailedPotions());
 		pm.setFailedPotions(0);
 		if(pm.getCombo() > pm.getLongestCombo()) {
@@ -43,13 +44,13 @@ public class InvView implements Listener {
     	}
 		pm.setCombo(0);
 		
-		Inventory inv = Bukkit.createInventory(null, 54, ChatColor.RED + p.getName() + "'s Inventory");
+		Inventory inv = Bukkit.createInventory(null, 54, ChatColor.RED + player.getName() + "'s Inventory");
 		
 		for (int i = 0; i < 9; i++) {
-			inv.setItem(i + 27, p.getInventory().getItem(i));
+			inv.setItem(i + 27, player.getInventory().getItem(i));
 		}
-		for (int i = 0; i < p.getInventory().getSize() - 9; i++) {
-			inv.setItem(i, p.getInventory().getItem(i + 9));
+		for (int i = 0; i < player.getInventory().getSize() - 9; i++) {
+			inv.setItem(i, player.getInventory().getItem(i + 9));
 		}
 		
 		ItemStack noarmor = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
@@ -57,52 +58,52 @@ public class InvView implements Listener {
 		nm.setDisplayName(ChatColor.RED + "No Armor");
 		noarmor.setItemMeta(nm);
 		
-		inv.setItem(36, (p.getInventory().getHelmet() != null ? p.getInventory().getHelmet() : noarmor));
-		inv.setItem(37, (p.getInventory().getChestplate() != null ? p.getInventory().getChestplate() : noarmor));
-		inv.setItem(38, (p.getInventory().getLeggings() != null ? p.getInventory().getLeggings() : noarmor));
-		inv.setItem(39, (p.getInventory().getBoots() != null ? p.getInventory().getBoots() : noarmor));
+		inv.setItem(36, (player.getInventory().getHelmet() != null ? player.getInventory().getHelmet() : noarmor));
+		inv.setItem(37, (player.getInventory().getChestplate() != null ? player.getInventory().getChestplate() : noarmor));
+		inv.setItem(38, (player.getInventory().getLeggings() != null ? player.getInventory().getLeggings() : noarmor));
+		inv.setItem(39, (player.getInventory().getBoots() != null ? player.getInventory().getBoots() : noarmor));
 		
-		if (p.getHealth() > 0) {
-			ItemStack vie = new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) p.getHealth()).intValue());
-			ItemMeta v = vie.getItemMeta();
-			v.setDisplayName(ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(p.getHealth() / 2.0D) + ChatColor.RED + " hp");
-			vie.setItemMeta(v);
+		if (player.getHealth() > 0) {
+			ItemStack life = new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) player.getHealth()).intValue());
+			ItemMeta lm = life.getItemMeta();
+			lm.setDisplayName(ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(player.getHealth() / 2.0D) + ChatColor.RED + " hp");
+			life.setItemMeta(lm);
 			
-			inv.setItem(48, vie);
+			inv.setItem(48, life);
 		} else {
-			ItemStack vie = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.SKELETON.ordinal());
-			ItemMeta v = vie.getItemMeta();
-			v.setDisplayName(ChatColor.DARK_AQUA + "Player Died");
-			vie.setItemMeta(v);
+			ItemStack death = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.SKELETON.ordinal());
+			ItemMeta dm = death.getItemMeta();
+			dm.setDisplayName(ChatColor.DARK_AQUA + "Player Died");
+			death.setItemMeta(dm);
 			
-			inv.setItem(48, vie);
+			inv.setItem(48, death);
 		}
 		
-		ItemStack bouffe = new ItemStack(Material.COOKED_BEEF, p.getFoodLevel());
-		ItemMeta b = bouffe.getItemMeta();
-		b.setDisplayName(ChatColor.DARK_AQUA + "Food points: " + ChatColor.RESET + p.getFoodLevel());
-		bouffe.setItemMeta(b);
-		inv.setItem(49, bouffe);
+		ItemStack food = new ItemStack(Material.COOKED_BEEF, player.getFoodLevel());
+		ItemMeta fm = food.getItemMeta();
+		fm.setDisplayName(ChatColor.DARK_AQUA + "Food points: " + ChatColor.RESET + player.getFoodLevel());
+		food.setItemMeta(fm);
+		inv.setItem(49, food);
       
-		ItemStack item2 = new ItemStack(Material.BREWING_STAND_ITEM, p.getActivePotionEffects().size());
-		ItemMeta itemm2 = item2.getItemMeta();
-		itemm2.setDisplayName(ChatColor.DARK_AQUA + "Potion Effects:");
-		List<String> lore = Lists.newArrayList();
-		if (p.getActivePotionEffects().size() == 0) {
-			lore.add(ChatColor.RED + "No potion effects");
+		ItemStack potEffect = new ItemStack(Material.BREWING_STAND_ITEM, player.getActivePotionEffects().size());
+		ItemMeta pem = potEffect.getItemMeta();
+		pem.setDisplayName(ChatColor.DARK_AQUA + "Potion Effects:");
+		List<String> potionEffectLore = Lists.newArrayList();
+		if (player.getActivePotionEffects().size() == 0) {
+			potionEffectLore.add(ChatColor.RED + "No potion effects");
 		} else {
-			for (PotionEffect pe : p.getActivePotionEffects()) {
+			for (PotionEffect pe : player.getActivePotionEffects()) {
 				int realtime = pe.getDuration() / 20;
 				String emp = convertToRoman(pe.getAmplifier() + 1);
           
-				lore.add(ChatColor.GRAY + "-> " + ChatColor.RED + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.RESET + convertToPotionFormat(realtime));
+				potionEffectLore.add(ChatColor.GRAY + "-> " + ChatColor.RED + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.RESET + convertToPotionFormat(realtime));
 			}
 		}
-		itemm2.setLore(lore);
-		item2.setItemMeta(itemm2);
-		inv.setItem(50, item2);
+		pem.setLore(potionEffectLore);
+		potEffect.setItemMeta(pem);
+		inv.setItem(50, potEffect);
       
-		int amount = (p.getInventory().contains(new ItemStack(Material.POTION, 1, (short)16421)) ? Integer.valueOf(p.getInventory().all(new ItemStack(Material.POTION, 1, (short)16421)).size()).intValue() : 0);
+		int amount = (player.getInventory().contains(new ItemStack(Material.POTION, 1, (short)16421)) ? Integer.valueOf(player.getInventory().all(new ItemStack(Material.POTION, 1, (short)16421)).size()).intValue() : 0);
 		
 		ItemStack pots = new ItemStack(Material.POTION, amount > 64 ? 64 : amount, (short)16421);
 		ItemMeta po = pots.getItemMeta();
@@ -118,20 +119,16 @@ public class InvView implements Listener {
 		stats.setItemMeta(sm);
 		inv.setItem(46, stats);
       
-		this.inventorymap.put(p.getUniqueId(), inv);
+		this.inventorymap.put(player.getUniqueId(), inv);
 	}
     
-	public void openInv(Player p, UUID t) {
-		if (this.inventorymap.containsKey(t)) {
-			p.openInventory(this.inventorymap.get(t));
-		}
+	public void openInv(Player player, UUID targetUUID) {
+		if (this.inventorymap.containsKey(targetUUID)) player.openInventory(this.inventorymap.get(targetUUID));
 	}
 	
 	@EventHandler(priority=EventPriority.LOW)
-	public void onInvsClick(InventoryClickEvent e) {
-		if (e.getInventory().getTitle().toLowerCase().endsWith("'s inventory")) {
-			e.setCancelled(true);
-		}
+	public void onInvsClick(InventoryClickEvent event) {
+		if (event.getInventory().getTitle().toLowerCase().endsWith("'s inventory")) event.setCancelled(true);
 	}
     
 	private String convertToPotionFormat(long paramLong) {

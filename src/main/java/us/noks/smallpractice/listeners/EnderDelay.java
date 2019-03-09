@@ -38,7 +38,7 @@ public class EnderDelay implements Listener {
 			if (event.hasItem()) {
 				ItemStack item = event.getItem();
 				if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && player.getGameMode() != GameMode.CREATIVE) {
-					if (PlayerManager.get(player).getStatus() == PlayerStatus.DUEL) {
+					if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL) {
 						if (isEnderPearlCooldownActive(player)) {
 							event.setUseItemInHand(Result.DENY);
 							double time = getEnderPearlCooldown(player) / 1000.0D;
@@ -63,7 +63,7 @@ public class EnderDelay implements Listener {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
 			
-			if (PlayerManager.get(player).getStatus() != PlayerStatus.DUEL) {
+			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 			}
 		}

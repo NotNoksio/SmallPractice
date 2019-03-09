@@ -27,7 +27,7 @@ public class SpectateCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
-		PlayerManager pm = PlayerManager.get(player);
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
 		if (args.length > 1 || args.length < 1) {
 			player.sendMessage(ChatColor.RED + "Usage: /spectate <player>");
@@ -51,7 +51,7 @@ public class SpectateCommand implements CommandExecutor {
 			player.sendMessage(Messages.NOT_YOURSELF);
 			return false;
 		}
-		PlayerManager tm = PlayerManager.get(target);
+		PlayerManager tm = PlayerManager.get(target.getUniqueId());
 		
 		if (tm.getStatus() != PlayerStatus.WAITING && tm.getStatus() != PlayerStatus.DUEL) {
 			player.sendMessage(ChatColor.RED + "That player isn't in duel!");

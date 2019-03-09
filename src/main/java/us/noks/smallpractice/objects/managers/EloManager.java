@@ -20,18 +20,18 @@ public class EloManager {
 	private int DEFAULT_ELO = 1000;
 	
 	public void tranferElo(UUID winnerUUID, UUID loserUUID) {
-		Player winner = Bukkit.getPlayer(winnerUUID);
-		Player loser = Bukkit.getPlayer(loserUUID);
-		
 		int scoreChange = 0;
-		double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (PlayerManager.get(winner).getElo() - PlayerManager.get(loser).getElo()) / 400.0D));
+		double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (PlayerManager.get(winnerUUID).getElo() - PlayerManager.get(loserUUID).getElo()) / 400.0D));
 
 		scoreChange = (int) (expectedp * 32.0D);
 		scoreChange = scoreChange > 25 ? 25 : scoreChange;
 		scoreChange = scoreChange < 4 ? 4 : scoreChange;
 		
-		PlayerManager.get(winner).addElo(scoreChange);
-		PlayerManager.get(loser).removeElo(scoreChange);
+		PlayerManager.get(winnerUUID).addElo(scoreChange);
+		PlayerManager.get(loserUUID).removeElo(scoreChange);
+		
+		Player winner = Bukkit.getPlayer(winnerUUID);
+		Player loser = Bukkit.getPlayer(loserUUID);
 
 		winner.sendMessage(ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + winner.getName() + " (+" + scoreChange + ") " + ChatColor.RED + loser.getName() + " (-" + scoreChange + ")");
 		loser.sendMessage(ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + winner.getName() + " (+" + scoreChange + ") " + ChatColor.RED + loser.getName() + " (-" + scoreChange + ")");
@@ -48,6 +48,6 @@ public class EloManager {
 	}
 	
 	private void updatePlayerElo(Player player) {
-		playersElo.put(player.getUniqueId(), PlayerManager.get(player).getElo());
+		playersElo.put(player.getUniqueId(), PlayerManager.get(player.getUniqueId()).getElo());
 	}
 }

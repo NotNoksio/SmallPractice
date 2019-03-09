@@ -117,20 +117,20 @@ public class Main extends JavaPlugin {
 	}
 
 	public void sendDuelRequest(Player requester, Player requested) {
-		if (PlayerManager.get(requester).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested).getStatus() != PlayerStatus.SPAWN) {
+		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or that player is not in spawn!");
 			return;
 		}
-		PlayerManager.get(requester).setRequestTo(requested.getUniqueId());
+		PlayerManager.get(requester.getUniqueId()).setRequestTo(requested.getUniqueId());
 		requester.openInventory(getRoundInventory());
 	}
 	
 	public void acceptDuelRequest(Player requested, Player requester) {
-		if (PlayerManager.get(requester).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested).getStatus() != PlayerStatus.SPAWN) {
+		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player is not in spawn!");
 			return;
 		}
-		if (!PlayerManager.get(requester).hasRequest(requested.getUniqueId())) {
+		if (!PlayerManager.get(requester.getUniqueId()).hasRequest(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
 			return;
 		}
@@ -141,7 +141,7 @@ public class Main extends JavaPlugin {
             return;
         }
 		if (requestedParty != null && requesterParty != null) {
-			DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false, PlayerManager.get(requester).getRequestedRound());
+			DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false, PlayerManager.get(requester.getUniqueId()).getRequestedRound());
 			return;
 		}
 		List<UUID> firstTeam = Lists.newArrayList();
@@ -149,18 +149,18 @@ public class Main extends JavaPlugin {
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(requested.getUniqueId());
 		
-		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, false, PlayerManager.get(requester).getRequestedRound());
+		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, false, PlayerManager.get(requester.getUniqueId()).getRequestedRound());
 	}
 	
 	public void addQueue(Player player, boolean ranked) {
-		if (PlayerManager.get(player).getStatus() != PlayerStatus.SPAWN) {
+		if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			return;
 		}
 		if (!this.queue.contains(player)) {
 			this.queue.add(player);
-			PlayerManager.get(player).setStatus(PlayerStatus.QUEUE);
+			PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.QUEUE);
 			if (this.queue.size() == 1) {
-				PlayerManager.get(player).giveQueueItem();
+				PlayerManager.get(player.getUniqueId()).giveQueueItem();
 			}
 			player.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
 		}
@@ -189,8 +189,8 @@ public class Main extends JavaPlugin {
 	public void quitQueue(Player player) {
 		if (this.queue.contains(player)) {
 			this.queue.remove(player);
-			PlayerManager.get(player).setStatus(PlayerStatus.SPAWN);
-			PlayerManager.get(player).giveSpawnItem();
+			PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
+			PlayerManager.get(player.getUniqueId()).giveSpawnItem();
 			player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 		}
 	}

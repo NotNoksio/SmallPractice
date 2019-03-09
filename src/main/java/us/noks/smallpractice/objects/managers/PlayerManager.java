@@ -23,6 +23,7 @@ public class PlayerManager {
 
 	public static List<PlayerManager> players = Lists.newArrayList();
 	private Player player;
+	private UUID playerUUID;
 	private Map<UUID, UUID> request = Maps.newHashMap();
 	private int requestedRound;
 	private Map<UUID, UUID> invite = Maps.newHashMap();
@@ -36,8 +37,9 @@ public class PlayerManager {
 	private int combo;
 	private int longestCombo;
 	
-	public PlayerManager(Player player) {
-	    this.player = player;
+	public PlayerManager(UUID playerUUID) {
+	    this.player = Bukkit.getPlayer(playerUUID);
+	    this.playerUUID = playerUUID;
 	    this.status = PlayerStatus.SPAWN;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
 	    this.requestedRound = 0;
@@ -50,13 +52,13 @@ public class PlayerManager {
 	    this.longestCombo = 0;
 	}
 
-	public static PlayerManager get(Player player) {
+	public static PlayerManager get(UUID playerUUID) {
 		for (PlayerManager pm : players) {
-			if (pm.getPlayer().equals(player)) {
+			if (pm.getPlayerUUID().equals(playerUUID)) {
 				return pm;
 			}
 		}
-		PlayerManager pm = new PlayerManager(player);
+		PlayerManager pm = new PlayerManager(playerUUID);
 		players.add(pm);
 		return pm;
 	}
@@ -67,6 +69,10 @@ public class PlayerManager {
 
 	public Player getPlayer() {
 		return this.player;
+	}
+	
+	public UUID getPlayerUUID() {
+		return playerUUID;
 	}
 	
 	public int getRequestedRound() {
@@ -328,13 +334,13 @@ public class PlayerManager {
 	public void hideAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			getPlayer().hidePlayer(allPlayers);
-			if (get(allPlayers).getStatus() != PlayerStatus.MODERATION) allPlayers.hidePlayer(getPlayer());
+			if (get(allPlayers.getUniqueId()).getStatus() != PlayerStatus.MODERATION) allPlayers.hidePlayer(getPlayer());
 		}
 	}
 	
 	public void showAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
-			PlayerManager pm = get(allPlayers);
+			PlayerManager pm = get(allPlayers.getUniqueId());
 			
 			if (pm.getStatus() != PlayerStatus.MODERATION) getPlayer().showPlayer(allPlayers);
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) allPlayers.showPlayer(getPlayer());

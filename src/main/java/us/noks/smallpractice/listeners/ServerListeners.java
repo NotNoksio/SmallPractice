@@ -21,7 +21,7 @@ public class ServerListeners implements Listener {
 	public void onPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		
-		if (!PlayerManager.get(player).isCanBuild()) {
+		if (!PlayerManager.get(player.getUniqueId()).isCanBuild()) {
 			event.setCancelled(true);
 		}
 	}
@@ -30,7 +30,7 @@ public class ServerListeners implements Listener {
 	public void onBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		
-		if (!PlayerManager.get(player).isCanBuild()) {
+		if (!PlayerManager.get(player.getUniqueId()).isCanBuild()) {
 			event.setCancelled(true);
 		}
 	}

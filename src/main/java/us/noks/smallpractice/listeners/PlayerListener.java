@@ -60,13 +60,13 @@ public class PlayerListener implements Listener {
 		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 		
 		player.teleport(Main.getInstance().getSpawnLocation());
-		PlayerManager.get(player).giveSpawnItem();
+		PlayerManager.get(player.getUniqueId()).giveSpawnItem();
 		
 		player.sendMessage(Messages.WELCOME_MESSAGE);
-		player.setPlayerListName(PlayerManager.get(player).getPrefixColors() + player.getName());
+		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
-			PlayerManager pmAll = PlayerManager.get(allPlayers);
+			PlayerManager pmAll = PlayerManager.get(allPlayers.getUniqueId());
 			if (pmAll.getStatus() == PlayerStatus.WAITING || pmAll.getStatus() == PlayerStatus.DUEL || pmAll.getStatus() == PlayerStatus.MODERATION) {
 				player.hidePlayer(allPlayers);
 			}
@@ -89,10 +89,10 @@ public class PlayerListener implements Listener {
 		if (Main.getInstance().queue.contains(player)) {
 			Main.getInstance().queue.remove(player);
 		}
-		if ((PlayerManager.get(player).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player).getStatus() == PlayerStatus.WAITING)) {
+		if ((PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING)) {
 			DuelManager.getInstance().removePlayerFromDuel(player, true);
 		}
-		PlayerManager.get(player).remove();
+		PlayerManager.get(player.getUniqueId()).remove();
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
@@ -120,7 +120,7 @@ public class PlayerListener implements Listener {
 			player.setFoodLevel(20);
 			player.setSaturation(10000f);
 			player.teleport(Main.getInstance().getSpawnLocation());
-			PlayerManager.get(player).giveSpawnItem();
+			PlayerManager.get(player.getUniqueId()).giveSpawnItem();
 		}
 	}
 	
@@ -128,7 +128,7 @@ public class PlayerListener implements Listener {
 	public void onVoidDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
-			PlayerManager pm = PlayerManager.get(player);
+			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
 			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
 				switch (event.getCause()) {
@@ -152,15 +152,15 @@ public class PlayerListener implements Listener {
 			Player attacked = (Player) event.getEntity();
 			Player attacker = (Player) event.getDamager();
 				
-			if (PlayerManager.get(attacker).getStatus() == PlayerStatus.MODERATION) {
+			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.MODERATION) {
 				event.setDamage(0.0D);
 				return;
 			}
-			if (PlayerManager.get(attacker).getStatus() == PlayerStatus.SPECTATE) {
+			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.SPECTATE) {
 				event.setCancelled(true);
 				return;
 			}
-			if (PlayerManager.get(attacker).getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked).getStatus() != PlayerStatus.DUEL) {
+			if (PlayerManager.get(attacker.getUniqueId()).getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 			}
 		}
@@ -171,7 +171,7 @@ public class PlayerListener implements Listener {
 		if (event.getItem().getOwner() instanceof Player) {
 			Player receiver = event.getPlayer();
 			Player owner = (Player) event.getItem().getOwner();
-			PlayerManager pm = PlayerManager.get(receiver);
+			PlayerManager pm = PlayerManager.get(receiver.getUniqueId());
 			
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
 				event.setCancelled(true);
@@ -191,7 +191,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDrop(PlayerDropItemEvent event) {
-		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && PlayerManager.get(event.getPlayer()).getStatus() != PlayerStatus.WAITING && PlayerManager.get(event.getPlayer()).getStatus() != PlayerStatus.DUEL) {
+		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && PlayerManager.get(event.getPlayer().getUniqueId()).getStatus() != PlayerStatus.WAITING && PlayerManager.get(event.getPlayer().getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 			event.setCancelled(true);
 		}
 		if (event.getItemDrop().getItemStack().getType() == Material.GLASS_BOTTLE) event.getItemDrop().remove();
@@ -205,7 +205,7 @@ public class PlayerListener implements Listener {
             return;
         }
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-        	PlayerManager pm = PlayerManager.get(player);
+        	PlayerManager pm = PlayerManager.get(player.getUniqueId());
         	
         	switch (pm.getStatus()) {
 			case SPAWN:
@@ -298,7 +298,7 @@ public class PlayerListener implements Listener {
 	                for (Player onlinePlayers : Bukkit.getOnlinePlayers()) {
 	                	if (onlinePlayers == player) continue;
 	                	
-	                	PlayerManager om = PlayerManager.get(onlinePlayers);
+	                	PlayerManager om = PlayerManager.get(onlinePlayers.getUniqueId());
 	                	if (om.getStatus() == PlayerStatus.MODERATION) continue;
 	                	
 	                	online.add(onlinePlayers);
@@ -324,7 +324,7 @@ public class PlayerListener implements Listener {
 	public void onDrag(InventoryClickEvent event) {
 		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
 			Player player = (Player) event.getWhoClicked();
-			PlayerManager pm = PlayerManager.get(player);
+			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
 			if (pm.getStatus() == PlayerStatus.MODERATION || (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild())) {
 				event.setCancelled(true);
@@ -338,7 +338,7 @@ public class PlayerListener implements Listener {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			
-			if (PlayerManager.get(player).getStatus() != PlayerStatus.DUEL) {
+			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 			}
 		}
@@ -348,7 +348,7 @@ public class PlayerListener implements Listener {
 	public void onPotionEffectAdd(PotionEffectAddEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player affected = (Player) event.getEntity();
-			PlayerManager pm = PlayerManager.get(affected);
+			PlayerManager pm = PlayerManager.get(affected.getUniqueId());
 			
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
 				event.setCancelled(true);

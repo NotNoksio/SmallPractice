@@ -26,7 +26,7 @@ public class ForceDuelCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
-		PlayerManager pm = PlayerManager.get(player);
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
 		if (!player.hasPermission("command.forceduel")) {
 			player.sendMessage(Messages.NO_PERMISSION);
@@ -54,7 +54,7 @@ public class ForceDuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "That player is in a party!");
 			return false;
 		}
-		PlayerManager tm = PlayerManager.get(target);
+		PlayerManager tm = PlayerManager.get(target.getUniqueId());
 		
 		if (tm.getStatus() != PlayerStatus.SPAWN) {
 			player.sendMessage(ChatColor.RED + "This player is not in the spawn.");

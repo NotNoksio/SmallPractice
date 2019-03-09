@@ -62,7 +62,7 @@ public class DuelManager {
 			
 			if (first == null) continue;
 			
-			PlayerManager fm = PlayerManager.get(first);
+			PlayerManager fm = PlayerManager.get(firstUUID);
 			fm.removeRequest();
 			fm.setStatus(PlayerStatus.WAITING);
 			
@@ -79,7 +79,7 @@ public class DuelManager {
 			
 			if (second == null) continue;
 			
-			PlayerManager sm = PlayerManager.get(second);
+			PlayerManager sm = PlayerManager.get(secondUUID);
 			sm.removeRequest();
 			sm.setStatus(PlayerStatus.WAITING);
 			
@@ -129,7 +129,7 @@ public class DuelManager {
 		Iterator<UUID> specIt = duel.getAllSpectators().iterator();
 		while (specIt.hasNext()) {
 			Player spec = Bukkit.getPlayer(specIt.next());
-			PlayerManager sm = PlayerManager.get(spec);
+			PlayerManager sm = PlayerManager.get(specIt.next());
 			
 			spec.setAllowFlight(false);
 			spec.setFlying(false);
@@ -159,7 +159,7 @@ public class DuelManager {
 		while (duelIt.hasNext()) {
 			Player duelPlayer = Bukkit.getPlayer(duelIt.next());
 			if (duelPlayer == null) continue;
-			PlayerManager dpm = PlayerManager.get(duelPlayer);
+			PlayerManager dpm = PlayerManager.get(duelIt.next());
 			
 			duelPlayer.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 			duelPlayer.extinguish();
@@ -184,9 +184,6 @@ public class DuelManager {
 	
 	public void sendWaitingMessage(Duel duel) {
 		Map<Duel, Integer> cooldown = Maps.newHashMap();
-		List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
-		duelPlayers.addAll(duel.getSecondTeamAlive());
-		
 		cooldown.put(duel, 5);
 		
 		new BukkitRunnable() {
@@ -206,13 +203,8 @@ public class DuelManager {
 				if (num <= 0) {
 					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has stated!", Sound.FIREWORK_BLAST);
 					duel.showDuelPlayer();
-					for (UUID uuid : duelPlayers) {
-						Player player = Bukkit.getPlayer(uuid);
-						if (player == null) continue;
-						PlayerManager.get(player).setStatus(PlayerStatus.DUEL);
-					}
+					duel.setDuelPlayersStatusToDuel();
 					cooldown.remove(duel);
-					duelPlayers.clear();
 					this.cancel();
 				}
 				if (num > 0) {
@@ -233,7 +225,7 @@ public class DuelManager {
 			if (first == null) continue;
 			
 			this.uuidIdentifierToDuel.put(firstUUID, duel);
-			PlayerManager pmf = PlayerManager.get(first);
+			PlayerManager pmf = PlayerManager.get(firstUUID);
 			
 			pmf.heal();
 			first.setNoDamageTicks(50);
@@ -250,7 +242,7 @@ public class DuelManager {
 			if (second == null) continue;
 			
 			this.uuidIdentifierToDuel.put(secondUUID, duel);
-			PlayerManager pms = PlayerManager.get(second);
+			PlayerManager pms = PlayerManager.get(secondUUID);
 			
 			pms.heal();
 			second.setNoDamageTicks(50);
@@ -302,7 +294,7 @@ public class DuelManager {
                 	public void run() {
                 		if (lastPlayers != null) {
                 			lastPlayers.teleport(Main.getInstance().getSpawnLocation());
-                			PlayerManager.get(lastPlayers).giveSpawnItem();
+                			PlayerManager.get(lastPlayersUUID).giveSpawnItem();
                 		}
                 	}
                 }.runTaskLaterAsynchronously(Main.getInstance(), 40L);
@@ -329,7 +321,7 @@ public class DuelManager {
                 	public void run() {
                 		if (lastPlayers != null) {
                 			lastPlayers.teleport(Main.getInstance().getSpawnLocation());
-                			PlayerManager.get(lastPlayers).giveSpawnItem();
+                			PlayerManager.get(lastPlayersUUID).giveSpawnItem();
                 		}
                 	}
                 }.runTaskLaterAsynchronously(Main.getInstance(), 40L);

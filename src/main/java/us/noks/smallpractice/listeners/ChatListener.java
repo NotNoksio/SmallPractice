@@ -20,7 +20,7 @@ public class ChatListener implements Listener {
 			return;
 		}
 		String prefix = "";
-		prefix = PlayerManager.get(event.getPlayer()).getColoredPrefix() + "%1$s" + ChatColor.RESET;
+		prefix = PlayerManager.get(event.getPlayer().getUniqueId()).getColoredPrefix() + "%1$s" + ChatColor.RESET;
 
 		event.setFormat(prefix + ChatColor.WHITE + ": %2$s");
 	}
@@ -51,7 +51,7 @@ public class ChatListener implements Listener {
 	      
 			message = message.replaceFirst("@", "");
 			if (player.hasPermission("chat.staff")) {
-				PlayerManager pm = PlayerManager.get(player);
+				PlayerManager pm = PlayerManager.get(player.getUniqueId());
 				for (Player staff : Bukkit.getOnlinePlayers()) {
 					if (staff.hasPermission("chat.staff")) {
 						event.setCancelled(true);

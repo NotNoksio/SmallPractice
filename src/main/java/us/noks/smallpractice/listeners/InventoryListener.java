@@ -27,7 +27,7 @@ public class InventoryListener implements Listener {
 			return;
 		}
 		if (event.getInventory().getTitle().toLowerCase().equals("how many rounds?")) {
-			PlayerManager pm = PlayerManager.get(player);
+			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			Player requested = Bukkit.getPlayer(pm.getRequestTo());
 			
 			if (item.getType() == Material.ARROW) {

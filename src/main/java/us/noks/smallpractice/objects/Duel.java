@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.managers.PlayerManager;
+
 public class Duel {
 	
 	private UUID firstTeamPartyLeaderUUID;
@@ -165,5 +168,14 @@ public class Duel {
 	
 	public boolean isValid() {
 		return (!this.firstTeam.isEmpty() && !this.secondTeam.isEmpty() && !this.firstTeamAlive.isEmpty() && !this.secondTeamAlive.isEmpty());
+	}
+	
+	public void setDuelPlayersStatusToDuel() {
+		List<UUID> duelPlayers = Lists.newArrayList(getFirstTeamAlive());
+		duelPlayers.addAll(getSecondTeamAlive());
+		
+		duelPlayers.forEach(players -> {
+			PlayerManager.get(players).setStatus(PlayerStatus.DUEL);
+		});
 	}
 }
