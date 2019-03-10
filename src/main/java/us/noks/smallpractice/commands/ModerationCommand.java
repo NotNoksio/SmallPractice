@@ -21,7 +21,7 @@ public class ModerationCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			
 			if (!player.hasPermission("command.moderation")) {
-				player.sendMessage(Messages.NO_PERMISSION);
+				player.sendMessage(Messages.getInstance().NO_PERMISSION);
 				return false;
 			}
 			if (args.length > 0) {

@@ -44,11 +44,11 @@ public class SpectateCommand implements CommandExecutor {
 		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
-			player.sendMessage(Messages.PLAYER_NOT_ONLINE);
+			player.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
 			return false;
 		}
 		if (target == player) {
-			player.sendMessage(Messages.NOT_YOURSELF);
+			player.sendMessage(Messages.getInstance().NOT_YOURSELF);
 			return false;
 		}
 		PlayerManager tm = PlayerManager.get(target.getUniqueId());

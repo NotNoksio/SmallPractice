@@ -36,11 +36,11 @@ public class ReportCommand implements CommandExecutor {
 			Player target = Bukkit.getPlayer(args[0]);
 			
 			if (target == null) {
-				p.sendMessage(Messages.PLAYER_NOT_ONLINE);
+				p.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
 				return false;
 			}
 			if (target == p) {
-				p.sendMessage(Messages.NOT_YOURSELF);
+				p.sendMessage(Messages.getInstance().NOT_YOURSELF);
 				return false;
 			}
 			if (cooldowns.containsKey(p.getUniqueId())) {

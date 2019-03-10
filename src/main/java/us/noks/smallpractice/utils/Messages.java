@@ -19,7 +19,12 @@ import us.noks.smallpractice.objects.Duel;
 
 public class Messages {
 	
-	public static String[] WELCOME_MESSAGE = new String[] {
+	public static Messages instance = new Messages();
+	public static Messages getInstance() {
+		return instance;
+	}
+	
+	public String[] WELCOME_MESSAGE = new String[] {
 			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 			ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + Main.getInstance().getDescription().getVersion() + " server",
 			"",
@@ -28,13 +33,17 @@ public class Messages {
 			ChatColor.DARK_PURPLE + "xelo_o (Server Owner) Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o",
 			ChatColor.RED + "-> Keep in mind this is a beta ^^",
 			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
-	public static String NO_PERMISSION = ChatColor.RED + "No permission.";
-	public static String PLAYER_NOT_ONLINE = ChatColor.RED + "This player is not online.";
-	public static String NOT_YOURSELF = ChatColor.RED + "You can't execute that command on yourself!";
+	public String NO_PERMISSION = ChatColor.RED + "No permission.";
+	public String PLAYER_NOT_ONLINE = ChatColor.RED + "This player is not online.";
+	public String NOT_YOURSELF = ChatColor.RED + "You can't execute that command on yourself!";
+	public String YOU_ARENT_IN_THE_SPAWN = ChatColor.RED + "You are not in the spawn!";
+	public String TARGET_ARENT_IN_THE_SPAWN = ChatColor.RED + "This player is not in the spawn!";
+	public String TARGET_OR_PLAYER_ARENT_IN_THE_SPAWN = ChatColor.RED + "Either you or this player are not in the spawn!";
+	public String NO_REQUEST_FOUND = ChatColor.RED + "No request found!";
 	
-	public static String CONTACT_NOKSIO = ChatColor.RED + "Please contact Noksio!";
+	public String CONTACT_NOKSIO = ChatColor.RED + "Please contact Noksio!";
 	
-	public static void deathMessage(Duel duel, int winningTeamNumber) {
+	public void deathMessage(Duel duel, int winningTeamNumber) {
 		List<UUID> winnerTeam = null;
 		List<UUID> loserTeam = null;
 		switch (winningTeamNumber) {

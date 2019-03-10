@@ -6,7 +6,9 @@ us\noks\smallpractice\objects\managers\DuelManager$2.class
 us\noks\smallpractice\commands\SpawnCommand.class
 us\noks\smallpractice\listeners\ChatListener.class
 us\noks\smallpractice\objects\managers\PartyManager.class
+us\noks\smallpractice\utils\DuelRequest.class
 us\noks\smallpractice\commands\PingCommand.class
+us\noks\smallpractice\objects\managers\QueueManager.class
 us\noks\smallpractice\commands\DuelCommand.class
 us\noks\smallpractice\Main.class
 us\noks\smallpractice\listeners\InventoryListener.class
@@ -24,8 +26,10 @@ us\noks\smallpractice\objects\managers\DuelManager.class
 us\noks\smallpractice\utils\Messages.class
 us\noks\smallpractice\listeners\PlayerListener$1.class
 us\noks\smallpractice\objects\managers\DuelManager$1.class
+us\noks\smallpractice\objects\managers\RequestManager.class
 us\noks\smallpractice\commands\ForceDuelCommand.class
 us\noks\smallpractice\commands\SpectateCommand.class
+us\noks\smallpractice\objects\managers\DuelManager$Rounds.class
 us\noks\smallpractice\utils\InvView.class
 us\noks\smallpractice\enums\PlayerStatus.class
 us\noks\smallpractice\commands\ReportCommand.class

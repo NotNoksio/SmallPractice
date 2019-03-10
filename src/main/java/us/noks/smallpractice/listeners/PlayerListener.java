@@ -34,6 +34,7 @@ import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.objects.managers.QueueManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 import us.noks.smallpractice.utils.Messages;
@@ -62,7 +63,7 @@ public class PlayerListener implements Listener {
 		player.teleport(Main.getInstance().getSpawnLocation());
 		PlayerManager.get(player.getUniqueId()).giveSpawnItem();
 		
-		player.sendMessage(Messages.WELCOME_MESSAGE);
+		player.sendMessage(Messages.getInstance().WELCOME_MESSAGE);
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
@@ -86,8 +87,8 @@ public class PlayerListener implements Listener {
             	PartyManager.getInstance().leaveParty(player.getUniqueId());
             }
         }
-		if (Main.getInstance().queue.contains(player)) {
-			Main.getInstance().queue.remove(player);
+		if (QueueManager.getInstance().queue.contains(player.getUniqueId())) {
+			QueueManager.getInstance().queue.remove(player.getUniqueId());
 		}
 		if ((PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING)) {
 			DuelManager.getInstance().removePlayerFromDuel(player, true);
@@ -212,7 +213,7 @@ public class PlayerListener implements Listener {
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
 					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Unranked Direct Queue")) {
 		                event.setCancelled(true);
-		                Main.getInstance().addQueue(player, false);
+		                QueueManager.getInstance().addToQueue(player, false);
 		                break;
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Ranked Direct Queue")) {
@@ -250,6 +251,10 @@ public class PlayerListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
 						break;
 					}
+					if (item.getType() == Material.PAPER && item.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Party Information")) {
+						Bukkit.dispatchCommand(player, "party info");
+						break;
+					}
 					if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Party")) {
 						event.setCancelled(true);
 						if (isPartyLeader) {
@@ -264,7 +269,7 @@ public class PlayerListener implements Listener {
 			case QUEUE:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Queue")) {
 	                event.setCancelled(true);
-	                Main.getInstance().quitQueue(player);
+	                QueueManager.getInstance().quitQueue(player);
 	            }
 				break;
 			case SPECTATE:
@@ -289,6 +294,7 @@ public class PlayerListener implements Listener {
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave Moderation")) {
 	                event.setCancelled(true);
 	                player.performCommand("mod");
+	                Bukkit.dispatchCommand(player, "mod");
 	                break;
 	            }
 				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().equals(ChatColor.RED + "See Random Player")) {

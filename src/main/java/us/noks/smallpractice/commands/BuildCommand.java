@@ -18,7 +18,7 @@ public class BuildCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			
 			if (!player.hasPermission("command.build")) {
-				player.sendMessage(Messages.NO_PERMISSION);
+				player.sendMessage(Messages.getInstance().NO_PERMISSION);
 				return false;
 			}
 			if (args.length != 0) {

@@ -15,6 +15,8 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.objects.managers.RequestManager;
+import us.noks.smallpractice.utils.DuelRequest;
 
 public class InventoryListener implements Listener {
 	
@@ -53,7 +55,7 @@ public class InventoryListener implements Listener {
 			    
 				requested.spigot().sendMessage(l1);
 				player.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
-				pm.setRequestedRound(item.getAmount());
+				RequestManager.getInstance().addDuelRequest(requested, player, new DuelRequest(item.getAmount()));
 			}
 		}
 	}

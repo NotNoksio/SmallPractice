@@ -55,8 +55,6 @@ public class DuelManager {
 		green2.setPrefix(ChatColor.GREEN.toString());
 		green2.setAllowFriendlyFire(false);
         
-		round--;
-		
 		for (UUID firstUUID : firstTeam) {
 			Player first = Bukkit.getPlayer(firstUUID);
 			
@@ -67,7 +65,7 @@ public class DuelManager {
 			fm.setStatus(PlayerStatus.WAITING);
 			
 			first.setGameMode(GameMode.SURVIVAL);
-			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()) + (round != 0 ? " (Round left: " + round + ")" : ""));
+			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()) + " (" + Rounds.getNameByRound(round) + ")");
 			fm.heal();
 			
 			green1.addEntry(first.getName());
@@ -84,13 +82,14 @@ public class DuelManager {
 			sm.setStatus(PlayerStatus.WAITING);
 			
 			second.setGameMode(GameMode.SURVIVAL);
-			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()) + (round != 0 ? " (Round left: " + round + ")" : ""));
+			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()) + " (" + Rounds.getNameByRound(round) + ")");
 			sm.heal();
 			
 			green2.addEntry(second.getName());
 			red1.addEntry(second.getName());
 			second.setScoreboard(secondPlayerScoreboard);
 		}
+		round--;
 		if (firstPartyLeaderUUID != null) {
             Party party = PartyManager.getInstance().getParty(firstPartyLeaderUUID);
             if (party != null) {
@@ -117,7 +116,7 @@ public class DuelManager {
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
-		Messages.deathMessage(duel, winningTeamNumber);
+		Messages.getInstance().deathMessage(duel, winningTeamNumber);
 		
 		if (duel.isRanked()) {
 			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeam().get(0) : duel.getSecondTeam().get(0));
@@ -327,6 +326,37 @@ public class DuelManager {
                 }.runTaskLaterAsynchronously(Main.getInstance(), 40L);
             }
 			endDuel(currentDuel, 1);
+		}
+	}
+	
+	protected enum Rounds {
+	    FIRST_ROUND(5), 
+	    SECOND_ROUND(4), 
+	    QUARTER_FINAL_ROUND(3), 
+	    SEMI_FINAL_ROUND(2), 
+	    FINAL_ROUND(1);
+		
+		private int roundNumber;
+
+		Rounds (int roundNumber) {
+			this.roundNumber = roundNumber;
+		}
+		
+		public int getRoundNumber() {
+			return this.roundNumber;
+		}
+		
+		private static Rounds fromRound(int round) {
+			for (Rounds type : values()) {
+				if (type.getRoundNumber() == round) {
+					return type;
+				}
+			}
+			return null;
+		}
+		
+		public static String getNameByRound(int round) {
+			return fromRound(round).toString();
 		}
 	}
 }

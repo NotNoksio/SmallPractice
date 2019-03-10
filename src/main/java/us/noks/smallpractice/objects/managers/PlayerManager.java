@@ -25,7 +25,6 @@ public class PlayerManager {
 	private Player player;
 	private UUID playerUUID;
 	private Map<UUID, UUID> request = Maps.newHashMap();
-	private int requestedRound;
 	private Map<UUID, UUID> invite = Maps.newHashMap();
 	private PlayerStatus status;
 	private Player spectate;
@@ -42,7 +41,6 @@ public class PlayerManager {
 	    this.playerUUID = playerUUID;
 	    this.status = PlayerStatus.SPAWN;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
-	    this.requestedRound = 0;
 	    this.spectate = null;
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
 	    this.failedPotions = 0;
@@ -74,14 +72,6 @@ public class PlayerManager {
 	public UUID getPlayerUUID() {
 		return playerUUID;
 	}
-	
-	public int getRequestedRound() {
-		return this.requestedRound;
-	}
-	
-	public void setRequestedRound(int round) {
-		this.requestedRound = round;
-	}
 
 	public boolean isCanBuild() {
 		return getStatus() == PlayerStatus.BUILD;
@@ -111,10 +101,6 @@ public class PlayerManager {
 		if (this.invite.containsKey(this.player.getUniqueId())) {
 			this.invite.remove(this.player.getUniqueId());
 		}
-	}
-	
-	public boolean hasRequest(UUID requestedUUID) {
-		return this.request.containsValue(requestedUUID) && this.request.containsKey(this.player.getUniqueId()) && this.request.get(this.player.getUniqueId()) == requestedUUID;
 	}
 	
 	public void setRequestTo(UUID targetUUID) {
@@ -206,6 +192,11 @@ public class PlayerManager {
 			bm.setDisplayName(ChatColor.YELLOW + "Fight Other Parties");
 			b.setItemMeta(bm);
 			
+			ItemStack p = new ItemStack(Material.PAPER, 1);
+			ItemMeta pm = p.getItemMeta();
+			pm.setDisplayName(ChatColor.YELLOW + "Party Information");
+			p.setItemMeta(pm);
+			
 			ItemStack r = new ItemStack(Material.REDSTONE, 1);
 			ItemMeta rm = r.getItemMeta();
 			rm.setDisplayName(ChatColor.RED + "Leave Party");
@@ -213,6 +204,7 @@ public class PlayerManager {
 			
 			getPlayer().getInventory().setItem(0, a);
 			getPlayer().getInventory().setItem(2, b);
+			getPlayer().getInventory().setItem(5, p);
 			getPlayer().getInventory().setItem(8, r);
 		}
 		getPlayer().updateInventory();
