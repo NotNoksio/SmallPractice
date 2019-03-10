@@ -65,7 +65,7 @@ public class DuelManager {
 			fm.setStatus(PlayerStatus.WAITING);
 			
 			first.setGameMode(GameMode.SURVIVAL);
-			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()) + " (" + Rounds.getNameByRound(round) + ")");
+			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()) + " (" + Rounds.getDisplayNameByRound(round) + ")");
 			fm.heal();
 			
 			green1.addEntry(first.getName());
@@ -82,7 +82,7 @@ public class DuelManager {
 			sm.setStatus(PlayerStatus.WAITING);
 			
 			second.setGameMode(GameMode.SURVIVAL);
-			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()) + " (" + Rounds.getNameByRound(round) + ")");
+			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()) + " (" + Rounds.getDisplayNameByRound(round) + ")");
 			sm.heal();
 			
 			green2.addEntry(second.getName());
@@ -192,12 +192,11 @@ public class DuelManager {
 			public void run() {
 				if (!cooldown.containsKey(duel)) {
 					this.cancel();
-					return;
 				}
 				if (!duel.isValid()) {
-					this.cancel();
 					duel.sendMessage(ChatColor.RED + "The current duel has been cancelled due to his invalidity.");
 					endDuel(duel, (duel.getFirstTeamAlive().isEmpty() ? 2 : 1));
+					this.cancel();
 				}
 				if (num <= 0) {
 					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has stated!", Sound.FIREWORK_BLAST);
@@ -283,9 +282,7 @@ public class DuelManager {
                 lastPlayers.setFoodLevel(20);
                 lastPlayers.setSaturation(10000f);
         			
-                if (currentDuel.hasRemainingRound()) {
-                	continue;
-                }
+                if (currentDuel.hasRemainingRound()) continue;
                 	
                 new BukkitRunnable() {
         				
@@ -310,9 +307,7 @@ public class DuelManager {
                 lastPlayers.setFoodLevel(20);
                 lastPlayers.setSaturation(10000f);
         			
-                if (currentDuel.hasRemainingRound()) {
-                	continue;
-                }
+                if (currentDuel.hasRemainingRound()) continue;
                 	
                 new BukkitRunnable() {
         				
@@ -330,20 +325,26 @@ public class DuelManager {
 	}
 	
 	protected enum Rounds {
-	    FIRST_ROUND(5), 
-	    SECOND_ROUND(4), 
-	    QUARTER_FINAL_ROUND(3), 
-	    SEMI_FINAL_ROUND(2), 
-	    FINAL_ROUND(1);
+	    FIRST_ROUND(5, "First Round"), 
+	    SECOND_ROUND(4, "Second Round"), 
+	    QUARTER_FINAL_ROUND(3, "Quarter Final Round"), 
+	    SEMI_FINAL_ROUND(2, "Semi Final Round"), 
+	    FINAL_ROUND(1, "Final Round");
 		
 		private int roundNumber;
+		private String displayName;
 
-		Rounds (int roundNumber) {
+		Rounds (int roundNumber, String displayName) {
 			this.roundNumber = roundNumber;
+			this.displayName = displayName;
 		}
 		
 		public int getRoundNumber() {
 			return this.roundNumber;
+		}
+		
+		public String getDisplayName() {
+			return this.displayName;
 		}
 		
 		private static Rounds fromRound(int round) {
@@ -355,8 +356,8 @@ public class DuelManager {
 			return null;
 		}
 		
-		public static String getNameByRound(int round) {
-			return fromRound(round).toString();
+		public static String getDisplayNameByRound(int round) {
+			return fromRound(round).getDisplayName();
 		}
 	}
 }

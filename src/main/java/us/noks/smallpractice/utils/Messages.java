@@ -62,40 +62,40 @@ public class Messages {
 		
 		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
 		
-	    TextComponent l1 = new TextComponent();
-	    l1.setText("Inventories (Click):");
-	    l1.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+	    TextComponent invTxt = new TextComponent();
+	    invTxt.setText("Inventories (Click):");
+	    invTxt.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
 	    List<BaseComponent> inventoriesTextList = Lists.newArrayList();
 	    
 	    for (UUID wUUID : winnerTeam) {
 	    	Player winners = Bukkit.getPlayer(wUUID);
-	    	TextComponent l1a = new TextComponent();
+	    	TextComponent wtxt = new TextComponent();
 	    	
-	    	l1a.setText(winners.getName());
-		    l1a.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-		    l1a.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winners.getName() + "'s inventory").create()));
-		    l1a.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winners.getUniqueId()));
+	    	wtxt.setText(winners.getName());
+	    	wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+	    	wtxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winners.getName() + "'s inventory").create()));
+	    	wtxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winners.getUniqueId()));
 		    
 		    inventoriesTextList.add(new TextComponent(" "));
-		    inventoriesTextList.add(l1a);
+		    inventoriesTextList.add(wtxt);
 	    }
 	    
 	    for (UUID lUUID : loserTeam) {
 	    	Player losers = Bukkit.getPlayer(lUUID);
-	    	TextComponent l1b = new TextComponent();
+	    	TextComponent ltxt = new TextComponent();
 	    	
-	    	l1b.setText(losers.getName());
-		    l1b.setColor(net.md_5.bungee.api.ChatColor.RED);
-		    l1b.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.RED + "Click to view " + losers.getName() + "'s inventory").create()));
-		    l1b.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + losers.getUniqueId()));
+	    	ltxt.setText(losers.getName());
+	    	ltxt.setColor(net.md_5.bungee.api.ChatColor.RED);
+	    	ltxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.RED + "Click to view " + losers.getName() + "'s inventory").create()));
+	    	ltxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + losers.getUniqueId()));
 		    
 		    inventoriesTextList.add(new TextComponent(" "));
-		    inventoriesTextList.add(l1b);
+		    inventoriesTextList.add(ltxt);
 	    }
 	    
-	    l1.setExtra(inventoriesTextList);
-	    l1.addExtra(net.md_5.bungee.api.ChatColor.DARK_AQUA + ".");
+	    invTxt.setExtra(inventoriesTextList);
+	    invTxt.addExtra(net.md_5.bungee.api.ChatColor.DARK_AQUA + ".");
 	    
 	    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
 	    if (duel.hasSpectator()) {
@@ -114,7 +114,7 @@ public class Messages {
 	    	Player duelPlayer = Bukkit.getPlayer(dpUUID);
 	    	if (duelPlayer == null) continue;
 	    	duelPlayer.sendMessage(winnerMessage);
-	    	duelPlayer.spigot().sendMessage(l1);
+	    	duelPlayer.spigot().sendMessage(invTxt);
 	    	if (duel.hasSpectator()) duelPlayer.sendMessage(spectatorMessage);
 	    }
 	}
