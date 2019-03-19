@@ -34,7 +34,6 @@ import us.noks.smallpractice.listeners.InventoryListener;
 import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.QueueManager;
-import us.noks.smallpractice.utils.InvView;
 
 public class Main extends JavaPlugin {
 	
@@ -101,7 +100,6 @@ public class Main extends JavaPlugin {
 		pm.registerEvents(new PlayerListener(), this);
 		pm.registerEvents(new ServerListeners(), this);
 		pm.registerEvents(new EnderDelay(), this);
-		pm.registerEvents(new InvView(), this);
 		pm.registerEvents(new ChatListener(), this);
 		pm.registerEvents(new DuelListener(), this);
 		pm.registerEvents(new InventoryListener(), this);

@@ -36,18 +36,16 @@ public class EloManager {
 		winner.sendMessage(ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + winner.getName() + " (+" + scoreChange + ") " + ChatColor.RED + loser.getName() + " (-" + scoreChange + ")");
 		loser.sendMessage(ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + winner.getName() + " (+" + scoreChange + ") " + ChatColor.RED + loser.getName() + " (-" + scoreChange + ")");
 		
-		updatePlayerElo(winner);
-		updatePlayerElo(loser);
+		updatePlayerElo(winnerUUID);
+		updatePlayerElo(loserUUID);
 	}
 	
 	public int getPlayerElo(UUID uuid) {
-		if (!playersElo.containsKey(uuid)) {
-			playersElo.put(uuid, DEFAULT_ELO);
-		}
+		if (!playersElo.containsKey(uuid)) playersElo.put(uuid, DEFAULT_ELO);
 		return playersElo.get(uuid);
 	}
 	
-	private void updatePlayerElo(Player player) {
-		playersElo.put(player.getUniqueId(), PlayerManager.get(player.getUniqueId()).getElo());
+	private void updatePlayerElo(UUID uuid) {
+		playersElo.put(uuid, PlayerManager.get(uuid).getElo());
 	}
 }

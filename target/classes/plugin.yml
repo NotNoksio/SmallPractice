@@ -1,6 +1,6 @@
 main: us.noks.smallpractice.Main
 name: SmallPractice
-version: 1.49.5
+version: 1.5
 author: Noksio
 depend: [PermissionsEx]
 commands:

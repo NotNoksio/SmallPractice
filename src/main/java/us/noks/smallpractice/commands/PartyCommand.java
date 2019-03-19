@@ -38,7 +38,7 @@ public class PartyCommand implements CommandExecutor {
         	sender.sendMessage(ChatColor.RED + "Only player can do this command!");
         	return false;
         }
-        if (args.length == 0) {
+        if (args.length == 0 || args.length > 2) {
         	sender.sendMessage(this.HELP_COMMAND);
         	return true;
         }
@@ -69,83 +69,92 @@ public class PartyCommand implements CommandExecutor {
         	player.sendMessage(ChatColor.RED + "You are not in a party!");
         	return false;
         }
-        if (args[0].equalsIgnoreCase("info")) {
-        	Player leader = Bukkit.getPlayer(party.getLeader());
-            StringJoiner members = new StringJoiner(", ");
-
-            members.add(leader.getName());
-            for (UUID memberUUID : party.getMembers()) {
-                Player member = Bukkit.getPlayer(memberUUID);
-                members.add(member.getName());
-            }
-
-            String[] information = new String[] {
-                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
-                    ChatColor.RED + "Party Information:",
-                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
-                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString(),
-                    ChatColor.DARK_AQUA + "Privacy: " + (party.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
-                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
-            };
-            player.sendMessage(information);
-            return true;
+        if (args.length == 1) {
+	        if (args[0].equalsIgnoreCase("info")) {
+	        	Player leader = Bukkit.getPlayer(party.getLeader());
+	            StringJoiner members = new StringJoiner(", ");
+	
+	            members.add(leader.getName());
+	            for (UUID memberUUID : party.getMembers()) {
+	                Player member = Bukkit.getPlayer(memberUUID);
+	                members.add(member.getName());
+	            }
+	
+	            String[] information = new String[] {
+	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
+	                    ChatColor.RED + "Party Information:",
+	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
+	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString(),
+	                    ChatColor.DARK_AQUA + "Privacy: " + (party.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
+	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
+	            };
+	            player.sendMessage(information);
+	            return true;
+	        }
+	        if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("disband")) {
+	        	if (party.getLeader().equals(player.getUniqueId())) {
+	                PartyManager.getInstance().transferLeader(player.getUniqueId());
+	                player.sendMessage(ChatColor.RED + "The party has been disbanded!");
+	            } else {
+	                PartyManager.getInstance().notifyParty(party, ChatColor.RED + player.getName() + " has left the party");
+	                PartyManager.getInstance().leaveParty(player.getUniqueId());
+	            }
+	        	pm.giveSpawnItem();
+	        	return true;
+	        }
+	        if (args[0].equalsIgnoreCase("open")) {
+	        	if (!party.getLeader().equals(player.getUniqueId())) {
+	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
+	        		return false;
+	        	}
+	        	if (party.isOpen()) {
+	        		player.sendMessage(ChatColor.RED + "Your party is already open, please do /party lock to lock your party.");
+	        		return false;
+	        	}
+	        	party.setOpen(true);
+	            player.sendMessage(ChatColor.GREEN + "You have opened your party!");
+	            return true;
+	        }
+	        if (args[0].equalsIgnoreCase("lock")) {
+	        	if (!party.getLeader().equals(player.getUniqueId())) {
+	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
+	        		return false;
+	        	}
+	        	if (!party.isOpen()) {
+	        		player.sendMessage(ChatColor.RED + "Your party is already lock, please do /party open to open your party.");
+	        		return false;
+	        	}
+	        	party.setOpen(false);
+	            player.sendMessage(ChatColor.GREEN + "You have locked your party!");
+	            return true;
+	        }
         }
-        if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("disband")) {
-        	if (party.getLeader().equals(player.getUniqueId())) {
-                PartyManager.getInstance().transferLeader(player.getUniqueId());
-                player.sendMessage(ChatColor.RED + "The party has been disbanded!");
-            } else {
-                PartyManager.getInstance().notifyParty(party, ChatColor.RED + player.getName() + " has left the party");
-                PartyManager.getInstance().leaveParty(player.getUniqueId());
-            }
-        	pm.giveSpawnItem();
-        	return true;
-        }
-        if (args[0].equalsIgnoreCase("open")) {
-        	if (!party.getLeader().equals(player.getUniqueId())) {
-        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
-        		return false;
-        	}
-        	if (party.isOpen()) {
-        		player.sendMessage(ChatColor.RED + "Your party is already open, please do /party lock to lock your party.");
-        		return false;
-        	}
-        	party.setOpen(true);
-            player.sendMessage(ChatColor.GREEN + "You have opened your party!");
-            return true;
-        }
-        if (args[0].equalsIgnoreCase("lock")) {
-        	if (!party.getLeader().equals(player.getUniqueId())) {
-        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
-        		return false;
-        	}
-        	if (!party.isOpen()) {
-        		player.sendMessage(ChatColor.RED + "Your party is already lock, please do /party open to open your party.");
-        		return false;
-        	}
-        	party.setOpen(false);
-            player.sendMessage(ChatColor.GREEN + "You have locked your party!");
-            return true;
-        }
-        if (args.length != 2) {
-        	player.sendMessage(this.HELP_COMMAND);
-        	return false;
-        }
-        Player target = Bukkit.getPlayer(args[1]);
-        
-        if (target == null) {
-        	player.sendMessage(ChatColor.RED + "This player isnt online!");
-        	return false;
-        }
-        if (target == player) {
-        	player.sendMessage(ChatColor.RED + "You cant do that on yourself.");
-        	return false;
-        }
-        PlayerManager tm = PlayerManager.get(target.getUniqueId());
-        
-        if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
-        	if (!PartyManager.getInstance().hasParty(target.getUniqueId())) {
+        if (args.length == 2) {
+        	Player target = Bukkit.getPlayer(args[1]);
+            
+            if (target == null) {
+            	player.sendMessage(ChatColor.RED + "This player isnt online!");
             	return false;
+            }
+            if (target == player) {
+            	player.sendMessage(ChatColor.RED + "You cant do that on yourself.");
+            	return false;
+            }
+            PlayerManager tm = PlayerManager.get(target.getUniqueId());
+            Party targetParty = PartyManager.getInstance().getParty(target.getUniqueId());
+            
+            if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
+            	if (PartyManager.getInstance().hasParty(target.getUniqueId())) {
+                	return false;
+                }
+            	if (targetParty.isOpen()) {
+            		PartyManager.getInstance().joinParty(targetParty.getLeader(), player.getUniqueId());
+            		PartyManager.getInstance().notifyParty(targetParty, ChatColor.GREEN + player.getName() + " has joined the party");
+                    player.sendMessage(ChatColor.GREEN + "You have joined the party!");
+                    tm.giveSpawnItem();
+                    PartyManager.getInstance().updateParty(targetParty);
+            		return true;
+            	}
             }
         }
         

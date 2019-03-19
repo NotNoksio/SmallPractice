@@ -46,6 +46,7 @@ public class Party {
     public void setNewLeader(UUID newLeader, String newLeaderName) {
     	this.partyLeader = newLeader;
     	this.leaderName = newLeaderName;
+    	if (this.memberUUIDs.contains(newLeader)) this.memberUUIDs.remove(newLeader);
     }
     
     public UUID getLeader() {

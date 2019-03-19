@@ -11,10 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,7 +21,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
-public class InvView implements Listener {
+public class InvView {
 
 	static InvView instance = new InvView();
 	public static InvView getInstance() {
@@ -124,11 +120,6 @@ public class InvView implements Listener {
     
 	public void openInv(Player player, UUID targetUUID) {
 		if (this.inventorymap.containsKey(targetUUID)) player.openInventory(this.inventorymap.get(targetUUID));
-	}
-	
-	@EventHandler(priority=EventPriority.LOW)
-	public void onInvsClick(InventoryClickEvent event) {
-		if (event.getInventory().getTitle().toLowerCase().endsWith("'s inventory")) event.setCancelled(true);
 	}
     
 	private String convertToPotionFormat(long paramLong) {

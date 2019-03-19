@@ -1,5 +1,7 @@
 package us.noks.smallpractice.listeners;
 
+import java.util.regex.Pattern;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,18 +19,27 @@ import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
 import us.noks.smallpractice.utils.DuelRequest;
+import us.noks.smallpractice.utils.Messages;
 
 public class InventoryListener implements Listener {
+	
+	private Pattern splitPattern = Pattern.compile("\\s");
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
-		ItemStack item = event.getCurrentItem();
 		
-		if (item == null || item.getType() == null || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null) {
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == null || event.getCurrentItem().getItemMeta() == null || event.getCurrentItem().getItemMeta().getDisplayName() == null) {
 			return;
 		}
-		if (event.getInventory().getTitle().toLowerCase().equals("how many rounds?")) {
+		ItemStack item = event.getCurrentItem();
+		String title = event.getInventory().getTitle().toLowerCase();
+		
+		if (title.endsWith("inventory")) {
+            event.setCancelled(true);
+            return;
+        }
+		if (title.equals("how many rounds?")) {
 			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			Player requested = Bukkit.getPlayer(pm.getRequestTo());
 			
@@ -57,6 +68,25 @@ public class InventoryListener implements Listener {
 				player.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
 				RequestManager.getInstance().addDuelRequest(requested, player, new DuelRequest(item.getAmount()));
 			}
+			return;
+		}
+		if (title.equals("fight other parties")) {
+			event.setCancelled(true);
+			
+			String[] itemName = splitString(item.getItemMeta().getDisplayName());
+            itemName[0] = ChatColor.stripColor(itemName[0]);
+            
+            if (player.getName().toLowerCase().equals(itemName[0].toLowerCase())) {
+            	player.sendMessage(Messages.getInstance().NOT_YOURSELF);
+            	return;
+            }
+            
+            player.closeInventory();
+            Bukkit.dispatchCommand(player, "duel " + itemName[0]); 
 		}
 	}
+	
+	private String[] splitString(String string) {
+        return string.split(this.splitPattern.pattern());
+    }
 }
