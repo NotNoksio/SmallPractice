@@ -23,7 +23,7 @@ import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class EnderDelay implements Listener {
 
-	static EnderDelay instance = new EnderDelay();
+	public static EnderDelay instance = new EnderDelay();
 	public static EnderDelay getInstance() {
 		return instance;
 	}
