@@ -6,4 +6,4 @@ Plugin used on Halka (halka.rip (1.7.x & 1.8.x))
 
 Depend of -> PermissionsEx
 
-This plugin only contain NoDebuff ladder
+Only Nodebuff ladder are available
