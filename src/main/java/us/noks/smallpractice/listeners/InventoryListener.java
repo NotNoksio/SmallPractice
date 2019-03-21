@@ -10,12 +10,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
 import us.noks.smallpractice.utils.DuelRequest;
@@ -83,6 +85,19 @@ public class InventoryListener implements Listener {
             
             player.closeInventory();
             Bukkit.dispatchCommand(player, "duel " + itemName[0]); 
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onDrag(InventoryClickEvent event) {
+		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
+			Player player = (Player) event.getWhoClicked();
+			PlayerManager pm = PlayerManager.get(player.getUniqueId());
+			
+			if (pm.getStatus() == PlayerStatus.MODERATION || (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild())) {
+				event.setCancelled(true);
+				player.updateInventory();
+			}
 		}
 	}
 	

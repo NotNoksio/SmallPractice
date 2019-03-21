@@ -17,8 +17,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionEffectAddEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -99,12 +97,10 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onDeath(PlayerDeathEvent event) {
 		event.setDeathMessage(null);
-		event.getDrops().clear();
 		event.setDroppedExp(0);
 		
 		if (event.getEntity() instanceof Player) {
 			Player killed = event.getEntity();
-			
 			DuelManager.getInstance().removePlayerFromDuel(killed, false);
 		}
 	}
@@ -322,19 +318,6 @@ public class PlayerListener implements Listener {
 				break;
 			}
         }
-	}
-	
-	@EventHandler(priority=EventPriority.LOWEST)
-	public void onDrag(InventoryClickEvent event) {
-		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
-			Player player = (Player) event.getWhoClicked();
-			PlayerManager pm = PlayerManager.get(player.getUniqueId());
-			
-			if (pm.getStatus() == PlayerStatus.MODERATION || (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild())) {
-				event.setCancelled(true);
-				player.updateInventory();
-			}
-		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
