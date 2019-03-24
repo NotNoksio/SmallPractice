@@ -30,18 +30,18 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
+		ItemStack item = event.getCurrentItem();
 		
-		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == null || event.getCurrentItem().getItemMeta() == null || event.getCurrentItem().getItemMeta().getDisplayName() == null) {
+		if (item == null || item.getType() == null || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null) {
 			return;
 		}
-		ItemStack item = event.getCurrentItem();
 		String title = event.getInventory().getTitle().toLowerCase();
 		
 		if (title.endsWith("inventory")) {
             event.setCancelled(true);
-            return;
         }
 		if (title.equals("how many rounds?")) {
+			event.setCancelled(true);
 			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			Player requested = Bukkit.getPlayer(pm.getRequestTo());
 			
@@ -70,7 +70,6 @@ public class InventoryListener implements Listener {
 				player.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
 				RequestManager.getInstance().addDuelRequest(requested, player, new DuelRequest(item.getAmount()));
 			}
-			return;
 		}
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);
@@ -102,6 +101,6 @@ public class InventoryListener implements Listener {
 	}
 	
 	private String[] splitString(String string) {
-        return string.split(this.splitPattern.pattern());
-    }
+		return string.split(this.splitPattern.pattern());
+	}
 }

@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import us.noks.smallpractice.enums.PlayerStatus;
@@ -43,6 +44,12 @@ public class Duel {
 		return secondTeam;
 	}
 	
+	public List<UUID> getFirstAndSecondTeams() {
+		List<UUID> teams = Lists.newArrayList(this.firstTeam);
+		teams.addAll(this.secondTeam);
+		return teams;
+	}
+	
 	public List<UUID> getFirstTeamAlive() {
 		return firstTeamAlive;
 	}
@@ -57,14 +64,6 @@ public class Duel {
 	
 	public void killSecondTeamPlayer(UUID killedUUID) {
 		this.secondTeamAlive.remove(killedUUID);
-	}
-	
-	public void removeFirstTeamPlayer(UUID player) {
-		this.firstTeam.remove(player);
-	}
-	
-	public void removeSecondTeamPlayer(UUID player) {
-		this.secondTeam.remove(player);
 	}
 
 	public boolean isRanked() {
@@ -103,13 +102,12 @@ public class Duel {
 		for (UUID uuid : duelPlayers) {
 			Player player = Bukkit.getPlayer(uuid);
 			
-			if (player == null) {
-                continue;
-            }
+			if (player == null) continue;
 			
 			player.sendMessage(message);
 			if (sound != null) player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
 		}
+		duelPlayers.clear();
 	}
 	
 	public void showDuelPlayer() {
@@ -136,6 +134,8 @@ public class Duel {
 				if (!second.canSee(second)) second.showPlayer(second);
 			}
 		}
+		firstTeamPlayer.clear();
+		secondTeamPlayer.clear();
 	}
 
 	public UUID getFirstTeamPartyLeaderUUID() {
@@ -166,16 +166,18 @@ public class Duel {
 		return this.round > 0;
 	}
 	
+	public boolean containPlayer(Player player) {
+		Preconditions.checkNotNull(player, "Player cannot be null");
+		return (this.firstTeam.contains(player.getUniqueId()) || this.secondTeam.contains(player.getUniqueId()));
+	}
+	
 	public boolean isValid() {
 		return (!this.firstTeam.isEmpty() && !this.secondTeam.isEmpty() && !this.firstTeamAlive.isEmpty() && !this.secondTeamAlive.isEmpty());
 	}
 	
-	public void setDuelPlayersStatusToDuel() {
-		List<UUID> duelPlayers = Lists.newArrayList(getFirstTeamAlive());
-		duelPlayers.addAll(getSecondTeamAlive());
-		
-		duelPlayers.forEach(players -> {
-			PlayerManager.get(players).setStatus(PlayerStatus.DUEL);
+	public void setDuelPlayersStatusTo(PlayerStatus status) {
+		getFirstAndSecondTeams().forEach(playersUUID -> {
+			PlayerManager.get(playersUUID).setStatus(status);
 		});
 	}
 }

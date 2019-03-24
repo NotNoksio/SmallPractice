@@ -85,11 +85,11 @@ public class PlayerListener implements Listener {
             	PartyManager.getInstance().leaveParty(player.getUniqueId());
             }
         }
-		if (QueueManager.getInstance().queue.contains(player.getUniqueId())) {
-			QueueManager.getInstance().queue.remove(player.getUniqueId());
+		if (QueueManager.getInstance().getQueue().contains(player.getUniqueId())) {
+			QueueManager.getInstance().getQueue().remove(player.getUniqueId());
 		}
 		if ((PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING)) {
-			DuelManager.getInstance().removePlayerFromDuel(player, true);
+			DuelManager.getInstance().removePlayerFromDuel(player);
 		}
 		PlayerManager.get(player.getUniqueId()).remove();
 	}
@@ -97,15 +97,16 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onDeath(PlayerDeathEvent event) {
 		event.setDeathMessage(null);
+		event.getDrops().clear();
 		event.setDroppedExp(0);
 		
 		if (event.getEntity() instanceof Player) {
 			Player killed = event.getEntity();
-			DuelManager.getInstance().removePlayerFromDuel(killed, false);
+			DuelManager.getInstance().removePlayerFromDuel(killed);
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.HIGH)
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onRespawn(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
 		
@@ -207,7 +208,7 @@ public class PlayerListener implements Listener {
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
 					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "unranked direct queue")) {
 		                event.setCancelled(true);
-		                QueueManager.getInstance().addToQueue(player, false);
+		                QueueManager.getInstance().addToQueue(player.getUniqueId(), false);
 		                break;
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "ranked direct queue")) {
@@ -309,7 +310,7 @@ public class PlayerListener implements Listener {
 	                }
 	                Player tooked = online.get(new Random().nextInt(online.size()));
 	                
-	                player.teleport(tooked.getLocation().add(0, 2, 0));
+	                player.teleport(tooked.getLocation().clone().add(0, 2, 0));
 	                player.sendMessage(ChatColor.GREEN + "You've been teleported to " + tooked.getName());
 	                online.clear();
 	            }

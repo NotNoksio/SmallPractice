@@ -18,29 +18,36 @@ public class QueueManager {
 		return instance;
 	}
 
-	public List<UUID> queue = Lists.newArrayList();
+	private List<UUID> queue = Lists.newArrayList();
+	public List<UUID> getQueue() {
+		return this.queue;
+	}
 	
-	public void addToQueue(Player player, boolean ranked) {
-		if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+	public void addToQueue(UUID uuid, boolean ranked) {
+		PlayerManager pm = PlayerManager.get(uuid);
+		
+		if (pm.getStatus() != PlayerStatus.SPAWN) {
 			return;
 		}
-		if (!this.queue.contains(player.getUniqueId())) {
-			this.queue.add(player.getUniqueId());
-			PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.QUEUE);
+		if (!this.queue.contains(uuid)) {
+			Player player = Bukkit.getPlayer(uuid);
+			this.queue.add(uuid);
+			pm.setStatus(PlayerStatus.QUEUE);
+			player.getInventory().clear();
 			if (this.queue.size() == 1) {
-				PlayerManager.get(player.getUniqueId()).giveQueueItem();
+				pm.giveQueueItem();
 			}
 			player.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
 		}
-		if (this.queue.size() == 1 && this.queue.contains(player.getUniqueId())) {
-			addToQueue(player, ranked);
-		} else if (this.queue.size() == 2) {
+		if (this.queue.size() < 2 && this.queue.contains(uuid)) {
+			addToQueue(uuid, ranked);
+		} else if (this.queue.size() >= 2) {
 			Player first = Bukkit.getPlayer(this.queue.get(0));
 			Player second = Bukkit.getPlayer(this.queue.get(1));
 			
-			if (first == player && second == first) {
+			if (first == second) {
 				this.queue.clear();
-				addToQueue(player, ranked);
+				addToQueue(uuid, ranked);
 				return;
 			}
 			List<UUID> firstTeam = Lists.newArrayList();
@@ -48,9 +55,9 @@ public class QueueManager {
 			List<UUID> secondTeam = Lists.newArrayList();
 			secondTeam.add(second.getUniqueId());
 			
-			DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, ranked, 1);
 			this.queue.remove(first.getUniqueId());
 			this.queue.remove(second.getUniqueId());
+			DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, ranked, 1);
 		}
 	}
 	

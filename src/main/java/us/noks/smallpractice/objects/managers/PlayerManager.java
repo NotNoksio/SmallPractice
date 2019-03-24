@@ -37,8 +37,8 @@ public class PlayerManager {
 	private int longestCombo;
 	
 	public PlayerManager(UUID playerUUID) {
-	    this.player = Bukkit.getPlayer(playerUUID);
 	    this.playerUUID = playerUUID;
+	    this.player = Bukkit.getPlayer(this.playerUUID);
 	    this.status = PlayerStatus.SPAWN;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
 	    this.spectate = null;
@@ -70,7 +70,7 @@ public class PlayerManager {
 	}
 	
 	public UUID getPlayerUUID() {
-		return playerUUID;
+		return this.playerUUID;
 	}
 
 	public boolean isCanBuild() {

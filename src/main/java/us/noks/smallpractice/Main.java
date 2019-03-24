@@ -63,7 +63,7 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		QueueManager.getInstance().queue.clear();
+		QueueManager.getInstance().getQueue().clear();
 		this.arenaList.clear();
 		this.roundInventory.clear();
 	}

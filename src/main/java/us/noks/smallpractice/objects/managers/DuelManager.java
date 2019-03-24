@@ -58,7 +58,11 @@ public class DuelManager {
 		for (UUID firstUUID : firstTeam) {
 			Player first = Bukkit.getPlayer(firstUUID);
 			
-			if (first == null) continue;
+			if (first == null) {
+				firstTeam.remove(firstUUID);
+				continue;
+			}
+			if (firstTeam.isEmpty()) continue;
 			
 			PlayerManager fm = PlayerManager.get(firstUUID);
 			fm.removeRequest();
@@ -75,7 +79,11 @@ public class DuelManager {
 		for (UUID secondUUID : secondTeam) {
 			Player second = Bukkit.getPlayer(secondUUID);
 			
-			if (second == null) continue;
+			if (second == null) {
+				secondTeam.remove(secondUUID);
+				continue;
+			}
+			if (secondTeam.isEmpty()) continue;
 			
 			PlayerManager sm = PlayerManager.get(secondUUID);
 			sm.removeRequest();
@@ -128,6 +136,7 @@ public class DuelManager {
 		Iterator<UUID> specIt = duel.getAllSpectators().iterator();
 		while (specIt.hasNext()) {
 			Player spec = Bukkit.getPlayer(specIt.next());
+			if(spec == null) continue;
 			PlayerManager sm = PlayerManager.get(specIt.next());
 			
 			spec.setAllowFlight(false);
@@ -154,11 +163,10 @@ public class DuelManager {
         List<UUID> duelPlayerUUID = Lists.newArrayList(duel.getFirstTeam());
         duelPlayerUUID.addAll(duel.getSecondTeam());
         
-        Iterator<UUID> duelIt = duelPlayerUUID.iterator(); 
-		while (duelIt.hasNext()) {
-			Player duelPlayer = Bukkit.getPlayer(duelIt.next());
+		for (UUID dpUUID : duelPlayerUUID) {
+			Player duelPlayer = Bukkit.getPlayer(dpUUID);
 			if (duelPlayer == null) continue;
-			PlayerManager dpm = PlayerManager.get(duelIt.next());
+			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 			duelPlayer.extinguish();
@@ -170,8 +178,8 @@ public class DuelManager {
 			
 			EnderDelay.getInstance().removeCooldown(duelPlayer);
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
-			duelIt.remove();
 		}
+		duelPlayerUUID.clear();
 		if (duel.hasRemainingRound() && (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty())) {
 			duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
 			return;
@@ -201,7 +209,7 @@ public class DuelManager {
 				if (num <= 0) {
 					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has stated!", Sound.FIREWORK_BLAST);
 					duel.showDuelPlayer();
-					duel.setDuelPlayersStatusToDuel();
+					duel.setDuelPlayersStatusTo(PlayerStatus.DUEL);
 					cooldown.remove(duel);
 					this.cancel();
 				}
@@ -210,10 +218,16 @@ public class DuelManager {
 					cooldown.put(duel, num--);
 				}
 			}
-		}.runTaskTimer(Main.getInstance(), 20L, 20L);
+		}.runTaskTimer(Main.getInstance(), 10L, 20L);
 	}
 	
 	private void teleportRandomArena(Duel duel) {
+		if (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty()) {
+        	duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
+        	duel.setRound(0);
+        	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1));
+        	return;
+        }
 		Random random = new Random();
 		int pickedArena = random.nextInt(Main.getInstance().arenaList.size()) + 1;
 		
@@ -222,8 +236,8 @@ public class DuelManager {
 			
 			if (first == null) continue;
 			
-			this.uuidIdentifierToDuel.put(firstUUID, duel);
 			PlayerManager pmf = PlayerManager.get(firstUUID);
+			this.uuidIdentifierToDuel.put(firstUUID, duel);
 			
 			pmf.heal();
 			first.setNoDamageTicks(50);
@@ -239,8 +253,8 @@ public class DuelManager {
 			
 			if (second == null) continue;
 			
-			this.uuidIdentifierToDuel.put(secondUUID, duel);
 			PlayerManager pms = PlayerManager.get(secondUUID);
+			this.uuidIdentifierToDuel.put(secondUUID, duel);
 			
 			pms.heal();
 			second.setNoDamageTicks(50);
@@ -254,21 +268,19 @@ public class DuelManager {
 		sendWaitingMessage(duel);
 	}
 	
-	public void removePlayerFromDuel(Player player, boolean disconnect) {
+	public void removePlayerFromDuel(Player player) {
 		Duel currentDuel = getDuelFromPlayerUUID(player.getUniqueId());
 		
 		if (currentDuel == null) return;
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
 		
 		InvView.getInstance().saveInv(player);
-		currentDuel.sendMessage(player.getName() + (!disconnect ? " has been killed" : " has disconnected") + (player.getKiller() != null ? (!disconnect ? " by " : " while fighting ") + player.getKiller().getName() : ""));
+		currentDuel.sendMessage(player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : ""));
 		
 		if (currentDuel.getFirstTeam().contains(player.getUniqueId())) {
 			currentDuel.killFirstTeamPlayer(player.getUniqueId());
-			if (disconnect) currentDuel.removeFirstTeamPlayer(player.getUniqueId());
 		} else {
 			currentDuel.killSecondTeamPlayer(player.getUniqueId());
-			if (disconnect) currentDuel.removeSecondTeamPlayer(player.getUniqueId());
 		}
 		
 		if (currentDuel.getFirstTeamAlive().isEmpty()) {
@@ -290,10 +302,10 @@ public class DuelManager {
                 	public void run() {
                 		if (lastPlayers != null) {
                 			lastPlayers.teleport(Main.getInstance().getSpawnLocation());
-                			PlayerManager.get(lastPlayersUUID).giveSpawnItem();
+                			PlayerManager.get(lastPlayers.getUniqueId()).giveSpawnItem();
                 		}
                 	}
-                }.runTaskLaterAsynchronously(Main.getInstance(), 40L);
+                }.runTaskLater(Main.getInstance(), 40L);
             }
 			endDuel(currentDuel, 2);
 		} else if (currentDuel.getSecondTeamAlive().isEmpty()) {
@@ -315,10 +327,10 @@ public class DuelManager {
                 	public void run() {
                 		if (lastPlayers != null) {
                 			lastPlayers.teleport(Main.getInstance().getSpawnLocation());
-                			PlayerManager.get(lastPlayersUUID).giveSpawnItem();
+                			PlayerManager.get(lastPlayers.getUniqueId()).giveSpawnItem();
                 		}
                 	}
-                }.runTaskLaterAsynchronously(Main.getInstance(), 40L);
+                }.runTaskLater(Main.getInstance(), 40L);
             }
 			endDuel(currentDuel, 1);
 		}

@@ -117,5 +117,6 @@ public class Messages {
 	    	duelPlayer.spigot().sendMessage(invTxt);
 	    	if (duel.hasSpectator()) duelPlayer.sendMessage(spectatorMessage);
 	    }
+	    duelPlayers.clear();
 	}
 }

@@ -35,25 +35,27 @@ public class EnderDelay implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getPlayer() instanceof Player) {
 			Player player = event.getPlayer();
-			if (event.hasItem()) {
-				ItemStack item = event.getItem();
-				if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && player.getGameMode() != GameMode.CREATIVE) {
-					if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL) {
-						if (isEnderPearlCooldownActive(player)) {
-							event.setUseItemInHand(Result.DENY);
-							double time = getEnderPearlCooldown(player) / 1000.0D;
-							DecimalFormat df = new DecimalFormat("0.0");
-							player.sendMessage(ChatColor.DARK_AQUA + "Pearl cooldown: " + ChatColor.YELLOW + df.format(time) + " second" + (time > 1.0D ? "s" : ""));
-							player.updateInventory();
-						} else {
-							applyCooldown(player);
-						}
-					} else {
-						event.setUseItemInHand(Result.DENY);
-						player.sendMessage(ChatColor.RED + "You cannot use enderpearl here!");
-						player.updateInventory();
-					}
+			
+			if (!event.hasItem()) {
+				return;
+			}
+			ItemStack item = event.getItem();
+			if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && player.getGameMode() != GameMode.CREATIVE) {
+				if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
+					event.setUseItemInHand(Result.DENY);
+					player.sendMessage(ChatColor.RED + "You cannot use enderpearl here!");
+					player.updateInventory();
+					return;
 				}
+				if (!isEnderPearlCooldownActive(player)) {
+					applyCooldown(player);
+					return;
+				}
+				event.setUseItemInHand(Result.DENY);
+				double time = getEnderPearlCooldown(player) / 1000.0D;
+				DecimalFormat df = new DecimalFormat("#.#");
+				player.sendMessage(ChatColor.DARK_AQUA + "Pearl cooldown: " + ChatColor.YELLOW + df.format(time) + " second" + (time > 1.0D ? "s" : ""));
+				player.updateInventory();
 			}
 		}
 	}
@@ -63,23 +65,17 @@ public class EnderDelay implements Listener {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
 			
-			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
-				event.setCancelled(true);
-			}
+			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) event.setCancelled(true);
 		}
 	}
 
 	public boolean isEnderPearlCooldownActive(Player player) {
-		if (!this.enderpearlCooldown.containsKey(player.getUniqueId())) {
-			return false;
-		}
+		if (!this.enderpearlCooldown.containsKey(player.getUniqueId())) return false;
 		return this.enderpearlCooldown.get(player.getUniqueId()).longValue() > System.currentTimeMillis();
 	}
 
 	public long getEnderPearlCooldown(Player player) {
-		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) {
-			return Math.max(0L, this.enderpearlCooldown.get(player.getUniqueId()).longValue() - System.currentTimeMillis());
-		}
+		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) return Math.max(0L, this.enderpearlCooldown.get(player.getUniqueId()).longValue() - System.currentTimeMillis());
 		return 0L;
 	}
 
