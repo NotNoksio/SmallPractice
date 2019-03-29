@@ -95,13 +95,11 @@ public class Duel {
 	}
 	
 	public void sendSoundedMessage(String message, Sound sound) {
-		List<UUID> duelPlayers = Lists.newArrayList(getFirstTeam());
-		duelPlayers.addAll(getSecondTeam());
+		List<UUID> duelPlayers = Lists.newArrayList(getFirstAndSecondTeams());
 		duelPlayers.addAll(getAllSpectators());
 		
 		for (UUID uuid : duelPlayers) {
 			Player player = Bukkit.getPlayer(uuid);
-			
 			if (player == null) continue;
 			
 			player.sendMessage(message);
@@ -129,9 +127,9 @@ public class Duel {
 		for (Player first : firstTeamPlayer) {
 			if (!first.canSee(first)) first.showPlayer(first);
 			for (Player second : secondTeamPlayer) {
+				if (!second.canSee(second)) second.showPlayer(second);
 				if (!first.canSee(second)) first.showPlayer(second);
 				if (!second.canSee(first)) second.showPlayer(first);
-				if (!second.canSee(second)) second.showPlayer(second);
 			}
 		}
 		firstTeamPlayer.clear();

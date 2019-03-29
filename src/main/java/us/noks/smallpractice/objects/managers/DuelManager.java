@@ -181,7 +181,7 @@ public class DuelManager {
 		}
 		duelPlayerUUID.clear();
 		if (duel.hasRemainingRound() && (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty())) {
-			duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
+			duel.sendMessage(Messages.getInstance().EMPTY_TEAM);
 			return;
 		}
 		if (duel.hasRemainingRound() && !duel.getFirstTeam().isEmpty() && !duel.getSecondTeam().isEmpty()) {
@@ -223,7 +223,7 @@ public class DuelManager {
 	
 	private void teleportRandomArena(Duel duel) {
 		if (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty()) {
-        	duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
+        	duel.sendMessage(Messages.getInstance().EMPTY_TEAM);
         	duel.setRound(0);
         	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1));
         	return;

@@ -1,6 +1,7 @@
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\AcceptCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\listeners\PlayerListener.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\ForceDuelCommand.java
+C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\utils\TtlHashMap.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\party\Party.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\PingCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\managers\EloManager.java
@@ -8,7 +9,6 @@ C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\sma
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\listeners\InventoryListener.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\listeners\EnderDelay.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\utils\Messages.java
-C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\DayCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\enums\PlayerStatus.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\BuildCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\InventoryCommand.java

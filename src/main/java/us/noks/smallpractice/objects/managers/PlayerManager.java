@@ -297,18 +297,17 @@ public class PlayerManager {
 		
 		ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
 		ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
-		ItemStack heal = new ItemStack(Material.POTION, 1, (short) 16421);
 		ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 		ItemStack fire = new ItemStack(Material.POTION, 1, (short) 8259);
+		
+		while (getPlayer().getInventory().firstEmpty() != -1) {
+			getPlayer().getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
+		}
 		
 		getPlayer().getInventory().setHelmet(hel);
 		getPlayer().getInventory().setChestplate(che);
 		getPlayer().getInventory().setLeggings(leg);
 		getPlayer().getInventory().setBoots(boo);
-		
-		for (int i = 0; i < 36; i++) {
-			getPlayer().getInventory().setItem(i, heal);
-		}
 		
 		getPlayer().getInventory().setItem(0, swo);
 		getPlayer().getInventory().setItem(1, pearl);
@@ -319,14 +318,15 @@ public class PlayerManager {
 		getPlayer().getInventory().setItem(17, speed);
 		getPlayer().getInventory().setItem(26, speed);
 		getPlayer().getInventory().setItem(35, speed);
-		
 		getPlayer().updateInventory();
 	}
 	
 	public void hideAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
-			getPlayer().hidePlayer(allPlayers);
-			if (get(allPlayers.getUniqueId()).getStatus() != PlayerStatus.MODERATION) allPlayers.hidePlayer(getPlayer());
+			if (getPlayer().canSee(allPlayers)) getPlayer().hidePlayer(allPlayers);
+			if (get(allPlayers.getUniqueId()).getStatus() != PlayerStatus.MODERATION) {
+				if (allPlayers.canSee(getPlayer())) allPlayers.hidePlayer(getPlayer());
+			}
 		}
 	}
 	
@@ -334,11 +334,15 @@ public class PlayerManager {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			PlayerManager pm = get(allPlayers.getUniqueId());
 			
-			if (pm.getStatus() != PlayerStatus.MODERATION) getPlayer().showPlayer(allPlayers);
-			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) allPlayers.showPlayer(getPlayer());
+			if (pm.getStatus() != PlayerStatus.MODERATION) {
+				if (!getPlayer().canSee(allPlayers)) getPlayer().showPlayer(allPlayers);
+			}
+			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
+				if (!allPlayers.canSee(getPlayer())) allPlayers.showPlayer(getPlayer());
+			}
 			if (pm.getStatus() == PlayerStatus.MODERATION) {
-				allPlayers.showPlayer(getPlayer());
-				getPlayer().hidePlayer(allPlayers);
+				if (!allPlayers.canSee(getPlayer())) allPlayers.showPlayer(getPlayer());
+				if (getPlayer().canSee(allPlayers)) getPlayer().hidePlayer(allPlayers);
 			}
 		}
 	}
@@ -438,6 +442,7 @@ public class PlayerManager {
 	}
 	
 	public void heal() {
+		if (getPlayer().isDead()) getPlayer().spigot().respawn();
 		getPlayer().setHealth(20.0D);
 		getPlayer().clearPotionEffect();
 		getPlayer().extinguish();

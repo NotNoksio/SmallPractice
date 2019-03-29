@@ -40,6 +40,7 @@ public class Messages {
 	public String TARGET_ARENT_IN_THE_SPAWN = ChatColor.RED + "This player is not in the spawn!";
 	public String TARGET_OR_PLAYER_ARENT_IN_THE_SPAWN = ChatColor.RED + "Either you or this player are not in the spawn!";
 	public String NO_REQUEST_FOUND = ChatColor.RED + "No request found!";
+	public String EMPTY_TEAM = ChatColor.RED + "The duel has been cancelled due to an empty team.";
 	
 	public String CONTACT_NOKSIO = ChatColor.RED + "Please contact Noksio!";
 	
@@ -70,6 +71,7 @@ public class Messages {
 	    
 	    for (UUID wUUID : winnerTeam) {
 	    	Player winners = Bukkit.getPlayer(wUUID);
+	    	if (winners == null) continue;
 	    	TextComponent wtxt = new TextComponent();
 	    	
 	    	wtxt.setText(winners.getName());
@@ -80,9 +82,9 @@ public class Messages {
 		    inventoriesTextList.add(new TextComponent(" "));
 		    inventoriesTextList.add(wtxt);
 	    }
-	    
 	    for (UUID lUUID : loserTeam) {
 	    	Player losers = Bukkit.getPlayer(lUUID);
+	    	if (losers == null) continue;
 	    	TextComponent ltxt = new TextComponent();
 	    	
 	    	ltxt.setText(losers.getName());
@@ -117,6 +119,5 @@ public class Messages {
 	    	duelPlayer.spigot().sendMessage(invTxt);
 	    	if (duel.hasSpectator()) duelPlayer.sendMessage(spectatorMessage);
 	    }
-	    duelPlayers.clear();
 	}
 }

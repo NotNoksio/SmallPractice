@@ -3,7 +3,9 @@ package us.noks.smallpractice.objects.managers;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -15,6 +17,7 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.utils.DuelRequest;
 import us.noks.smallpractice.utils.Messages;
+import us.noks.smallpractice.utils.TtlHashMap;
 
 public class RequestManager {
 	
@@ -26,6 +29,9 @@ public class RequestManager {
 	private Map<UUID, Map<UUID, DuelRequest>> duelRequestMap = Maps.newHashMap();
 	
 	public void addDuelRequest(Player requested, Player requester, DuelRequest request) {
+		if (!this.hasDuelRequests(requested)) {
+            this.duelRequestMap.put(requested.getUniqueId(), new TtlHashMap<UUID, DuelRequest>(TimeUnit.SECONDS, 10L));
+        }
         this.duelRequestMap.get(requested.getUniqueId()).put(requester.getUniqueId(), request);
     }
     
@@ -42,6 +48,7 @@ public class RequestManager {
     }
     
     public DuelRequest getDuelRequest(Player requested, Player requester) {
+    	Validate.notNull(duelRequestMap.get(requested.getUniqueId()).get(requester.getUniqueId()));
         return this.duelRequestMap.get(requested.getUniqueId()).get(requester.getUniqueId());
     }
     
