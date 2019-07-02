@@ -23,9 +23,8 @@ public class Duel {
 	private List<UUID> secondTeamAlive;
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
-	private int round;
 	
-	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked, int round) {
+	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
 		this.firstTeam = Lists.newArrayList(firstTeam);
@@ -33,7 +32,6 @@ public class Duel {
 		this.firstTeamAlive = Lists.newArrayList(firstTeam);
 		this.secondTeamAlive = Lists.newArrayList(secondTeam);
 		this.ranked = ranked;
-		this.round = round;
 	}
 	
 	public List<UUID> getFirstTeam() {
@@ -99,7 +97,7 @@ public class Duel {
 		duelPlayers.addAll(getAllSpectators());
 		
 		for (UUID uuid : duelPlayers) {
-			Player player = Bukkit.getPlayer(uuid);
+			final Player player = Bukkit.getPlayer(uuid);
 			if (player == null) continue;
 			
 			player.sendMessage(message);
@@ -115,12 +113,12 @@ public class Duel {
 		List<Player> firstTeamPlayer = Lists.newArrayList();
 		List<Player> secondTeamPlayer = Lists.newArrayList();
 		for (UUID firstTeamUUID : this.firstTeamAlive) {
-			Player first = Bukkit.getPlayer(firstTeamUUID);
+			final Player first = Bukkit.getPlayer(firstTeamUUID);
 			if (first == null) continue;
 			firstTeamPlayer.add(first);
 		}
 		for (UUID secondTeamUUID : this.secondTeamAlive) {
-			Player second = Bukkit.getPlayer(secondTeamUUID);
+			final Player second = Bukkit.getPlayer(secondTeamUUID);
 			if (second == null) continue;
 			secondTeamPlayer.add(second);
 		}
@@ -150,18 +148,6 @@ public class Duel {
 
 	public void setSecondTeamPartyLeaderUUID(UUID secondTeamPartyLeaderUUID) {
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
-	}
-	
-	public int getRound() {
-		return this.round;
-	}
-	
-	public void setRound(int newRound) {
-		this.round = newRound;
-	}
-	
-	public boolean hasRemainingRound() {
-		return this.round > 0;
 	}
 	
 	public boolean containPlayer(Player player) {

@@ -36,15 +36,14 @@ import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.QueueManager;
 
 public class Main extends JavaPlugin {
-	
 	private Location arena1_Pos1, arena2_Pos1;
 	private Location arena1_Pos2, arena2_Pos2;
 	private Location spawnLocation;
 	private Inventory roundInventory;
 	
-	public Map<Integer, Location[]> arenaList = Maps.newConcurrentMap();
+	private Map<Integer, Location[]> arenaList = Maps.newConcurrentMap();
 	
-	public static Main instance;
+	private static Main instance;
 	public static Main getInstance() {
 		return instance;
 	}
@@ -122,5 +121,9 @@ public class Main extends JavaPlugin {
 			
 	        this.roundInventory.setItem(i - 1, arrow);
     	}
+	}
+	
+	public Map<Integer, Location[]> getArenaList() {
+		return this.arenaList;
 	}
 }

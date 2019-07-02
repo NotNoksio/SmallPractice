@@ -19,8 +19,7 @@ import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 
 public class PartyManager {
-	
-	static PartyManager instance = new PartyManager();
+	private static PartyManager instance = new PartyManager();
 	public static PartyManager getInstance() {
 		return instance;
 	}

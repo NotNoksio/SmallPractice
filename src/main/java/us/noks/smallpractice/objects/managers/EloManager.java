@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 import net.minecraft.util.com.google.common.collect.Maps;
 
 public class EloManager {
-	
-	public static EloManager instance = new EloManager();
+	private static EloManager instance = new EloManager();
 	public static EloManager getInstance() {
 		return instance;
 	}

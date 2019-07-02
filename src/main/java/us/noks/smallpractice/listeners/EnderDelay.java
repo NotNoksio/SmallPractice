@@ -22,24 +22,23 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class EnderDelay implements Listener {
-
-	public static EnderDelay instance = new EnderDelay();
+	private static EnderDelay instance = new EnderDelay();
 	public static EnderDelay getInstance() {
 		return instance;
 	}
 	
 	private Map<UUID, Long> enderpearlCooldown = Maps.newConcurrentMap();
-	private int cooldowntime = 14;
+	private final  int cooldowntime = 14;
 
 	@EventHandler(priority=EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getPlayer() instanceof Player) {
-			Player player = event.getPlayer();
+			final Player player = event.getPlayer();
 			
 			if (!event.hasItem()) {
 				return;
 			}
-			ItemStack item = event.getItem();
+			final ItemStack item = event.getItem();
 			if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && player.getGameMode() != GameMode.CREATIVE) {
 				if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 					event.setUseItemInHand(Result.DENY);
@@ -52,8 +51,8 @@ public class EnderDelay implements Listener {
 					return;
 				}
 				event.setUseItemInHand(Result.DENY);
-				double time = getEnderPearlCooldown(player) / 1000.0D;
-				DecimalFormat df = new DecimalFormat("#.#");
+				final double time = getEnderPearlCooldown(player) / 1000.0D;
+				final DecimalFormat df = new DecimalFormat("#.#");
 				player.sendMessage(ChatColor.DARK_AQUA + "Pearl cooldown: " + ChatColor.YELLOW + df.format(time) + " second" + (time > 1.0D ? "s" : ""));
 				player.updateInventory();
 			}
@@ -63,27 +62,27 @@ public class EnderDelay implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onTeleport(EnderpearlLandEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
-			Player player = (Player) event.getEntity().getShooter();
+			final Player player = (Player) event.getEntity().getShooter();
 			
 			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) event.setCancelled(true);
 		}
 	}
 
-	public boolean isEnderPearlCooldownActive(Player player) {
+	public boolean isEnderPearlCooldownActive(final Player player) {
 		if (!this.enderpearlCooldown.containsKey(player.getUniqueId())) return false;
 		return this.enderpearlCooldown.get(player.getUniqueId()).longValue() > System.currentTimeMillis();
 	}
 
-	public long getEnderPearlCooldown(Player player) {
+	public long getEnderPearlCooldown(final Player player) {
 		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) return Math.max(0L, this.enderpearlCooldown.get(player.getUniqueId()).longValue() - System.currentTimeMillis());
 		return 0L;
 	}
 
-	public void applyCooldown(Player player) {
+	public void applyCooldown(final Player player) {
 		this.enderpearlCooldown.put(player.getUniqueId(), Long.valueOf(System.currentTimeMillis() + this.cooldowntime * 1000));
 	}
 
-	public void removeCooldown(Player player) {
+	public void removeCooldown(final Player player) {
 		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) this.enderpearlCooldown.remove(player.getUniqueId());
 	}
 }

@@ -1,7 +1,6 @@
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\AcceptCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\listeners\PlayerListener.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\ForceDuelCommand.java
-C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\utils\TtlHashMap.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\party\Party.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\PingCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\managers\EloManager.java
@@ -12,6 +11,7 @@ C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\sma
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\enums\PlayerStatus.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\BuildCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\InventoryCommand.java
+C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\MatchStats.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\utils\InvView.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\party\PartyState.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\managers\RequestManager.java
@@ -20,7 +20,6 @@ C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\sma
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\Duel.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\Main.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\objects\managers\DuelManager.java
-C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\utils\DuelRequest.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\listeners\ServerListeners.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\commands\ModerationCommand.java
 C:\Users\blues\eclipse-workspace-plugins\smallpractice\src\main\java\us\noks\smallpractice\listeners\ChatListener.java

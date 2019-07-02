@@ -7,8 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
-import us.noks.smallpractice.utils.DuelRequest;
 import us.noks.smallpractice.utils.Messages;
 
 public class AcceptCommand implements CommandExecutor {
@@ -32,12 +32,11 @@ public class AcceptCommand implements CommandExecutor {
 				player.sendMessage(Messages.getInstance().NOT_YOURSELF);
 				return false;
 			}
-			DuelRequest request = RequestManager.getInstance().getDuelRequest(player, dueler);
-			if (request == null) {
+			if (PlayerManager.get(dueler.getUniqueId()).getRequestTo() != player.getUniqueId()) {
 				player.sendMessage(Messages.getInstance().NO_REQUEST_FOUND);
 				return false;
 			}
-			RequestManager.getInstance().acceptDuelRequest(player, dueler, request);
+			RequestManager.getInstance().acceptDuelRequest(player, dueler);
 		}
 		return true;
 	}

@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class DuelListener implements Listener {
@@ -15,11 +16,13 @@ public class DuelListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onFailedPotion(PotionSplashEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
-			Player shooter = (Player) event.getEntity().getShooter();
-			PlayerManager sm = PlayerManager.get(shooter.getUniqueId());
+			final Player shooter = (Player) event.getEntity().getShooter();
+			final PlayerManager sm = PlayerManager.get(shooter.getUniqueId());
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
-				sm.setFailedPotions(sm.getFailedPotions() + 1);
+				final MatchStats stats = sm.getMatchStats();
+				int cacheFailedPotions = stats.getFailedPotions();
+				stats.setFailedPotions(cacheFailedPotions++);
 			}
 		}
 	}
@@ -27,19 +30,21 @@ public class DuelListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
-            Player damaged = (Player)e.getEntity();
-            Player attacker = (Player)e.getDamager();
+            final Player damaged = (Player)e.getEntity();
+            final Player attacker = (Player)e.getDamager();
             
-            PlayerManager dm = PlayerManager.get(damaged.getUniqueId());
-            PlayerManager am = PlayerManager.get(attacker.getUniqueId());
+            final PlayerManager dm = PlayerManager.get(damaged.getUniqueId());
+            final PlayerManager am = PlayerManager.get(attacker.getUniqueId());
             
             if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) {
-            	am.setHit(am.getHit() + 1);
-            	am.setCombo(am.getCombo() + 1);
-            	if(dm.getCombo() > dm.getLongestCombo()) {
-            		dm.setLongestCombo(dm.getCombo());
+            	final MatchStats damagedStats = dm.getMatchStats();
+            	final MatchStats attackerStats = am.getMatchStats();
+            	attackerStats.setHit(attackerStats.getHit() + 1);
+            	attackerStats.setCombo(attackerStats.getCombo() + 1);
+            	if(damagedStats.getCombo() > damagedStats.getLongestCombo()) {
+            		damagedStats.setLongestCombo(damagedStats.getCombo());
             	}
-            	dm.setCombo(0);
+            	damagedStats.setCombo(0);
             }
         }
     }

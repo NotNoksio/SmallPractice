@@ -1,6 +1,6 @@
 main: us.noks.smallpractice.Main
 name: SmallPractice
-version: 1.5
+version: 2.0
 author: Noksio
 depend: [PermissionsEx]
 commands:
@@ -8,7 +8,9 @@ commands:
   accept:
   build:
   ping:
+    aliases: [ms]
   inventory:
+    aliases: [inv]
   spawn:
   seeall:
   report:
@@ -16,5 +18,7 @@ commands:
     aliases: [spec]
   mod:
   party:
+    aliases: [team]
   forceduel:
+    aliases: [fd]
   

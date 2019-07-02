@@ -57,7 +57,7 @@ public class QueueManager {
 			
 			this.queue.remove(first.getUniqueId());
 			this.queue.remove(second.getUniqueId());
-			DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, ranked, 1);
+			DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, ranked);
 		}
 	}
 	

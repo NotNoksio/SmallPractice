@@ -42,7 +42,9 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
+		
+		PlayerManager.create(player.getUniqueId());
 		
 		player.setExp(0.0F);
 		player.setLevel(0);
@@ -65,7 +67,7 @@ public class PlayerListener implements Listener {
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
-			PlayerManager pmAll = PlayerManager.get(allPlayers.getUniqueId());
+			final PlayerManager pmAll = PlayerManager.get(allPlayers.getUniqueId());
 			if (pmAll.getStatus() == PlayerStatus.WAITING || pmAll.getStatus() == PlayerStatus.DUEL || pmAll.getStatus() == PlayerStatus.MODERATION) {
 				player.hidePlayer(allPlayers);
 			}
@@ -75,10 +77,10 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onQuit(PlayerQuitEvent event) {
 		event.setQuitMessage(null);
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		
         if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
-        	Party party = PartyManager.getInstance().getParty(player.getUniqueId());
+        	final Party party = PartyManager.getInstance().getParty(player.getUniqueId());
             if (party.getLeader().equals(player.getUniqueId())) {
             	PartyManager.getInstance().transferLeader(player.getUniqueId());
             } else {
@@ -101,16 +103,16 @@ public class PlayerListener implements Listener {
 		event.setDroppedExp(0);
 		
 		if (event.getEntity() instanceof Player) {
-			Player killed = event.getEntity();
+			final Player killed = event.getEntity();
 			DuelManager.getInstance().removePlayerFromDuel(killed);
 		}
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onRespawn(PlayerRespawnEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		
-		if (DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()) == null || !DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()).hasRemainingRound()) {
+		if (DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()) == null) {
 			player.getInventory().clear();
 			player.getInventory().setArmorContents(null);
 
@@ -125,8 +127,8 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onVoidDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
-			Player player = (Player) event.getEntity();
-			PlayerManager pm = PlayerManager.get(player.getUniqueId());
+			final Player player = (Player) event.getEntity();
+			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
 			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
 				switch (event.getCause()) {
@@ -147,8 +149,8 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDamage(EntityDamageByEntityEvent event) {
 		if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-			Player attacked = (Player) event.getEntity();
-			Player attacker = (Player) event.getDamager();
+			final Player attacked = (Player) event.getEntity();
+			final Player attacker = (Player) event.getDamager();
 				
 			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.MODERATION) {
 				event.setDamage(0.0D);
@@ -167,16 +169,16 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onReceiveDrop(PlayerPickupItemEvent event) {
 		if (event.getItem().getOwner() instanceof Player) {
-			Player receiver = event.getPlayer();
-			Player owner = (Player) event.getItem().getOwner();
-			PlayerManager pm = PlayerManager.get(receiver.getUniqueId());
+			final Player receiver = event.getPlayer();
+			final Player owner = (Player) event.getItem().getOwner();
+			final PlayerManager pm = PlayerManager.get(receiver.getUniqueId());
 			
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
 				event.setCancelled(true);
 				return;
 			}
 			if (DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
-				Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId());
+				final Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId());
 				
 				if (!currentDuel.getFirstTeam().contains(owner.getUniqueId()) && !currentDuel.getSecondTeam().contains(owner.getUniqueId())) event.setCancelled(true);
 				return;
@@ -195,11 +197,11 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onClickItem(PlayerInteractEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
         if (player.getInventory().getItemInHand() == null || !player.getInventory().getItemInHand().hasItemMeta() || !player.getInventory().getItemInHand().getItemMeta().hasDisplayName()) {
             return;
         }
-        ItemStack item = player.getItemInHand();
+        final ItemStack item = player.getItemInHand();
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
         	PlayerManager pm = PlayerManager.get(player.getUniqueId());
         	
@@ -223,8 +225,8 @@ public class PlayerListener implements Listener {
 		                break;
 		            }
 				} else {
-					Party currentParty = PartyManager.getInstance().getParty(player.getUniqueId());
-					boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
+					final Party currentParty = PartyManager.getInstance().getParty(player.getUniqueId());
+					final boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
 					
 					if (item.getType() == Material.ARROW && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "split teams")) {
 						if (!isPartyLeader) {
@@ -270,8 +272,8 @@ public class PlayerListener implements Listener {
 			case SPECTATE:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave spectate")) {
 	                event.setCancelled(true);
-	                Player spectatePlayer = pm.getSpectate();
-	                Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
+	                final Player spectatePlayer = pm.getSpectate();
+	                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
 	                
 	        		spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
 	        		spectatedDuel.removeSpectator(player.getUniqueId());
@@ -299,7 +301,7 @@ public class PlayerListener implements Listener {
 	                for (Player onlinePlayers : Bukkit.getOnlinePlayers()) {
 	                	if (onlinePlayers == player) continue;
 	                	
-	                	PlayerManager om = PlayerManager.get(onlinePlayers.getUniqueId());
+	                	final PlayerManager om = PlayerManager.get(onlinePlayers.getUniqueId());
 	                	if (om.getStatus() == PlayerStatus.MODERATION) continue;
 	                	
 	                	online.add(onlinePlayers);
@@ -308,7 +310,7 @@ public class PlayerListener implements Listener {
 	                	player.sendMessage(ChatColor.RED + "No player to agree.");
 	                	return;
 	                }
-	                Player tooked = online.get(new Random().nextInt(online.size()));
+	                final Player tooked = online.get(new Random().nextInt(online.size()));
 	                
 	                player.teleport(tooked.getLocation().clone().add(0, 2, 0));
 	                player.sendMessage(ChatColor.GREEN + "You've been teleported to " + tooked.getName());
@@ -324,7 +326,7 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onFeed(FoodLevelChangeEvent event) {
 		if (event.getEntity() instanceof Player) {
-			Player player = (Player) event.getEntity();
+			final Player player = (Player) event.getEntity();
 			
 			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
@@ -335,8 +337,8 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPotionEffectAdd(PotionEffectAddEvent event) {
 		if (event.getEntity() instanceof Player) {
-			Player affected = (Player) event.getEntity();
-			PlayerManager pm = PlayerManager.get(affected.getUniqueId());
+			final Player affected = (Player) event.getEntity();
+			final PlayerManager pm = PlayerManager.get(affected.getUniqueId());
 			
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
 				event.setCancelled(true);

@@ -19,11 +19,11 @@ import org.bukkit.potion.PotionEffect;
 import com.google.common.collect.Lists;
 
 import net.minecraft.util.com.google.common.collect.Maps;
+import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class InvView {
-
-	static InvView instance = new InvView();
+	private static InvView instance = new InvView();
 	public static InvView getInstance() {
 		return instance;
 	}
@@ -31,14 +31,14 @@ public class InvView {
     private Map<UUID, Inventory> inventorymap = Maps.newHashMap();
     
 	public void saveInv(Player player) {
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final MatchStats stats = PlayerManager.get(player.getUniqueId()).getMatchStats();
 		
-		pm.setLastFailedPotions(pm.getFailedPotions());
-		pm.setFailedPotions(0);
-		if(pm.getCombo() > pm.getLongestCombo()) {
-    		pm.setLongestCombo(pm.getCombo());
+		stats.setLastFailedPotions(stats.getFailedPotions());
+		stats.setFailedPotions(0);
+		if(stats.getCombo() > stats.getLongestCombo()) {
+			stats.setLongestCombo(stats.getCombo());
     	}
-		pm.setCombo(0);
+		stats.setCombo(0);
 		
 		Inventory inv = Bukkit.createInventory(null, 54, ChatColor.RED + player.getName() + "'s Inventory");
 		
@@ -49,8 +49,8 @@ public class InvView {
 			inv.setItem(i, player.getInventory().getItem(i + 9));
 		}
 		
-		ItemStack noarmor = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
-		ItemMeta nm = noarmor.getItemMeta();
+		final ItemStack noarmor = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+		final ItemMeta nm = noarmor.getItemMeta();
 		nm.setDisplayName(ChatColor.RED + "No Armor");
 		noarmor.setItemMeta(nm);
 		
@@ -60,37 +60,37 @@ public class InvView {
 		inv.setItem(39, (player.getInventory().getBoots() != null ? player.getInventory().getBoots() : noarmor));
 		
 		if (player.getHealth() > 0) {
-			ItemStack life = new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) player.getHealth()).intValue());
-			ItemMeta lm = life.getItemMeta();
+			final ItemStack life = new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) player.getHealth()).intValue());
+			final ItemMeta lm = life.getItemMeta();
 			lm.setDisplayName(ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(player.getHealth() / 2.0D) + ChatColor.RED + " hp");
 			life.setItemMeta(lm);
 			
 			inv.setItem(48, life);
 		} else {
-			ItemStack death = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.SKELETON.ordinal());
-			ItemMeta dm = death.getItemMeta();
+			final ItemStack death = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.SKELETON.ordinal());
+			final ItemMeta dm = death.getItemMeta();
 			dm.setDisplayName(ChatColor.DARK_AQUA + "Player Died");
 			death.setItemMeta(dm);
 			
 			inv.setItem(48, death);
 		}
 		
-		ItemStack food = new ItemStack(Material.COOKED_BEEF, player.getFoodLevel());
-		ItemMeta fm = food.getItemMeta();
+		final ItemStack food = new ItemStack(Material.COOKED_BEEF, player.getFoodLevel());
+		final ItemMeta fm = food.getItemMeta();
 		fm.setDisplayName(ChatColor.DARK_AQUA + "Food points: " + ChatColor.RESET + player.getFoodLevel());
 		food.setItemMeta(fm);
 		inv.setItem(49, food);
       
-		ItemStack potEffect = new ItemStack(Material.BREWING_STAND_ITEM, player.getActivePotionEffects().size());
-		ItemMeta pem = potEffect.getItemMeta();
+		final ItemStack potEffect = new ItemStack(Material.BREWING_STAND_ITEM, player.getActivePotionEffects().size());
+		final ItemMeta pem = potEffect.getItemMeta();
 		pem.setDisplayName(ChatColor.DARK_AQUA + "Potion Effects:");
 		List<String> potionEffectLore = Lists.newArrayList();
 		if (player.getActivePotionEffects().size() == 0) {
 			potionEffectLore.add(ChatColor.RED + "No potion effects");
 		} else {
 			for (PotionEffect pe : player.getActivePotionEffects()) {
-				int realtime = pe.getDuration() / 20;
-				String emp = convertToRoman(pe.getAmplifier() + 1);
+				final int realtime = pe.getDuration() / 20;
+				final String emp = convertToRoman(pe.getAmplifier() + 1);
           
 				potionEffectLore.add(ChatColor.GRAY + "-> " + ChatColor.RED + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.RESET + convertToPotionFormat(realtime));
 			}
@@ -99,30 +99,30 @@ public class InvView {
 		potEffect.setItemMeta(pem);
 		inv.setItem(50, potEffect);
       
-		int amount = (player.getInventory().contains(new ItemStack(Material.POTION, 1, (short)16421)) ? Integer.valueOf(player.getInventory().all(new ItemStack(Material.POTION, 1, (short)16421)).size()).intValue() : 0);
+		final int amount = (player.getInventory().contains(new ItemStack(Material.POTION, 1, (short)16421)) ? Integer.valueOf(player.getInventory().all(new ItemStack(Material.POTION, 1, (short)16421)).size()).intValue() : 0);
 		
-		ItemStack pots = new ItemStack(Material.POTION, amount > 64 ? 64 : amount, (short)16421);
-		ItemMeta po = pots.getItemMeta();
+		final ItemStack pots = new ItemStack(Material.POTION, amount > 64 ? 64 : amount, (short)16421);
+		final ItemMeta po = pots.getItemMeta();
 		po.setDisplayName(ChatColor.YELLOW.toString() + amount + ChatColor.DARK_AQUA + " health pot(s) left");
-		po.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + pm.getLastFailedPotions()));
+		po.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + stats.getLastFailedPotions()));
 		pots.setItemMeta(po);
 		inv.setItem(45, pots);
 		
-		ItemStack stats = new ItemStack(Material.DIAMOND_SWORD, 1);
-		ItemMeta sm = stats.getItemMeta();
+		final ItemStack statistics = new ItemStack(Material.DIAMOND_SWORD, 1);
+		final ItemMeta sm = statistics.getItemMeta();
 		sm.setDisplayName(ChatColor.GOLD + "Statistics");
-		sm.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + pm.getHit(), ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + pm.getLongestCombo()));
-		stats.setItemMeta(sm);
-		inv.setItem(46, stats);
+		sm.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + stats.getHit(), ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + stats.getLongestCombo()));
+		statistics.setItemMeta(sm);
+		inv.setItem(46, statistics);
       
 		this.inventorymap.put(player.getUniqueId(), inv);
 	}
     
-	public void openInv(Player player, UUID targetUUID) {
+	public void openInv(final Player player, final UUID targetUUID) {
 		if (this.inventorymap.containsKey(targetUUID)) player.openInventory(this.inventorymap.get(targetUUID));
 	}
     
-	private String convertToPotionFormat(long paramLong) {
+	private String convertToPotionFormat(final long paramLong) {
 		if (paramLong < 0L) {
 			return null;
 		}

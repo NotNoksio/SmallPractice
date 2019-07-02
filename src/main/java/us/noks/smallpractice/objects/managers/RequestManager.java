@@ -1,23 +1,20 @@
 package us.noks.smallpractice.objects.managers;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.util.com.google.common.collect.Maps;
-import us.noks.smallpractice.Main;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.party.Party;
-import us.noks.smallpractice.utils.DuelRequest;
 import us.noks.smallpractice.utils.Messages;
-import us.noks.smallpractice.utils.TtlHashMap;
 
 public class RequestManager {
 	
@@ -25,52 +22,45 @@ public class RequestManager {
 	public static RequestManager getInstance() {
 		return instance;
 	}
-	
-	private Map<UUID, Map<UUID, DuelRequest>> duelRequestMap = Maps.newHashMap();
-	
-	public void addDuelRequest(Player requested, Player requester, DuelRequest request) {
-		if (!this.hasDuelRequests(requested)) {
-            this.duelRequestMap.put(requested.getUniqueId(), new TtlHashMap<UUID, DuelRequest>(TimeUnit.SECONDS, 10L));
-        }
-        this.duelRequestMap.get(requested.getUniqueId()).put(requester.getUniqueId(), request);
-    }
-    
-    public boolean hasDuelRequestFromPlayer(Player requested, Player requester) {
-        return this.duelRequestMap.get(requested.getUniqueId()).containsKey(requester.getUniqueId());
-    }
-    
-    public boolean hasDuelRequests(Player player) {
-        return this.duelRequestMap.containsKey(player.getUniqueId());
-    }
-    
-    public void removeDuelRequest(Player player, Player requester) {
-        this.duelRequestMap.get(player.getUniqueId()).remove(requester.getUniqueId());
-    }
-    
-    public DuelRequest getDuelRequest(Player requested, Player requester) {
-    	Validate.notNull(duelRequestMap.get(requested.getUniqueId()).get(requester.getUniqueId()));
-        return this.duelRequestMap.get(requested.getUniqueId()).get(requester.getUniqueId());
-    }
     
     public void sendDuelRequest(Player requester, Player requested) {
 		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(Messages.getInstance().TARGET_OR_PLAYER_ARENT_IN_THE_SPAWN);
 			return;
 		}
+		TextComponent l1 = new TextComponent();
+		l1.setText(requester.getName());
+		l1.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+	    
+		TextComponent l1a = new TextComponent();
+		l1a.setText(" has requested to duel ");
+		l1a.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+	    
+		TextComponent l1b = new TextComponent();
+		l1b.setText("Click here to accept.");
+		l1b.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+		l1b.setBold(true);
+		l1b.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
+		l1b.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + requester.getName()));
+	    
+		l1.addExtra(l1a);
+		l1.addExtra(l1b);
+	    
+		requested.spigot().sendMessage(l1);
+		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
 		PlayerManager.get(requester.getUniqueId()).setRequestTo(requested.getUniqueId());
-		requester.openInventory(Main.getInstance().getRoundInventory());
 	}
 	
-	public void acceptDuelRequest(Player requested, Player requester, DuelRequest duelrequest) {
+	public void acceptDuelRequest(Player requested, Player requester) {
 		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(Messages.getInstance().TARGET_OR_PLAYER_ARENT_IN_THE_SPAWN);
 			return;
 		}
-		if (!hasDuelRequestFromPlayer(requested, requester)) {
+		if (PlayerManager.get(requester.getUniqueId()).getRequestTo() != requested.getUniqueId()) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
 			return;
 		}
-		removeDuelRequest(requested, requester);
+		PlayerManager.get(requester.getUniqueId()).setRequestTo(null);
 		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
         Party requestedParty = PartyManager.getInstance().getParty(requested.getUniqueId());
         if ((requesterParty != null && requestedParty == null) || (requestedParty != null && requesterParty == null)) {
@@ -78,7 +68,7 @@ public class RequestManager {
             return;
         }
 		if (requestedParty != null && requesterParty != null) {
-			DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false, duelrequest.getRounds());
+			DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;
 		}
 		List<UUID> firstTeam = Lists.newArrayList();
@@ -86,6 +76,6 @@ public class RequestManager {
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(requested.getUniqueId());
 		
-		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, false, duelrequest.getRounds());
+		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, false);
 	}
 }

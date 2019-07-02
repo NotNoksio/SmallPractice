@@ -19,7 +19,7 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlace(BlockPlaceEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		
 		if (!PlayerManager.get(player.getUniqueId()).isCanBuild()) {
 			event.setCancelled(true);
@@ -28,7 +28,7 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		
 		if (!PlayerManager.get(player.getUniqueId()).isCanBuild()) {
 			event.setCancelled(true);
@@ -42,8 +42,8 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler
 	public void onMotd(ServerListPingEvent event) {
-		String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka " + ChatColor.GRAY + "(Practice "  + Main.getInstance().getDescription().getVersion() + ")\n";
-		String line2 = ChatColor.YELLOW + "Home of the pots pvp";
+		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka " + ChatColor.GRAY + "(Practice "  + Main.getInstance().getDescription().getVersion() + ")\n";
+		final String line2 = ChatColor.YELLOW + "Home of the pots pvp";
 		event.setMotd(line1 + line2 + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : ""));
 	}
 	

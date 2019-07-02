@@ -1,6 +1,5 @@
 package us.noks.smallpractice.objects.managers;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,13 +14,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.collect.Maps;
 
-import net.minecraft.util.com.google.common.collect.Lists;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.MatchStats;
 
 public class PlayerManager {
-
-	public static List<PlayerManager> players = Lists.newArrayList();
+	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
 	private Map<UUID, UUID> request = Maps.newHashMap();
@@ -30,11 +28,7 @@ public class PlayerManager {
 	private Player spectate;
 	private String prefix;
 	private int elo;
-	private int failedPotions;
-	private int lastFailedPotions;
-	private int hit;
-	private int combo;
-	private int longestCombo;
+	private MatchStats matchStats;
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
@@ -43,26 +37,22 @@ public class PlayerManager {
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
 	    this.spectate = null;
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
-	    this.failedPotions = 0;
-	    this.lastFailedPotions = 0;
-	    this.hit = 0;
-	    this.combo = 0;
-	    this.longestCombo = 0;
+	    this.matchStats = new MatchStats();
+	}
+
+	public static void create(UUID uuid) {
+		players.putIfAbsent(uuid, new PlayerManager(uuid));
 	}
 
 	public static PlayerManager get(UUID playerUUID) {
-		for (PlayerManager pm : players) {
-			if (pm.getPlayerUUID().equals(playerUUID)) {
-				return pm;
-			}
+		if (players.containsKey(playerUUID)) {
+			return players.get(playerUUID);
 		}
-		PlayerManager pm = new PlayerManager(playerUUID);
-		players.add(pm);
-		return pm;
+		return null;
 	}
 
 	public void remove() {
-		players.remove(this);
+		players.remove(this.playerUUID);
 	}
 
 	public Player getPlayer() {
@@ -137,20 +127,8 @@ public class PlayerManager {
 		this.elo -= elo;
 	}
 	
-	public int getFailedPotions() {
-		return failedPotions;
-	}
-	
-	public void setFailedPotions(int pots) {
-		this.failedPotions = pots;
-	}
-	
-	public int getLastFailedPotions() {
-		return lastFailedPotions;
-	}
-	
-	public void setLastFailedPotions(int pots) {
-		this.lastFailedPotions = pots;
+	public MatchStats getMatchStats() {
+		return this.matchStats;
 	}
 	
 	public void giveSpawnItem() {
@@ -408,37 +386,6 @@ public class PlayerManager {
 			break;
 		}
 		return false;
-	}
-	
-	public void resetDuelStats() {
-		this.failedPotions = 0;
-		this.hit = 0;
-		this.combo = 0;
-		this.longestCombo = 0;
-	}
-
-	public int getHit() {
-		return hit;
-	}
-
-	public void setHit(int hit) {
-		this.hit = hit;
-	}
-
-	public int getCombo() {
-		return combo;
-	}
-
-	public void setCombo(int combo) {
-		this.combo = combo;
-	}
-
-	public int getLongestCombo() {
-		return longestCombo;
-	}
-
-	public void setLongestCombo(int longestCombo) {
-		this.longestCombo = longestCombo;
 	}
 	
 	public void heal() {

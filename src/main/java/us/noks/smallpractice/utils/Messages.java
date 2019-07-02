@@ -18,13 +18,12 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.Duel;
 
 public class Messages {
-	
-	public static Messages instance = new Messages();
+	private static Messages instance = new Messages();
 	public static Messages getInstance() {
 		return instance;
 	}
 	
-	public String[] WELCOME_MESSAGE = new String[] {
+	public final String[] WELCOME_MESSAGE = new String[] {
 			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 			ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + Main.getInstance().getDescription().getVersion() + " server",
 			"",
@@ -33,16 +32,16 @@ public class Messages {
 			ChatColor.DARK_PURPLE + "xelo_o (Server Owner) Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o",
 			ChatColor.RED + "-> Keep in mind this is a beta ^^",
 			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
-	public String NO_PERMISSION = ChatColor.RED + "No permission.";
-	public String PLAYER_NOT_ONLINE = ChatColor.RED + "This player is not online.";
-	public String NOT_YOURSELF = ChatColor.RED + "You can't execute that command on yourself!";
-	public String YOU_ARENT_IN_THE_SPAWN = ChatColor.RED + "You are not in the spawn!";
-	public String TARGET_ARENT_IN_THE_SPAWN = ChatColor.RED + "This player is not in the spawn!";
-	public String TARGET_OR_PLAYER_ARENT_IN_THE_SPAWN = ChatColor.RED + "Either you or this player are not in the spawn!";
-	public String NO_REQUEST_FOUND = ChatColor.RED + "No request found!";
-	public String EMPTY_TEAM = ChatColor.RED + "The duel has been cancelled due to an empty team.";
+	public final String NO_PERMISSION = ChatColor.RED + "No permission.";
+	public final String PLAYER_NOT_ONLINE = ChatColor.RED + "This player is not online.";
+	public final String NOT_YOURSELF = ChatColor.RED + "You can't execute that command on yourself!";
+	public final String YOU_ARENT_IN_THE_SPAWN = ChatColor.RED + "You are not in the spawn!";
+	public final String TARGET_ARENT_IN_THE_SPAWN = ChatColor.RED + "This player is not in the spawn!";
+	public final String TARGET_OR_PLAYER_ARENT_IN_THE_SPAWN = ChatColor.RED + "Either you or this player are not in the spawn!";
+	public final String NO_REQUEST_FOUND = ChatColor.RED + "No request found!";
+	public final String EMPTY_TEAM = ChatColor.RED + "The duel has been cancelled due to an empty team.";
 	
-	public String CONTACT_NOKSIO = ChatColor.RED + "Please contact Noksio!";
+	public final String CONTACT_NOKSIO = ChatColor.RED + "Please contact Noksio!";
 	
 	public void deathMessage(Duel duel, int winningTeamNumber) {
 		List<UUID> winnerTeam = null;
@@ -59,9 +58,9 @@ public class Messages {
 		default:
 			break;
 		}
-		boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
+		final boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
 		
-		String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
+		final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
 		
 	    TextComponent invTxt = new TextComponent();
 	    invTxt.setText("Inventories (Click):");
@@ -70,7 +69,7 @@ public class Messages {
 	    List<BaseComponent> inventoriesTextList = Lists.newArrayList();
 	    
 	    for (UUID wUUID : winnerTeam) {
-	    	Player winners = Bukkit.getPlayer(wUUID);
+	    	final Player winners = Bukkit.getPlayer(wUUID);
 	    	if (winners == null) continue;
 	    	TextComponent wtxt = new TextComponent();
 	    	
@@ -83,7 +82,7 @@ public class Messages {
 		    inventoriesTextList.add(wtxt);
 	    }
 	    for (UUID lUUID : loserTeam) {
-	    	Player losers = Bukkit.getPlayer(lUUID);
+	    	final Player losers = Bukkit.getPlayer(lUUID);
 	    	if (losers == null) continue;
 	    	TextComponent ltxt = new TextComponent();
 	    	
@@ -102,18 +101,18 @@ public class Messages {
 	    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
 	    if (duel.hasSpectator()) {
 	    	for (UUID specs : duel.getAllSpectators()) {
-	    		Player spec = Bukkit.getPlayer(specs);
+	    		final Player spec = Bukkit.getPlayer(specs);
 	    		spect.add(ChatColor.YELLOW + spec.getName());
 	    	}
 	    }
-	    String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
+	    final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
 	    
 	    List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeam());
 	    duelPlayers.addAll(duel.getSecondTeam());
 	    duelPlayers.addAll(duel.getAllSpectators());
 	    
 	    for (UUID dpUUID : duelPlayers) {
-	    	Player duelPlayer = Bukkit.getPlayer(dpUUID);
+	    	final Player duelPlayer = Bukkit.getPlayer(dpUUID);
 	    	if (duelPlayer == null) continue;
 	    	duelPlayer.sendMessage(winnerMessage);
 	    	duelPlayer.spigot().sendMessage(invTxt);
