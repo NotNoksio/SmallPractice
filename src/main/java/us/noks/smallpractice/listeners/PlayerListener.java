@@ -333,16 +333,4 @@ public class PlayerListener implements Listener {
 			}
 		}
 	}
-	
-	@EventHandler(priority=EventPriority.LOWEST)
-	public void onPotionEffectAdd(PotionEffectAddEvent event) {
-		if (event.getEntity() instanceof Player) {
-			final Player affected = (Player) event.getEntity();
-			final PlayerManager pm = PlayerManager.get(affected.getUniqueId());
-			
-			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
-				event.setCancelled(true);
-			}
-		}
-	}
 }
