@@ -209,7 +209,7 @@ public class DuelManager {
 					cooldown.put(duel, num--);
 				}
 			}
-		}.runTaskTimerAsynchronously(Main.getInstance(), 10L, 20L);
+		}.runTaskTimer(Main.getInstance(), 10L, 20L);
 	}
 	
 	private void teleportRandomArena(Duel duel) {
