@@ -198,7 +198,7 @@ public class DuelManager {
 					this.cancel();
 				}
 				if (num <= 0) {
-					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has stated!", Sound.FIREWORK_BLAST);
+					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has started!", Sound.FIREWORK_BLAST);
 					duel.showDuelPlayer();
 					duel.setDuelPlayersStatusTo(PlayerStatus.DUEL);
 					cooldown.remove(duel);
