@@ -135,7 +135,7 @@ public class DuelManager {
 		while (specIt.hasNext()) {
 			Player spec = Bukkit.getPlayer(specIt.next());
 			if (spec == null) continue;
-			PlayerManager sm = PlayerManager.get(specIt.next());
+			PlayerManager sm = PlayerManager.get(spec.getUniqueId());
 			
 			spec.setAllowFlight(false);
 			spec.setFlying(false);
