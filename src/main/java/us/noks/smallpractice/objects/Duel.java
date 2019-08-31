@@ -2,6 +2,8 @@ package us.noks.smallpractice.objects;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -122,9 +124,11 @@ public class Duel {
 			if (second == null) continue;
 			secondTeamPlayer.add(second);
 		}
+                Iterator<Player> it = new ArrayList<>(secondTeamPlayer.iterator());
 		for (Player first : firstTeamPlayer) {
 			if (!first.canSee(first)) first.showPlayer(first);
-			for (Player second : secondTeamPlayer) {
+			while (it.hasNext()) {
+                                Player second = it.next();
 				if (!second.canSee(second)) second.showPlayer(second);
 				if (!first.canSee(second)) first.showPlayer(second);
 				if (!second.canSee(first)) second.showPlayer(first);
