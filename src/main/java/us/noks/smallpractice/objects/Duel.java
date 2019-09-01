@@ -124,7 +124,7 @@ public class Duel {
 			if (second == null) continue;
 			secondTeamPlayer.add(second);
 		}
-                Iterator<Player> it = new ArrayList<>(secondTeamPlayer.iterator());
+                Iterator<Player> it = new ArrayList<>(secondTeamPlayer).iterator();
 		for (Player first : firstTeamPlayer) {
 			if (!first.canSee(first)) first.showPlayer(first);
 			while (it.hasNext()) {
