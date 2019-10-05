@@ -79,6 +79,6 @@ public class SpectateCommand implements CommandExecutor {
 		pm.giveSpectateItem();
 		player.sendMessage(ChatColor.GREEN + "You are now spectating " + ChatColor.YELLOW + target.getName());
 		duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
-		return false;
+		return true;
 	}
 }

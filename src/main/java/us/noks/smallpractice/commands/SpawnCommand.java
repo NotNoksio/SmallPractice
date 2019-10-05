@@ -29,6 +29,6 @@ public class SpawnCommand implements CommandExecutor {
 		}
 		player.teleport(Main.getInstance().getSpawnLocation());
 		player.sendMessage(ChatColor.GREEN + "Teleportation..");
-		return false;
+		return true;
 	}
 }

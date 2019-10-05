@@ -3,14 +3,13 @@ package us.noks.smallpractice.commands;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import com.google.common.collect.Maps;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -22,7 +21,7 @@ import us.noks.smallpractice.utils.Messages;
 public class ReportCommand implements CommandExecutor {
 	
 	private int cooldownTime = 30;
-	private Map<UUID, Long> cooldowns = Maps.newConcurrentMap();
+	private Map<UUID, Long> cooldowns = new WeakHashMap<UUID, Long>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

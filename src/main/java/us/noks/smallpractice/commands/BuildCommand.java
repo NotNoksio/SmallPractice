@@ -14,22 +14,23 @@ public class BuildCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			
-			if (!player.hasPermission("command.build")) {
-				player.sendMessage(Messages.getInstance().NO_PERMISSION);
-				return false;
-			}
-			if (args.length != 0) {
-				player.sendMessage(ChatColor.RED + "Usage: /build");
-				return false;
-			}
-			PlayerManager pm = PlayerManager.get(player.getUniqueId());
-			
-			pm.setStatus((pm.isCanBuild() ? PlayerStatus.SPAWN : PlayerStatus.BUILD));
-			player.sendMessage(ChatColor.DARK_AQUA + "Build state updated: " + ChatColor.YELLOW + pm.isCanBuild());
+		if (!(sender instanceof Player)) {
+			return false;
 		}
+		if (args.length != 0) {
+			sender.sendMessage(ChatColor.RED + "Usage: /build");
+			return false;
+		}
+		Player player = (Player) sender;
+			
+		if (!player.hasPermission("command.build")) {
+			player.sendMessage(Messages.getInstance().NO_PERMISSION);
+			return false;
+		}
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+			
+		pm.setStatus((pm.isCanBuild() ? PlayerStatus.SPAWN : PlayerStatus.BUILD));
+		player.sendMessage(ChatColor.DARK_AQUA + "Build state updated: " + ChatColor.YELLOW + pm.isCanBuild());
 		return true;
 	}
 }

@@ -3,13 +3,7 @@ package us.noks.smallpractice;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,7 +33,6 @@ public class Main extends JavaPlugin {
 	private Location arena1_Pos1, arena2_Pos1;
 	private Location arena1_Pos2, arena2_Pos2;
 	private Location spawnLocation;
-	private Inventory roundInventory;
 	
 	private Map<Integer, Location[]> arenaList = Maps.newConcurrentMap();
 	
@@ -55,16 +48,12 @@ public class Main extends JavaPlugin {
 		setupArena();
 		registerCommands();
 		registerListers();
-		
-		this.roundInventory = Bukkit.createInventory(null, InventoryType.HOPPER, "How many rounds?");
-		setupRoundInventory();
 	}
 	
 	@Override
 	public void onDisable() {
 		QueueManager.getInstance().getQueue().clear();
 		this.arenaList.clear();
-		this.roundInventory.clear();
 	}
 	
 	private void setupArena() {
@@ -106,21 +95,6 @@ public class Main extends JavaPlugin {
 	
 	public Location getSpawnLocation() {
 		return this.spawnLocation;
-	}
-	
-	public Inventory getRoundInventory() {
-		return this.roundInventory;
-	}
-	
-	private void setupRoundInventory() {
-		for(int i = 1; i <= this.roundInventory.getSize(); i++) {
-			ItemStack arrow = new ItemStack(Material.ARROW, i);
-			ItemMeta am = arrow.getItemMeta();
-			am.setDisplayName(ChatColor.YELLOW.toString() + i + " Round" + (i > 1 ? "s" : ""));
-			arrow.setItemMeta(am);
-			
-	        this.roundInventory.setItem(i - 1, arrow);
-    	}
 	}
 	
 	public Map<Integer, Location[]> getArenaList() {

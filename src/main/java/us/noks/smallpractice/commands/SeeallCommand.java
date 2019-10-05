@@ -29,6 +29,6 @@ public class SeeallCommand implements CommandExecutor {
 			player.showPlayer(allplayers);
 		});
 		player.sendMessage(ChatColor.GREEN + "You see everyone right now.");
-		return false;
+		return true;
 	}
 }

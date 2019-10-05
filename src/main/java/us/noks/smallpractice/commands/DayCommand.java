@@ -10,14 +10,13 @@ public class DayCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player) {
-			Player p = (Player) sender;
-			
-			if (args.length != 0) {
-				p.sendMessage(ChatColor.RED + "Usage: /day");
-				return false;
-			}
+		if (!(sender instanceof Player)) {
+			return false;
 		}
-		return false;
+		if (args.length != 0) {
+			sender.sendMessage(ChatColor.RED + "Usage: /day");
+			return false;
+		}
+		return true;
 	}
 }

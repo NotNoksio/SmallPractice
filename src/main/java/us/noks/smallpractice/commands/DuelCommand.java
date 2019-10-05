@@ -2,6 +2,7 @@ package us.noks.smallpractice.commands;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,7 +11,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
 import us.noks.smallpractice.party.Party;
@@ -20,7 +20,7 @@ import us.noks.smallpractice.utils.Messages;
 public class DuelCommand implements CommandExecutor {
 	
 	private int cooldownTime = 5;
-	private Map<UUID, Long> cooldowns = Maps.newConcurrentMap();
+	private Map<UUID, Long> cooldowns = new WeakHashMap<UUID, Long>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

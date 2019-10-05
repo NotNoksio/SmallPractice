@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -18,7 +19,6 @@ import org.bukkit.potion.PotionEffect;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
@@ -28,7 +28,7 @@ public class InvView {
 		return instance;
 	}
 	  
-    private Map<UUID, Inventory> inventorymap = Maps.newHashMap();
+    private Map<UUID, Inventory> inventories = new WeakHashMap<UUID, Inventory>();
     
 	public void saveInv(Player player) {
 		final MatchStats stats = PlayerManager.get(player.getUniqueId()).getMatchStats();
@@ -115,11 +115,15 @@ public class InvView {
 		statistics.setItemMeta(sm);
 		inv.setItem(46, statistics);
       
-		this.inventorymap.put(player.getUniqueId(), inv);
+		this.inventories.put(player.getUniqueId(), inv);
 	}
     
 	public void openInv(final Player player, final UUID targetUUID) {
-		if (this.inventorymap.containsKey(targetUUID)) player.openInventory(this.inventorymap.get(targetUUID));
+		if (!this.inventories.containsKey(targetUUID)) {
+			player.sendMessage(ChatColor.RED + "Inventory not found!");
+			return;
+		}
+		player.openInventory(this.inventories.get(targetUUID));
 	}
     
 	private String convertToPotionFormat(final long paramLong) {

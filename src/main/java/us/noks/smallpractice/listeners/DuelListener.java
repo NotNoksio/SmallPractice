@@ -29,6 +29,9 @@ public class DuelListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		if (e.isCancelled()) {
+			return;
+		}
         if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
             final Player damaged = (Player)e.getEntity();
             final Player attacker = (Player)e.getDamager();

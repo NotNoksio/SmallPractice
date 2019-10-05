@@ -28,7 +28,7 @@ public class EnderDelay implements Listener {
 	}
 	
 	private Map<UUID, Long> enderpearlCooldown = Maps.newConcurrentMap();
-	private final  int cooldowntime = 14;
+	private final int cooldowntime = 14;
 
 	@EventHandler(priority=EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -68,17 +68,17 @@ public class EnderDelay implements Listener {
 		}
 	}
 
-	public boolean isEnderPearlCooldownActive(final Player player) {
+	private boolean isEnderPearlCooldownActive(final Player player) {
 		if (!this.enderpearlCooldown.containsKey(player.getUniqueId())) return false;
 		return this.enderpearlCooldown.get(player.getUniqueId()).longValue() > System.currentTimeMillis();
 	}
 
-	public long getEnderPearlCooldown(final Player player) {
+	private long getEnderPearlCooldown(final Player player) {
 		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) return Math.max(0L, this.enderpearlCooldown.get(player.getUniqueId()).longValue() - System.currentTimeMillis());
 		return 0L;
 	}
 
-	public void applyCooldown(final Player player) {
+	private void applyCooldown(final Player player) {
 		this.enderpearlCooldown.put(player.getUniqueId(), Long.valueOf(System.currentTimeMillis() + this.cooldowntime * 1000));
 	}
 
