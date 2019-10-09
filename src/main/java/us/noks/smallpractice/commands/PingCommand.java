@@ -16,12 +16,11 @@ public class PingCommand implements CommandExecutor {
 		if (!(sender instanceof Player)) {
 			return false;
 		}
-		Player player = (Player) sender;
-			
 		if(args.length > 1) {
-			player.sendMessage(ChatColor.RED + "Usage: /ping <player>");
+			sender.sendMessage(ChatColor.RED + "Usage: /ping <player>");
 			return false;
 		}
+		Player player = (Player) sender;
 			
 		if (args.length == 0) {
 			player.sendMessage(ChatColor.DARK_AQUA + "Your ping: " + ChatColor.YELLOW + player.spigot().getPing() + "ms");

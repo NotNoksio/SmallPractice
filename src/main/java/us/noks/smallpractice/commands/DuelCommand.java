@@ -25,18 +25,18 @@ public class DuelCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			
 			if (args.length != 1) {
-				player.sendMessage(ChatColor.RED + "Usage: /duel <player>");
+				sender.sendMessage(ChatColor.RED + "Usage: /duel <player>");
 				return false;
 			}
 			Player target = Bukkit.getPlayer(args[0]);
 			
 			if (target == null) {
-				player.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
+				sender.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
 				return false;
 			}
+			Player player = (Player) sender;
+			
 			if (target == player) {
 				player.sendMessage(Messages.getInstance().NOT_YOURSELF);
 				return false;

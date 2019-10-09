@@ -21,12 +21,11 @@ public class BuildCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "Usage: /build");
 			return false;
 		}
-		Player player = (Player) sender;
-			
-		if (!player.hasPermission("command.build")) {
-			player.sendMessage(Messages.getInstance().NO_PERMISSION);
+		if (!sender.hasPermission("command.build")) {
+			sender.sendMessage(Messages.getInstance().NO_PERMISSION);
 			return false;
 		}
+		Player player = (Player) sender;
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
 		pm.setStatus((pm.isCanBuild() ? PlayerStatus.SPAWN : PlayerStatus.BUILD));

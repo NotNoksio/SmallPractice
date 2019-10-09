@@ -18,18 +18,18 @@ public class AcceptCommand implements CommandExecutor {
 		if (!(sender instanceof Player)) {
 			return false;
 		}
-		Player player = (Player) sender;
-			
 		if (args.length != 1) {
-			player.sendMessage(ChatColor.RED + "Usage: /accept <player>");
+			sender.sendMessage(ChatColor.RED + "Usage: /accept <player>");
 			return false;
 		}
 		Player dueler = Bukkit.getPlayer(args[0]);
 			
 		if (dueler == null) {
-			player.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
+			sender.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
 			return false;
 		}
+		Player player = (Player) sender;
+		
 		if (dueler == player) {
 			player.sendMessage(Messages.getInstance().NOT_YOURSELF);
 			return false;

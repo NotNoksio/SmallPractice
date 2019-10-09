@@ -26,18 +26,17 @@ public class ReportCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if ((sender instanceof Player)) {
-			Player p = (Player) sender;
-			
 			if (args.length < 2) {
-				p.sendMessage(org.bukkit.ChatColor.RED + "Usage: /report <player> <reason>");
+				sender.sendMessage(org.bukkit.ChatColor.RED + "Usage: /report <player> <reason>");
 				return false;
 			}
 			Player target = Bukkit.getPlayer(args[0]);
 			
 			if (target == null) {
-				p.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
+				sender.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
 				return false;
 			}
+			Player p = (Player) sender;
 			if (target == p) {
 				p.sendMessage(Messages.getInstance().NOT_YOURSELF);
 				return false;

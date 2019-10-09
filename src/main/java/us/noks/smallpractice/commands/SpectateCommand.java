@@ -26,13 +26,13 @@ public class SpectateCommand implements CommandExecutor {
 		if (!(sender instanceof Player)) {
 			return false;
 		}
+		if (args.length != 1) {
+			sender.sendMessage(ChatColor.RED + "Usage: /spectate <player>");
+			return false;
+		}
 		Player player = (Player) sender;
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
-		if (args.length > 1 || args.length < 1) {
-			player.sendMessage(ChatColor.RED + "Usage: /spectate <player>");
-			return false;
-		}
 		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "You are in party!");
 			return false;
@@ -68,8 +68,7 @@ public class SpectateCommand implements CommandExecutor {
 		player.setFlying(true);
 		player.teleport(target.getLocation().add(0, 2, 0));
 		
-		List<UUID> duelPlayers = Lists.newArrayList();
-		duelPlayers.addAll(duel.getFirstTeamAlive());
+		List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
 		duelPlayers.addAll(duel.getSecondTeamAlive());
 			
 		for (UUID uuid : duelPlayers) {

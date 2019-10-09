@@ -18,16 +18,16 @@ public class ModerationCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			
-			if (!player.hasPermission("command.moderation")) {
-				player.sendMessage(Messages.getInstance().NO_PERMISSION);
+			if (!sender.hasPermission("command.moderation")) {
+				sender.sendMessage(Messages.getInstance().NO_PERMISSION);
 				return false;
 			}
 			if (args.length > 0) {
 				sender.sendMessage(ChatColor.RED + "Usage: /mod");
 				return false;
 			}
+			Player player = (Player) sender;
+			
 			if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
 				player.sendMessage(ChatColor.RED + "You are in party!");
 				return false;
@@ -52,6 +52,7 @@ public class ModerationCommand implements CommandExecutor {
 				player.showPlayer(allPlayers);
 			}
 			pm.giveModerationItem();
+			return true;
 		}
 		return false;
 	}

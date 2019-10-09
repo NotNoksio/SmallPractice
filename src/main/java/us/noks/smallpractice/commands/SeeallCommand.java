@@ -16,15 +16,15 @@ public class SeeallCommand implements CommandExecutor {
 		if (!(sender instanceof Player)) {
 			return false;
 		}
-		Player player = (Player) sender;
-		if (!player.hasPermission("command.seeall")) {
-			player.sendMessage(Messages.getInstance().NO_PERMISSION);
+		if (!sender.hasPermission("command.seeall")) {
+			sender.sendMessage(Messages.getInstance().NO_PERMISSION);
 			return false;
 		}
 		if (args.length != 0) {
-			player.sendMessage(ChatColor.RED + "Usage: /seeall");
+			sender.sendMessage(ChatColor.RED + "Usage: /seeall");
 			return false;
 		}
+		Player player = (Player) sender;
 		Bukkit.getOnlinePlayers().forEach((allplayers) -> {
 			player.showPlayer(allplayers);
 		});

@@ -25,19 +25,23 @@ public class ForceDuelCommand implements CommandExecutor {
 		if (!(sender instanceof Player)) {
 			return false;
 		}
-		Player player = (Player) sender;
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
-		
-		if (!player.hasPermission("command.forceduel")) {
-			player.sendMessage(Messages.getInstance().NO_PERMISSION);
+		if (!sender.hasPermission("command.forceduel")) {
+			sender.sendMessage(Messages.getInstance().NO_PERMISSION);
 			return false;
 		}
 		if (args.length != 1) {
-			player.sendMessage(ChatColor.RED + "Usage: /forceduel <player>");
+			sender.sendMessage(ChatColor.RED + "Usage: /forceduel <player>");
 			return false;
 		}
+		Player player = (Player) sender;
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		
 		if (pm.getStatus() != PlayerStatus.SPAWN) {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn.");
+			return false;
+		}
+		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+			player.sendMessage(ChatColor.RED + "You are in a party!");
 			return false;
 		}
 		Player target = Bukkit.getPlayer(args[0]);
@@ -66,6 +70,6 @@ public class ForceDuelCommand implements CommandExecutor {
 		secondTeam.add(target.getUniqueId());
 		
 		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, false);
-		return false;
+		return true;
 	}
 }

@@ -16,7 +16,7 @@ public class Arena {
 		setupArena();
 	}
 	
-	public void setupArena() {
+	private void setupArena() {
 		if (arenaList.isEmpty()) {
 			arena1_Pos1 = new Location(Bukkit.getWorld("world"), -549.5D, 4.0D, 113.5D, 90.0F, 0.0F);
 		    arena1_Pos2 = new Location(Bukkit.getWorld("world"), -608.5D, 4.0D, 115.5D, -90.0F, -1.0F);
@@ -40,7 +40,7 @@ public class Arena {
 		return this.arenaList;
 	}
 	
-	public class Arenas {
+	private class Arenas {
 		private Arena arena;
 		private Location[] locations;
 		
@@ -49,11 +49,11 @@ public class Arena {
 			this.locations = locations;
 		}
 		
-		public Arena getArena() {
+		private Arena getArena() {
 			return this.arena;
 		}
 		
-		public Location[] getLocations() {
+		private Location[] getLocations() {
 			return this.locations;
 		}
 	}
