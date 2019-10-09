@@ -2,6 +2,7 @@ package us.noks.smallpractice.objects.managers;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,8 +23,8 @@ public class PlayerManager {
 	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
-	private Map<UUID, UUID> request = Maps.newHashMap();
-	private Map<UUID, UUID> invite = Maps.newHashMap();
+	private Map<UUID, UUID> request = new WeakHashMap<UUID, UUID>();
+	private Map<UUID, UUID> invite = new WeakHashMap<UUID, UUID>();
 	private PlayerStatus status;
 	private Player spectate;
 	private String prefix;
@@ -45,10 +46,10 @@ public class PlayerManager {
 	}
 
 	public static PlayerManager get(UUID playerUUID) {
-		if (players.containsKey(playerUUID)) {
-			return players.get(playerUUID);
+		if (!players.containsKey(playerUUID)) {
+			return null;
 		}
-		return null;
+		return players.get(playerUUID);
 	}
 
 	public void remove() {

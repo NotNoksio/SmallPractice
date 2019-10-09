@@ -16,7 +16,6 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class Duel {
-	
 	private UUID firstTeamPartyLeaderUUID;
     private UUID secondTeamPartyLeaderUUID;
 	private List<UUID> firstTeam;

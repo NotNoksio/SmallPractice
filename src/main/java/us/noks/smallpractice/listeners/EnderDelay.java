@@ -3,6 +3,7 @@ package us.noks.smallpractice.listeners;
 import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -17,7 +18,6 @@ import org.bukkit.event.entity.EnderpearlLandEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
@@ -27,7 +27,7 @@ public class EnderDelay implements Listener {
 		return instance;
 	}
 	
-	private Map<UUID, Long> enderpearlCooldown = Maps.newConcurrentMap();
+	private Map<UUID, Long> enderpearlCooldown = new WeakHashMap<UUID, Long>();
 	private final int cooldowntime = 14;
 
 	@EventHandler(priority=EventPriority.NORMAL)
@@ -74,8 +74,8 @@ public class EnderDelay implements Listener {
 	}
 
 	private long getEnderPearlCooldown(final Player player) {
-		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) return Math.max(0L, this.enderpearlCooldown.get(player.getUniqueId()).longValue() - System.currentTimeMillis());
-		return 0L;
+		if (!this.enderpearlCooldown.containsKey(player.getUniqueId())) return 0L;
+		return Math.max(0L, this.enderpearlCooldown.get(player.getUniqueId()).longValue() - System.currentTimeMillis());
 	}
 
 	private void applyCooldown(final Player player) {

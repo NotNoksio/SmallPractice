@@ -1,13 +1,9 @@
 package us.noks.smallpractice;
 
-import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.google.common.collect.Maps;
 
 import us.noks.smallpractice.commands.AcceptCommand;
 import us.noks.smallpractice.commands.BuildCommand;
@@ -30,41 +26,25 @@ import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.QueueManager;
 
 public class Main extends JavaPlugin {
-	private Location arena1_Pos1, arena2_Pos1;
-	private Location arena1_Pos2, arena2_Pos2;
-	private Location spawnLocation;
-	
-	private Map<Integer, Location[]> arenaList = Maps.newConcurrentMap();
-	
 	private static Main instance;
 	public static Main getInstance() {
 		return instance;
 	}
 	
+	private Location spawnLocation;
+	
 	@Override
 	public void onEnable() {
 		instance = this;
 		
-		setupArena();
 		registerCommands();
 		registerListers();
+		this.spawnLocation = new Location(Bukkit.getWorld("world"), -215.5D, 6.5D, 84.5D, 180.0F, 0.0F);
 	}
 	
 	@Override
 	public void onDisable() {
 		QueueManager.getInstance().getQueue().clear();
-		this.arenaList.clear();
-	}
-	
-	private void setupArena() {
-		arena1_Pos1 = new Location(Bukkit.getWorld("world"), -549.5D, 4.0D, 113.5D, 90.0F, 0.0F);
-	    arena1_Pos2 = new Location(Bukkit.getWorld("world"), -608.5D, 4.0D, 115.5D, -90.0F, -1.0F);
-	    arena2_Pos1 = new Location(Bukkit.getWorld("world"), 72.5D, 4.0D, 74.5D, 0.0F, 0.0F);
-	    arena2_Pos2 = new Location(Bukkit.getWorld("world"), 70.5D, 4.0D, 154.5D, 180.0F, 0.0F);
-		spawnLocation = new Location(Bukkit.getWorld("world"), -215.5D, 6.5D, 84.5D, 180.0F, 0.0F);
-		
-		arenaList.put(1, new Location[] {arena1_Pos1, arena1_Pos2});
-		arenaList.put(2, new Location[] {arena2_Pos1, arena2_Pos2});
 	}
 	
 	private void registerCommands() {
@@ -95,9 +75,5 @@ public class Main extends JavaPlugin {
 	
 	public Location getSpawnLocation() {
 		return this.spawnLocation;
-	}
-	
-	public Map<Integer, Location[]> getArenaList() {
-		return this.arenaList;
 	}
 }

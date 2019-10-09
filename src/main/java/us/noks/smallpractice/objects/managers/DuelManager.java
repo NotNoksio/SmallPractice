@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +21,7 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.objects.Duel;
@@ -181,7 +183,7 @@ public class DuelManager {
 	}
 	
 	public void sendWaitingMessage(Duel duel) {
-		Map<Duel, Integer> cooldown = Maps.newHashMap();
+		Map<Duel, Integer> cooldown = new WeakHashMap<Duel, Integer>();
 		cooldown.put(duel, 5);
 		
 		new BukkitRunnable() {
@@ -218,8 +220,8 @@ public class DuelManager {
         	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1));
         	return;
         }
-		Random random = new Random();
-		int pickedArena = random.nextInt(Main.getInstance().getArenaList().size()) + 1;
+		int random = new Random().nextInt(new Arena().getArenaList().size()) + 1;
+		Arena pickedArena = new Arena().getRandomArena(random);
 		
 		for (UUID firstUUID : duel.getFirstTeam()) {
 			Player first = Bukkit.getPlayer(firstUUID);
@@ -235,7 +237,7 @@ public class DuelManager {
 			pmf.hideAllPlayer();
 			pmf.giveKit();
 			
-			first.teleport(Main.getInstance().getArenaList().get(pickedArena)[0]);
+			first.teleport(pickedArena.getPositions(random)[0]);
 			first.setSneaking(false);
 		}
 		for (UUID secondUUID : duel.getSecondTeam()) {
@@ -252,7 +254,7 @@ public class DuelManager {
 			pms.hideAllPlayer();
 			pms.giveKit();
 			
-			second.teleport(Main.getInstance().getArenaList().get(pickedArena)[1]);
+			second.teleport(pickedArena.getPositions(random)[1]);
 			second.setSneaking(false);
 		}
 		sendWaitingMessage(duel);

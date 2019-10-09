@@ -17,8 +17,7 @@ import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.utils.Messages;
 
 public class RequestManager {
-	
-	public static RequestManager instance = new RequestManager();
+	private static RequestManager instance = new RequestManager();
 	public static RequestManager getInstance() {
 		return instance;
 	}

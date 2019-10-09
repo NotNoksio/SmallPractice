@@ -12,8 +12,7 @@ import com.google.common.collect.Lists;
 import us.noks.smallpractice.enums.PlayerStatus;
 
 public class QueueManager {
-	
-	public static QueueManager instance = new QueueManager();
+	private static QueueManager instance = new QueueManager();
 	public static QueueManager getInstance() {
 		return instance;
 	}
