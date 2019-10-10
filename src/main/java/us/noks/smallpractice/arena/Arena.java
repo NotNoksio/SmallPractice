@@ -28,7 +28,7 @@ public class Arena {
 		}
 	}
 	
-	public Arena getRandomArena(int random) {
+	public Arena getArena(int random) {
 		return this.arenaList.get(random).getArena();
 	}
 	

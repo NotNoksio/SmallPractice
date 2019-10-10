@@ -34,7 +34,7 @@ public class QueueManager {
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
 			if (this.queue.size() == 1) {
-				pm.giveQueueItem();
+				ItemManager.getInstace().giveQueueItem(player);
 			}
 			player.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
 		}
@@ -64,7 +64,7 @@ public class QueueManager {
 		if (this.queue.contains(player.getUniqueId())) {
 			this.queue.remove(player.getUniqueId());
 			PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
-			PlayerManager.get(player.getUniqueId()).giveSpawnItem();
+			ItemManager.getInstace().giveSpawnItem(player);
 			player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 		}
 	}

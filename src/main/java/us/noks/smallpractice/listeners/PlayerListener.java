@@ -29,6 +29,7 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
@@ -60,7 +61,7 @@ public class PlayerListener implements Listener {
 		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 		
 		player.teleport(Main.getInstance().getSpawnLocation());
-		PlayerManager.get(player.getUniqueId()).giveSpawnItem();
+		ItemManager.getInstace().giveSpawnItem(player);
 		
 		player.sendMessage(Messages.getInstance().WELCOME_MESSAGE);
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
@@ -119,7 +120,7 @@ public class PlayerListener implements Listener {
 			player.setFoodLevel(20);
 			player.setSaturation(10000f);
 			player.teleport(Main.getInstance().getSpawnLocation());
-			PlayerManager.get(player.getUniqueId()).giveSpawnItem();
+			ItemManager.getInstace().giveSpawnItem(player);
 		}
 	}
 	
@@ -220,7 +221,7 @@ public class PlayerListener implements Listener {
 					if (item.getType() == Material.NAME_TAG && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "create party")) {
 		                event.setCancelled(true);
 		                PartyManager.getInstance().createParty(player.getUniqueId(), player.getName());
-		                pm.giveSpawnItem();
+		                ItemManager.getInstace().giveSpawnItem(player);
 		                break;
 		            }
 				} else {
@@ -258,7 +259,7 @@ public class PlayerListener implements Listener {
 						} else {
 							currentParty.removeMember(player.getUniqueId());
 						}
-						pm.giveSpawnItem();
+						ItemManager.getInstace().giveSpawnItem(player);
 					}
 				}
 				break;
@@ -283,7 +284,7 @@ public class PlayerListener implements Listener {
 	        		pm.showAllPlayer();
 	        		pm.setSpectate(null);
 	        		player.teleport(Main.getInstance().getSpawnLocation());
-	        		pm.giveSpawnItem();
+	        		ItemManager.getInstace().giveSpawnItem(player);
 	            }
 				break;
 			case MODERATION:

@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.party.Party;
@@ -62,7 +63,7 @@ public class PartyCommand implements CommandExecutor {
         	}
         	PartyManager.getInstance().createParty(player.getUniqueId(), player.getName());
         	player.sendMessage(ChatColor.GREEN + "Party successfully created.");
-        	pm.giveSpawnItem();
+        	ItemManager.getInstace().giveSpawnItem(player);
         	return true;
         }
         if (party == null) {
@@ -99,7 +100,7 @@ public class PartyCommand implements CommandExecutor {
 	                PartyManager.getInstance().notifyParty(party, ChatColor.RED + player.getName() + " has left the party");
 	                PartyManager.getInstance().leaveParty(player.getUniqueId());
 	            }
-	        	pm.giveSpawnItem();
+	        	ItemManager.getInstace().giveSpawnItem(player);
 	        	return true;
 	        }
 	        if (args[0].equalsIgnoreCase("open")) {
@@ -140,7 +141,7 @@ public class PartyCommand implements CommandExecutor {
             	player.sendMessage(ChatColor.RED + "You cant do that on yourself.");
             	return false;
             }
-            PlayerManager tm = PlayerManager.get(target.getUniqueId());
+            //PlayerManager tm = PlayerManager.get(target.getUniqueId());
             Party targetParty = PartyManager.getInstance().getParty(target.getUniqueId());
             
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
@@ -151,7 +152,7 @@ public class PartyCommand implements CommandExecutor {
             		PartyManager.getInstance().joinParty(targetParty.getLeader(), player.getUniqueId());
             		PartyManager.getInstance().notifyParty(targetParty, ChatColor.GREEN + player.getName() + " has joined the party");
                     player.sendMessage(ChatColor.GREEN + "You have joined the party!");
-                    tm.giveSpawnItem();
+                    ItemManager.getInstace().giveSpawnItem(target);
                     PartyManager.getInstance().updateParty(targetParty);
             		return true;
             	}

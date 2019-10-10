@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.Messages;
@@ -75,7 +76,7 @@ public class SpectateCommand implements CommandExecutor {
 			Player dplayers = Bukkit.getPlayer(uuid);
 			player.showPlayer(dplayers);
 		}
-		pm.giveSpectateItem();
+		ItemManager.getInstace().giveSpectateItem(player);
 		player.sendMessage(ChatColor.GREEN + "You are now spectating " + ChatColor.YELLOW + target.getName());
 		duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 		return true;
