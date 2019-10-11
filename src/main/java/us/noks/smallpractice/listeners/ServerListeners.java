@@ -16,6 +16,11 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ServerListeners implements Listener {
+	private Main main;
+	public ServerListeners(Main plugin) {
+		this.main = plugin;
+	    this.main.getServer().getPluginManager().registerEvents(this, this.main);
+	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlace(BlockPlaceEvent event) {
@@ -42,9 +47,13 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler
 	public void onMotd(ServerListPingEvent event) {
+		event.setMotd(this.getMotd());
+	}
+	
+	private final String getMotd() {
 		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka " + ChatColor.GRAY + "(Practice "  + Main.getInstance().getDescription().getVersion() + ")\n";
-		final String line2 = ChatColor.YELLOW + "Home of the pots pvp";
-		event.setMotd(line1 + line2 + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : ""));
+		final String line2 = ChatColor.YELLOW + "Home of the pots pvp" + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : "");
+		return (line1 + line2);
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)

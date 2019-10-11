@@ -38,6 +38,11 @@ import us.noks.smallpractice.party.PartyState;
 import us.noks.smallpractice.utils.Messages;
 
 public class PlayerListener implements Listener {
+	private Main main;
+	public PlayerListener(Main plugin) {
+		this.main = plugin;
+	    this.main.getServer().getPluginManager().registerEvents(this, this.main);
+	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
@@ -58,9 +63,9 @@ public class PlayerListener implements Listener {
 		player.setFlying(false);
 		player.setGameMode(GameMode.SURVIVAL);
 		
-		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
+		player.setScoreboard(this.main.getServer().getScoreboardManager().getNewScoreboard());
 		
-		player.teleport(Main.getInstance().getSpawnLocation());
+		player.teleport(this.main.getSpawnLocation());
 		ItemManager.getInstace().giveSpawnItem(player);
 		
 		player.sendMessage(Messages.getInstance().WELCOME_MESSAGE);
@@ -119,7 +124,7 @@ public class PlayerListener implements Listener {
 			player.setHealth(20.0D);
 			player.setFoodLevel(20);
 			player.setSaturation(10000f);
-			player.teleport(Main.getInstance().getSpawnLocation());
+			player.teleport(this.main.getSpawnLocation());
 			ItemManager.getInstace().giveSpawnItem(player);
 		}
 	}
@@ -137,7 +142,7 @@ public class PlayerListener implements Listener {
 					break;
 				case VOID:
 					event.setCancelled(true);
-					player.teleport(Main.getInstance().getSpawnLocation());
+					player.teleport(this.main.getSpawnLocation());
 					break;
 				default:
 					break;
@@ -283,7 +288,7 @@ public class PlayerListener implements Listener {
 	        		pm.setStatus(PlayerStatus.SPAWN);
 	        		pm.showAllPlayer();
 	        		pm.setSpectate(null);
-	        		player.teleport(Main.getInstance().getSpawnLocation());
+	        		player.teleport(this.main.getSpawnLocation());
 	        		ItemManager.getInstace().giveSpawnItem(player);
 	            }
 				break;

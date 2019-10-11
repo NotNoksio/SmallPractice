@@ -2,7 +2,6 @@ package us.noks.smallpractice;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.noks.smallpractice.commands.AcceptCommand;
@@ -63,14 +62,12 @@ public class Main extends JavaPlugin {
 	}
 	
 	private void registerListers() {
-		PluginManager pm = Bukkit.getPluginManager();
-		
-		pm.registerEvents(new PlayerListener(), this);
-		pm.registerEvents(new ServerListeners(), this);
-		pm.registerEvents(new EnderDelay(), this);
-		pm.registerEvents(new ChatListener(), this);
-		pm.registerEvents(new DuelListener(), this);
-		pm.registerEvents(new InventoryListener(), this);
+		new PlayerListener(this);
+		new ServerListeners(this);
+		new EnderDelay(this);
+		new ChatListener(this);
+		new DuelListener(this);
+		new InventoryListener(this);
 	}
 	
 	public Location getSpawnLocation() {

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -176,24 +175,18 @@ public class DuelManager {
 			dpm.showAllPlayer();
 			dpm.getMatchStats().resetDuelStats();
 			
-			EnderDelay.getInstance().removeCooldown(duelPlayer);
+			new EnderDelay(Main.getInstance()).removeCooldown(duelPlayer);
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
 		}
 		duelPlayerUUID.clear();
 	}
 	
-	public void sendWaitingMessage(Duel duel) {
-		Map<Duel, Integer> cooldown = new WeakHashMap<Duel, Integer>();
-		cooldown.put(duel, 5);
-		
+	private void sendWaitingMessage(Duel duel) {
 		new BukkitRunnable() {
-			int num = cooldown.get(duel);
+			int num = duel.getTimeBeforeDuel();
 			
 			@Override
 			public void run() {
-				if (!cooldown.containsKey(duel)) {
-					this.cancel();
-				}
 				if (!duel.isValid()) {
 					duel.sendMessage(ChatColor.RED + "The current duel has been cancelled due to his invalidity.");
 					endDuel(duel, (duel.getFirstTeamAlive().isEmpty() ? 2 : 1));
@@ -203,12 +196,11 @@ public class DuelManager {
 					duel.sendSoundedMessage(ChatColor.GREEN + "Duel has started!", Sound.FIREWORK_BLAST);
 					duel.showDuelPlayer();
 					duel.setDuelPlayersStatusTo(PlayerStatus.DUEL);
-					cooldown.remove(duel);
 					this.cancel();
 				}
 				if (num > 0) {
 					duel.sendSoundedMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + num + ChatColor.DARK_AQUA + " second" + (num > 1 ? "s.." : ".."), Sound.NOTE_PLING);
-					cooldown.put(duel, num--);
+					num--;
 				}
 			}
 		}.runTaskTimer(Main.getInstance(), 10L, 20L);

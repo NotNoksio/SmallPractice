@@ -24,6 +24,7 @@ public class Duel {
 	private List<UUID> secondTeamAlive;
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
+	private int timeBeforeDuel = 5;
 	
 	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
@@ -166,5 +167,9 @@ public class Duel {
 		getFirstAndSecondTeams().forEach(playersUUID -> {
 			PlayerManager.get(playersUUID).setStatus(status);
 		});
+	}
+	
+	public int getTimeBeforeDuel() {
+		return this.timeBeforeDuel;
 	}
 }

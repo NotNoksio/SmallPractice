@@ -7,11 +7,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class DuelListener implements Listener {
+	private Main main;
+	public DuelListener(Main plugin) {
+		this.main = plugin;
+	    this.main.getServer().getPluginManager().registerEvents(this, this.main);
+	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onFailedPotion(PotionSplashEvent event) {

@@ -18,13 +18,15 @@ import org.bukkit.event.entity.EnderpearlLandEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
-public class EnderDelay implements Listener {
-	private static EnderDelay instance = new EnderDelay();
-	public static EnderDelay getInstance() {
-		return instance;
+public class EnderDelay implements Listener {	
+	private Main main;
+	public EnderDelay(Main plugin) {
+		this.main = plugin;
+	    this.main.getServer().getPluginManager().registerEvents(this, this.main);
 	}
 	
 	private Map<UUID, Long> enderpearlCooldown = new WeakHashMap<UUID, Long>();

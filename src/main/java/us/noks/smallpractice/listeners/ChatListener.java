@@ -10,9 +10,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ChatListener implements Listener {
+	private Main main;
+	public ChatListener(Main plugin) {
+		this.main = plugin;
+	    this.main.getServer().getPluginManager().registerEvents(this, this.main);
+	}
 
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onChat(AsyncPlayerChatEvent event) {

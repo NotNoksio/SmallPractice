@@ -12,11 +12,17 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.utils.Messages;
 
 public class InventoryListener implements Listener {
+	private Main main;
+	public InventoryListener(Main plugin) {
+		this.main = plugin;
+	    this.main.getServer().getPluginManager().registerEvents(this, this.main);
+	}
 	
 	private Pattern splitPattern = Pattern.compile("\\s");
 	
