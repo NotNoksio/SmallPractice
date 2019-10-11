@@ -34,7 +34,7 @@ public class InvView {
 		final MatchStats stats = PlayerManager.get(player.getUniqueId()).getMatchStats();
 		
 		stats.setLastFailedPotions(stats.getFailedPotions());
-		stats.setFailedPotions(0);
+		stats.setFailedPotions((byte) 0);
 		if(stats.getCombo() > stats.getLongestCombo()) {
 			stats.setLongestCombo(stats.getCombo());
     	}
@@ -124,12 +124,12 @@ public class InvView {
 		return String.format("%01dm %02ds", new Object[] { Long.valueOf(paramLong / 60L), Long.valueOf(paramLong % 60L) });
 	}
 	
-	private String convertToRoman(int N) {
+	private String convertToRoman(int number) {
 		String roman = "";
 		for (int i = 0; i < numbers.length; i++) {
-			while (N >= numbers[i]) {
+			while (number >= numbers[i]) {
 				roman = roman + letters[i];
-				N -= numbers[i];
+				number -= numbers[i];
 			}
 		}
 		return roman;

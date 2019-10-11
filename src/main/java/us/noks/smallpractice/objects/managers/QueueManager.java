@@ -23,13 +23,13 @@ public class QueueManager {
 	}
 	
 	public void addToQueue(UUID uuid, boolean ranked) {
-		PlayerManager pm = PlayerManager.get(uuid);
+		final PlayerManager pm = PlayerManager.get(uuid);
 		
 		if (pm.getStatus() != PlayerStatus.SPAWN) {
 			return;
 		}
 		if (!this.queue.contains(uuid)) {
-			Player player = Bukkit.getPlayer(uuid);
+			final Player player = Bukkit.getPlayer(uuid);
 			this.queue.add(uuid);
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
@@ -40,32 +40,31 @@ public class QueueManager {
 		}
 		if (this.queue.size() < 2 && this.queue.contains(uuid)) {
 			addToQueue(uuid, ranked);
-		} else if (this.queue.size() >= 2) {
-			Player first = Bukkit.getPlayer(this.queue.get(0));
-			Player second = Bukkit.getPlayer(this.queue.get(1));
+			return;
+		}
+		if (this.queue.size() >= 2) {
+			final UUID firstUUID = this.queue.get(0);
+			final UUID secondUUID = this.queue.get(1);
 			
-			if (first == second) {
-				this.queue.clear();
+			if (firstUUID == secondUUID) {
+				this.queue.remove(0);
+				this.queue.remove(1);
 				addToQueue(uuid, ranked);
 				return;
 			}
-			List<UUID> firstTeam = Lists.newArrayList();
-			firstTeam.add(first.getUniqueId());
-			List<UUID> secondTeam = Lists.newArrayList();
-			secondTeam.add(second.getUniqueId());
-			
-			this.queue.remove(first.getUniqueId());
-			this.queue.remove(second.getUniqueId());
-			DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, ranked);
+			this.queue.remove(firstUUID);
+			this.queue.remove(secondUUID);
+			DuelManager.getInstance().startDuel(firstUUID, secondUUID, ranked);
 		}
 	}
 	
 	public void quitQueue(Player player) {
-		if (this.queue.contains(player.getUniqueId())) {
-			this.queue.remove(player.getUniqueId());
-			PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
-			ItemManager.getInstace().giveSpawnItem(player);
-			player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
+		if (!this.queue.contains(player.getUniqueId())) {
+			return;
 		}
+		this.queue.remove(player.getUniqueId());
+		PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
+		ItemManager.getInstace().giveSpawnItem(player);
+		player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 	}
 }

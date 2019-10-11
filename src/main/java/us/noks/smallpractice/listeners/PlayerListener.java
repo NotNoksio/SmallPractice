@@ -65,7 +65,7 @@ public class PlayerListener implements Listener {
 		
 		player.setScoreboard(this.main.getServer().getScoreboardManager().getNewScoreboard());
 		
-		player.teleport(this.main.getSpawnLocation());
+		player.teleport(player.getWorld().getSpawnLocation());
 		ItemManager.getInstace().giveSpawnItem(player);
 		
 		player.sendMessage(Messages.getInstance().WELCOME_MESSAGE);
@@ -124,7 +124,7 @@ public class PlayerListener implements Listener {
 			player.setHealth(20.0D);
 			player.setFoodLevel(20);
 			player.setSaturation(10000f);
-			player.teleport(this.main.getSpawnLocation());
+			player.teleport(player.getWorld().getSpawnLocation());
 			ItemManager.getInstace().giveSpawnItem(player);
 		}
 	}
@@ -142,7 +142,7 @@ public class PlayerListener implements Listener {
 					break;
 				case VOID:
 					event.setCancelled(true);
-					player.teleport(this.main.getSpawnLocation());
+					player.teleport(player.getWorld().getSpawnLocation());
 					break;
 				default:
 					break;
@@ -288,7 +288,7 @@ public class PlayerListener implements Listener {
 	        		pm.setStatus(PlayerStatus.SPAWN);
 	        		pm.showAllPlayer();
 	        		pm.setSpectate(null);
-	        		player.teleport(this.main.getSpawnLocation());
+	        		player.teleport(player.getWorld().getSpawnLocation());
 	        		ItemManager.getInstace().giveSpawnItem(player);
 	            }
 				break;

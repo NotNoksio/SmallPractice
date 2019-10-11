@@ -6,7 +6,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
@@ -26,7 +25,7 @@ public class SpawnCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return false;
 		}
-		player.teleport(Main.getInstance().getSpawnLocation());
+		player.teleport(player.getWorld().getSpawnLocation());
 		player.sendMessage(ChatColor.GREEN + "Teleportation..");
 		return true;
 	}

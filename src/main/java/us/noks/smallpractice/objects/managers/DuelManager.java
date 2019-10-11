@@ -40,15 +40,23 @@ public class DuelManager {
         return this.uuidIdentifierToDuel.get(uuid);
     }
 	
+	public void startDuel(UUID player1, UUID player2, boolean ranked) {
+		List<UUID> firstTeam = Lists.newArrayList();
+		firstTeam.add(player1);
+		List<UUID> secondTeam = Lists.newArrayList();
+		secondTeam.add(player2);
+		startDuel(null, null, firstTeam, secondTeam, ranked);
+	}
+	
 	public void startDuel(UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
-		Scoreboard firstPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
+		Scoreboard firstPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
 		Team red1 = firstPlayerScoreboard.registerNewTeam("red");
 		red1.setPrefix(ChatColor.RED.toString());
 		Team green1 = firstPlayerScoreboard.registerNewTeam("green");
 		green1.setPrefix(ChatColor.GREEN.toString());
 		green1.setAllowFriendlyFire(false);
         
-		Scoreboard secondPlayerScoreboard = Main.getInstance().getServer().getScoreboardManager().getNewScoreboard();
+		Scoreboard secondPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
 		Team red2 = secondPlayerScoreboard.registerNewTeam("red");
 		red2.setPrefix(ChatColor.RED.toString());
 		Team green2 = secondPlayerScoreboard.registerNewTeam("green");
@@ -143,7 +151,7 @@ public class DuelManager {
 			sm.setStatus(PlayerStatus.SPAWN);
 			sm.showAllPlayer();
 			sm.setSpectate(null);
-			spec.teleport(Main.getInstance().getSpawnLocation());
+			spec.teleport(spec.getWorld().getSpawnLocation());
 			ItemManager.getInstace().giveSpawnItem(spec);
 			specIt.remove();
 		}
@@ -167,7 +175,7 @@ public class DuelManager {
 			if (duelPlayer == null) continue;
 			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
-			duelPlayer.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
+			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
 			duelPlayer.extinguish();
 			duelPlayer.clearPotionEffect();
 			
@@ -175,7 +183,7 @@ public class DuelManager {
 			dpm.showAllPlayer();
 			dpm.getMatchStats().resetDuelStats();
 			
-			new EnderDelay(Main.getInstance()).removeCooldown(duelPlayer);
+			new EnderDelay(new Main()).removeCooldown(duelPlayer);
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
 		}
 		duelPlayerUUID.clear();
@@ -203,7 +211,7 @@ public class DuelManager {
 					num--;
 				}
 			}
-		}.runTaskTimer(Main.getInstance(), 10L, 20L);
+		}.runTaskTimer(new Main(), 10L, 20L);
 	}
 	
 	private void teleportRandomArena(Duel duel) {
@@ -284,11 +292,11 @@ public class DuelManager {
                 	@Override
                 	public void run() {
                 		if (lastPlayers != null) {
-                			lastPlayers.teleport(Main.getInstance().getSpawnLocation());
+                			lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
                 			ItemManager.getInstace().giveSpawnItem(lastPlayers);
                 		}
                 	}
-                }.runTaskLater(Main.getInstance(), 40L);
+                }.runTaskLater(new Main(), 40L);
             }
 			winningTeamNumber = 2;
 		} else if (currentDuel.getSecondTeamAlive().isEmpty()) {
@@ -307,53 +315,16 @@ public class DuelManager {
                 	@Override
                 	public void run() {
                 		if (lastPlayers != null) {
-                			lastPlayers.teleport(Main.getInstance().getSpawnLocation());
+                			lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
                 			ItemManager.getInstace().giveSpawnItem(lastPlayers);
                 		}
                 	}
-                }.runTaskLater(Main.getInstance(), 40L);
+                }.runTaskLater(new Main(), 40L);
             }
 			winningTeamNumber = 1;
 		}
 		if (currentDuel.getFirstTeamAlive().isEmpty() || currentDuel.getSecondTeamAlive().isEmpty()) {
 			endDuel(currentDuel, winningTeamNumber);
-		}
-	}
-	
-	protected enum Rounds {
-	    FIRST_ROUND(5, "First Round"), 
-	    SECOND_ROUND(4, "Second Round"), 
-	    QUARTER_FINAL_ROUND(3, "Quarter Final Round"), 
-	    SEMI_FINAL_ROUND(2, "Semi Final Round"), 
-	    FINAL_ROUND(1, "Final Round");
-		
-		private int roundNumber;
-		private String displayName;
-
-		Rounds (int roundNumber, String displayName) {
-			this.roundNumber = roundNumber;
-			this.displayName = displayName;
-		}
-		
-		public int getRoundNumber() {
-			return this.roundNumber;
-		}
-		
-		public String getDisplayName() {
-			return this.displayName;
-		}
-		
-		private static Rounds fromRound(int round) {
-			for (Rounds type : values()) {
-				if (type.getRoundNumber() == round) {
-					return type;
-				}
-			}
-			return null;
-		}
-		
-		public static String getDisplayNameByRound(int round) {
-			return fromRound(round).getDisplayName();
 		}
 	}
 }

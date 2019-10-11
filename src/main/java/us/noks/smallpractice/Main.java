@@ -1,7 +1,5 @@
 package us.noks.smallpractice;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.noks.smallpractice.commands.AcceptCommand;
@@ -25,20 +23,11 @@ import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.QueueManager;
 
 public class Main extends JavaPlugin {
-	private static Main instance;
-	public static Main getInstance() {
-		return instance;
-	}
-	
-	private Location spawnLocation;
 	
 	@Override
 	public void onEnable() {
-		instance = this;
-		
 		registerCommands();
 		registerListers();
-		this.spawnLocation = new Location(Bukkit.getWorld("world"), -215.5D, 6.5D, 84.5D, 180.0F, 0.0F);
 	}
 	
 	@Override
@@ -68,9 +57,5 @@ public class Main extends JavaPlugin {
 		new ChatListener(this);
 		new DuelListener(this);
 		new InventoryListener(this);
-	}
-	
-	public Location getSpawnLocation() {
-		return this.spawnLocation;
 	}
 }

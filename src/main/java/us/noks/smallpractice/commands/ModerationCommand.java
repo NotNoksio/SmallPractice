@@ -7,7 +7,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
@@ -36,7 +35,7 @@ public class ModerationCommand implements CommandExecutor {
 			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
 			if (pm.getStatus() == PlayerStatus.MODERATION) {
-				player.teleport(Main.getInstance().getSpawnLocation());
+				player.teleport(player.getWorld().getSpawnLocation());
                 PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
                 ItemManager.getInstace().giveSpawnItem(player);
                 PlayerManager.get(player.getUniqueId()).showAllPlayer();

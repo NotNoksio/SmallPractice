@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import net.minecraft.util.com.google.common.collect.Lists;
 
 public class Party {
-	
 	private List<UUID> memberUUIDs;
     private UUID partyLeader;
     private String leaderName;
@@ -66,7 +65,7 @@ public class Party {
     }
     
     public int getSize() {
-        return this.getMembers().size() + 1;
+        return (this.getMembers().size() + 1);
     }
 
     public List<UUID> getAllMembersOnline() {

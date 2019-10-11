@@ -32,7 +32,7 @@ public class ChatListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 	public void onPlayerGetMentioned(AsyncPlayerChatEvent event) {
-		String message = event.getMessage();
+		final String message = event.getMessage();
 		Iterator<Player> iterator = event.getRecipients().iterator();
 		while (iterator.hasNext()) {
 			Player player = iterator.next();

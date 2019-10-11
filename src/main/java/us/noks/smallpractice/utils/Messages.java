@@ -25,11 +25,15 @@ public class Messages {
 	
 	public final String[] WELCOME_MESSAGE = new String[] {
 			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
-			ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + Main.getInstance().getDescription().getVersion() + " server",
+			ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + new Main().getDescription().getVersion() + " server",
 			"",
-			ChatColor.AQUA + "Noksio (Creator) Twitter -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio",
-			ChatColor.BLUE + "Noksio (Creator) Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/TZhyPnB",
-			ChatColor.DARK_PURPLE + "xelo_o (Server Owner) Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o",
+			ChatColor.DARK_AQUA + "Noksio (Creator) ↓",
+			ChatColor.AQUA + "Twitter -> " + ChatColor.DARK_AQUA + "https://github.com/NotNoksio",
+			ChatColor.AQUA + "Github -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio",
+			ChatColor.BLUE + "Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/BXz5yMF",
+			ChatColor.DARK_PURPLE + "xelo_o (Server Owner) ↓",
+			ChatColor.DARK_PURPLE + "Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o",
+			"",
 			ChatColor.RED + "-> Keep in mind this is a beta ^^",
 			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
 	public final String NO_PERMISSION = ChatColor.RED + "No permission.";
@@ -59,7 +63,6 @@ public class Messages {
 			break;
 		}
 		final boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
-		
 		final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
 		
 	    TextComponent invTxt = new TextComponent();
@@ -107,8 +110,7 @@ public class Messages {
 	    }
 	    final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
 	    
-	    List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeam());
-	    duelPlayers.addAll(duel.getSecondTeam());
+	    List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstAndSecondTeams());
 	    duelPlayers.addAll(duel.getAllSpectators());
 	    
 	    for (UUID dpUUID : duelPlayers) {

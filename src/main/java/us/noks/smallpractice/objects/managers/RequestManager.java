@@ -1,12 +1,7 @@
 package us.noks.smallpractice.objects.managers;
 
-import java.util.List;
-import java.util.UUID;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-
-import com.google.common.collect.Lists;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -70,11 +65,6 @@ public class RequestManager {
 			DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;
 		}
-		List<UUID> firstTeam = Lists.newArrayList();
-		firstTeam.add(requester.getUniqueId());
-		List<UUID> secondTeam = Lists.newArrayList();
-		secondTeam.add(requested.getUniqueId());
-		
-		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, false);
+		DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), false);
 	}
 }

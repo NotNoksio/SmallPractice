@@ -27,7 +27,7 @@ public class DuelListener implements Listener {
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
 				final MatchStats stats = sm.getMatchStats();
-				int cacheFailedPotions = stats.getFailedPotions();
+				byte cacheFailedPotions = stats.getFailedPotions();
 				stats.setFailedPotions(cacheFailedPotions++);
 			}
 		}

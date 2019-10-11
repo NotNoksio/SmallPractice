@@ -1,25 +1,25 @@
 package us.noks.smallpractice.objects;
 
 public class MatchStats {
-	private int failedPotions = 0;
-	private int lastFailedPotions = 0;
+	private byte failedPotions = 0;
+	private byte lastFailedPotions = 0;
 	private int hit = 0;
 	private int combo = 0;
 	private int longestCombo = 0;
 	
-	public int getFailedPotions() {
+	public byte getFailedPotions() {
 		return failedPotions;
 	}
 	
-	public void setFailedPotions(int pots) {
+	public void setFailedPotions(byte pots) {
 		this.failedPotions = pots;
 	}
 	
-	public int getLastFailedPotions() {
+	public byte getLastFailedPotions() {
 		return lastFailedPotions;
 	}
 	
-	public void setLastFailedPotions(int pots) {
+	public void setLastFailedPotions(byte pots) {
 		this.lastFailedPotions = pots;
 	}
 
