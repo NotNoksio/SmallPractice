@@ -1,13 +1,15 @@
 package us.noks.smallpractice.objects;
 
-import java.util.List;
-import java.util.UUID;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -25,6 +27,7 @@ public class Duel {
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
 	private int timeBeforeDuel = 5;
+	private List<Item> drops;
 	
 	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
@@ -34,6 +37,7 @@ public class Duel {
 		this.firstTeamAlive = Lists.newArrayList(firstTeam);
 		this.secondTeamAlive = Lists.newArrayList(secondTeam);
 		this.ranked = ranked;
+		this.drops = Lists.newArrayList();
 	}
 	
 	public List<UUID> getFirstTeam() {
@@ -171,5 +175,27 @@ public class Duel {
 	
 	public int getTimeBeforeDuel() {
 		return this.timeBeforeDuel;
+	}
+	
+	public void addDrops(List<ItemStack> item) {
+		for (ItemStack items : item) {
+			this.drops.add((Item)items);
+		}
+	}
+	
+	public void addDrops(Item item) {
+		this.drops.add(item);
+	}
+	
+	public boolean containDrops(Item item) {
+		return this.drops.contains(item);
+	}
+	
+	public void clearDrops() {
+		Iterator<Item> it = this.drops.iterator();
+		while (it.hasNext()) {
+			Item items = it.next();
+			items.remove();
+		}
 	}
 }

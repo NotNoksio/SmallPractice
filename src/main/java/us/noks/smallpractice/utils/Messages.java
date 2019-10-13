@@ -29,7 +29,7 @@ public class Messages {
 			"",
 			ChatColor.DARK_AQUA + "Noksio (Creator) ↓",
 			ChatColor.AQUA + "Twitter -> " + ChatColor.DARK_AQUA + "https://github.com/NotNoksio",
-			ChatColor.AQUA + "Github -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio",
+			ChatColor.GRAY + "Github -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio",
 			ChatColor.BLUE + "Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/BXz5yMF",
 			ChatColor.DARK_PURPLE + "xelo_o (Server Owner) ↓",
 			ChatColor.DARK_PURPLE + "Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o",

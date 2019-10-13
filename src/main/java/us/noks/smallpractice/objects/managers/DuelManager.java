@@ -186,6 +186,7 @@ public class DuelManager {
 			new EnderDelay(new Main()).removeCooldown(duelPlayer);
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
 		}
+		duel.clearDrops();
 		duelPlayerUUID.clear();
 	}
 	

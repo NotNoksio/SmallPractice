@@ -162,7 +162,7 @@ public class PlayerManager {
 	}
 	
 	public String getColoredPrefix() {
-		return ChatColor.translateAlternateColorCodes('&', getPrefix()) + "";
+		return ChatColor.translateAlternateColorCodes('&', getPrefix());
 	}
 	
 	public String getPrefixColors() {
@@ -194,6 +194,10 @@ public class PlayerManager {
 		color = ChatColor.getByChar(code);
 		magicColor = ChatColor.getByChar(magic);
 		return count == 1 ? color.toString() : color.toString() + magicColor.toString();
+
+		//                 |Tab||   Chat Prefix    |
+		//                 ↓   ↓↓                  ↓
+		// PREFIX FORMAT -> &3&l&f[&3Developer&f] &3
 	}
 	
 	private boolean isMagicColor(char letter) {

@@ -1,12 +1,13 @@
 package us.noks.smallpractice.listeners;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -109,6 +110,8 @@ public class PlayerListener implements Listener {
 		
 		if (event.getEntity() instanceof Player) {
 			final Player killed = event.getEntity();
+			Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(killed.getUniqueId());
+			duel.addDrops(event.getDrops());
 			DuelManager.getInstance().removePlayerFromDuel(killed);
 		}
 	}
@@ -175,17 +178,18 @@ public class PlayerListener implements Listener {
 	public void onReceiveDrop(PlayerPickupItemEvent event) {
 		if (event.getItem().getOwner() instanceof Player) {
 			final Player receiver = event.getPlayer();
-			final Player owner = (Player) event.getItem().getOwner();
 			final PlayerManager pm = PlayerManager.get(receiver.getUniqueId());
 			
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
 				event.setCancelled(true);
 				return;
 			}
+			Item item = event.getItem();
+			final Player owner = (Player) item.getOwner();
 			if (DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
 				final Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId());
 				
-				if (!currentDuel.getFirstTeam().contains(owner.getUniqueId()) && !currentDuel.getSecondTeam().contains(owner.getUniqueId())) event.setCancelled(true);
+				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item)) event.setCancelled(true);
 				return;
 			}
 			if (!receiver.canSee(owner)) event.setCancelled(true);
@@ -194,10 +198,19 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDrop(PlayerDropItemEvent event) {
-		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && PlayerManager.get(event.getPlayer().getUniqueId()).getStatus() != PlayerStatus.WAITING && PlayerManager.get(event.getPlayer().getUniqueId()).getStatus() != PlayerStatus.DUEL) {
+		PlayerManager pm = PlayerManager.get(event.getPlayer().getUniqueId());
+		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && pm.getStatus() != PlayerStatus.WAITING && pm.getStatus() != PlayerStatus.DUEL) {
 			event.setCancelled(true);
 		}
 		if (event.getItemDrop().getItemStack().getType() == Material.GLASS_BOTTLE) event.getItemDrop().remove();
+		if (pm.getStatus() == PlayerStatus.WAITING || pm.getStatus() == PlayerStatus.DUEL) {
+			Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(event.getPlayer().getUniqueId());
+			
+			if (duel == null) {
+				return;
+			}
+			duel.addDrops(event.getItemDrop());
+		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
@@ -315,7 +328,8 @@ public class PlayerListener implements Listener {
 	                	player.sendMessage(ChatColor.RED + "No player to agree.");
 	                	return;
 	                }
-	                final Player tooked = online.get(new Random().nextInt(online.size()));
+	                Collections.shuffle(online);
+	                final Player tooked = online.get(0);
 	                
 	                player.teleport(tooked.getLocation().clone().add(0, 2, 0));
 	                player.sendMessage(ChatColor.GREEN + "You've been teleported to " + tooked.getName());
