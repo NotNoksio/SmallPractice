@@ -7,9 +7,9 @@
   
   <dependencies>
         <dependency>
-            <groupId>us.noks.rinnyhose</groupId>
-            <artifactId>rinnyhose</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
+            <groupId>org.projectspigot</groupId>
+            <artifactId>projectspigot</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>ru.tehkode</groupId>
 			<artifactId>PermissionsEx</artifactId>
-			<version>1.23.4</version>
+			<version>1.23.4-SNAPSHOT</version>
 		</dependency>
     </dependencies>
     <build>

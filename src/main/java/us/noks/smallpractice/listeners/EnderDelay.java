@@ -14,8 +14,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EnderpearlLandEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 
 import us.noks.smallpractice.Main;
@@ -62,9 +63,9 @@ public class EnderDelay implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onTeleport(EnderpearlLandEvent event) {
-		if (event.getEntity().getShooter() instanceof Player) {
-			final Player player = (Player) event.getEntity().getShooter();
+	public void onTeleport(PlayerTeleportEvent event) {
+		if (event.getCause() == TeleportCause.ENDER_PEARL) {
+			final Player player = event.getPlayer();
 			
 			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) event.setCancelled(true);
 		}

@@ -24,8 +24,14 @@ import us.noks.smallpractice.objects.managers.QueueManager;
 
 public class Main extends JavaPlugin {
 	
+	private static Main instance;
+	public static Main getInstance() {
+		return instance;
+	}
+	
 	@Override
 	public void onEnable() {
+		instance = this;
 		registerCommands();
 		registerListers();
 	}

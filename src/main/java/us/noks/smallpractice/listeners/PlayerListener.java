@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,8 +25,10 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
-import net.minecraft.util.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
+
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
@@ -58,8 +61,12 @@ public class PlayerListener implements Listener {
 		player.setHealth(20.0D);
 		player.setFoodLevel(20);
 		player.setSaturation(1000f);
-		player.extinguish();
-		player.clearPotionEffect();
+		((CraftPlayer)player).getHandle().extinguish();
+		if (!player.getActivePotionEffects().isEmpty()) {
+			for (PotionEffect effect : player.getActivePotionEffects()) {
+				player.removePotionEffect(effect.getType());
+			}
+		}
 		player.setAllowFlight(false);
 		player.setFlying(false);
 		player.setGameMode(GameMode.SURVIVAL);

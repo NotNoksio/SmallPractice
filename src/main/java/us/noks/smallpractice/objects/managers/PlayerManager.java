@@ -6,7 +6,9 @@ import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 import com.google.common.collect.Maps;
 
@@ -223,8 +225,12 @@ public class PlayerManager {
 	public void heal() {
 		if (getPlayer().isDead()) getPlayer().spigot().respawn();
 		getPlayer().setHealth(20.0D);
-		getPlayer().clearPotionEffect();
-		getPlayer().extinguish();
+		((CraftPlayer)player).getHandle().extinguish();
+		if (!player.getActivePotionEffects().isEmpty()) {
+			for (PotionEffect effect : player.getActivePotionEffects()) {
+				player.removePotionEffect(effect.getType());
+			}
+		}
 		getPlayer().setFoodLevel(20);
 		getPlayer().setSaturation(20f);
 	}

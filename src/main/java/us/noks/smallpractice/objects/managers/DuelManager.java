@@ -11,14 +11,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
-import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.PlayerStatus;
@@ -176,8 +178,12 @@ public class DuelManager {
 			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
-			duelPlayer.extinguish();
-			duelPlayer.clearPotionEffect();
+			((CraftPlayer)duelPlayer).getHandle().extinguish();
+			if (!duelPlayer.getActivePotionEffects().isEmpty()) {
+				for (PotionEffect effect : duelPlayer.getActivePotionEffects()) {
+					duelPlayer.removePotionEffect(effect.getType());
+				}
+			}
 			
 			dpm.setStatus(PlayerStatus.SPAWN);
 			dpm.showAllPlayer();
@@ -212,7 +218,7 @@ public class DuelManager {
 					num--;
 				}
 			}
-		}.runTaskTimer(new Main(), 10L, 20L);
+		}.runTaskTimer(Main.getInstance(), 10L, 20L);
 	}
 	
 	private void teleportRandomArena(Duel duel) {
@@ -297,7 +303,7 @@ public class DuelManager {
                 			ItemManager.getInstace().giveSpawnItem(lastPlayers);
                 		}
                 	}
-                }.runTaskLater(new Main(), 40L);
+                }.runTaskLater(Main.getInstance(), 40L);
             }
 			winningTeamNumber = 2;
 		} else if (currentDuel.getSecondTeamAlive().isEmpty()) {
@@ -320,7 +326,7 @@ public class DuelManager {
                 			ItemManager.getInstace().giveSpawnItem(lastPlayers);
                 		}
                 	}
-                }.runTaskLater(new Main(), 40L);
+                }.runTaskLater(Main.getInstance(), 40L);
             }
 			winningTeamNumber = 1;
 		}
