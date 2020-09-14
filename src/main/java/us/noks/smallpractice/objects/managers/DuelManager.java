@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -135,13 +134,6 @@ public class DuelManager {
 	public void endDuel(Duel duel, int winningTeamNumber) {
 		Messages.getInstance().deathMessage(duel, winningTeamNumber);
 		
-		if (duel.isRanked()) {
-			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeam().get(0) : duel.getSecondTeam().get(0));
-			UUID loserUUID = (winnerUUID == duel.getFirstTeam().get(0) ? duel.getSecondTeam().get(0) : duel.getFirstTeam().get(0));
-			
-			EloManager.getInstance().tranferElo(winnerUUID, loserUUID);
-		}
-		
 		Iterator<UUID> specIt = duel.getAllSpectators().iterator();
 		while (specIt.hasNext()) {
 			Player spec = Bukkit.getPlayer(specIt.next());
@@ -178,7 +170,7 @@ public class DuelManager {
 			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
-			((CraftPlayer)duelPlayer).getHandle().extinguish();
+			duelPlayer.extinguish();
 			if (!duelPlayer.getActivePotionEffects().isEmpty()) {
 				for (PotionEffect effect : duelPlayer.getActivePotionEffects()) {
 					duelPlayer.removePotionEffect(effect.getType());

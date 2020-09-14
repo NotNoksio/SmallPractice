@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,7 +60,7 @@ public class PlayerListener implements Listener {
 		player.setHealth(20.0D);
 		player.setFoodLevel(20);
 		player.setSaturation(1000f);
-		((CraftPlayer)player).getHandle().extinguish();
+		player.extinguish();
 		if (!player.getActivePotionEffects().isEmpty()) {
 			for (PotionEffect effect : player.getActivePotionEffects()) {
 				player.removePotionEffect(effect.getType());

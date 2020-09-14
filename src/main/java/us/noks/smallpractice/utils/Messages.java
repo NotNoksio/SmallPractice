@@ -17,6 +17,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.Duel;
+import us.noks.smallpractice.objects.managers.EloManager;;
 
 public class Messages {
 	private static Messages instance = new Messages();
@@ -28,11 +29,11 @@ public class Messages {
 			ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 			ChatColor.YELLOW + "Welcome on the " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Halka" + ChatColor.YELLOW + " practice " + new Main().getDescription().getVersion() + " server",
 			"",
-			ChatColor.DARK_AQUA + "Noksio (Creator) ↓",
+			ChatColor.DARK_AQUA + "Noksio (Creator):",
 			ChatColor.AQUA + "Twitter -> " + ChatColor.DARK_AQUA + "https://github.com/NotNoksio",
 			ChatColor.GRAY + "Github -> " + ChatColor.DARK_AQUA + "https://twitter.com/NotNoksio",
 			ChatColor.BLUE + "Discord -> " + ChatColor.DARK_AQUA + "https://discord.gg/BXz5yMF",
-			ChatColor.DARK_PURPLE + "xelo_o (Server Owner) ↓",
+			ChatColor.DARK_PURPLE + "xelo_o (Server Owner):",
 			ChatColor.DARK_PURPLE + "Twitch -> " + ChatColor.DARK_AQUA + "https://www.twitch.tv/xelo_o",
 			"",
 			ChatColor.RED + "-> Keep in mind this is a beta ^^",
@@ -121,5 +122,12 @@ public class Messages {
 	    	duelPlayer.spigot().sendMessage(invTxt);
 	    	if (duel.hasSpectator()) duelPlayer.sendMessage(spectatorMessage);
 	    }
+	    
+	    if (duel.isRanked()) {
+			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeam().get(0) : duel.getSecondTeam().get(0));
+			UUID loserUUID = (winnerUUID == duel.getFirstTeam().get(0) ? duel.getSecondTeam().get(0) : duel.getFirstTeam().get(0));
+			
+			EloManager.getInstance().tranferElo(winnerUUID, loserUUID);
+		}
 	}
 }
