@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.utils.Messages;
+import us.noks.smallpractice.utils.CustomMessages;
 
 public class SeeallCommand implements CommandExecutor {
 
@@ -17,7 +17,7 @@ public class SeeallCommand implements CommandExecutor {
 			return false;
 		}
 		if (!sender.hasPermission("command.seeall")) {
-			sender.sendMessage(Messages.getInstance().NO_PERMISSION);
+			sender.sendMessage(CustomMessages.getInstance().NO_PERMISSION);
 			return false;
 		}
 		if (args.length != 0) {

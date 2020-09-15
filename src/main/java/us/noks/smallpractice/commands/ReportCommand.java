@@ -16,7 +16,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import us.noks.smallpractice.utils.Messages;
+import us.noks.smallpractice.utils.CustomMessages;
 
 public class ReportCommand implements CommandExecutor {
 	
@@ -33,12 +33,12 @@ public class ReportCommand implements CommandExecutor {
 			Player target = Bukkit.getPlayer(args[0]);
 			
 			if (target == null) {
-				sender.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
+				sender.sendMessage(CustomMessages.getInstance().PLAYER_NOT_ONLINE);
 				return false;
 			}
 			Player p = (Player) sender;
 			if (target == p) {
-				p.sendMessage(Messages.getInstance().NOT_YOURSELF);
+				p.sendMessage(CustomMessages.getInstance().NOT_YOURSELF);
 				return false;
 			}
 			if (cooldowns.containsKey(p.getUniqueId())) {

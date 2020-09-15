@@ -28,7 +28,7 @@ import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 import us.noks.smallpractice.utils.InvView;
-import us.noks.smallpractice.utils.Messages;
+import us.noks.smallpractice.utils.CustomMessages;
 
 public class DuelManager {
 	private static DuelManager instance = new DuelManager();
@@ -132,7 +132,14 @@ public class DuelManager {
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
-		Messages.getInstance().deathMessage(duel, winningTeamNumber);
+		CustomMessages.getInstance().deathMessage(duel, winningTeamNumber);
+		
+		if (duel.isRanked()) {
+			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeam().get(0) : duel.getSecondTeam().get(0));
+			UUID loserUUID = (winnerUUID == duel.getFirstTeam().get(0) ? duel.getSecondTeam().get(0) : duel.getFirstTeam().get(0));
+			
+			EloManager.getInstance().tranferElo(winnerUUID, loserUUID);
+		}
 		
 		Iterator<UUID> specIt = duel.getAllSpectators().iterator();
 		while (specIt.hasNext()) {
@@ -181,7 +188,7 @@ public class DuelManager {
 			dpm.showAllPlayer();
 			dpm.getMatchStats().resetDuelStats();
 			
-			new EnderDelay(new Main()).removeCooldown(duelPlayer);
+			EnderDelay.getInstance().removeCooldown(duelPlayer);
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
 		}
 		duel.clearDrops();
@@ -215,7 +222,7 @@ public class DuelManager {
 	
 	private void teleportRandomArena(Duel duel) {
 		if (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty()) {
-        	duel.sendMessage(Messages.getInstance().EMPTY_TEAM);
+        	duel.sendMessage(CustomMessages.getInstance().EMPTY_TEAM);
         	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1));
         	return;
         }
@@ -274,7 +281,7 @@ public class DuelManager {
 			currentDuel.killSecondTeamPlayer(player.getUniqueId());
 		}
 		
-		byte winningTeamNumber = 0;
+		int winningTeamNumber = 0;
 		if (currentDuel.getFirstTeamAlive().isEmpty()) {
 			for (UUID lastPlayersUUID : currentDuel.getSecondTeamAlive()) {
                 Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);

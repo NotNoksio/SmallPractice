@@ -1,6 +1,5 @@
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\ModerationCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\PlayerManager.java
-D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\utils\Messages.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\listeners\ServerListeners.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\AcceptCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\utils\InvView.java
@@ -16,6 +15,7 @@ D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\party\Party.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\ForceDuelCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\PingCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\SeeallCommand.java
+D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\utils\CustomMessages.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\ReportCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\SpectateCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\listeners\ChatListener.java

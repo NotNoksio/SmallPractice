@@ -58,7 +58,7 @@ public class InvView {
 		inv.setItem(37, (player.getInventory().getChestplate() != null ? player.getInventory().getChestplate() : noarmor));
 		inv.setItem(38, (player.getInventory().getLeggings() != null ? player.getInventory().getLeggings() : noarmor));
 		inv.setItem(39, (player.getInventory().getBoots() != null ? player.getInventory().getBoots() : noarmor));
-		final boolean isAlive = player.getHealth() > 0 || !player.isDead();
+		final boolean isAlive = player.getHealth() > 0.0D || !player.isDead();
 		
 		final ItemStack life = (isAlive ? new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) player.getHealth()).intValue()) : new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.SKELETON.ordinal()));
 		final ItemMeta lm = life.getItemMeta();

@@ -16,7 +16,7 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.Messages;
+import us.noks.smallpractice.utils.CustomMessages;
 
 public class ForceDuelCommand implements CommandExecutor {
 
@@ -26,7 +26,7 @@ public class ForceDuelCommand implements CommandExecutor {
 			return false;
 		}
 		if (!sender.hasPermission("command.forceduel")) {
-			sender.sendMessage(Messages.getInstance().NO_PERMISSION);
+			sender.sendMessage(CustomMessages.getInstance().NO_PERMISSION);
 			return false;
 		}
 		if (args.length != 1) {
@@ -47,11 +47,11 @@ public class ForceDuelCommand implements CommandExecutor {
 		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
-			player.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
+			player.sendMessage(CustomMessages.getInstance().PLAYER_NOT_ONLINE);
 			return false;
 		}
 		if (target == player) {
-			player.sendMessage(Messages.getInstance().NOT_YOURSELF);
+			player.sendMessage(CustomMessages.getInstance().NOT_YOURSELF);
 			return false;
 		}
 		if (PartyManager.getInstance().hasParty(target.getUniqueId())) {

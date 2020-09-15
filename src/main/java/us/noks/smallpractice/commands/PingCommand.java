@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.utils.Messages;
+import us.noks.smallpractice.utils.CustomMessages;
 
 public class PingCommand implements CommandExecutor {
 
@@ -31,7 +31,7 @@ public class PingCommand implements CommandExecutor {
 			Player target = Bukkit.getPlayer(args[0]);
 				
 			if (target == null) {
-				player.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
+				player.sendMessage(CustomMessages.getInstance().PLAYER_NOT_ONLINE);
 				return false;
 			}
 			if (target == player) {

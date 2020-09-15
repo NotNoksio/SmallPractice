@@ -18,7 +18,7 @@ import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.Messages;
+import us.noks.smallpractice.utils.CustomMessages;
 
 public class SpectateCommand implements CommandExecutor {
 
@@ -45,11 +45,11 @@ public class SpectateCommand implements CommandExecutor {
 		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
-			player.sendMessage(Messages.getInstance().PLAYER_NOT_ONLINE);
+			player.sendMessage(CustomMessages.getInstance().PLAYER_NOT_ONLINE);
 			return false;
 		}
 		if (target == player) {
-			player.sendMessage(Messages.getInstance().NOT_YOURSELF);
+			player.sendMessage(CustomMessages.getInstance().NOT_YOURSELF);
 			return false;
 		}
 		PlayerManager tm = PlayerManager.get(target.getUniqueId());

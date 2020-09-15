@@ -179,7 +179,7 @@ public class Duel {
 	
 	public void addDrops(List<ItemStack> item) {
 		for (ItemStack items : item) {
-			this.drops.add((Item)items);
+			this.drops.add((Item) items);
 		}
 	}
 	

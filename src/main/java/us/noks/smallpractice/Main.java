@@ -1,5 +1,6 @@
 package us.noks.smallpractice;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.noks.smallpractice.commands.AcceptCommand;
@@ -24,6 +25,8 @@ import us.noks.smallpractice.objects.managers.QueueManager;
 
 public class Main extends JavaPlugin {
 	
+	private boolean permissionsPluginHere;
+	
 	private static Main instance;
 	public static Main getInstance() {
 		return instance;
@@ -34,6 +37,7 @@ public class Main extends JavaPlugin {
 		instance = this;
 		registerCommands();
 		registerListers();
+		getPermissionsPlugin();
 	}
 	
 	@Override
@@ -59,9 +63,25 @@ public class Main extends JavaPlugin {
 	private void registerListers() {
 		new PlayerListener(this);
 		new ServerListeners(this);
-		new EnderDelay(this);
+		new EnderDelay();
 		new ChatListener(this);
 		new DuelListener(this);
 		new InventoryListener(this);
+	}
+	
+	private void getPermissionsPlugin() {
+		if (hasPermissionsPlugin()) {
+			this.permissionsPluginHere = true;
+			return;
+		}
+		this.permissionsPluginHere = false;
+	}
+	
+	private boolean hasPermissionsPlugin() {
+		return Bukkit.getPluginManager().getPlugin("PermissionsEx") != null;
+	}
+	
+	public boolean isPermissionsPluginHere() {
+		return this.permissionsPluginHere;
 	}
 }

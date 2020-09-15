@@ -38,7 +38,7 @@ import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
-import us.noks.smallpractice.utils.Messages;
+import us.noks.smallpractice.utils.CustomMessages;
 
 public class PlayerListener implements Listener {
 	private Main main;
@@ -75,7 +75,7 @@ public class PlayerListener implements Listener {
 		player.teleport(player.getWorld().getSpawnLocation());
 		ItemManager.getInstace().giveSpawnItem(player);
 		
-		player.sendMessage(Messages.getInstance().WELCOME_MESSAGE);
+		player.sendMessage(CustomMessages.getInstance().WELCOME_MESSAGE);
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
@@ -111,7 +111,6 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onDeath(PlayerDeathEvent event) {
 		event.setDeathMessage(null);
-		event.getDrops().clear();
 		event.setDroppedExp(0);
 		
 		if (event.getEntity() instanceof Player) {
