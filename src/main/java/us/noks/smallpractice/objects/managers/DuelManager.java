@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -20,6 +21,11 @@ import org.bukkit.scoreboard.Team;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.PlayerStatus;
@@ -28,7 +34,6 @@ import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 import us.noks.smallpractice.utils.InvView;
-import us.noks.smallpractice.utils.CustomMessages;
 
 public class DuelManager {
 	private static DuelManager instance = new DuelManager();
@@ -132,7 +137,7 @@ public class DuelManager {
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
-		CustomMessages.getInstance().deathMessage(duel, winningTeamNumber);
+		deathMessage(duel, winningTeamNumber);
 		
 		if (duel.isRanked()) {
 			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeam().get(0) : duel.getSecondTeam().get(0));
@@ -195,6 +200,85 @@ public class DuelManager {
 		duelPlayerUUID.clear();
 	}
 	
+	private void deathMessage(Duel duel, int winningTeamNumber) {
+		try {
+			List<UUID> winnerTeam = null;
+			List<UUID> loserTeam = null;
+			switch (winningTeamNumber) {
+			case 1:
+				winnerTeam = duel.getFirstTeam();
+				loserTeam = duel.getSecondTeam();
+				break;
+			case 2:
+				winnerTeam = duel.getSecondTeam();
+				loserTeam = duel.getFirstTeam();
+				break;
+			default:
+				break;
+			}
+			final boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
+			final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
+			
+		    TextComponent invTxt = new TextComponent();
+		    invTxt.setText("Inventories (Click):");
+		    invTxt.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+		    
+		    List<BaseComponent> inventoriesTextList = Lists.newArrayList();
+		    
+		    for (UUID wUUID : winnerTeam) {
+		    	final Player winners = Bukkit.getPlayer(wUUID);
+		    	if (winners == null) continue;
+		    	TextComponent wtxt = new TextComponent();
+		    	
+		    	wtxt.setText(winners.getName());
+		    	wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+		    	wtxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winners.getName() + "'s inventory").create()));
+		    	wtxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winners.getUniqueId()));
+			    
+			    inventoriesTextList.add(new TextComponent(" "));
+			    inventoriesTextList.add(wtxt);
+		    }
+		    for (UUID lUUID : loserTeam) {
+		    	final Player losers = Bukkit.getPlayer(lUUID);
+		    	if (losers == null) continue;
+		    	TextComponent ltxt = new TextComponent();
+		    	
+		    	ltxt.setText(losers.getName());
+		    	ltxt.setColor(net.md_5.bungee.api.ChatColor.RED);
+		    	ltxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.RED + "Click to view " + losers.getName() + "'s inventory").create()));
+		    	ltxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + losers.getUniqueId()));
+			    
+			    inventoriesTextList.add(new TextComponent(" "));
+			    inventoriesTextList.add(ltxt);
+		    }
+		    
+		    invTxt.setExtra(inventoriesTextList);
+		    invTxt.addExtra(net.md_5.bungee.api.ChatColor.DARK_AQUA + ".");
+		    
+		    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
+		    if (duel.hasSpectator()) {
+		    	for (UUID specs : duel.getAllSpectators()) {
+		    		final Player spec = Bukkit.getPlayer(specs);
+		    		spect.add(ChatColor.YELLOW + spec.getName());
+		    	}
+		    }
+		    final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
+		    
+		    List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstAndSecondTeams());
+		    duelPlayers.addAll(duel.getAllSpectators());
+		    
+		    for (UUID dpUUID : duelPlayers) {
+		    	final Player duelPlayer = Bukkit.getPlayer(dpUUID);
+		    	if (duelPlayer == null) continue;
+		    	duelPlayer.sendMessage(winnerMessage);
+		    	duelPlayer.spigot().sendMessage(invTxt);
+		    	if (duel.hasSpectator()) duelPlayer.sendMessage(spectatorMessage);
+		    }
+		} catch (Exception ex) {
+			System.out.println(ex.getCause());
+		}
+	}
+	
 	private void sendWaitingMessage(Duel duel) {
 		new BukkitRunnable() {
 			int num = duel.getTimeBeforeDuel();
@@ -222,7 +306,7 @@ public class DuelManager {
 	
 	private void teleportRandomArena(Duel duel) {
 		if (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty()) {
-        	duel.sendMessage(CustomMessages.getInstance().EMPTY_TEAM);
+        	duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
         	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1));
         	return;
         }

@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.CustomMessages;
 
 public class BuildCommand implements CommandExecutor {
 
@@ -22,7 +21,7 @@ public class BuildCommand implements CommandExecutor {
 			return false;
 		}
 		if (!sender.hasPermission("command.build")) {
-			sender.sendMessage(CustomMessages.getInstance().NO_PERMISSION);
+			sender.sendMessage(ChatColor.RED + "No permission.");
 			return false;
 		}
 		Player player = (Player) sender;

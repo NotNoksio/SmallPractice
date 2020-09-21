@@ -18,7 +18,6 @@ import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.CustomMessages;
 
 public class SpectateCommand implements CommandExecutor {
 
@@ -45,11 +44,11 @@ public class SpectateCommand implements CommandExecutor {
 		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
-			player.sendMessage(CustomMessages.getInstance().PLAYER_NOT_ONLINE);
+			player.sendMessage(ChatColor.RED + "This player is not online.");
 			return false;
 		}
 		if (target == player) {
-			player.sendMessage(CustomMessages.getInstance().NOT_YOURSELF);
+			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
 		PlayerManager tm = PlayerManager.get(target.getUniqueId());

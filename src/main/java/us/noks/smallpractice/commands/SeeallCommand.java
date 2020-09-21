@@ -7,8 +7,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.utils.CustomMessages;
-
 public class SeeallCommand implements CommandExecutor {
 
 	@Override
@@ -17,7 +15,7 @@ public class SeeallCommand implements CommandExecutor {
 			return false;
 		}
 		if (!sender.hasPermission("command.seeall")) {
-			sender.sendMessage(CustomMessages.getInstance().NO_PERMISSION);
+			sender.sendMessage(ChatColor.RED + "No permission.");
 			return false;
 		}
 		if (args.length != 0) {
@@ -25,9 +23,9 @@ public class SeeallCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
-		Bukkit.getOnlinePlayers().forEach((allplayers) -> {
-			player.showPlayer(allplayers);
-		});
+		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
+			player.showPlayer(allPlayers);
+		}
 		player.sendMessage(ChatColor.GREEN + "You see everyone right now.");
 		return true;
 	}

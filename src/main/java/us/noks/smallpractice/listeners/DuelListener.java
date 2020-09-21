@@ -7,7 +7,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.github.paperspigot.event.entity.ProjectileCollideEvent;
 
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
@@ -25,13 +24,13 @@ public class DuelListener implements Listener {
 	public void onFailedPotion(PotionSplashEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			final Player shooter = (Player) event.getEntity().getShooter();
-			for (LivingEntity affectedEntities : event.getAffectedEntities()) {
+			/*for (LivingEntity affectedEntities : event.getAffectedEntities()) {
 				Player affectedPlayers = (Player) affectedEntities;
 				if (!shooter.canSee(affectedPlayers)) {
 					event.setCancelled(true);
 				}
 			}
-			if (event.isCancelled()) return;
+			if (event.isCancelled()) return;*/
 			final PlayerManager sm = PlayerManager.get(shooter.getUniqueId());
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
@@ -63,14 +62,4 @@ public class DuelListener implements Listener {
             }
         }
     }
-	
-	@EventHandler
-	public void onProjectileColide(ProjectileCollideEvent event) {
-		if (event.getEntity().getShooter() instanceof Player && event.getCollidedWith() instanceof Player) {
-			final Player shooter = (Player) event.getEntity().getShooter();
-			final Player collide = (Player) event.getCollidedWith();
-			
-			if (!shooter.canSee(collide)) event.setCancelled(true);
-		}
-	}
 }

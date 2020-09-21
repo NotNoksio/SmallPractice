@@ -7,8 +7,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.utils.CustomMessages;
-
 public class PingCommand implements CommandExecutor {
 
 	@Override
@@ -23,7 +21,7 @@ public class PingCommand implements CommandExecutor {
 		Player player = (Player) sender;
 			
 		if (args.length == 0) {
-			player.sendMessage(ChatColor.DARK_AQUA + "Your ping: " + ChatColor.YELLOW + player.spigot().getPing() + "ms");
+			player.sendMessage(ChatColor.DARK_AQUA + "Your ping: " + ChatColor.YELLOW + player.getPing() + "ms");
 			return true;
 		}
 			
@@ -31,15 +29,15 @@ public class PingCommand implements CommandExecutor {
 			Player target = Bukkit.getPlayer(args[0]);
 				
 			if (target == null) {
-				player.sendMessage(CustomMessages.getInstance().PLAYER_NOT_ONLINE);
+				player.sendMessage(ChatColor.RED + "This player is not online.");
 				return false;
 			}
 			if (target == player) {
-				player.sendMessage(ChatColor.DARK_AQUA + "Your ping: " + ChatColor.YELLOW + player.spigot().getPing() + "ms");
+				player.sendMessage(ChatColor.DARK_AQUA + "Your ping: " + ChatColor.YELLOW + player.getPing() + "ms");
 				return true;
 			}
-			player.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.DARK_AQUA + "'s ping: " + ChatColor.YELLOW + target.spigot().getPing() + "ms");
-			player.sendMessage(ChatColor.DARK_AQUA + "Ping difference: " + ChatColor.YELLOW + Math.abs(player.spigot().getPing() - target.spigot().getPing()) + "ms");
+			player.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.DARK_AQUA + "'s ping: " + ChatColor.YELLOW + target.getPing() + "ms");
+			player.sendMessage(ChatColor.DARK_AQUA + "Ping difference: " + ChatColor.YELLOW + Math.abs(player.getPing() - target.getPing()) + "ms");
 			return true;
 		}
 		return false;

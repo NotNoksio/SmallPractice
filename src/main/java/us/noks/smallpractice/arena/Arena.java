@@ -18,10 +18,10 @@ public class Arena {
 	
 	private void setupArena() {
 		if (arenaList.isEmpty()) {
-			arena1_Pos1 = new Location(Bukkit.getWorld("world"), -1094.5D, 77.0D, 1225.5D, -27.0F, 0.0F);
-		    arena1_Pos2 = new Location(Bukkit.getWorld("world"), -1055.5D, 76.0D, 1292.5D, 121.0F, -1.0F);
-		    arena2_Pos1 = new Location(Bukkit.getWorld("world"), -1359.5D, 127.0D, 685.5D, 90.0F, 0.0F);
-		    arena2_Pos2 = new Location(Bukkit.getWorld("world"), -1419.5D, 127.0D, 685.5D, -90.0F, 0.0F);
+			arena1_Pos1 = new Location(Bukkit.getWorld("world"), -2121.5D, 120.0D, 1667.5D, -163.0F, 0.0F);
+		    arena1_Pos2 = new Location(Bukkit.getWorld("world"), -2092.5D, 120.0D, 1590.5D, 22.0F, -1.0F);
+		    arena2_Pos1 = new Location(Bukkit.getWorld("world"), -878.5D, 46.0D, 1984.5D, -35.0F, 0.0F);
+		    arena2_Pos2 = new Location(Bukkit.getWorld("world"), -832.5D, 46.0D, 2056.5D, -202.0F, 0.0F);
 		    
 		    arenaList.put(1, new Arenas(this, new Location[] {arena1_Pos1, arena1_Pos2}));
 			arenaList.put(2, new Arenas(this, new Location[] {arena2_Pos1, arena2_Pos2}));

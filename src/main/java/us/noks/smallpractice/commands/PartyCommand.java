@@ -25,7 +25,7 @@ public class PartyCommand implements CommandExecutor {
             ChatColor.GREEN + "-> /party create " + ChatColor.GRAY + "- Creates a party instance",
             ChatColor.GREEN + "-> /party leave " + ChatColor.GRAY + "- Leave your current party",
             ChatColor.GREEN + "-> /party info " + ChatColor.GRAY + "- Displays your party information",
-            ChatColor.RED + "-> /party join <player> " + ChatColor.GRAY + "- Join a party (invited or unlocked)",
+            ChatColor.GREEN + "-> /party join <player> " + ChatColor.GRAY + "- Join a party (invited or unlocked)",
             "",
             ChatColor.RED.toString() + ChatColor.BOLD + "Leader Commands:",
             ChatColor.GREEN + "-> /party open " + ChatColor.GRAY + "- Open your party for others to join",
@@ -65,10 +65,6 @@ public class PartyCommand implements CommandExecutor {
         	player.sendMessage(ChatColor.GREEN + "Party successfully created.");
         	ItemManager.getInstace().giveSpawnItem(player);
         	return true;
-        }
-        if (party == null) {
-        	player.sendMessage(ChatColor.RED + "You are not in a party!");
-        	return false;
         }
         if (args.length == 1) {
 	        if (args[0].equalsIgnoreCase("info")) {
@@ -143,7 +139,9 @@ public class PartyCommand implements CommandExecutor {
             }
             //PlayerManager tm = PlayerManager.get(target.getUniqueId());
             Party targetParty = PartyManager.getInstance().getParty(target.getUniqueId());
-            
+            if (targetParty == null) {
+            	return false;
+            }
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
             	if (PartyManager.getInstance().hasParty(target.getUniqueId())) {
                 	return false;

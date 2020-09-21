@@ -23,7 +23,6 @@ us\noks\smallpractice\commands\InventoryCommand.class
 us\noks\smallpractice\objects\managers\EloManager.class
 us\noks\smallpractice\commands\ModerationCommand.class
 us\noks\smallpractice\commands\AcceptCommand.class
-us\noks\smallpractice\utils\CustomMessages.class
 us\noks\smallpractice\listeners\EnderDelay.class
 us\noks\smallpractice\listeners\ServerListeners.class
 us\noks\smallpractice\objects\managers\DuelManager.class

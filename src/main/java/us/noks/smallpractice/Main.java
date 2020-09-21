@@ -63,7 +63,7 @@ public class Main extends JavaPlugin {
 	private void registerListers() {
 		new PlayerListener(this);
 		new ServerListeners(this);
-		new EnderDelay();
+		Bukkit.getServer().getPluginManager().registerEvents(new EnderDelay(), this);
 		new ChatListener(this);
 		new DuelListener(this);
 		new InventoryListener(this);

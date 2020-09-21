@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.utils.CustomMessages;
 
 public class InventoryListener implements Listener {
 	private Main main;
@@ -46,7 +45,7 @@ public class InventoryListener implements Listener {
             itemName[0] = ChatColor.stripColor(itemName[0]);
             
             if (player.getName().toLowerCase().equals(itemName[0].toLowerCase())) {
-            	player.sendMessage(CustomMessages.getInstance().NOT_YOURSELF);
+            	player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
             	return;
             }
             

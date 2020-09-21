@@ -15,7 +15,6 @@ import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
-import us.noks.smallpractice.utils.CustomMessages;
 
 public class DuelCommand implements CommandExecutor {
 	
@@ -32,13 +31,13 @@ public class DuelCommand implements CommandExecutor {
 			Player target = Bukkit.getPlayer(args[0]);
 			
 			if (target == null) {
-				sender.sendMessage(CustomMessages.getInstance().PLAYER_NOT_ONLINE);
+				sender.sendMessage(ChatColor.RED + "This player is not online.");
 				return false;
 			}
 			Player player = (Player) sender;
 			
 			if (target == player) {
-				player.sendMessage(CustomMessages.getInstance().NOT_YOURSELF);
+				player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 				return false;
 			}
 			Party party = PartyManager.getInstance().getParty(player.getUniqueId());
