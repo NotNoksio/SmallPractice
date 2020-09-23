@@ -22,6 +22,7 @@ D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\listeners\ChatListen
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\listeners\InventoryListener.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\enums\PlayerStatus.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\listeners\PlayerListener.java
+D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\DenyCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\NightCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\RequestManager.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\ItemManager.java
@@ -33,4 +34,5 @@ D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\MatchStats.j
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\SpawnCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\Duel.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\Main.java
+D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\RollCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\DayCommand.java

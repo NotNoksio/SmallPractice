@@ -35,9 +35,20 @@ public class RequestManager {
 		l1b.setBold(true);
 		l1b.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
 		l1b.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + requester.getName()));
+		
+		TextComponent l1space = new TextComponent(" ");
+		
+		TextComponent l1c = new TextComponent();
+		l1c.setText("Click here to deny.");
+		l1c.setColor(net.md_5.bungee.api.ChatColor.RED);
+		l1c.setBold(true);
+		l1c.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.RED + "Click this message to deny " + requester.getName()).create()));
+		l1c.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/deny " + requester.getName()));
 	    
 		l1.addExtra(l1a);
 		l1.addExtra(l1b);
+		l1.addExtra(l1space);
+		l1.addExtra(l1c);
 	    
 		requested.spigot().sendMessage(l1);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
@@ -65,5 +76,19 @@ public class RequestManager {
 			return;
 		}
 		DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), false);
+	}
+	
+	public void denyDuelRequest(Player requested, Player requester) {
+		if (PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
+			return;
+		}
+		if (PlayerManager.get(requester.getUniqueId()).getRequestTo() != requested.getUniqueId()) {
+			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
+			return;
+		}
+		PlayerManager.get(requester.getUniqueId()).setRequestTo(null);
+		requester.sendMessage(ChatColor.DARK_AQUA + requested.getName() + ChatColor.RED + " has denied your duel request!");
+		requested.sendMessage(ChatColor.RED + "You deny the request from " + ChatColor.DARK_AQUA + requester.getName());
 	}
 }

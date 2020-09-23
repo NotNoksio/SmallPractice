@@ -6,6 +6,7 @@ depend: [PermissionsEx]
 commands:
   duel:
   accept:
+  deny:
   build:
   ping:
     aliases: [ms]
@@ -24,4 +25,5 @@ commands:
   day:
   night:
   resettime:
+  roll:
   

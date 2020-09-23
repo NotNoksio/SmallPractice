@@ -1,3 +1,4 @@
+us\noks\smallpractice\commands\RollCommand.class
 us\noks\smallpractice\listeners\DuelListener.class
 us\noks\smallpractice\objects\managers\PlayerManager.class
 us\noks\smallpractice\party\Party.class
@@ -32,6 +33,7 @@ us\noks\smallpractice\objects\managers\RequestManager.class
 us\noks\smallpractice\commands\ForceDuelCommand.class
 us\noks\smallpractice\commands\SpectateCommand.class
 us\noks\smallpractice\utils\InvView.class
+us\noks\smallpractice\commands\DenyCommand.class
 us\noks\smallpractice\enums\PlayerStatus.class
 us\noks\smallpractice\arena\Arena$Arenas.class
 us\noks\smallpractice\commands\ReportCommand.class

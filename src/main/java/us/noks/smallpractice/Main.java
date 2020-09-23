@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.noks.smallpractice.commands.AcceptCommand;
 import us.noks.smallpractice.commands.BuildCommand;
 import us.noks.smallpractice.commands.DayCommand;
+import us.noks.smallpractice.commands.DenyCommand;
 import us.noks.smallpractice.commands.DuelCommand;
 import us.noks.smallpractice.commands.ForceDuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
@@ -15,6 +16,7 @@ import us.noks.smallpractice.commands.PartyCommand;
 import us.noks.smallpractice.commands.PingCommand;
 import us.noks.smallpractice.commands.ReportCommand;
 import us.noks.smallpractice.commands.ResetTimeCommand;
+import us.noks.smallpractice.commands.RollCommand;
 import us.noks.smallpractice.commands.SeeallCommand;
 import us.noks.smallpractice.commands.SpawnCommand;
 import us.noks.smallpractice.commands.SpectateCommand;
@@ -51,6 +53,7 @@ public class Main extends JavaPlugin {
 	private void registerCommands() {
 		getCommand("duel").setExecutor(new DuelCommand());
 		getCommand("accept").setExecutor(new AcceptCommand());
+		getCommand("deny").setExecutor(new DenyCommand());
 		getCommand("build").setExecutor(new BuildCommand());
 		getCommand("ping").setExecutor(new PingCommand());
 		getCommand("inventory").setExecutor(new InventoryCommand());
@@ -64,6 +67,7 @@ public class Main extends JavaPlugin {
 		getCommand("day").setExecutor(new DayCommand());
 		getCommand("night").setExecutor(new NightCommand());
 		getCommand("resettime").setExecutor(new ResetTimeCommand());
+		getCommand("roll").setExecutor(new RollCommand());
 	}
 	
 	private void registerListers() {
