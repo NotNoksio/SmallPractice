@@ -5,13 +5,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import us.noks.smallpractice.commands.AcceptCommand;
 import us.noks.smallpractice.commands.BuildCommand;
+import us.noks.smallpractice.commands.DayCommand;
 import us.noks.smallpractice.commands.DuelCommand;
 import us.noks.smallpractice.commands.ForceDuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
 import us.noks.smallpractice.commands.ModerationCommand;
+import us.noks.smallpractice.commands.NightCommand;
 import us.noks.smallpractice.commands.PartyCommand;
 import us.noks.smallpractice.commands.PingCommand;
 import us.noks.smallpractice.commands.ReportCommand;
+import us.noks.smallpractice.commands.ResetTimeCommand;
 import us.noks.smallpractice.commands.SeeallCommand;
 import us.noks.smallpractice.commands.SpawnCommand;
 import us.noks.smallpractice.commands.SpectateCommand;
@@ -58,6 +61,9 @@ public class Main extends JavaPlugin {
 		getCommand("mod").setExecutor(new ModerationCommand());
 		getCommand("party").setExecutor(new PartyCommand());
 		getCommand("forceduel").setExecutor(new ForceDuelCommand());
+		getCommand("day").setExecutor(new DayCommand());
+		getCommand("night").setExecutor(new NightCommand());
+		getCommand("resettime").setExecutor(new ResetTimeCommand());
 	}
 	
 	private void registerListers() {

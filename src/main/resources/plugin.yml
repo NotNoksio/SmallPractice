@@ -21,4 +21,7 @@ commands:
     aliases: [team]
   forceduel:
     aliases: [fd]
+  day:
+  night:
+  resettime:
   

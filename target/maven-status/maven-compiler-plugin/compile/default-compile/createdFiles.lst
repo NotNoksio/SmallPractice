@@ -22,6 +22,7 @@ us\noks\smallpractice\commands\InventoryCommand.class
 us\noks\smallpractice\objects\managers\EloManager.class
 us\noks\smallpractice\commands\ModerationCommand.class
 us\noks\smallpractice\commands\AcceptCommand.class
+us\noks\smallpractice\commands\ResetTimeCommand.class
 us\noks\smallpractice\listeners\EnderDelay.class
 us\noks\smallpractice\listeners\ServerListeners.class
 us\noks\smallpractice\objects\managers\DuelManager.class
@@ -35,5 +36,6 @@ us\noks\smallpractice\enums\PlayerStatus.class
 us\noks\smallpractice\arena\Arena$Arenas.class
 us\noks\smallpractice\commands\ReportCommand.class
 us\noks\smallpractice\commands\DayCommand.class
+us\noks\smallpractice\commands\NightCommand.class
 us\noks\smallpractice\objects\managers\DuelManager$3.class
 us\noks\smallpractice\commands\BuildCommand.class

@@ -17,6 +17,9 @@ public class DayCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "Usage: /day");
 			return false;
 		}
+		Player player = (Player) sender;
+		player.setPlayerTime(6000L, false);
+        player.sendMessage(ChatColor.GREEN + "You have set the day.");
 		return true;
 	}
 }
