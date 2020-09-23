@@ -18,7 +18,7 @@ public class RollCommand implements CommandExecutor {
 		}
 		Random roll = new Random();
 		int rollNumber = roll.nextInt(100) + 1;
-		if (args[0] != null) {
+		if (args.length == 1) {
 			if (!isInteger(args[0])) {
 				sender.sendMessage(ChatColor.RED + "Args 1 need to be an integer!");
 				return false;
