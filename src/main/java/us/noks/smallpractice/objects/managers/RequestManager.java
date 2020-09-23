@@ -21,36 +21,36 @@ public class RequestManager {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		TextComponent l1 = new TextComponent();
-		l1.setText(requester.getName());
-		l1.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+		TextComponent line = new TextComponent();
+		line.setText(requester.getName());
+		line.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 	    
-		TextComponent l1a = new TextComponent();
-		l1a.setText(" has requested to duel ");
-		l1a.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+		TextComponent lineA = new TextComponent();
+		lineA.setText(" has requested to duel ");
+		lineA.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
-		TextComponent l1b = new TextComponent();
-		l1b.setText("Click here to accept.");
-		l1b.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-		l1b.setBold(true);
-		l1b.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
-		l1b.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + requester.getName()));
+		TextComponent lineB = new TextComponent();
+		lineB.setText("Click here to accept.");
+		lineB.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+		lineB.setBold(true);
+		lineB.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
+		lineB.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + requester.getName()));
 		
-		TextComponent l1space = new TextComponent(" ");
+		TextComponent lineSpace = new TextComponent(" ");
 		
-		TextComponent l1c = new TextComponent();
-		l1c.setText("Click here to deny.");
-		l1c.setColor(net.md_5.bungee.api.ChatColor.RED);
-		l1c.setBold(true);
-		l1c.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.RED + "Click this message to deny " + requester.getName()).create()));
-		l1c.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/deny " + requester.getName()));
+		TextComponent lineC = new TextComponent();
+		lineC.setText("Click here to deny.");
+		lineC.setColor(net.md_5.bungee.api.ChatColor.RED);
+		lineC.setBold(true);
+		lineC.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.RED + "Click this message to deny " + requester.getName()).create()));
+		lineC.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/deny " + requester.getName()));
 	    
-		l1.addExtra(l1a);
-		l1.addExtra(l1b);
-		l1.addExtra(l1space);
-		l1.addExtra(l1c);
+		line.addExtra(lineA);
+		line.addExtra(lineB);
+		line.addExtra(lineSpace);
+		line.addExtra(lineC);
 	    
-		requested.spigot().sendMessage(l1);
+		requested.spigot().sendMessage(line);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
 		PlayerManager.get(requester.getUniqueId()).setRequestTo(requested.getUniqueId());
 	}
@@ -80,15 +80,15 @@ public class RequestManager {
 	
 	public void denyDuelRequest(Player requested, Player requester) {
 		if (PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
-			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
+			requested.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return;
 		}
 		if (PlayerManager.get(requester.getUniqueId()).getRequestTo() != requested.getUniqueId()) {
-			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
+			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a request duel!");
 			return;
 		}
 		PlayerManager.get(requester.getUniqueId()).setRequestTo(null);
-		requester.sendMessage(ChatColor.DARK_AQUA + requested.getName() + ChatColor.RED + " has denied your duel request!");
-		requested.sendMessage(ChatColor.RED + "You deny the request from " + ChatColor.DARK_AQUA + requester.getName());
+		requester.sendMessage(ChatColor.YELLOW + requested.getName() + ChatColor.RED + " has denied your duel request!");
+		requested.sendMessage(ChatColor.RED + "You deny the request from " + ChatColor.YELLOW + requester.getName());
 	}
 }

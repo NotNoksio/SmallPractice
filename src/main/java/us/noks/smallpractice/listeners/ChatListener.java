@@ -26,7 +26,8 @@ public class ChatListener implements Listener {
 			return;
 		}
 		String prefix = "";
-		prefix = PlayerManager.get(event.getPlayer().getUniqueId()).getColoredPrefix() + "%1$s" + ChatColor.RESET;
+		PlayerManager pm = PlayerManager.get(event.getPlayer().getUniqueId());
+		prefix = pm.getColoredPrefix() + "%1$s" + pm.getColoredSuffix() + ChatColor.RESET;
 		event.setFormat(prefix + ChatColor.WHITE + ": %2$s");
 	}
 	

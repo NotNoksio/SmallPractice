@@ -68,6 +68,10 @@ public class PartyCommand implements CommandExecutor {
         }
         if (args.length == 1) {
 	        if (args[0].equalsIgnoreCase("info")) {
+	        	if (party == null) {
+	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
+	        		return false;
+	        	}
 	        	Player leader = Bukkit.getPlayer(party.getLeader());
 	            StringJoiner members = new StringJoiner(", ");
 	
@@ -89,6 +93,10 @@ public class PartyCommand implements CommandExecutor {
 	            return true;
 	        }
 	        if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("disband")) {
+	        	if (party == null) {
+	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
+	        		return false;
+	        	}
 	        	if (party.getLeader().equals(player.getUniqueId())) {
 	                PartyManager.getInstance().transferLeader(player.getUniqueId());
 	                player.sendMessage(ChatColor.RED + "The party has been disbanded!");
@@ -100,6 +108,10 @@ public class PartyCommand implements CommandExecutor {
 	        	return true;
 	        }
 	        if (args[0].equalsIgnoreCase("open")) {
+	        	if (party == null) {
+	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
+	        		return false;
+	        	}
 	        	if (!party.getLeader().equals(player.getUniqueId())) {
 	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
 	        		return false;
@@ -113,6 +125,10 @@ public class PartyCommand implements CommandExecutor {
 	            return true;
 	        }
 	        if (args[0].equalsIgnoreCase("lock")) {
+	        	if (party == null) {
+	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
+	        		return false;
+	        	}
 	        	if (!party.getLeader().equals(player.getUniqueId())) {
 	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
 	        		return false;

@@ -155,6 +155,9 @@ public class PlayerListener implements Listener {
 					break;
 				}
 			}
+			if (pm.getStatus() == PlayerStatus.SPECTATE) {
+				event.setCancelled(true);
+			}
 		}
 	}
 	

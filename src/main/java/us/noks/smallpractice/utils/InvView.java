@@ -34,7 +34,7 @@ public class InvView {
 		final MatchStats stats = PlayerManager.get(player.getUniqueId()).getMatchStats();
 		
 		stats.setLastFailedPotions(stats.getFailedPotions());
-		stats.setFailedPotions((byte) 0);
+		stats.setFailedPotions(0);
 		if(stats.getCombo() > stats.getLongestCombo()) {
 			stats.setLongestCombo(stats.getCombo());
     	}

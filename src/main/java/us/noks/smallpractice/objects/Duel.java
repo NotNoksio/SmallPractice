@@ -118,24 +118,22 @@ public class Duel {
 		}
 		List<Player> firstTeamPlayer = Lists.newArrayList();
 		List<Player> secondTeamPlayer = Lists.newArrayList();
-		for (UUID firstTeamUUID : this.firstTeamAlive) {
+		for (UUID firstTeamUUID : this.firstTeam) {
 			final Player first = Bukkit.getPlayer(firstTeamUUID);
 			if (first == null) continue;
 			firstTeamPlayer.add(first);
 		}
-		for (UUID secondTeamUUID : this.secondTeamAlive) {
+		for (UUID secondTeamUUID : this.secondTeam) {
 			final Player second = Bukkit.getPlayer(secondTeamUUID);
 			if (second == null) continue;
 			secondTeamPlayer.add(second);
 		}
         Iterator<Player> it = new ArrayList<>(secondTeamPlayer).iterator();
 		for (Player first : firstTeamPlayer) {
-			if (!first.canSee(first)) first.showPlayer(first);
 			while (it.hasNext()) {
                 Player second = it.next();
-				if (!second.canSee(second)) second.showPlayer(second);
-				if (!first.canSee(second)) first.showPlayer(second);
-				if (!second.canSee(first)) second.showPlayer(first);
+				first.showPlayer(second);
+				second.showPlayer(first);
 			}
 		}
 		firstTeamPlayer.clear();

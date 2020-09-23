@@ -23,7 +23,7 @@ public class PlayerManager {
 	private Map<UUID, UUID> invite = new WeakHashMap<UUID, UUID>();
 	private PlayerStatus status;
 	private Player spectate;
-	private String prefix;
+	private String prefix, suffix;
 	private int elo;
 	private MatchStats matchStats;
 	
@@ -32,6 +32,7 @@ public class PlayerManager {
 	    this.player = Bukkit.getPlayer(this.playerUUID);
 	    this.status = PlayerStatus.SPAWN;
 	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
+	    this.suffix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getSuffix();
 	    this.spectate = null;
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
 	    this.matchStats = new MatchStats();
@@ -199,6 +200,14 @@ public class PlayerManager {
 		//                 |Tab||   Chat Prefix    |
 		//                 ↓   ↓↓                  ↓
 		// PREFIX FORMAT -> &3&l&f[&3Developer&f] &3
+	}
+	
+	public String getSuffix() {
+		return this.suffix;
+	}
+	
+	public String getColoredSuffix() {
+		return ChatColor.translateAlternateColorCodes('&', getSuffix());
 	}
 	
 	private boolean isMagicColor(char letter) {

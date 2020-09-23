@@ -347,6 +347,22 @@ public class DuelManager {
 			second.teleport(pickedArena.getPositions(random)[1]);
 			second.setSneaking(false);
 		}
+		for (UUID firstUUID : duel.getFirstTeam()) {
+			for (UUID firstUUID2 : duel.getFirstTeam()) {
+				Player first1 = Bukkit.getPlayer(firstUUID);
+				Player first2 = Bukkit.getPlayer(firstUUID2);
+				first1.showPlayer(first2);
+				first2.showPlayer(first1);
+			}
+		}
+		for (UUID secondUUID : duel.getSecondTeam()) {
+			for (UUID secondUUID2 : duel.getSecondTeam()) {
+				Player second1 = Bukkit.getPlayer(secondUUID);
+				Player second2 = Bukkit.getPlayer(secondUUID2);
+				second1.showPlayer(second2);
+				second2.showPlayer(second1);
+			}
+		}
 		sendWaitingMessage(duel);
 	}
 	
