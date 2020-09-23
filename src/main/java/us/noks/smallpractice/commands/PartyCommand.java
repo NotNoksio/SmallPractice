@@ -143,7 +143,7 @@ public class PartyCommand implements CommandExecutor {
             	return false;
             }
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
-            	if (PartyManager.getInstance().hasParty(target.getUniqueId())) {
+            	if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
                 	return false;
                 }
             	if (targetParty.isOpen()) {

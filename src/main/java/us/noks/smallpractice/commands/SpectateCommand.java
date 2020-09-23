@@ -75,7 +75,7 @@ public class SpectateCommand implements CommandExecutor {
 			Player dplayers = Bukkit.getPlayer(uuid);
 			player.showPlayer(dplayers);
 		}
-		ItemManager.getInstace().giveSpectateItem(player);
+		ItemManager.getInstace().giveLeaveItem(player, "Spectate");
 		player.sendMessage(ChatColor.GREEN + "You are now spectating " + ChatColor.YELLOW + target.getName());
 		duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 		return true;

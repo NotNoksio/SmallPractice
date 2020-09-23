@@ -376,6 +376,15 @@ public class DuelManager {
                 lastPlayers.setHealth(20.0D);
                 lastPlayers.setFoodLevel(20);
                 lastPlayers.setSaturation(10000f);
+                lastPlayers.getInventory().clear();
+                lastPlayers.getInventory().setArmorContents(null);
+                if (!lastPlayers.getActivePotionEffects().isEmpty()) {
+        			for (PotionEffect effect : lastPlayers.getActivePotionEffects()) {
+        				lastPlayers.removePotionEffect(effect.getType());
+        			}
+        		}
+                lastPlayers.extinguish();
+                lastPlayers.setItemOnCursor(null);
         			
                 new BukkitRunnable() {
         				
@@ -399,6 +408,15 @@ public class DuelManager {
                 lastPlayers.setHealth(20.0D);
                 lastPlayers.setFoodLevel(20);
                 lastPlayers.setSaturation(10000f);
+                lastPlayers.getInventory().clear();
+                lastPlayers.getInventory().setArmorContents(null);
+                if (!lastPlayers.getActivePotionEffects().isEmpty()) {
+        			for (PotionEffect effect : lastPlayers.getActivePotionEffects()) {
+        				lastPlayers.removePotionEffect(effect.getType());
+        			}
+        		}
+                lastPlayers.extinguish();
+                lastPlayers.setItemOnCursor(null);
         			
                 new BukkitRunnable() {
         				

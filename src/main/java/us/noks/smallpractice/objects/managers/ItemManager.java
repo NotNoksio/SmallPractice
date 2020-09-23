@@ -58,41 +58,29 @@ public class ItemManager {
 			pm.setDisplayName(ChatColor.YELLOW + "Party Information");
 			p.setItemMeta(pm);
 			
-			ItemStack r = new ItemStack(Material.REDSTONE, 1);
-			ItemMeta rm = r.getItemMeta();
-			rm.setDisplayName(ChatColor.RED + "Leave Party");
-			r.setItemMeta(rm);
+			giveLeaveItem(player, "Party", false);
 			
 			player.getInventory().setItem(0, a);
 			player.getInventory().setItem(2, b);
 			player.getInventory().setItem(5, p);
-			player.getInventory().setItem(8, r);
 		}
 		player.updateInventory();
 	}
 	
-	public void giveQueueItem(Player player) {
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
-		player.setItemOnCursor(null);
-		
-		ItemStack r = new ItemStack(Material.REDSTONE, 1);
-		ItemMeta rm = r.getItemMeta();
-		rm.setDisplayName(ChatColor.RED + "Leave Queue");
-		r.setItemMeta(rm);
-		
-		player.getInventory().setItem(8, r);
-		player.updateInventory();
+	public void giveLeaveItem(Player player, String string) {
+		giveLeaveItem(player, string, true);
 	}
-	
-	public void giveSpectateItem(Player player) {
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
-		player.setItemOnCursor(null);
+	private void giveLeaveItem(Player player, String string, boolean clearInventory) {
+		// Queue - Spectate - Party
+		if (clearInventory) {
+			player.getInventory().clear();
+			player.getInventory().setArmorContents(null);
+			player.setItemOnCursor(null);
+		}
 		
 		ItemStack r = new ItemStack(Material.REDSTONE, 1);
 		ItemMeta rm = r.getItemMeta();
-		rm.setDisplayName(ChatColor.RED + "Leave Spectate");
+		rm.setDisplayName(ChatColor.RED + "Leave " + string);
 		r.setItemMeta(rm);
 		
 		player.getInventory().setItem(8, r);
@@ -161,14 +149,14 @@ public class ItemManager {
 		ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 		ItemStack fire = new ItemStack(Material.POTION, 1, (short) 8259);
 		
-		while (player.getInventory().firstEmpty() != -1) {
-			player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
-		}
-		
 		player.getInventory().setHelmet(hel);
 		player.getInventory().setChestplate(che);
 		player.getInventory().setLeggings(leg);
 		player.getInventory().setBoots(boo);
+		
+		while (player.getInventory().firstEmpty() != -1) {
+			player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
+		}
 		
 		player.getInventory().setItem(0, swo);
 		player.getInventory().setItem(1, pearl);
@@ -178,7 +166,6 @@ public class ItemManager {
 		
 		player.getInventory().setItem(17, speed);
 		player.getInventory().setItem(26, speed);
-		player.getInventory().setItem(35, speed);
 		player.updateInventory();
 	}
 }

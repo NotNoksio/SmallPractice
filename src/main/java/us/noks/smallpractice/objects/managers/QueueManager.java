@@ -34,7 +34,7 @@ public class QueueManager {
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
 			if (this.queue.size() == 1) {
-				ItemManager.getInstace().giveQueueItem(player);
+				ItemManager.getInstace().giveLeaveItem(player, "Queue");
 			}
 			player.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
 		}

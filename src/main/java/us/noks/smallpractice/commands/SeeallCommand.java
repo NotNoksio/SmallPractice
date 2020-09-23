@@ -7,6 +7,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.managers.PlayerManager;
+
 public class SeeallCommand implements CommandExecutor {
 
 	@Override
@@ -23,6 +26,11 @@ public class SeeallCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (pm.getStatus() != PlayerStatus.MODERATION) {
+			player.sendMessage(ChatColor.RED + "You are not in the appropriate state for use this command!");
+			return false;
+		}
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			player.showPlayer(allPlayers);
 		}

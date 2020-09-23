@@ -1,6 +1,5 @@
 package us.noks.smallpractice.listeners;
 
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -35,7 +34,7 @@ public class DuelListener implements Listener {
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
 				final MatchStats stats = sm.getMatchStats();
-				byte cacheFailedPotions = stats.getFailedPotions();
+				int cacheFailedPotions = stats.getFailedPotions();
 				stats.setFailedPotions(cacheFailedPotions++);
 			}
 		}
