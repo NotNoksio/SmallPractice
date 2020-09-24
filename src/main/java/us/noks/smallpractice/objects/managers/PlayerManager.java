@@ -13,6 +13,7 @@ import com.google.common.collect.Maps;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.CommandCooldown;
 import us.noks.smallpractice.objects.MatchStats;
 
 public class PlayerManager {
@@ -26,6 +27,7 @@ public class PlayerManager {
 	private String prefix, suffix;
 	private int elo;
 	private MatchStats matchStats;
+	private CommandCooldown cooldown;
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
@@ -36,6 +38,7 @@ public class PlayerManager {
 	    this.spectate = null;
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
 	    this.matchStats = new MatchStats();
+	    this.cooldown = new CommandCooldown();
 	}
 
 	public static void create(UUID uuid) {
@@ -228,6 +231,10 @@ public class PlayerManager {
 			break;
 		}
 		return false;
+	}
+	
+	public CommandCooldown getCooldown() {
+		return this.cooldown;
 	}
 	
 	public void heal() {

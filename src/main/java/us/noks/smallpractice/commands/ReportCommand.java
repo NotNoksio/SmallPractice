@@ -1,9 +1,6 @@
 package us.noks.smallpractice.commands;
 
-import java.util.Map;
 import java.util.StringJoiner;
-import java.util.UUID;
-import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -16,11 +13,12 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import us.noks.smallpractice.objects.CommandCooldown;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ReportCommand implements CommandExecutor {
 	
 	private int cooldownTime = 30;
-	private Map<UUID, Long> cooldowns = new WeakHashMap<UUID, Long>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -40,8 +38,9 @@ public class ReportCommand implements CommandExecutor {
 				p.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 				return false;
 			}
-			if (cooldowns.containsKey(p.getUniqueId())) {
-				long secondsLeft = ((cooldowns.get(p.getUniqueId()) / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);
+			CommandCooldown cooldown = PlayerManager.get(p.getUniqueId()).getCooldown();
+			if (cooldown.hasCooldown("Report")) {
+				long secondsLeft = ((cooldown.getCooldownTime("Report") / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);
 	            if (secondsLeft > 0) {
 	                p.sendMessage(org.bukkit.ChatColor.RED + "You cant report for another " + secondsLeft + " seconds!");
 	                return false;
@@ -114,8 +113,8 @@ public class ReportCommand implements CommandExecutor {
 					staff.spigot().sendMessage(l1);
 				}
 			}
-			cooldowns.put(p.getUniqueId(), System.currentTimeMillis());
 			p.sendMessage(org.bukkit.ChatColor.GREEN + "You have reported " + target.getName() + " for " + reason.toString() + ".");
+			cooldown.addCooldown("Report", System.currentTimeMillis());
 		}
 		return true;
 	}

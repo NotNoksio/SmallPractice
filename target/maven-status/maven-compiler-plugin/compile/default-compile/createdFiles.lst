@@ -16,6 +16,7 @@ us\noks\smallpractice\Main.class
 us\noks\smallpractice\objects\MatchStats.class
 us\noks\smallpractice\listeners\InventoryListener.class
 us\noks\smallpractice\party\PartyState.class
+us\noks\smallpractice\objects\CommandCooldown.class
 us\noks\smallpractice\objects\Duel.class
 us\noks\smallpractice\commands\SeeallCommand.class
 us\noks\smallpractice\listeners\PlayerListener.class

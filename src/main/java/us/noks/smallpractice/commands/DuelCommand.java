@@ -1,9 +1,5 @@
 package us.noks.smallpractice.commands;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,7 +7,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.objects.CommandCooldown;
 import us.noks.smallpractice.objects.managers.PartyManager;
+import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
@@ -19,7 +17,6 @@ import us.noks.smallpractice.party.PartyState;
 public class DuelCommand implements CommandExecutor {
 	
 	private int cooldownTime = 5;
-	private Map<UUID, Long> cooldowns = new WeakHashMap<UUID, Long>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -68,15 +65,16 @@ public class DuelCommand implements CommandExecutor {
 	            	target = Bukkit.getPlayer(targetParty.getLeader());
 	            }
 	        }
-			if (cooldowns.containsKey(player.getUniqueId())) {
-				long secondsLeft = ((cooldowns.get(player.getUniqueId()) / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);
+	        CommandCooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
+			if (cooldown.hasCooldown("Duel")) {
+				long secondsLeft = ((cooldown.getCooldownTime("Duel") / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);
 	            if (secondsLeft > 0) {
 	                player.sendMessage(ChatColor.RED + "You cant sent duel request for another " + secondsLeft + " seconds!");
 	                return false;
 	            }
 			}
 			RequestManager.getInstance().sendDuelRequest(player, target);
-			cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
+			cooldown.addCooldown("Duel", System.currentTimeMillis());
 		}
 		return false;
 	}

@@ -39,7 +39,7 @@ public class Arena {
 			arenaList.put(2, new Arenas(this, "Rock", new Location[] {arena2_Pos1, arena2_Pos2}, false));
 			arenaList.put(3, new Arenas(this, "Logo", new Location[] {arena3_Pos1, arena3_Pos2}, false));
 			arenaList.put(4, new Arenas(this, "Stalagmites", new Location[] {arena4_Pos1, arena4_Pos2}, false));
-			arenaList.put(5, new Arenas(this, "PacMan", new Location[] {arena5_Pos1, arena5_Pos2}, false));
+			arenaList.put(5, new Arenas(this, "Pac-Man", new Location[] {arena5_Pos1, arena5_Pos2}, false));
 			arenaList.put(6, new Arenas(this, "Sphinx", new Location[] {arena6_Pos1, arena6_Pos2}, false));
 		}
 	}

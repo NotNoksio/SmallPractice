@@ -74,6 +74,7 @@ public class PlayerListener implements Listener {
 		player.teleport(player.getWorld().getSpawnLocation());
 		ItemManager.getInstace().giveSpawnItem(player);
 		
+		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko");
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
@@ -315,7 +316,6 @@ public class PlayerListener implements Listener {
 			case MODERATION:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave moderation")) {
 	                event.setCancelled(true);
-	                player.performCommand("mod");
 	                Bukkit.dispatchCommand(player, "mod");
 	                break;
 	            }
@@ -327,7 +327,7 @@ public class PlayerListener implements Listener {
 	                	if (onlinePlayers == player) continue;
 	                	
 	                	final PlayerManager om = PlayerManager.get(onlinePlayers.getUniqueId());
-	                	if (om.getStatus() == PlayerStatus.MODERATION) continue;
+	                	if (om.getStatus() == PlayerStatus.MODERATION || om.getStatus() == PlayerStatus.SPAWN || om.getStatus() == PlayerStatus.QUEUE) continue;
 	                	
 	                	online.add(onlinePlayers);
 	                }
