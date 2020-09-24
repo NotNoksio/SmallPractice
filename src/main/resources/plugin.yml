@@ -2,7 +2,7 @@ main: us.noks.smallpractice.Main
 name: SmallPractice
 version: 2.0
 author: Noksio
-depend: [PermissionsEx]
+softdepend: [PermissionsEx]
 commands:
   duel:
   accept:

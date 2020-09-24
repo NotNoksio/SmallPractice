@@ -43,6 +43,7 @@ public class Main extends JavaPlugin {
 		registerCommands();
 		registerListers();
 		getPermissionsPlugin();
+		System.out.println("PermissionsEx is " + (permissionsPluginHere ? "Enabled" : "Disabled"));
 	}
 	
 	@Override

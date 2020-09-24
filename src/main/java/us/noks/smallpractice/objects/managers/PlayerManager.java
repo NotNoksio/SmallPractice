@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffect;
 import com.google.common.collect.Maps;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.CommandCooldown;
 import us.noks.smallpractice.objects.MatchStats;
@@ -33,8 +34,8 @@ public class PlayerManager {
 	    this.playerUUID = playerUUID;
 	    this.player = Bukkit.getPlayer(this.playerUUID);
 	    this.status = PlayerStatus.SPAWN;
-	    this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
-	    this.suffix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getSuffix();
+	    this.prefix = (!Main.getInstance().isPermissionsPluginHere() ? "&a" : PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix());
+	    this.suffix = (!Main.getInstance().isPermissionsPluginHere() ? "" : PermissionsEx.getPermissionManager().getUser(getPlayer()).getSuffix());
 	    this.spectate = null;
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
 	    this.matchStats = new MatchStats();
@@ -159,6 +160,9 @@ public class PlayerManager {
 	}
 	
 	public String getPrefix() {
+		if (!Main.getInstance().isPermissionsPluginHere()) {
+			return "";
+		}
 		if (this.prefix != PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix()) {
 			this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
 			getPlayer().setPlayerListName(getPrefixColors() + getPlayer().getName());
@@ -171,6 +175,9 @@ public class PlayerManager {
 	}
 	
 	public String getPrefixColors() {
+		if (!Main.getInstance().isPermissionsPluginHere()) {
+			return "";
+		}
 		if (getPrefix().isEmpty()) {
 			return "";
 		}
