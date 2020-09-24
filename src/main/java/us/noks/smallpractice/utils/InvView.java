@@ -83,7 +83,7 @@ public class InvView {
 				final int realtime = pe.getDuration() / 20;
 				final String emp = convertToRoman(pe.getAmplifier() + 1);
           
-				potionEffectLore.add(ChatColor.GRAY + "-> " + ChatColor.RED + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.RESET + convertToPotionFormat(realtime));
+				potionEffectLore.add(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.YELLOW + convertToPotionFormat(realtime));
 			}
 		}
 		pem.setLore(potionEffectLore);

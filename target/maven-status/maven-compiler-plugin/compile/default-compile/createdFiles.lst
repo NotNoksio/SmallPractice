@@ -9,6 +9,7 @@ us\noks\smallpractice\listeners\ChatListener.class
 us\noks\smallpractice\arena\Arena.class
 us\noks\smallpractice\objects\managers\ItemManager.class
 us\noks\smallpractice\objects\managers\PartyManager.class
+us\noks\smallpractice\commands\MentionCommand.class
 us\noks\smallpractice\commands\PingCommand.class
 us\noks\smallpractice\objects\managers\QueueManager.class
 us\noks\smallpractice\commands\DuelCommand.class

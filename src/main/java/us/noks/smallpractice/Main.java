@@ -10,6 +10,7 @@ import us.noks.smallpractice.commands.DenyCommand;
 import us.noks.smallpractice.commands.DuelCommand;
 import us.noks.smallpractice.commands.ForceDuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
+import us.noks.smallpractice.commands.MentionCommand;
 import us.noks.smallpractice.commands.ModerationCommand;
 import us.noks.smallpractice.commands.NightCommand;
 import us.noks.smallpractice.commands.PartyCommand;
@@ -69,6 +70,7 @@ public class Main extends JavaPlugin {
 		getCommand("night").setExecutor(new NightCommand());
 		getCommand("resettime").setExecutor(new ResetTimeCommand());
 		getCommand("roll").setExecutor(new RollCommand());
+		getCommand("mention").setExecutor(new MentionCommand());
 	}
 	
 	private void registerListers() {

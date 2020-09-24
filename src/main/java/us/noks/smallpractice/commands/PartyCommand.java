@@ -30,7 +30,7 @@ public class PartyCommand implements CommandExecutor {
             ChatColor.RED.toString() + ChatColor.BOLD + "Leader Commands:",
             ChatColor.GREEN + "-> /party open " + ChatColor.GRAY + "- Open your party for others to join",
             ChatColor.GREEN + "-> /party lock " + ChatColor.GRAY + "- Lock your party for others to join",
-            ChatColor.RED + "-> /party invite <player> " + ChatColor.GRAY + "- Invites a player to your party",
+            ChatColor.GREEN + "-> /party invite <player> " + ChatColor.GRAY + "- Invites a player to your party",
             ChatColor.RED + "-> /party kick <player> " + ChatColor.GRAY + "- Kicks a player from your party",
             ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
     
@@ -160,6 +160,7 @@ public class PartyCommand implements CommandExecutor {
             }
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
             	if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+            		player.sendMessage(ChatColor.RED + "You are already in a party!");
                 	return false;
                 }
             	if (targetParty.isOpen()) {
@@ -174,11 +175,20 @@ public class PartyCommand implements CommandExecutor {
             		player.sendMessage(ChatColor.RED + "You are not invited to this party!");
             		return false;
             	}
+            	tm.setInviteTo(null);
             	PartyManager.getInstance().joinParty(targetParty.getLeader(), player.getUniqueId());
         		PartyManager.getInstance().notifyParty(targetParty, ChatColor.GREEN + player.getName() + " has joined the party");
                 player.sendMessage(ChatColor.GREEN + "You have joined the party!");
                 ItemManager.getInstace().giveSpawnItem(target);
                 PartyManager.getInstance().updateParty(targetParty);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("invite")) {
+            	if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+            		player.sendMessage(ChatColor.RED + "You are already in a party!");
+                	return false;
+                }
+            	
             }
         }
         

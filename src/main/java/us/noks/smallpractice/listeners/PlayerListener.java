@@ -245,7 +245,7 @@ public class PlayerListener implements Listener {
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "ranked direct queue")) {
 		                event.setCancelled(true);
-		                player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 		                break;
 		            }
 					if (item.getType() == Material.NAME_TAG && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "create party")) {
@@ -255,11 +255,11 @@ public class PlayerListener implements Listener {
 		                break;
 		            }
 					if (item.getType() == Material.COMPASS && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "warps selection")) {
-						player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+						player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 						break;
 					}
 					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "edit kit")) {
-						player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+						player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 						break;
 					}
 				} else {
@@ -280,7 +280,7 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
-		                player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 		                break;
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "2v2 ranked queue")) {
@@ -297,7 +297,7 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
-		                player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 		                break;
 		            }
 					if (item.getType() == Material.ARROW && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "split teams")) {

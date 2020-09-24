@@ -65,7 +65,7 @@ public class PartyManager {
     		party = this.leaderUUIDtoParty.get(newLeader);
     		
     		notifyParty(party, ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
-    		ItemManager.getInstace().giveSpawnItem(Bukkit.getPlayer(newLeader));
+    		if (party.getPartyState() == PartyState.LOBBY) ItemManager.getInstace().giveSpawnItem(Bukkit.getPlayer(newLeader));
     		updateParty(party);
     		return;
     	}
