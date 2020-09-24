@@ -153,7 +153,7 @@ public class PartyCommand implements CommandExecutor {
             	player.sendMessage(ChatColor.RED + "You cant do that on yourself.");
             	return false;
             }
-            //PlayerManager tm = PlayerManager.get(target.getUniqueId());
+            PlayerManager tm = PlayerManager.get(target.getUniqueId());
             Party targetParty = PartyManager.getInstance().getParty(target.getUniqueId());
             if (targetParty == null) {
             	return false;
@@ -170,6 +170,15 @@ public class PartyCommand implements CommandExecutor {
                     PartyManager.getInstance().updateParty(targetParty);
             		return true;
             	}
+            	if (!tm.hasInvited(player.getUniqueId())) {
+            		player.sendMessage(ChatColor.RED + "You are not invited to this party!");
+            		return false;
+            	}
+            	PartyManager.getInstance().joinParty(targetParty.getLeader(), player.getUniqueId());
+        		PartyManager.getInstance().notifyParty(targetParty, ChatColor.GREEN + player.getName() + " has joined the party");
+                player.sendMessage(ChatColor.GREEN + "You have joined the party!");
+                ItemManager.getInstace().giveSpawnItem(target);
+                PartyManager.getInstance().updateParty(targetParty);
             }
         }
         

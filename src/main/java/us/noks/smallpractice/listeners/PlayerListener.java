@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -74,6 +75,9 @@ public class PlayerListener implements Listener {
 		player.teleport(player.getWorld().getSpawnLocation());
 		ItemManager.getInstace().giveSpawnItem(player);
 		
+		for (int i = 0; i < 100; i++) {
+			player.sendMessage(""); 
+		}
 		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko");
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 		
@@ -250,10 +254,52 @@ public class PlayerListener implements Listener {
 		                ItemManager.getInstace().giveSpawnItem(player);
 		                break;
 		            }
+					if (item.getType() == Material.COMPASS && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "warps selection")) {
+						player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+						break;
+					}
+					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "edit kit")) {
+						player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+						break;
+					}
 				} else {
 					final Party currentParty = PartyManager.getInstance().getParty(player.getUniqueId());
 					final boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
 					
+					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "2v2 unranked queue")) {
+		                event.setCancelled(true);
+		                if (!isPartyLeader) {
+							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
+							break;
+						}
+						if (currentParty.getPartyState() == PartyState.DUELING) {
+                            player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
+                            break;
+                        }
+                        if (currentParty.getMembers().isEmpty() || currentParty.getSize() > 2) {
+                            player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
+                            break;
+                        }
+		                player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+		                break;
+		            }
+					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "2v2 ranked queue")) {
+		                event.setCancelled(true);
+		                if (!isPartyLeader) {
+							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
+							break;
+						}
+						if (currentParty.getPartyState() == PartyState.DUELING) {
+                            player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
+                            break;
+                        }
+                        if (currentParty.getMembers().isEmpty() || currentParty.getSize() > 2) {
+                            player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
+                            break;
+                        }
+		                player.sendMessage(ChatColor.GOLD + "This action comming soon ^^");
+		                break;
+		            }
 					if (item.getType() == Material.ARROW && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "split teams")) {
 						if (!isPartyLeader) {
 							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
@@ -347,6 +393,33 @@ public class PlayerListener implements Listener {
 				break;
 			}
         }
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onClickPlayer(PlayerInteractEntityEvent event) {
+		if (event.getRightClicked() instanceof Player) {
+			Player player = event.getPlayer();
+			PlayerManager pm = PlayerManager.get(player.getUniqueId());
+			
+			if (pm.getStatus() != PlayerStatus.MODERATION) {
+				return;
+			}
+			Player target = (Player)event.getRightClicked();
+	      
+			if (player.getItemInHand().getItemMeta() == null) {
+				return;
+			}
+			if (player.getItemInHand().getItemMeta().getDisplayName() == null) {
+				return;
+			}
+			if (player.getItemInHand().getType() == Material.BOOK && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "inspection tool")) {
+				Bukkit.dispatchCommand(player, "verif " + target.getName());
+				return;
+			}
+			if (player.getItemInHand().getType() == Material.PACKED_ICE && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "freeze player")) {
+				Bukkit.dispatchCommand(player, "freeze " + target.getName());
+			}
+		} 
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
