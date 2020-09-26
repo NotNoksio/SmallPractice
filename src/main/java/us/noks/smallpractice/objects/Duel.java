@@ -1,6 +1,5 @@
 package us.noks.smallpractice.objects;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -116,28 +115,14 @@ public class Duel {
 		if (!isValid()) {
 			return;
 		}
-		List<Player> firstTeamPlayer = Lists.newArrayList();
-		List<Player> secondTeamPlayer = Lists.newArrayList();
-		for (UUID firstTeamUUID : this.firstTeam) {
-			final Player first = Bukkit.getPlayer(firstTeamUUID);
-			if (first == null) continue;
-			firstTeamPlayer.add(first);
-		}
-		for (UUID secondTeamUUID : this.secondTeam) {
-			final Player second = Bukkit.getPlayer(secondTeamUUID);
-			if (second == null) continue;
-			secondTeamPlayer.add(second);
-		}
-        Iterator<Player> it = new ArrayList<>(secondTeamPlayer).iterator();
-		for (Player first : firstTeamPlayer) {
-			while (it.hasNext()) {
-                Player second = it.next();
+		for (UUID firstUUID : this.firstTeamAlive) {
+			for (UUID secondUUID : this.secondTeamAlive) {
+                Player first = Bukkit.getPlayer(firstUUID);
+                Player second = Bukkit.getPlayer(secondUUID);
 				first.showPlayer(second);
 				second.showPlayer(first);
 			}
 		}
-		firstTeamPlayer.clear();
-		secondTeamPlayer.clear();
 	}
 
 	public UUID getFirstTeamPartyLeaderUUID() {

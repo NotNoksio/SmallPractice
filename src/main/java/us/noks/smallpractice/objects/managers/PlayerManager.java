@@ -64,6 +64,10 @@ public class PlayerManager {
 	public UUID getPlayerUUID() {
 		return this.playerUUID;
 	}
+	
+	public boolean isAlive() {
+		return !this.player.isDead() && this.player.getHealth() > 0.0D;
+	}
 
 	public boolean isCanBuild() {
 		return getStatus() == PlayerStatus.BUILD;

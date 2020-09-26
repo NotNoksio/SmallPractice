@@ -137,6 +137,7 @@ public class PlayerListener implements Listener {
 			player.setFoodLevel(20);
 			player.setSaturation(10000f);
 			player.teleport(player.getWorld().getSpawnLocation());
+			PlayerManager.get(player.getUniqueId()).showAllPlayer();
 			ItemManager.getInstace().giveSpawnItem(player);
 		}
 	}
@@ -258,7 +259,7 @@ public class PlayerListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 						break;
 					}
-					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "edit kit")) {
+					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "edit kit/settings")) {
 						player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 						break;
 					}

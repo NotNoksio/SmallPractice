@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import us.noks.smallpractice.party.Party;
+
 public class ItemManager {
 	private static ItemManager instance = new ItemManager();
 	public static ItemManager getInstace() {
@@ -46,7 +48,7 @@ public class ItemManager {
 			
 			ItemStack b = new ItemStack(Material.BOOK, 1);
 			ItemMeta bm = b.getItemMeta();
-			bm.setDisplayName(ChatColor.YELLOW + "Edit Kit");
+			bm.setDisplayName(ChatColor.YELLOW + "Edit Kit/Settings");
 			b.setItemMeta(bm);
 			
 			player.getInventory().setItem(0, u);
@@ -55,6 +57,8 @@ public class ItemManager {
 			player.getInventory().setItem(5, c);
 			player.getInventory().setItem(8, b);
 		} else {
+			Party party = PartyManager.getInstance().getParty(player.getUniqueId());
+			
 			ItemStack u = new ItemStack(Material.IRON_SWORD, 1);
 			ItemMeta um = u.getItemMeta();
 			um.setDisplayName(ChatColor.YELLOW + "2v2 Unranked Queue");
@@ -82,12 +86,18 @@ public class ItemManager {
 			pm.setDisplayName(ChatColor.YELLOW + "Party Information");
 			p.setItemMeta(pm);
 			
+			ItemStack glass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+			ItemMeta glassm = glass.getItemMeta();
+			glassm.setDisplayName(ChatColor.RED + "2 players needed");
+			glass.setItemMeta(glassm);
+			
 			giveLeaveItem(player, "Party", false);
 			
-			player.getInventory().setItem(0, u);
-			player.getInventory().setItem(1, r);
+			final boolean able = party.getSize() > 1;
+			player.getInventory().setItem(0, (able ? u : glass));
+			player.getInventory().setItem(1, (able ? r : glass));
 			player.getInventory().setItem(4, b);
-			player.getInventory().setItem(5, a);
+			player.getInventory().setItem(5, (able ? a : glass));
 			player.getInventory().setItem(7, p);
 		}
 		player.updateInventory();

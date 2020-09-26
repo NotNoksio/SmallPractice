@@ -11,11 +11,12 @@ import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 
@@ -109,7 +110,8 @@ public class PartyManager {
     public void addParty(Party party) {
         Player player = Bukkit.getPlayer(party.getLeader());
         ItemStack skull = new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)SkullType.PLAYER.ordinal());
-        ItemMeta skullm = skull.getItemMeta();
+        SkullMeta skullm = (SkullMeta) skull.getItemMeta();
+        skullm.setOwner(player.getName());
         skullm.setDisplayName(ChatColor.DARK_AQUA + player.getName() + " (" + ChatColor.YELLOW + party.getSize() + ChatColor.DARK_AQUA + ")");
         skull.setItemMeta(skullm);
         this.partiesInventory.addItem(skull);
@@ -127,20 +129,28 @@ public class PartyManager {
         }
     }
     
+    // TODO: need optimization & put the head of the leader on the first empty slot
     public void updateParty(Party party) {
-        Player player = Bukkit.getPlayer(party.getLeader());
-        String leaderName = (player == null ? party.getLeaderName() : player.getName());
+        Player leader = Bukkit.getPlayer(party.getLeader());
+        ItemManager.getInstace().giveSpawnItem(leader);
+        String leaderName = (leader == null ? party.getLeaderName() : leader.getName());
         List<String> lores = Lists.newArrayList();
         for (UUID uuid : party.getMembers()) {
-            Player memberPlayer = Bukkit.getPlayer(uuid);
-            if (memberPlayer == null) continue;
-            lores.add(ChatColor.GRAY + "-> " + ChatColor.YELLOW + memberPlayer.getName());
+            Player members = Bukkit.getPlayer(uuid);
+            if (members == null) continue;
+            lores.add(ChatColor.GRAY + "-> " + ChatColor.YELLOW + members.getName());
+            if (PlayerManager.get(members.getUniqueId()).getStatus() == PlayerStatus.SPAWN) {
+            	ItemManager.getInstace().giveSpawnItem(members);
+            }
         }
         for (ItemStack itemStack : this.partiesInventory.getContents()) {
             if (itemStack == null) continue;
             if (itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().contains(leaderName)) {
             	itemStack = (party.getPartyState() == PartyState.LOBBY ? new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)SkullType.PLAYER.ordinal()) : new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)SkullType.WITHER.ordinal()));
-            	ItemMeta itemMeta = itemStack.getItemMeta();
+            	SkullMeta itemMeta = (SkullMeta) itemStack.getItemMeta();
+            	if (party.getPartyState() == PartyState.LOBBY) {
+            		itemMeta.setOwner(leader.getName());
+            	}
             	itemMeta.setLore(lores);
             	itemMeta.setDisplayName(ChatColor.DARK_AQUA + leaderName + " (" + ChatColor.YELLOW + party.getSize() + ChatColor.DARK_AQUA + ")");
             	itemStack.setItemMeta(itemMeta);
