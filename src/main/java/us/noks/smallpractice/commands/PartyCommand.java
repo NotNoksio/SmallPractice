@@ -99,7 +99,6 @@ public class PartyCommand implements CommandExecutor {
 	        	}
 	        	if (party.getLeader().equals(player.getUniqueId())) {
 	                PartyManager.getInstance().transferLeader(player.getUniqueId());
-	                player.sendMessage(ChatColor.RED + "The party has been disbanded!");
 	            } else {
 	                PartyManager.getInstance().notifyParty(party, ChatColor.RED + player.getName() + " has left the party");
 	                PartyManager.getInstance().leaveParty(player.getUniqueId());

@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -75,11 +76,7 @@ public class PlayerListener implements Listener {
 		player.teleport(player.getWorld().getSpawnLocation());
 		ItemManager.getInstace().giveSpawnItem(player);
 		
-		for (int i = 0; i < 100; i++) {
-			player.sendMessage(""); 
-		}
-		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko");
-		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
+		this.sendJoinMessage(event);
 		
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
 			final PlayerManager pmAll = PlayerManager.get(allPlayers.getUniqueId());
@@ -87,6 +84,18 @@ public class PlayerListener implements Listener {
 				player.hidePlayer(allPlayers);
 			}
 		}
+	}
+	
+	private void sendJoinMessage(PlayerJoinEvent event) {
+		final Player player = event.getPlayer();
+		for (int i = 0; i < 100; i++) {
+			player.sendMessage(""); 
+		}
+		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko" + ChatColor.GRAY + " (Practice)");
+		player.sendMessage("");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/Y8dFcM8");
+		player.sendMessage("");
+		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
@@ -148,14 +157,21 @@ public class PlayerListener implements Listener {
 			final Player player = (Player) event.getEntity();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
-			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
+			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE || pm.getStatus() == PlayerStatus.BRIDGE) {
 				switch (event.getCause()) {
 				case FALL:
 					event.setCancelled(true);
 					break;
 				case VOID:
 					event.setCancelled(true);
-					player.teleport(player.getWorld().getSpawnLocation());
+					if (pm.getStatus() != PlayerStatus.BRIDGE) {
+						player.teleport(player.getWorld().getSpawnLocation());
+						break;
+					}
+					player.setNoDamageTicks(40);
+					event.setCancelled(true);
+					ItemManager.getInstace().giveBridgeItems(player);
+					player.teleport(Main.getInstance().bridgeLocation);
 					break;
 				default:
 					break;
@@ -163,6 +179,7 @@ public class PlayerListener implements Listener {
 			}
 			if (pm.getStatus() == PlayerStatus.SPECTATE) {
 				event.setCancelled(true);
+				return;
 			}
 		}
 	}
@@ -173,7 +190,11 @@ public class PlayerListener implements Listener {
 			final Player attacked = (Player) event.getEntity();
 			final Player attacker = (Player) event.getDamager();
 				
-			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.MODERATION) {
+			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.MODERATION || PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.BRIDGE) {
+				if (attacker.getNoDamageTicks() > 0) {
+					event.setCancelled(true);
+					return;
+				}
 				event.setDamage(0.0D);
 				return;
 			}
@@ -215,7 +236,10 @@ public class PlayerListener implements Listener {
 		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && pm.getStatus() != PlayerStatus.WAITING && pm.getStatus() != PlayerStatus.DUEL) {
 			event.setCancelled(true);
 		}
-		if (event.getItemDrop().getItemStack().getType() == Material.GLASS_BOTTLE) event.getItemDrop().remove();
+		if (event.getItemDrop().getItemStack().getType() == Material.GLASS_BOTTLE) {
+			event.getItemDrop().remove();
+			return;
+		}
 		if (pm.getStatus() == PlayerStatus.WAITING || pm.getStatus() == PlayerStatus.DUEL) {
 			Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(event.getPlayer().getUniqueId());
 			
@@ -256,7 +280,11 @@ public class PlayerListener implements Listener {
 		                break;
 		            }
 					if (item.getType() == Material.COMPASS && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "warps selection")) {
-						player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
+						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge warps (because it's the only one ^^')");
+						player.teleport(main.bridgeLocation);
+						pm.setStatus(PlayerStatus.BRIDGE);
+						ItemManager.getInstace().giveBridgeItems(player);
+						player.setNoDamageTicks(40);
 						break;
 					}
 					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "edit kit/settings")) {
@@ -327,12 +355,13 @@ public class PlayerListener implements Listener {
 					}
 					if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave party")) {
 						event.setCancelled(true);
-						if (isPartyLeader) {
-							PartyManager.getInstance().transferLeader(player.getUniqueId());
-						} else {
-							currentParty.removeMember(player.getUniqueId());
-						}
-						ItemManager.getInstace().giveSpawnItem(player);
+						if (currentParty.getLeader().equals(player.getUniqueId())) {
+			                PartyManager.getInstance().transferLeader(player.getUniqueId());
+			            } else {
+			                PartyManager.getInstance().notifyParty(currentParty, ChatColor.RED + player.getName() + " has left the party");
+			                PartyManager.getInstance().leaveParty(player.getUniqueId());
+			            }
+			        	ItemManager.getInstace().giveSpawnItem(player);
 					}
 				}
 				break;
@@ -340,6 +369,12 @@ public class PlayerListener implements Listener {
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave queue")) {
 	                event.setCancelled(true);
 	                QueueManager.getInstance().quitQueue(player);
+	            }
+				break;
+			case WAITING:
+				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "nodebuff default kit")) {
+	                ItemManager.getInstace().giveFightItems(player);
+	                player.sendMessage(ChatColor.GREEN + "NoDebuff kit successfully given.");
 	            }
 				break;
 			case SPECTATE:
@@ -394,6 +429,22 @@ public class PlayerListener implements Listener {
 				break;
 			}
         }
+	}
+	
+	@EventHandler
+	public void onInteractWithBlock(PlayerInteractEvent e) {
+		if (e.getClickedBlock() != null && (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.SIGN || (e.getClickedBlock().getType() == Material.WALL_SIGN && e.getAction() == Action.RIGHT_CLICK_BLOCK))) {
+			Sign s = (Sign)e.getClickedBlock().getState();
+			if (s.getLine(0).equalsIgnoreCase("-*-") && s.getLine(1).equalsIgnoreCase("Back to spawn") && s.getLine(2).equalsIgnoreCase("-*-")) {
+				e.setCancelled(true);
+				Player p = e.getPlayer();
+				PlayerManager pm = PlayerManager.get(p.getUniqueId());
+				
+				pm.setStatus(PlayerStatus.SPAWN);
+				p.teleport(p.getWorld().getSpawnLocation());
+				ItemManager.getInstace().giveSpawnItem(p);
+			}
+		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)

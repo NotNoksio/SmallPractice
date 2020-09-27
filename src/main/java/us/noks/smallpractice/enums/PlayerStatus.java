@@ -7,5 +7,6 @@ public enum PlayerStatus {
 	MODERATION, 
 	BUILD, 
 	WAITING, 
-	DUEL; 
+	DUEL,
+	BRIDGE; 
 }

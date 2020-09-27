@@ -70,7 +70,7 @@ public class PlayerManager {
 	}
 
 	public boolean isCanBuild() {
-		return getStatus() == PlayerStatus.BUILD;
+		return getStatus() == PlayerStatus.BUILD || getStatus() == PlayerStatus.BRIDGE;
 	}
 	
 	public Player getSpectate() {

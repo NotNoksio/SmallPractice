@@ -132,14 +132,16 @@ public class PartyManager {
     // TODO: need optimization & put the head of the leader on the first empty slot
     public void updateParty(Party party) {
         Player leader = Bukkit.getPlayer(party.getLeader());
-        ItemManager.getInstace().giveSpawnItem(leader);
+        if (party.getSize() < 3) {
+        	ItemManager.getInstace().giveSpawnItem(leader);
+        }
         String leaderName = (leader == null ? party.getLeaderName() : leader.getName());
         List<String> lores = Lists.newArrayList();
         for (UUID uuid : party.getMembers()) {
             Player members = Bukkit.getPlayer(uuid);
             if (members == null) continue;
             lores.add(ChatColor.GRAY + "-> " + ChatColor.YELLOW + members.getName());
-            if (PlayerManager.get(members.getUniqueId()).getStatus() == PlayerStatus.SPAWN) {
+            if (PlayerManager.get(members.getUniqueId()).getStatus() == PlayerStatus.SPAWN && party.getSize() < 3) {
             	ItemManager.getInstace().giveSpawnItem(members);
             }
         }

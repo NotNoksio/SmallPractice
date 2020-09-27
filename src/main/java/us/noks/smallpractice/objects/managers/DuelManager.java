@@ -305,7 +305,7 @@ public class DuelManager {
 			first.setNoDamageTicks(50);
 			
 			pmf.hideAllPlayer();
-			ItemManager.getInstace().giveKit(first);
+			ItemManager.getInstace().givePreFightItems(first);
 			
 			first.teleport(pickedArena.getPositions(random)[0]);
 			first.setSneaking(false);
@@ -322,7 +322,7 @@ public class DuelManager {
 			second.setNoDamageTicks(50);
 			
 			pms.hideAllPlayer();
-			ItemManager.getInstace().giveKit(second);
+			ItemManager.getInstace().givePreFightItems(second);
 			
 			second.teleport(pickedArena.getPositions(random)[1]);
 			second.setSneaking(false);

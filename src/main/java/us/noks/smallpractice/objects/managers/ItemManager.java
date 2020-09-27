@@ -161,11 +161,20 @@ public class ItemManager {
 		player.updateInventory();
 	}
 	
-	public void giveKit(Player player) {
+	public void givePreFightItems(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 		player.setItemOnCursor(null);
 		
+		ItemStack b = new ItemStack(Material.ENCHANTED_BOOK, 1);
+		ItemMeta bm = b.getItemMeta();
+		bm.setDisplayName(ChatColor.YELLOW + "NoDebuff default kit");
+		b.setItemMeta(bm);
+		
+		player.getInventory().setItem(0, b);
+		player.updateInventory();
+	}
+	public void giveFightItems(Player player) {
 		ItemStack swo = new ItemStack(Material.DIAMOND_SWORD, 1);
 		swo.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
 		swo.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 2);
@@ -211,5 +220,30 @@ public class ItemManager {
 		player.getInventory().setItem(17, speed);
 		player.getInventory().setItem(26, speed);
 		player.updateInventory();
+	}
+	
+	public void giveBridgeItems(Player player) {
+		player.getInventory().clear();
+		player.getInventory().setArmorContents(null);
+		player.setItemOnCursor(null);
+	    
+	    ItemStack item = new ItemStack(Material.SANDSTONE, 64, (short)2);
+	    for (int i = 0; i < player.getInventory().getSize(); i++) {
+	    	player.getInventory().setItem(i, item);
+	    }
+	    
+	    ItemStack i = new ItemStack(Material.WOOD_PICKAXE);
+	    ItemMeta im = i.getItemMeta();
+	    im.spigot().setUnbreakable(true);
+	    i.setItemMeta(im);
+	    i.addUnsafeEnchantment(Enchantment.DIG_SPEED, 2);
+	    i.addUnsafeEnchantment(Enchantment.KNOCKBACK, 5);
+	    i.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+	    
+	    player.getInventory().setItem(0, i);
+	    
+	    player.updateInventory();
+	    PlayerManager pm = PlayerManager.get(player.getUniqueId());
+	    pm.showAllPlayer();
 	}
 }

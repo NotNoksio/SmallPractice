@@ -1,6 +1,7 @@
 package us.noks.smallpractice.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -8,11 +9,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import net.md_5.bungee.api.ChatColor;
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ServerListeners implements Listener {
@@ -25,18 +28,34 @@ public class ServerListeners implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlace(BlockPlaceEvent event) {
 		final Player player = event.getPlayer();
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
-		if (!PlayerManager.get(player.getUniqueId()).isCanBuild()) {
+		if (!pm.isCanBuild()) {
 			event.setCancelled(true);
+			return;
+		}
+		if (pm.getStatus() == PlayerStatus.BRIDGE) {
+			for (int i = 0; i < 8; i++) {
+				if (event.getBlock().getLocation().subtract(0.0D, i, 0.0D).getBlock().getType() == Material.OBSIDIAN || event.getBlock().getLocation().subtract(0.0D, i, 0.0D).getBlock().getType() == Material.GLOWSTONE) {
+					event.setCancelled(true);
+				}
+			}
 		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBreak(BlockBreakEvent event) {
 		final Player player = event.getPlayer();
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
-		if (!PlayerManager.get(player.getUniqueId()).isCanBuild()) {
+		if (!pm.isCanBuild()) {
 			event.setCancelled(true);
+			return;
+		}
+		if (pm.getStatus() == PlayerStatus.BRIDGE) {
+			if (event.getBlock().getType() != Material.SANDSTONE) {
+				event.setCancelled(true);
+			}
 		}
 	}
 	
@@ -59,5 +78,12 @@ public class ServerListeners implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onTnt(EntityExplodeEvent event) {
 		event.blockList().clear();
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onPrepareCraft(PrepareItemCraftEvent event) {
+		if (event.getInventory().getResult().getType() != Material.MUSHROOM_SOUP) {
+			event.getInventory().setResult(null);
+		}
 	}
 }
