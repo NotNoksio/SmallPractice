@@ -22,11 +22,11 @@ public class SpawnCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
-		if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.SPAWN && PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.MODERATION && !PlayerManager.get(player.getUniqueId()).isCanBuild()) {
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (pm.getStatus() != PlayerStatus.SPAWN && pm.getStatus() != PlayerStatus.MODERATION && !pm.isCanBuild()) {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return false;
 		}
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		player.teleport(player.getWorld().getSpawnLocation());
 		player.sendMessage(ChatColor.GREEN + "Teleportation..");
 		if (pm.getStatus() == PlayerStatus.BRIDGE) {
