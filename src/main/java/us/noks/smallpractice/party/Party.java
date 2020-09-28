@@ -74,9 +74,10 @@ public class Party {
         for(UUID memberUUID : this.memberUUIDs) {
             Player member = Bukkit.getPlayer(memberUUID);
 
-            if(member != null) {
-                membersOnline.add(member.getUniqueId());
+            if(member == null) {
+            	continue;
             }
+            membersOnline.add(member.getUniqueId());
         }
         membersOnline.add(partyLeader);
         return membersOnline;

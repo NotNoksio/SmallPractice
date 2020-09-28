@@ -139,9 +139,9 @@ public class PlayerManager {
 	
 	public void hideAllPlayer() {
 		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
-			if (getPlayer().canSee(allPlayers)) getPlayer().hidePlayer(allPlayers);
+			getPlayer().hidePlayer(allPlayers);
 			if (get(allPlayers.getUniqueId()).getStatus() != PlayerStatus.MODERATION) {
-				if (allPlayers.canSee(getPlayer())) allPlayers.hidePlayer(getPlayer());
+				allPlayers.hidePlayer(getPlayer());
 			}
 		}
 	}
@@ -151,14 +151,14 @@ public class PlayerManager {
 			PlayerManager pm = get(allPlayers.getUniqueId());
 			
 			if (pm.getStatus() != PlayerStatus.MODERATION) {
-				if (!getPlayer().canSee(allPlayers)) getPlayer().showPlayer(allPlayers);
+				getPlayer().showPlayer(allPlayers);
 			}
 			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
-				if (!allPlayers.canSee(getPlayer())) allPlayers.showPlayer(getPlayer());
+				allPlayers.showPlayer(getPlayer());
 			}
 			if (pm.getStatus() == PlayerStatus.MODERATION) {
-				if (!allPlayers.canSee(getPlayer())) allPlayers.showPlayer(getPlayer());
-				if (getPlayer().canSee(allPlayers)) getPlayer().hidePlayer(allPlayers);
+				allPlayers.showPlayer(getPlayer());
+				getPlayer().hidePlayer(allPlayers);
 			}
 		}
 	}
@@ -248,8 +248,8 @@ public class PlayerManager {
 		return this.cooldown;
 	}
 	
-	public void heal() {
-		if (getPlayer().isDead()) getPlayer().spigot().respawn();
+	public void heal(boolean forFight) {
+		if (!isAlive()) getPlayer().spigot().respawn();
 		getPlayer().setHealth(20.0D);
 		getPlayer().extinguish();
 		if (!getPlayer().getActivePotionEffects().isEmpty()) {
@@ -258,6 +258,6 @@ public class PlayerManager {
 			}
 		}
 		getPlayer().setFoodLevel(20);
-		getPlayer().setSaturation(20f);
+		getPlayer().setSaturation(forFight ? 20F : 1000F);
 	}
 }

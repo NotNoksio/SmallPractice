@@ -84,7 +84,7 @@ public class DuelManager {
 			
 			first.setGameMode(GameMode.SURVIVAL);
 			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()));
-			fm.heal();
+			fm.heal(true);
 			
 			green1.addEntry(first.getName());
 			red2.addEntry(first.getName());
@@ -105,7 +105,7 @@ public class DuelManager {
 			
 			second.setGameMode(GameMode.SURVIVAL);
 			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()));
-			sm.heal();
+			sm.heal(true);
 			
 			green2.addEntry(second.getName());
 			red1.addEntry(second.getName());
@@ -301,7 +301,7 @@ public class DuelManager {
 			PlayerManager pmf = PlayerManager.get(firstUUID);
 			this.uuidIdentifierToDuel.put(firstUUID, duel);
 			
-			pmf.heal();
+			pmf.heal(true);
 			first.setNoDamageTicks(50);
 			
 			pmf.hideAllPlayer();
@@ -318,7 +318,7 @@ public class DuelManager {
 			PlayerManager pms = PlayerManager.get(secondUUID);
 			this.uuidIdentifierToDuel.put(secondUUID, duel);
 			
-			pms.heal();
+			pms.heal(true);
 			second.setNoDamageTicks(50);
 			
 			pms.hideAllPlayer();
@@ -369,9 +369,7 @@ public class DuelManager {
                 
                 if (lastPlayers == null) continue;
                 
-                lastPlayers.setHealth(20.0D);
-                lastPlayers.setFoodLevel(20);
-                lastPlayers.setSaturation(10000f);
+                PlayerManager.get(lastPlayers.getUniqueId()).heal(false);
                 lastPlayers.getInventory().clear();
                 lastPlayers.getInventory().setArmorContents(null);
                 if (!lastPlayers.getActivePotionEffects().isEmpty()) {
@@ -402,9 +400,7 @@ public class DuelManager {
                 
                 if (lastPlayers == null) continue;
                 
-                lastPlayers.setHealth(20.0D);
-                lastPlayers.setFoodLevel(20);
-                lastPlayers.setSaturation(10000f);
+                PlayerManager.get(lastPlayers.getUniqueId()).heal(false);
                 lastPlayers.getInventory().clear();
                 lastPlayers.getInventory().setArmorContents(null);
                 if (!lastPlayers.getActivePotionEffects().isEmpty()) {
@@ -444,13 +440,8 @@ public class DuelManager {
 			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
-			duelPlayer.extinguish();
-			if (!duelPlayer.getActivePotionEffects().isEmpty()) {
-				for (PotionEffect effect : duelPlayer.getActivePotionEffects()) {
-					duelPlayer.removePotionEffect(effect.getType());
-				}
-			}
 			
+			dpm.heal(false);
 			dpm.setStatus(PlayerStatus.SPAWN);
 			if (dpm.isAlive()) {
 				dpm.showAllPlayer();

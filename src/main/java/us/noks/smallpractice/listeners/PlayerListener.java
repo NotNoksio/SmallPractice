@@ -26,7 +26,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 
 import com.google.common.collect.Lists;
 
@@ -58,15 +57,7 @@ public class PlayerListener implements Listener {
 		player.setExp(0.0F);
 		player.setLevel(0);
 		
-		player.setHealth(20.0D);
-		player.setFoodLevel(20);
-		player.setSaturation(1000f);
-		player.extinguish();
-		if (!player.getActivePotionEffects().isEmpty()) {
-			for (PotionEffect effect : player.getActivePotionEffects()) {
-				player.removePotionEffect(effect.getType());
-			}
-		}
+		PlayerManager.get(player.getUniqueId()).heal(false);
 		player.setAllowFlight(false);
 		player.setFlying(false);
 		player.setGameMode(GameMode.SURVIVAL);
@@ -94,6 +85,7 @@ public class PlayerListener implements Listener {
 		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
 		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/Y8dFcM8");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "https://fr.namemc.com/server/devmc.noks.io");
 		player.sendMessage("");
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 	}
@@ -139,14 +131,10 @@ public class PlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		
 		if (DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()) == null) {
-			player.getInventory().clear();
-			player.getInventory().setArmorContents(null);
-
-			player.setHealth(20.0D);
-			player.setFoodLevel(20);
-			player.setSaturation(10000f);
+			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+			pm.heal(false);
 			player.teleport(player.getWorld().getSpawnLocation());
-			PlayerManager.get(player.getUniqueId()).showAllPlayer();
+			pm.showAllPlayer();
 			ItemManager.getInstace().giveSpawnItem(player);
 		}
 	}
