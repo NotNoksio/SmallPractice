@@ -2,21 +2,29 @@ package us.noks.smallpractice.commands;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import us.noks.smallpractice.objects.managers.PartyManager;
+import us.noks.smallpractice.party.Party;
 
 // Copying Osu! !roll <integer>
 public class RollCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!(sender instanceof Player)) {
+			return false;
+		}
 		if (args.length > 1) {
 			sender.sendMessage(ChatColor.RED + "Usage: /roll <integer>");
 			return false;
 		}
-		Random roll = new Random();
+		final Random roll = new Random();
 		int rollNumber = roll.nextInt(100) + 1;
 		if (args.length == 1) {
 			if (!isInteger(args[0])) {
@@ -25,7 +33,14 @@ public class RollCommand implements CommandExecutor {
 			}
 			rollNumber = roll.nextInt(Integer.valueOf(args[0])) + 1;
 		}
-		sender.sendMessage(ChatColor.GREEN + sender.getName() + ChatColor.YELLOW + " rolls " + ChatColor.RED + rollNumber + ChatColor.YELLOW + " point(s).");
+		final Player player = (Player) sender;
+		final String rollMessage = ChatColor.GREEN + sender.getName() + ChatColor.YELLOW + " rolls " + ChatColor.RED + rollNumber + ChatColor.YELLOW + " point(s).";
+		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+			Party party = PartyManager.getInstance().getParty(player.getUniqueId());
+			PartyManager.getInstance().notifyParty(party, rollMessage);
+			return true;
+		}
+		player.sendMessage(rollMessage);
 		return true;
 	}
 	
