@@ -79,7 +79,7 @@ public class DuelManager {
 			if (firstTeam.isEmpty()) continue;
 			
 			PlayerManager fm = PlayerManager.get(firstUUID);
-			fm.removeRequest();
+			fm.clearRequest();
 			fm.setStatus(PlayerStatus.WAITING);
 			
 			first.setGameMode(GameMode.SURVIVAL);
@@ -100,7 +100,7 @@ public class DuelManager {
 			if (secondTeam.isEmpty()) continue;
 			
 			PlayerManager sm = PlayerManager.get(secondUUID);
-			sm.removeRequest();
+			sm.clearRequest();
 			sm.setStatus(PlayerStatus.WAITING);
 			
 			second.setGameMode(GameMode.SURVIVAL);

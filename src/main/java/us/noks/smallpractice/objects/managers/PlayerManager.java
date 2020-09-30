@@ -1,5 +1,7 @@
 package us.noks.smallpractice.objects.managers;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -21,8 +23,10 @@ public class PlayerManager {
 	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
-	private Map<UUID, UUID> request = new WeakHashMap<UUID, UUID>();
-	private Map<UUID, UUID> invite = new WeakHashMap<UUID, UUID>();
+	//private Map<UUID, List<UUID>> request = new WeakHashMap<UUID, List<UUID>>();
+	//private Map<UUID, List<UUID>> invite = new WeakHashMap<UUID, List<UUID>>();
+	private Collection<UUID> request = Collections.newSetFromMap(new WeakHashMap<>());
+	private Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
 	private PlayerStatus status;
 	private Player spectate;
 	private String prefix, suffix;
@@ -82,35 +86,31 @@ public class PlayerManager {
 	}
 	
 	public boolean hasInvited(UUID invitedUUID) {
-		return this.invite.containsValue(invitedUUID) && this.invite.containsKey(this.player.getUniqueId()) && this.invite.get(this.player.getUniqueId()) == invitedUUID;
+		return this.invite.contains(invitedUUID);
 	}
 	
-	public void setInviteTo(UUID targetUUID) {
-		this.invite.put(this.player.getUniqueId(), targetUUID);
+	public void addInvite(UUID targetUUID) {
+		this.invite.add(targetUUID);
 	}
 	
-	public UUID getInviteTo() {
-		return this.invite.get(this.player.getUniqueId());
+	public Collection<UUID> getInviteTo() {
+		return this.invite;
 	}
 	
-	public void removePartyInvite() {
-		if (this.invite.containsKey(this.player.getUniqueId())) {
-			this.invite.remove(this.player.getUniqueId());
-		}
+	public void addRequest(UUID targetUUID) {
+		this.request.add(targetUUID);
 	}
 	
-	public void setRequestTo(UUID targetUUID) {
-		this.request.put(this.player.getUniqueId(), targetUUID);
+	public Collection<UUID> getRequests() {
+		return this.request;
 	}
 	
-	public UUID getRequestTo() {
-		return this.request.get(this.player.getUniqueId());
+	public boolean hasRequest(UUID invitedUUID) {
+		return this.request.contains(invitedUUID);
 	}
 	
-	public void removeRequest() {
-		if (this.request.containsKey(this.player.getUniqueId())) {
-			this.request.remove(this.player.getUniqueId());
-		}
+	public void clearRequest() {
+		this.request.clear();
 	}
 
 	public PlayerStatus getStatus() {
@@ -249,7 +249,7 @@ public class PlayerManager {
 	}
 	
 	public void heal(boolean forFight) {
-		if (!isAlive()) getPlayer().spigot().respawn();
+		//if (!isAlive()) getPlayer().spigot().respawn();
 		getPlayer().setHealth(20.0D);
 		getPlayer().extinguish();
 		if (!getPlayer().getActivePotionEffects().isEmpty()) {

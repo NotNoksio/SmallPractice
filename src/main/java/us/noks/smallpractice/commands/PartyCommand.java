@@ -154,9 +154,7 @@ public class PartyCommand implements CommandExecutor {
             }
             PlayerManager tm = PlayerManager.get(target.getUniqueId());
             Party targetParty = PartyManager.getInstance().getParty(target.getUniqueId());
-            if (targetParty == null) {
-            	return false;
-            }
+            
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
             	if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
             		player.sendMessage(ChatColor.RED + "You are already in a party!");
@@ -174,7 +172,7 @@ public class PartyCommand implements CommandExecutor {
             		player.sendMessage(ChatColor.RED + "You are not invited to this party!");
             		return false;
             	}
-            	tm.setInviteTo(null);
+            	tm.addInvite(target.getUniqueId());
             	PartyManager.getInstance().joinParty(targetParty.getLeader(), player.getUniqueId());
         		PartyManager.getInstance().notifyParty(targetParty, ChatColor.GREEN + player.getName() + " has joined the party");
                 player.sendMessage(ChatColor.GREEN + "You have joined the party!");
@@ -187,7 +185,18 @@ public class PartyCommand implements CommandExecutor {
             		player.sendMessage(ChatColor.RED + "You are already in a party!");
                 	return false;
                 }
-            	
+            	if (PartyManager.getInstance().hasParty(target.getUniqueId())) {
+            		player.sendMessage(ChatColor.RED + "This player is already in a party!");
+            		return false;
+            	}
+            	//pm.setInviteTo(target.getUniqueId());
+            	return true;
+            }
+            if (args[0].equalsIgnoreCase("accept")) {
+            	return false;
+            }
+            if (args[0].equalsIgnoreCase("deny")) {
+            	return false;
             }
         }
         

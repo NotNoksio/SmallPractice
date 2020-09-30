@@ -33,7 +33,7 @@ public class DenyCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		if (PlayerManager.get(dueler.getUniqueId()).getRequestTo() != player.getUniqueId()) {
+		if (!PlayerManager.get(dueler.getUniqueId()).hasRequest(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "No request found!");
 			return false;
 		}

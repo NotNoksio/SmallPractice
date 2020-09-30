@@ -263,8 +263,7 @@ public class PlayerListener implements Listener {
 		            }
 					if (item.getType() == Material.NAME_TAG && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "create party")) {
 		                event.setCancelled(true);
-		                PartyManager.getInstance().createParty(player.getUniqueId(), player.getName());
-		                ItemManager.getInstace().giveSpawnItem(player);
+		                Bukkit.dispatchCommand(player, "party create");
 		                break;
 		            }
 					if (item.getType() == Material.COMPASS && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "warps selection")) {
@@ -365,6 +364,12 @@ public class PlayerListener implements Listener {
 	                player.sendMessage(ChatColor.GREEN + "NoDebuff kit successfully given.");
 	            }
 				break;
+			case DUEL:
+				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "nodebuff default kit")) {
+	                ItemManager.getInstace().giveFightItems(player);
+	                player.sendMessage(ChatColor.GREEN + "NoDebuff kit successfully given.");
+	            }
+				break;
 			case SPECTATE:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave spectate")) {
 	                event.setCancelled(true);
@@ -440,18 +445,11 @@ public class PlayerListener implements Listener {
 		if (event.getRightClicked() instanceof Player) {
 			Player player = event.getPlayer();
 			PlayerManager pm = PlayerManager.get(player.getUniqueId());
-			
-			if (pm.getStatus() != PlayerStatus.MODERATION) {
+	      
+			if (pm.getStatus() != PlayerStatus.MODERATION || player.getItemInHand().getItemMeta() == null || player.getItemInHand().getItemMeta().getDisplayName() == null) {
 				return;
 			}
 			Player target = (Player)event.getRightClicked();
-	      
-			if (player.getItemInHand().getItemMeta() == null) {
-				return;
-			}
-			if (player.getItemInHand().getItemMeta().getDisplayName() == null) {
-				return;
-			}
 			if (player.getItemInHand().getType() == Material.BOOK && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "inspection tool")) {
 				Bukkit.dispatchCommand(player, "verif " + target.getName());
 				return;

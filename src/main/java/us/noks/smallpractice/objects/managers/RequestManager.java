@@ -52,7 +52,7 @@ public class RequestManager {
 	    
 		requested.spigot().sendMessage(line);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
-		PlayerManager.get(requester.getUniqueId()).setRequestTo(requested.getUniqueId());
+		PlayerManager.get(requester.getUniqueId()).addRequest(requested.getUniqueId());
 	}
 	
 	public void acceptDuelRequest(Player requested, Player requester) {
@@ -60,11 +60,11 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		if (PlayerManager.get(requester.getUniqueId()).getRequestTo() != requested.getUniqueId()) {
-			requested.sendMessage(ChatColor.RED + "This player doesn't request you to duel!");
+		if (!PlayerManager.get(requester.getUniqueId()).hasRequest(requested.getUniqueId())) {
+			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
 		}
-		PlayerManager.get(requester.getUniqueId()).setRequestTo(null);
+		PlayerManager.get(requester.getUniqueId()).clearRequest();;
 		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
         Party requestedParty = PartyManager.getInstance().getParty(requested.getUniqueId());
         if ((requesterParty != null && requestedParty == null) || (requestedParty != null && requesterParty == null)) {
@@ -83,11 +83,11 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return;
 		}
-		if (PlayerManager.get(requester.getUniqueId()).getRequestTo() != requested.getUniqueId()) {
-			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a request duel!");
+		if (!PlayerManager.get(requester.getUniqueId()).hasRequest(requested.getUniqueId())) {
+			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
 		}
-		PlayerManager.get(requester.getUniqueId()).setRequestTo(null);
+		PlayerManager.get(requester.getUniqueId()).getRequests().remove(requested.getUniqueId());
 		requester.sendMessage(ChatColor.YELLOW + requested.getName() + ChatColor.RED + " has denied your duel request!");
 		requested.sendMessage(ChatColor.RED + "You deny the request from " + ChatColor.YELLOW + requester.getName());
 	}
