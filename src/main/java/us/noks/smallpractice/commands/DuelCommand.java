@@ -16,8 +16,6 @@ import us.noks.smallpractice.party.PartyState;
 
 public class DuelCommand implements CommandExecutor {
 	
-	private int cooldownTime = 5;
-
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player) {
@@ -67,7 +65,7 @@ public class DuelCommand implements CommandExecutor {
 	        }
 	        CommandCooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 			if (cooldown.hasCooldown("Duel")) {
-				long secondsLeft = ((cooldown.getCooldownTime("Duel") / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);
+				long secondsLeft = ((cooldown.getCooldownTime("Duel") / 1000) + 5) - (System.currentTimeMillis() / 1000);
 	            if (secondsLeft > 0) {
 	                player.sendMessage(ChatColor.RED + "You cant sent duel request for another " + secondsLeft + " seconds!");
 	                return false;

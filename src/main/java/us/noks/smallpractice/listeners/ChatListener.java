@@ -54,6 +54,9 @@ public class ChatListener implements Listener {
 		if (event.getMessage().charAt(0) == '@') {
 			String message = event.getMessage();
 	      
+			if (message.length() == 1) {
+				return;
+			}
 			message = message.replaceFirst("@", "");
 			if (player.hasPermission("chat.staff")) {
 				final PlayerManager pm = PlayerManager.get(player.getUniqueId());

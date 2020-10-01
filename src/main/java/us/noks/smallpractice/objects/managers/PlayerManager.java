@@ -93,7 +93,7 @@ public class PlayerManager {
 		this.invite.add(targetUUID);
 	}
 	
-	public Collection<UUID> getInviteTo() {
+	public Collection<UUID> getInvites() {
 		return this.invite;
 	}
 	

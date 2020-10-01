@@ -14,6 +14,7 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.objects.managers.RequestManager;
 import us.noks.smallpractice.party.Party;
 
 public class PartyCommand implements CommandExecutor {
@@ -26,6 +27,7 @@ public class PartyCommand implements CommandExecutor {
             ChatColor.GREEN + "-> /party leave " + ChatColor.GRAY + "- Leave your current party",
             ChatColor.GREEN + "-> /party info " + ChatColor.GRAY + "- Displays your party information",
             ChatColor.GREEN + "-> /party join <player> " + ChatColor.GRAY + "- Join a party (invited or unlocked)",
+            ChatColor.GREEN + "-> /party deny <player> " + ChatColor.GRAY + "- Deny a party invite",
             "",
             ChatColor.RED.toString() + ChatColor.BOLD + "Leader Commands:",
             ChatColor.GREEN + "-> /party open " + ChatColor.GRAY + "- Open your party for others to join",
@@ -156,6 +158,10 @@ public class PartyCommand implements CommandExecutor {
             Party targetParty = PartyManager.getInstance().getParty(target.getUniqueId());
             
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
+            	if (targetParty == null) {
+            		player.sendMessage(ChatColor.RED + "This party has expired!");
+                	return false;
+            	}
             	if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
             		player.sendMessage(ChatColor.RED + "You are already in a party!");
                 	return false;
@@ -172,36 +178,37 @@ public class PartyCommand implements CommandExecutor {
             		player.sendMessage(ChatColor.RED + "You are not invited to this party!");
             		return false;
             	}
-            	tm.addInvite(target.getUniqueId());
-            	PartyManager.getInstance().joinParty(targetParty.getLeader(), player.getUniqueId());
-        		PartyManager.getInstance().notifyParty(targetParty, ChatColor.GREEN + player.getName() + " has joined the party");
-                player.sendMessage(ChatColor.GREEN + "You have joined the party!");
-                ItemManager.getInstace().giveSpawnItem(target);
-                PartyManager.getInstance().updateParty(targetParty);
+            	RequestManager.getInstance().acceptPartyInvite(player, target);
                 return true;
             }
             if (args[0].equalsIgnoreCase("invite")) {
-            	if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
-            		player.sendMessage(ChatColor.RED + "You are already in a party!");
+            	if (party == null) {
+            		player.sendMessage(ChatColor.RED + "You are not in a party!");
+            		return false;
+            	}
+            	if (PartyManager.getInstance().hasParty(target.getUniqueId())) {
+            		player.sendMessage(ChatColor.RED + "This player is already in a party!");
                 	return false;
                 }
             	if (PartyManager.getInstance().hasParty(target.getUniqueId())) {
             		player.sendMessage(ChatColor.RED + "This player is already in a party!");
             		return false;
             	}
-            	//pm.setInviteTo(target.getUniqueId());
+            	RequestManager.getInstance().sendPartyInvite(player, target);
             	return true;
             }
-            if (args[0].equalsIgnoreCase("accept")) {
-            	return false;
-            }
             if (args[0].equalsIgnoreCase("deny")) {
+            	if (targetParty == null) {
+            		player.sendMessage(ChatColor.RED + "This party has expired!");
+                	return false;
+            	}
+            	RequestManager.getInstance().denyPartyInvite(player, target);
+            	return true;
+            }
+            if (args[0].equalsIgnoreCase("kick")) {
             	return false;
             }
         }
-        
-        // ITS ANNOYING :'(
-        
         return false;
     }
 }

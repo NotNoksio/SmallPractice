@@ -18,8 +18,6 @@ import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ReportCommand implements CommandExecutor {
 	
-	private int cooldownTime = 30;
-
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if ((sender instanceof Player)) {
@@ -40,7 +38,7 @@ public class ReportCommand implements CommandExecutor {
 			}
 			CommandCooldown cooldown = PlayerManager.get(p.getUniqueId()).getCooldown();
 			if (cooldown.hasCooldown("Report")) {
-				long secondsLeft = ((cooldown.getCooldownTime("Report") / 1000) + cooldownTime) - (System.currentTimeMillis() / 1000);
+				long secondsLeft = ((cooldown.getCooldownTime("Report") / 1000) + 30) - (System.currentTimeMillis() / 1000);
 	            if (secondsLeft > 0) {
 	                p.sendMessage(org.bukkit.ChatColor.RED + "You cant report for another " + secondsLeft + " seconds!");
 	                return false;
