@@ -13,10 +13,12 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
+import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class Duel {
+	private Arenas arena;
 	private UUID firstTeamPartyLeaderUUID;
     private UUID secondTeamPartyLeaderUUID;
 	private List<UUID> firstTeam;
@@ -28,7 +30,8 @@ public class Duel {
 	private int timeBeforeDuel = 5;
 	private List<Item> drops;
 	
-	public Duel(UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
+	public Duel(Arenas arena, UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
+		this.arena = arena;
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
 		this.firstTeam = Lists.newArrayList(firstTeam);
@@ -37,6 +40,10 @@ public class Duel {
 		this.secondTeamAlive = Lists.newArrayList(secondTeam);
 		this.ranked = ranked;
 		this.drops = Lists.newArrayList();
+	}
+	
+	public Arenas getArena() {
+		return this.arena;
 	}
 	
 	public List<UUID> getFirstTeam() {

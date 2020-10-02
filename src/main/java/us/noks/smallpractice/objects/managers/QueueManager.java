@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.PlayerStatus;
 
 public class QueueManager {
@@ -54,7 +55,7 @@ public class QueueManager {
 			}
 			this.queue.remove(firstUUID);
 			this.queue.remove(secondUUID);
-			DuelManager.getInstance().startDuel(firstUUID, secondUUID, ranked);
+			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(), firstUUID, secondUUID, ranked);
 		}
 	}
 	

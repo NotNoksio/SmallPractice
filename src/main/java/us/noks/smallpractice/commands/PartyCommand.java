@@ -33,7 +33,7 @@ public class PartyCommand implements CommandExecutor {
             ChatColor.GREEN + "-> /party open " + ChatColor.GRAY + "- Open your party for others to join",
             ChatColor.GREEN + "-> /party lock " + ChatColor.GRAY + "- Lock your party for others to join",
             ChatColor.GREEN + "-> /party invite <player> " + ChatColor.GRAY + "- Invites a player to your party",
-            ChatColor.RED + "-> /party kick <player> " + ChatColor.GRAY + "- Kicks a player from your party",
+            ChatColor.GREEN + "-> /party kick <player> " + ChatColor.GRAY + "- Kicks a player from your party",
             ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
     
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -206,7 +206,22 @@ public class PartyCommand implements CommandExecutor {
             	return true;
             }
             if (args[0].equalsIgnoreCase("kick")) {
-            	return false;
+            	if (party == null) {
+            		player.sendMessage(ChatColor.RED + "You are not in a party!");
+            		return false;
+            	}
+            	if (!party.getLeader().equals(player.getUniqueId())) {
+	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
+	        		return false;
+	        	}
+            	if (!party.getMembers().contains(target.getUniqueId())) {
+            		player.sendMessage(ChatColor.RED + "This player is not in your party!");
+            		return false;
+            	}
+            	PartyManager.getInstance().notifyParty(party, ChatColor.RED + target.getName() + " has been kicked from the party!");
+                PartyManager.getInstance().leaveParty(target.getUniqueId());
+                ItemManager.getInstace().giveSpawnItem(target);
+            	return true;
             }
         }
         return false;

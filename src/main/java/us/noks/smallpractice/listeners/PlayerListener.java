@@ -84,8 +84,8 @@ public class PlayerListener implements Listener {
 		}
 		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/Y8dFcM8");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "https://fr.namemc.com/server/devmc.noks.io");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/8v8Mzhd");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "https://namemc.com/server/devmc.noks.io");
 		player.sendMessage("");
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 	}
@@ -186,11 +186,7 @@ public class PlayerListener implements Listener {
 				event.setDamage(0.0D);
 				return;
 			}
-			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.SPECTATE) {
-				event.setCancelled(true);
-				return;
-			}
-			if (PlayerManager.get(attacker.getUniqueId()).getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
+			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.SPECTATE || PlayerManager.get(attacker.getUniqueId()).getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 			}
 		}
@@ -221,8 +217,9 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDrop(PlayerDropItemEvent event) {
 		PlayerManager pm = PlayerManager.get(event.getPlayer().getUniqueId());
-		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && pm.getStatus() != PlayerStatus.WAITING && pm.getStatus() != PlayerStatus.DUEL) {
+		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && pm.getStatus() != PlayerStatus.WAITING && pm.getStatus() != PlayerStatus.DUEL && !pm.isCanBuild()) {
 			event.setCancelled(true);
+			return;
 		}
 		if (event.getItemDrop().getItemStack().getType() == Material.GLASS_BOTTLE) {
 			event.getItemDrop().remove();

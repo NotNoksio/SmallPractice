@@ -7,6 +7,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import us.noks.smallpractice.arena.Arena;
+import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.party.Party;
 
@@ -55,7 +57,7 @@ public class RequestManager {
 		PlayerManager.get(requester.getUniqueId()).addRequest(requested.getUniqueId());
 	}
 	
-	public void acceptDuelRequest(Player requested, Player requester) {
+	public void acceptDuelRequest(Player requested, Player requester) { // Add arena selection here later
 		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
@@ -71,11 +73,12 @@ public class RequestManager {
             requested.sendMessage(ChatColor.RED + "Either you or this player are in a party!");
             return;
         }
+        Arenas arena = Arena.getInstance().getRandomArena();
 		if (requestedParty != null && requesterParty != null) {
-			DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
+			DuelManager.getInstance().startDuel(arena, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;
 		}
-		DuelManager.getInstance().startDuel(requester.getUniqueId(), requested.getUniqueId(), false);
+		DuelManager.getInstance().startDuel(arena, requester.getUniqueId(), requested.getUniqueId(), false);
 	}
 	
 	public void denyDuelRequest(Player requested, Player requester) {

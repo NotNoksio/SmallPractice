@@ -23,8 +23,6 @@ public class PlayerManager {
 	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
-	//private Map<UUID, List<UUID>> request = new WeakHashMap<UUID, List<UUID>>();
-	//private Map<UUID, List<UUID>> invite = new WeakHashMap<UUID, List<UUID>>();
 	private Collection<UUID> request = Collections.newSetFromMap(new WeakHashMap<>());
 	private Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
 	private PlayerStatus status;
@@ -165,7 +163,7 @@ public class PlayerManager {
 	
 	public String getPrefix() {
 		if (!Main.getInstance().isPermissionsPluginHere()) {
-			return "";
+			return this.prefix;
 		}
 		if (this.prefix != PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix()) {
 			this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
@@ -222,6 +220,10 @@ public class PlayerManager {
 	
 	public String getColoredSuffix() {
 		return ChatColor.translateAlternateColorCodes('&', getSuffix());
+	}
+	
+	public boolean hasVoted() {
+		return false;
 	}
 	
 	private boolean isMagicColor(char letter) {

@@ -13,6 +13,7 @@ import us.noks.smallpractice.commands.ForceDuelCommand;
 import us.noks.smallpractice.commands.InventoryCommand;
 import us.noks.smallpractice.commands.MentionCommand;
 import us.noks.smallpractice.commands.ModerationCommand;
+import us.noks.smallpractice.commands.NameMCCommand;
 import us.noks.smallpractice.commands.NightCommand;
 import us.noks.smallpractice.commands.PartyCommand;
 import us.noks.smallpractice.commands.PingCommand;
@@ -74,6 +75,7 @@ public class Main extends JavaPlugin {
 		getCommand("resettime").setExecutor(new ResetTimeCommand());
 		getCommand("roll").setExecutor(new RollCommand());
 		getCommand("mention").setExecutor(new MentionCommand());
+		getCommand("namemc").setExecutor(new NameMCCommand());
 	}
 	
 	private void registerListers() {

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -28,6 +27,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
+import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.objects.Duel;
@@ -46,15 +46,15 @@ public class DuelManager {
         return this.uuidIdentifierToDuel.get(uuid);
     }
 	
-	public void startDuel(UUID player1, UUID player2, boolean ranked) {
+	public void startDuel(Arenas arena, UUID player1, UUID player2, boolean ranked) {
 		List<UUID> firstTeam = Lists.newArrayList();
 		firstTeam.add(player1);
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(player2);
-		startDuel(null, null, firstTeam, secondTeam, ranked);
+		startDuel(arena, null, null, firstTeam, secondTeam, ranked);
 	}
 	
-	public void startDuel(UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
+	public void startDuel(Arenas arena, UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		Scoreboard firstPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
 		Team red1 = firstPlayerScoreboard.registerNewTeam("red");
 		red1.setPrefix(ChatColor.RED.toString());
@@ -125,7 +125,7 @@ public class DuelManager {
             }
             PartyManager.getInstance().updateParty(party);
         }
-		teleportRandomArena(new Duel(firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
+		teleportRandomArena(new Duel(arena, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
 	}
 	
 	public void createSplitTeamsDuel(Party party) {
@@ -135,7 +135,7 @@ public class DuelManager {
         List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         
-        startDuel(party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
+        startDuel(Arena.getInstance().getRandomArena(), party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
@@ -290,8 +290,6 @@ public class DuelManager {
         	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1));
         	return;
         }
-		int random = new Random().nextInt(new Arena().getArenaList().size()) + 1;
-		Arena pickedArena = new Arena().getArena(random);
 		
 		for (UUID firstUUID : duel.getFirstTeam()) {
 			Player first = Bukkit.getPlayer(firstUUID);
@@ -307,7 +305,7 @@ public class DuelManager {
 			pmf.hideAllPlayer();
 			ItemManager.getInstace().givePreFightItems(first);
 			
-			first.teleport(pickedArena.getPositions(random)[0]);
+			first.teleport(duel.getArena().getLocations()[0]);
 			first.setSneaking(false);
 		}
 		for (UUID secondUUID : duel.getSecondTeam()) {
@@ -324,7 +322,7 @@ public class DuelManager {
 			pms.hideAllPlayer();
 			ItemManager.getInstace().givePreFightItems(second);
 			
-			second.teleport(pickedArena.getPositions(random)[1]);
+			second.teleport(duel.getArena().getLocations()[1]);
 			second.setSneaking(false);
 		}
 		for (UUID firstUUID : duel.getFirstTeamAlive()) {

@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
@@ -68,7 +69,7 @@ public class ForceDuelCommand implements CommandExecutor {
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(target.getUniqueId());
 		
-		DuelManager.getInstance().startDuel(null, null, firstTeam, secondTeam, false);
+		DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(), null, null, firstTeam, secondTeam, false);
 		return true;
 	}
 }
