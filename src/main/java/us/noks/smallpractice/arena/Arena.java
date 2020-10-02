@@ -1,7 +1,10 @@
 package us.noks.smallpractice.arena;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,23 +46,25 @@ public class Arena {
 			Location arena10_Pos1 = new Location(Bukkit.getWorld("world"), -3657.5D, 153.0D, 1488.5D, 63.0F, 0.0F);
 			Location arena10_Pos2 = new Location(Bukkit.getWorld("world"), -3724.5D, 153.0D, 1527.5D, -125.0F, 0.0F);
 		    
-		    arenaList.put(1, new Arenas(this, "River", new Location[] {arena1_Pos1, arena1_Pos2}, false));
-			arenaList.put(2, new Arenas(this, "Rock", new Location[] {arena2_Pos1, arena2_Pos2}, false));
-			arenaList.put(3, new Arenas(this, "Logo", new Location[] {arena3_Pos1, arena3_Pos2}, false));
-			arenaList.put(4, new Arenas(this, "Stalagmites", new Location[] {arena4_Pos1, arena4_Pos2}, false));
-			arenaList.put(5, new Arenas(this, "Rocks", new Location[] {arena5_Pos1, arena5_Pos2}, false));
-			arenaList.put(6, new Arenas(this, "Sphinx", new Location[] {arena6_Pos1, arena6_Pos2}, false));
-			arenaList.put(7, new Arenas(this, "American-Foot", new Location[] {arena7_Pos1, arena7_Pos2}, false));
-			arenaList.put(8, new Arenas(this, "Lava", new Location[] {arena8_Pos1, arena8_Pos2}, false));
-			arenaList.put(9, new Arenas(this, "Book", new Location[] {arena9_Pos1, arena9_Pos2}, false));
-			arenaList.put(10, new Arenas(this, "End", new Location[] {arena10_Pos1, arena10_Pos2}, false));
+		    arenaList.put(1, new Arenas("River", new Location[] {arena1_Pos1, arena1_Pos2}, false));
+			arenaList.put(2, new Arenas("Rock", new Location[] {arena2_Pos1, arena2_Pos2}, false));
+			arenaList.put(3, new Arenas("Logo", new Location[] {arena3_Pos1, arena3_Pos2}, false));
+			arenaList.put(4, new Arenas("Stalagmites", new Location[] {arena4_Pos1, arena4_Pos2}, false));
+			arenaList.put(5, new Arenas("Rocks", new Location[] {arena5_Pos1, arena5_Pos2}, false));
+			arenaList.put(6, new Arenas("Sphinx", new Location[] {arena6_Pos1, arena6_Pos2}, false));
+			arenaList.put(7, new Arenas("American-Foot", new Location[] {arena7_Pos1, arena7_Pos2}, false));
+			arenaList.put(8, new Arenas("Lava", new Location[] {arena8_Pos1, arena8_Pos2}, false));
+			arenaList.put(9, new Arenas("Book", new Location[] {arena9_Pos1, arena9_Pos2}, false));
+			arenaList.put(10, new Arenas("End", new Location[] {arena10_Pos1, arena10_Pos2}, false));
 		}
 	}
 	
-	public Arenas getRandomArena() {
-		int random = new Random().nextInt(this.arenaList.size()) + 1;
-		return this.arenaList.get(random);
+	public Arenas getRandomArena(boolean sumo) {
+		List<Arenas> arenas = this.arenaList.values().stream().filter((sumo ? Arenas::isSumo : not(Arenas::isSumo))).collect(Collectors.toList());
+		int random = new Random().nextInt(arenas.size());
+		return arenas.get(random);
 	}
+	private <T> Predicate<T> not(Predicate<T> p) { return t -> !p.test(t); }
 	
 	public Map<Integer, Arenas> getArenaList() {
 		return this.arenaList;
@@ -70,7 +75,7 @@ public class Arena {
 		private Location[] locations;
 		private boolean sumo;
 		
-		public Arenas(Arena arena, String name, Location[] locations, boolean sumo) {
+		public Arenas(String name, Location[] locations, boolean sumo) {
 			this.name = name;
 			this.locations = locations;
 			this.sumo = sumo;

@@ -135,7 +135,7 @@ public class DuelManager {
         List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         
-        startDuel(Arena.getInstance().getRandomArena(), party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
+        startDuel(Arena.getInstance().getRandomArena(false), party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
@@ -303,7 +303,9 @@ public class DuelManager {
 			first.setNoDamageTicks(50);
 			
 			pmf.hideAllPlayer();
-			ItemManager.getInstace().givePreFightItems(first);
+			if (!duel.getArena().isSumo()) {
+				ItemManager.getInstace().givePreFightItems(first);
+			}
 			
 			first.teleport(duel.getArena().getLocations()[0]);
 			first.setSneaking(false);
@@ -320,7 +322,9 @@ public class DuelManager {
 			second.setNoDamageTicks(50);
 			
 			pms.hideAllPlayer();
-			ItemManager.getInstace().givePreFightItems(second);
+			if (!duel.getArena().isSumo()) {
+				ItemManager.getInstace().givePreFightItems(second);
+			}
 			
 			second.teleport(duel.getArena().getLocations()[1]);
 			second.setSneaking(false);

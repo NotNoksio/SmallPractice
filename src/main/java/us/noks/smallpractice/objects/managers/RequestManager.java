@@ -73,7 +73,7 @@ public class RequestManager {
             requested.sendMessage(ChatColor.RED + "Either you or this player are in a party!");
             return;
         }
-        Arenas arena = Arena.getInstance().getRandomArena();
+        Arenas arena = Arena.getInstance().getRandomArena(false);
 		if (requestedParty != null && requesterParty != null) {
 			DuelManager.getInstance().startDuel(arena, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;

@@ -69,7 +69,7 @@ public class ForceDuelCommand implements CommandExecutor {
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(target.getUniqueId());
 		
-		DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(), null, null, firstTeam, secondTeam, false);
+		DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(false), null, null, firstTeam, secondTeam, false);
 		return true;
 	}
 }

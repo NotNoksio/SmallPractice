@@ -19,7 +19,7 @@ commands:
     aliases: [spec]
   mod:
   party:
-    aliases: [team]
+    aliases: [team, p]
   forceduel:
     aliases: [fd]
   day:

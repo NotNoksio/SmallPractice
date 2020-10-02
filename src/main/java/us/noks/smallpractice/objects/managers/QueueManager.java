@@ -23,7 +23,7 @@ public class QueueManager {
 		return this.queue;
 	}
 	
-	public void addToQueue(UUID uuid, boolean ranked) {
+	public void addToQueue(UUID uuid, boolean ranked, boolean sumo) {
 		final PlayerManager pm = PlayerManager.get(uuid);
 		
 		if (pm.getStatus() != PlayerStatus.SPAWN) {
@@ -40,7 +40,7 @@ public class QueueManager {
 			player.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
 		}
 		if (this.queue.size() < 2 && this.queue.contains(uuid)) {
-			addToQueue(uuid, ranked);
+			addToQueue(uuid, ranked, sumo);
 			return;
 		}
 		if (this.queue.size() >= 2) {
@@ -50,12 +50,12 @@ public class QueueManager {
 			if (firstUUID == secondUUID) {
 				this.queue.remove(0);
 				this.queue.remove(1);
-				addToQueue(uuid, ranked);
+				addToQueue(uuid, ranked, sumo);
 				return;
 			}
 			this.queue.remove(firstUUID);
 			this.queue.remove(secondUUID);
-			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(), firstUUID, secondUUID, ranked);
+			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(sumo), firstUUID, secondUUID, ranked);
 		}
 	}
 	

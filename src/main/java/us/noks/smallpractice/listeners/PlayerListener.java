@@ -250,7 +250,7 @@ public class PlayerListener implements Listener {
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
 					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "unranked direct queue")) {
 		                event.setCancelled(true);
-		                QueueManager.getInstance().addToQueue(player.getUniqueId(), false);
+		                QueueManager.getInstance().addToQueue(player.getUniqueId(), false, false);
 		                break;
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "ranked direct queue")) {
