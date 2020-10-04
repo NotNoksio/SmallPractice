@@ -1,4 +1,4 @@
-package us.noks.smallpractice.utils;
+package us.noks.smallpractice.inventories;
 
 import java.util.Arrays;
 import java.util.List;

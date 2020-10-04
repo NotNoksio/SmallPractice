@@ -29,11 +29,11 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.inventories.InvView;
 import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
-import us.noks.smallpractice.utils.InvView;
 
 public class DuelManager {
 	private static DuelManager instance = new DuelManager();
@@ -181,81 +181,77 @@ public class DuelManager {
 	}
 	
 	private void deathMessage(Duel duel, int winningTeamNumber) {
-		try {
-			List<UUID> winnerTeam = null;
-			List<UUID> loserTeam = null;
-			switch (winningTeamNumber) {
-			case 1:
-				winnerTeam = duel.getFirstTeam();
-				loserTeam = duel.getSecondTeam();
-				break;
-			case 2:
-				winnerTeam = duel.getSecondTeam();
-				loserTeam = duel.getFirstTeam();
-				break;
-			default:
-				break;
-			}
-			final boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
-			final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
+		List<UUID> winnerTeam = null;
+		List<UUID> loserTeam = null;
+		switch (winningTeamNumber) {
+		case 1:
+			winnerTeam = duel.getFirstTeam();
+			loserTeam = duel.getSecondTeam();
+			break;
+		case 2:
+			winnerTeam = duel.getSecondTeam();
+			loserTeam = duel.getFirstTeam();
+			break;
+		default:
+			break;
+		}
+		final boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
+		final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
 			
-		    TextComponent invTxt = new TextComponent();
-		    invTxt.setText("Inventories (Click):");
-		    invTxt.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+		TextComponent invTxt = new TextComponent();
+		invTxt.setText("Inventories (Click):");
+		invTxt.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		    
-		    List<BaseComponent> inventoriesTextList = Lists.newArrayList();
+		List<BaseComponent> inventoriesTextList = Lists.newArrayList();
 		    
-		    for (UUID wUUID : winnerTeam) {
-		    	final Player winners = Bukkit.getPlayer(wUUID);
-		    	if (winners == null) continue;
-		    	TextComponent wtxt = new TextComponent();
+		for (UUID wUUID : winnerTeam) {
+			final Player winners = Bukkit.getPlayer(wUUID);
+			if (winners == null) continue;
+			TextComponent wtxt = new TextComponent();
 		    	
-		    	wtxt.setText(winners.getName());
-		    	wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-		    	wtxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winners.getName() + "'s inventory").create()));
-		    	wtxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winners.getUniqueId()));
+			wtxt.setText(winners.getName());
+			wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+			wtxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winners.getName() + "'s inventory").create()));
+			wtxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winners.getUniqueId()));
 			    
-			    inventoriesTextList.add(new TextComponent(" "));
-			    inventoriesTextList.add(wtxt);
-		    }
-		    for (UUID lUUID : loserTeam) {
-		    	final Player losers = Bukkit.getPlayer(lUUID);
-		    	if (losers == null) continue;
-		    	TextComponent ltxt = new TextComponent();
+			inventoriesTextList.add(new TextComponent(" "));
+			inventoriesTextList.add(wtxt);
+		}
+		for (UUID lUUID : loserTeam) {
+			final Player losers = Bukkit.getPlayer(lUUID);
+			if (losers == null) continue;
+			TextComponent ltxt = new TextComponent();
 		    	
-		    	ltxt.setText(losers.getName());
-		    	ltxt.setColor(net.md_5.bungee.api.ChatColor.RED);
-		    	ltxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.RED + "Click to view " + losers.getName() + "'s inventory").create()));
-		    	ltxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + losers.getUniqueId()));
+			ltxt.setText(losers.getName());
+			ltxt.setColor(net.md_5.bungee.api.ChatColor.RED);
+			ltxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.RED + "Click to view " + losers.getName() + "'s inventory").create()));
+			ltxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + losers.getUniqueId()));
 			    
-			    inventoriesTextList.add(new TextComponent(" "));
-			    inventoriesTextList.add(ltxt);
-		    }
+			inventoriesTextList.add(new TextComponent(" "));
+			inventoriesTextList.add(ltxt);
+		}
 		    
-		    invTxt.setExtra(inventoriesTextList);
-		    invTxt.addExtra(net.md_5.bungee.api.ChatColor.DARK_AQUA + ".");
+		invTxt.setExtra(inventoriesTextList);
+		invTxt.addExtra(net.md_5.bungee.api.ChatColor.DARK_AQUA + ".");
 		    
-		    StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
-		    if (duel.hasSpectator()) {
-		    	for (UUID specs : duel.getAllSpectators()) {
-		    		final Player spec = Bukkit.getPlayer(specs);
-		    		spect.add(ChatColor.YELLOW + spec.getName());
-		    	}
-		    }
-		    final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
+		StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
+		if (duel.hasSpectator()) {
+			for (UUID specs : duel.getAllSpectators()) {
+				final Player spec = Bukkit.getPlayer(specs);
+				spect.add(ChatColor.YELLOW + spec.getName());
+			}
+		}
+		final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
 		    
-		    List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstAndSecondTeams());
-		    duelPlayers.addAll(duel.getAllSpectators());
+		List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstAndSecondTeams());
+		duelPlayers.addAll(duel.getAllSpectators());
 		    
-		    for (UUID dpUUID : duelPlayers) {
-		    	final Player duelPlayer = Bukkit.getPlayer(dpUUID);
-		    	if (duelPlayer == null) continue;
-		    	duelPlayer.sendMessage(winnerMessage);
-		    	duelPlayer.spigot().sendMessage(invTxt);
-		    	if (duel.hasSpectator()) duelPlayer.sendMessage(spectatorMessage);
-		    }
-		} catch (Exception ex) {
-			System.out.println(ex.getCause());
+		for (UUID dpUUID : duelPlayers) {
+			final Player duelPlayer = Bukkit.getPlayer(dpUUID);
+			if (duelPlayer == null) continue;
+			duelPlayer.sendMessage(winnerMessage);
+			duelPlayer.spigot().sendMessage(invTxt);
+			if (duel.hasSpectator()) duelPlayer.sendMessage(spectatorMessage);
 		}
 	}
 	
@@ -370,8 +366,9 @@ public class DuelManager {
                 InvView.getInstance().saveInv(lastPlayers);
                 
                 if (lastPlayers == null) continue;
+                PlayerManager lpm = PlayerManager.get(lastPlayers.getUniqueId());
                 
-                PlayerManager.get(lastPlayers.getUniqueId()).heal(false);
+                lpm.heal(false);
                 lastPlayers.getInventory().clear();
                 lastPlayers.getInventory().setArmorContents(null);
                 if (!lastPlayers.getActivePotionEffects().isEmpty()) {
@@ -401,8 +398,9 @@ public class DuelManager {
                 InvView.getInstance().saveInv(lastPlayers);
                 
                 if (lastPlayers == null) continue;
+                PlayerManager lpm = PlayerManager.get(lastPlayers.getUniqueId());
                 
-                PlayerManager.get(lastPlayers.getUniqueId()).heal(false);
+                lpm.heal(false);
                 lastPlayers.getInventory().clear();
                 lastPlayers.getInventory().setArmorContents(null);
                 if (!lastPlayers.getActivePotionEffects().isEmpty()) {

@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.utils.InvView;
+import us.noks.smallpractice.inventories.InvView;
 
 public class InventoryCommand implements CommandExecutor {
 	

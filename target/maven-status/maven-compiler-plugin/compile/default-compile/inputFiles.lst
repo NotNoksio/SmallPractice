@@ -3,7 +3,6 @@ D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\Pla
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\listeners\ServerListeners.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\ResetTimeCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\AcceptCommand.java
-D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\utils\InvView.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\DuelCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\arena\Arena.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\InventoryCommand.java
@@ -26,6 +25,7 @@ D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\DenyCommand
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\NameMCCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\CommandCooldown.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\NightCommand.java
+D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\inventories\InvView.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\RequestManager.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\ItemManager.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\PartyManager.java

@@ -188,6 +188,17 @@ public class PlayerListener implements Listener {
 			}
 			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.SPECTATE || PlayerManager.get(attacker.getUniqueId()).getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
+				return;
+			}
+			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.DUEL) {
+				Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(attacker.getUniqueId());
+				
+				if (currentDuel == null) {
+					return;
+				}
+				if (currentDuel.getArena().isSumo()) {
+					event.setDamage(0.0D);
+				}
 			}
 		}
 	}
@@ -373,8 +384,10 @@ public class PlayerListener implements Listener {
 	                final Player spectatePlayer = pm.getSpectate();
 	                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
 	                
-	        		spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
-	        		spectatedDuel.removeSpectator(player.getUniqueId());
+	                if (spectatedDuel != null) {
+	                	spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
+	                	spectatedDuel.removeSpectator(player.getUniqueId());
+	                }
 	        		
 	        		player.setAllowFlight(false);
 	        		player.setFlying(false);
