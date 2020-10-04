@@ -30,7 +30,7 @@ public class ServerListeners implements Listener {
 		final Player player = event.getPlayer();
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
-		if (!pm.isCanBuild()) {
+		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);
 			return;
 		}
@@ -48,7 +48,7 @@ public class ServerListeners implements Listener {
 		final Player player = event.getPlayer();
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
-		if (!pm.isCanBuild()) {
+		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);
 			return;
 		}

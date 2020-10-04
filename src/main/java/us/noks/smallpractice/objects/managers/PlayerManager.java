@@ -71,7 +71,7 @@ public class PlayerManager {
 		return !this.player.isDead() && this.player.getHealth() > 0.0D;
 	}
 
-	public boolean isCanBuild() {
+	public boolean isAllowedToBuild() {
 		return getStatus() == PlayerStatus.BUILD || getStatus() == PlayerStatus.BRIDGE;
 	}
 	

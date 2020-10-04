@@ -20,15 +20,16 @@ public class BuildCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "Usage: /build");
 			return false;
 		}
-		if (!sender.hasPermission("command.build")) {
+		// Add /build <player>
+		if (!sender.isOp()) {
 			sender.sendMessage(ChatColor.RED + "No permission.");
 			return false;
 		}
 		Player player = (Player) sender;
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
-		pm.setStatus((pm.isCanBuild() ? PlayerStatus.SPAWN : PlayerStatus.BUILD));
-		player.sendMessage(ChatColor.DARK_AQUA + "Build state updated: " + ChatColor.YELLOW + pm.isCanBuild());
+		pm.setStatus((pm.isAllowedToBuild() ? PlayerStatus.SPAWN : PlayerStatus.BUILD));
+		player.sendMessage(ChatColor.DARK_AQUA + "Build state updated: " + (pm.isAllowedToBuild() ? ChatColor.GREEN + "Activated" : ChatColor.RED + "Deactivated"));
 		return true;
 	}
 }

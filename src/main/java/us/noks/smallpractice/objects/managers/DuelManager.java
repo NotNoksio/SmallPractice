@@ -180,6 +180,7 @@ public class DuelManager {
 		duel.clearDrops();
 	}
 	
+	// TODO: Sometimes there's an NULLPOINTEREXCEPTION appear
 	private void deathMessage(Duel duel, int winningTeamNumber) {
 		List<UUID> winnerTeam = null;
 		List<UUID> loserTeam = null;

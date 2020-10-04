@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.objects.CommandCooldown;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
@@ -71,7 +72,7 @@ public class DuelCommand implements CommandExecutor {
 	                return false;
 	            }
 			}
-			RequestManager.getInstance().sendDuelRequest(player, target);
+			RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getRandomArena(false), player, target);
 			cooldown.addCooldown("Duel", System.currentTimeMillis());
 		}
 		return false;

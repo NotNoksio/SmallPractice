@@ -25,13 +25,13 @@ public class PartyCommand implements CommandExecutor {
             ChatColor.GREEN + "-> /party help " + ChatColor.GRAY + "- Displays the help menu",
             ChatColor.GREEN + "-> /party create " + ChatColor.GRAY + "- Creates a party instance",
             ChatColor.GREEN + "-> /party leave " + ChatColor.GRAY + "- Leave your current party",
-            ChatColor.GREEN + "-> /party info " + ChatColor.GRAY + "- Displays your party information",
+            ChatColor.GREEN + "-> /party info [<player>]" + ChatColor.GRAY + "- Displays your party information",
             ChatColor.GREEN + "-> /party join <player> " + ChatColor.GRAY + "- Join a party (invited or unlocked)",
             ChatColor.GREEN + "-> /party deny <player> " + ChatColor.GRAY + "- Deny a party invite",
             "",
             ChatColor.RED.toString() + ChatColor.BOLD + "Leader Commands:",
             ChatColor.GREEN + "-> /party open " + ChatColor.GRAY + "- Open your party for others to join",
-            ChatColor.GREEN + "-> /party lock " + ChatColor.GRAY + "- Lock your party for others to join",
+            ChatColor.GREEN + "-> /party lock/close " + ChatColor.GRAY + "- Lock your party for others to join",
             ChatColor.GREEN + "-> /party invite <player> " + ChatColor.GRAY + "- Invites a player to your party",
             ChatColor.GREEN + "-> /party kick <player> " + ChatColor.GRAY + "- Kicks a player from your party",
             ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
@@ -85,7 +85,7 @@ public class PartyCommand implements CommandExecutor {
 	
 	            String[] information = new String[] {
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
-	                    ChatColor.RED + "Party Information:",
+	                    ChatColor.RED + "Your party informations:",
 	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
 	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString(),
 	                    ChatColor.DARK_AQUA + "Privacy: " + (party.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
@@ -125,7 +125,7 @@ public class PartyCommand implements CommandExecutor {
 	            player.sendMessage(ChatColor.GREEN + "You have opened your party!");
 	            return true;
 	        }
-	        if (args[0].equalsIgnoreCase("lock")) {
+	        if (args[0].equalsIgnoreCase("lock") || args[0].equalsIgnoreCase("close")) {
 	        	if (party == null) {
 	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
 	        		return false;
@@ -142,6 +142,7 @@ public class PartyCommand implements CommandExecutor {
 	            player.sendMessage(ChatColor.GREEN + "You have locked your party!");
 	            return true;
 	        }
+	        return false;
         }
         if (args.length == 2) {
         	Player target = Bukkit.getPlayer(args[1]);
@@ -223,6 +224,31 @@ public class PartyCommand implements CommandExecutor {
                 ItemManager.getInstace().giveSpawnItem(target);
             	return true;
             }
+            if (args[0].equalsIgnoreCase("info")) {
+	        	if (targetParty == null) {
+	        		player.sendMessage(ChatColor.RED + "This player is not in a party!");
+	        		return false;
+	        	}
+	        	Player leader = Bukkit.getPlayer(targetParty.getLeader());
+	            StringJoiner members = new StringJoiner(", ");
+	
+	            members.add(leader.getName());
+	            for (UUID memberUUID : targetParty.getMembers()) {
+	                Player member = Bukkit.getPlayer(memberUUID);
+	                members.add(member.getName());
+	            }
+	
+	            String[] information = new String[] {
+	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
+	                    ChatColor.RED + leader.getName() + "'s party informations:",
+	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
+	                    ChatColor.DARK_AQUA + "Members (" + (targetParty.getSize()) + "): " + ChatColor.GRAY + members.toString(),
+	                    ChatColor.DARK_AQUA + "Privacy: " + (targetParty.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
+	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
+	            };
+	            player.sendMessage(information);
+	            return true;
+	        }
         }
         return false;
     }

@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
 
@@ -37,7 +38,7 @@ public class AcceptCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "No request found!");
 			return false;
 		}
-		RequestManager.getInstance().acceptDuelRequest(player, dueler);
+		RequestManager.getInstance().acceptDuelRequest(Arena.getInstance().getRandomArena(false), player, dueler);
 		return true;
 	}
 }

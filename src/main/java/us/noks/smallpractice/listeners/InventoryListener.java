@@ -60,8 +60,8 @@ public class InventoryListener implements Listener {
 			final Player player = (Player) event.getWhoClicked();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
-			if (pm.getStatus() == PlayerStatus.MODERATION || (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild())) {
-				event.setCancelled(!pm.isCanBuild());
+			if (pm.getStatus() == PlayerStatus.MODERATION || (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isAllowedToBuild())) {
+				event.setCancelled(!pm.isAllowedToBuild());
 				player.updateInventory();
 			}
 		}

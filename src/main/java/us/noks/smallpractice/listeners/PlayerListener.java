@@ -209,7 +209,7 @@ public class PlayerListener implements Listener {
 			final Player receiver = event.getPlayer();
 			final PlayerManager pm = PlayerManager.get(receiver.getUniqueId());
 			
-			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isCanBuild()) {
+			if (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isAllowedToBuild()) {
 				event.setCancelled(true);
 				return;
 			}
@@ -228,7 +228,7 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDrop(PlayerDropItemEvent event) {
 		PlayerManager pm = PlayerManager.get(event.getPlayer().getUniqueId());
-		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && pm.getStatus() != PlayerStatus.WAITING && pm.getStatus() != PlayerStatus.DUEL && !pm.isCanBuild()) {
+		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && pm.getStatus() != PlayerStatus.WAITING && pm.getStatus() != PlayerStatus.DUEL && !pm.isAllowedToBuild()) {
 			event.setCancelled(true);
 			return;
 		}
