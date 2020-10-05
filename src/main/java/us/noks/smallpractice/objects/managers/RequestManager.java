@@ -72,7 +72,7 @@ public class RequestManager {
 		InventoryManager.getInstance().removeSelectingDuel(requester.getUniqueId());
 	}
 	
-	public void acceptDuelRequest(Arenas arena, Player requested, Player requester) { // Add arena selection here later
+	public void acceptDuelRequest(Arenas arena, Player requested, Player requester) {
 		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");

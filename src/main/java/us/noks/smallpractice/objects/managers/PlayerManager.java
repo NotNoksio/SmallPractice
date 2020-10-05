@@ -19,13 +19,12 @@ import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.CommandCooldown;
 import us.noks.smallpractice.objects.MatchStats;
-import us.noks.smallpractice.objects.Request;
 
 public class PlayerManager {
 	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
-	private Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
+	private Map<UUID, Arenas> request = new WeakHashMap<UUID, Arenas>();
 	private Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
 	private PlayerStatus status;
 	private Player spectate;
@@ -98,15 +97,16 @@ public class PlayerManager {
 	}
 	
 	public void addRequest(UUID targetUUID, Arenas arena) {
-		this.request.put(this.playerUUID, new Request(targetUUID, arena));
+		//this.request.put(this.playerUUID, new Request(targetUUID, arena));
+		this.request.put(targetUUID, arena);
 	}
 	
-	public Map<UUID, Request> getRequests() {
+	public Map<UUID, Arenas> getRequests() {
 		return this.request;
 	}
 	
 	public boolean hasRequested(UUID targetUUID) {
-		return this.request.get(this.playerUUID).getRequestedUUID() == targetUUID;
+		return this.request.containsKey(targetUUID);
 	}
 	
 	public void clearRequest() {

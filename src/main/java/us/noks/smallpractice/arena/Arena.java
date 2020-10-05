@@ -47,6 +47,8 @@ public class Arena {
 		Location arena9_Pos2 = new Location(Bukkit.getWorld("world"), -3287.5D, 150.0D, 2603.5D, 178.0F, 0.0F);
 		Location arena10_Pos1 = new Location(Bukkit.getWorld("world"), -3657.5D, 153.0D, 1488.5D, 63.0F, 0.0F);
 		Location arena10_Pos2 = new Location(Bukkit.getWorld("world"), -3724.5D, 153.0D, 1527.5D, -125.0F, 0.0F);
+		Location arena11_Pos1 = new Location(Bukkit.getWorld("world"), 751.5D, 4.0D, 971.5D, -43.0F, 0.0F);
+		Location arena11_Pos2 = new Location(Bukkit.getWorld("world"), 804.5D, 4.0D, 1025.5D, 134.0F, 0.0F);
 		    
 		arenaList.put(1, new Arenas("River", new Location[] {arena1_Pos1, arena1_Pos2}, false));
 		arenaList.put(2, new Arenas("Rock", new Location[] {arena2_Pos1, arena2_Pos2}, false));
@@ -58,6 +60,7 @@ public class Arena {
 		arenaList.put(8, new Arenas("Lava", new Location[] {arena8_Pos1, arena8_Pos2}, false));
 		arenaList.put(9, new Arenas("Book", new Location[] {arena9_Pos1, arena9_Pos2}, false));
 		arenaList.put(10, new Arenas("End", new Location[] {arena10_Pos1, arena10_Pos2}, false));
+		arenaList.put(11, new Arenas("WoolWorld", new Location[] {arena11_Pos1, arena11_Pos2}, false));
 	}
 	
 	public Arenas getRandomArena(boolean sumo) {

@@ -105,6 +105,9 @@ public class Duel {
 	}
 	
 	public void sendSoundedMessage(String message, Sound sound) {
+		sendSoundedMessage(message, sound, 1.0f, 1.0f);
+	}
+	public void sendSoundedMessage(String message, Sound sound, float volume, float pitch) {
 		List<UUID> duelPlayers = Lists.newArrayList(getFirstAndSecondTeams());
 		duelPlayers.addAll(getAllSpectators());
 		
@@ -113,7 +116,7 @@ public class Duel {
 			if (player == null) continue;
 			
 			player.sendMessage(message);
-			if (sound != null) player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+			if (sound != null) player.playSound(player.getLocation(), sound, volume, pitch);
 		}
 		duelPlayers.clear();
 	}
