@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.arena.Arena;
+import us.noks.smallpractice.objects.Request;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
 
@@ -34,11 +34,13 @@ public class AcceptCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		if (!PlayerManager.get(dueler.getUniqueId()).hasRequest(player.getUniqueId())) {
+		PlayerManager dm = PlayerManager.get(dueler.getUniqueId());
+		if (!dm.hasRequested(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "No request found!");
 			return false;
 		}
-		RequestManager.getInstance().acceptDuelRequest(Arena.getInstance().getRandomArena(false), player, dueler);
+		Request request = dm.getRequests().get(dueler.getUniqueId());
+		RequestManager.getInstance().acceptDuelRequest(request.getArenas(), player, dueler);
 		return true;
 	}
 }

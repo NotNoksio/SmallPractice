@@ -15,15 +15,17 @@ import com.google.common.collect.Maps;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.CommandCooldown;
 import us.noks.smallpractice.objects.MatchStats;
+import us.noks.smallpractice.objects.Request;
 
 public class PlayerManager {
 	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
-	private Collection<UUID> request = Collections.newSetFromMap(new WeakHashMap<>());
+	private Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
 	private Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
 	private PlayerStatus status;
 	private Player spectate;
@@ -95,16 +97,16 @@ public class PlayerManager {
 		return this.invite;
 	}
 	
-	public void addRequest(UUID targetUUID) {
-		this.request.add(targetUUID);
+	public void addRequest(UUID targetUUID, Arenas arena) {
+		this.request.put(this.playerUUID, new Request(targetUUID, arena));
 	}
 	
-	public Collection<UUID> getRequests() {
+	public Map<UUID, Request> getRequests() {
 		return this.request;
 	}
 	
-	public boolean hasRequest(UUID invitedUUID) {
-		return this.request.contains(invitedUUID);
+	public boolean hasRequested(UUID targetUUID) {
+		return this.request.get(this.playerUUID).getRequestedUUID() == targetUUID;
 	}
 	
 	public void clearRequest() {

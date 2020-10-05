@@ -16,9 +16,19 @@ public class RequestManager {
 	public static RequestManager getInstance() {
 		return instance;
 	}
+	
+	public void openArenasSelectionIventory(Player requester, Player requested) {
+		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
+			return;
+		}
+		InventoryManager.getInstance().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
+		requester.openInventory(InventoryManager.getInstance().getArenasInventory());
+	}
     
     public void sendDuelRequest(Arenas arena, Player requester, Player requested) {
-		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+    	PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
@@ -27,8 +37,12 @@ public class RequestManager {
 		line.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 	    
 		TextComponent lineA = new TextComponent();
-		lineA.setText(" has requested to duel ");
+		lineA.setText(" has requested you to duel in ");
 		lineA.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+		
+		TextComponent lineArena = new TextComponent();
+		lineArena.setText(arena.getName() + " arena ");
+		lineArena.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 	    
 		TextComponent lineB = new TextComponent();
 		lineB.setText("Click here to accept.");
@@ -47,25 +61,28 @@ public class RequestManager {
 		lineC.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/deny " + requester.getName()));
 	    
 		line.addExtra(lineA);
+		line.addExtra(lineArena);
 		line.addExtra(lineB);
 		line.addExtra(lineSpace);
 		line.addExtra(lineC);
 	    
 		requested.spigot().sendMessage(line);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
-		PlayerManager.get(requester.getUniqueId()).addRequest(requested.getUniqueId());
+		requesterManager.addRequest(requested.getUniqueId(), arena);
+		InventoryManager.getInstance().removeSelectingDuel(requester.getUniqueId());
 	}
 	
 	public void acceptDuelRequest(Arenas arena, Player requested, Player requester) { // Add arena selection here later
-		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		if (!PlayerManager.get(requester.getUniqueId()).hasRequest(requested.getUniqueId())) {
+		if (!requesterManager.hasRequested(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
 		}
-		PlayerManager.get(requester.getUniqueId()).clearRequest();;
+		requesterManager.clearRequest();
 		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
         Party requestedParty = PartyManager.getInstance().getParty(requested.getUniqueId());
         if ((requesterParty != null && requestedParty == null) || (requestedParty != null && requesterParty == null)) {
@@ -84,17 +101,19 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return;
 		}
-		if (!PlayerManager.get(requester.getUniqueId()).hasRequest(requested.getUniqueId())) {
+		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		if (!requesterManager.hasRequested(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
 		}
-		PlayerManager.get(requester.getUniqueId()).getRequests().remove(requested.getUniqueId());
+		requesterManager.getRequests().remove(requested.getUniqueId());
 		requester.sendMessage(ChatColor.YELLOW + requested.getName() + ChatColor.RED + " has denied your duel request!");
 		requested.sendMessage(ChatColor.RED + "You deny the request from " + ChatColor.YELLOW + requester.getName());
 	}
 	
 	public void sendPartyInvite(Player requester, Player requested) {
-		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
@@ -129,20 +148,21 @@ public class RequestManager {
 	    
 		requested.spigot().sendMessage(line);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a party invite to " + ChatColor.YELLOW + requested.getName());
-		PlayerManager.get(requester.getUniqueId()).addInvite(requested.getUniqueId());
+		requesterManager.addInvite(requested.getUniqueId());
 	}
 	
 	public void acceptPartyInvite(Player requested, Player requester) {
-		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		if (!PlayerManager.get(requester.getUniqueId()).hasInvited(requested.getUniqueId())) {
+		if (!requesterManager.hasInvited(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't invite you to his party!");
 			return;
 		}
 		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
-		PlayerManager.get(requester.getUniqueId()).getInvites().remove(requested.getUniqueId());
+		requesterManager.getInvites().remove(requested.getUniqueId());
 		PartyManager.getInstance().joinParty(requesterParty.getLeader(), requested.getUniqueId());
 		PartyManager.getInstance().notifyParty(requesterParty, ChatColor.GREEN + requested.getName() + " has joined the party");
         requested.sendMessage(ChatColor.GREEN + "You have joined the party!");
@@ -155,11 +175,12 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return;
 		}
-		if (!PlayerManager.get(requester.getUniqueId()).hasInvited(requested.getUniqueId())) {
+		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		if (!requesterManager.hasInvited(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't invite you to his party!");
 			return;
 		}
-		PlayerManager.get(requester.getUniqueId()).getInvites().remove(requested.getUniqueId());
+		requesterManager.getInvites().remove(requested.getUniqueId());
 		requester.sendMessage(ChatColor.YELLOW + requested.getName() + ChatColor.RED + " has denied your party invite!");
 		requested.sendMessage(ChatColor.RED + "You deny the party invite from " + ChatColor.YELLOW + requester.getName());
 	}

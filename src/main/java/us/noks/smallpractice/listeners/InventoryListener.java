@@ -13,8 +13,11 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.managers.InventoryManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.objects.managers.RequestManager;
 
 public class InventoryListener implements Listener {
 	private Main main;
@@ -27,7 +30,6 @@ public class InventoryListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
-		final Player player = (Player) event.getWhoClicked();
 		final ItemStack item = event.getCurrentItem();
 		
 		if (item == null || item.getType() == null || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null) {
@@ -38,6 +40,7 @@ public class InventoryListener implements Listener {
 		if (title.endsWith("inventory")) {
             event.setCancelled(true);
         }
+		final Player player = (Player) event.getWhoClicked();
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);
 			
@@ -52,6 +55,21 @@ public class InventoryListener implements Listener {
             player.closeInventory();
             Bukkit.dispatchCommand(player, "duel " + itemName[0]); 
 		}
+		if (title.toLowerCase().equals("arena selection")) {
+			Player target = Bukkit.getPlayer(InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId()));
+			
+			if (target == null) {
+				player.sendMessage(ChatColor.RED + "Player not found!");
+				player.closeInventory();
+				return;
+			} 
+			int slotTranslation = event.getSlot() + 1;
+			if (Arena.getInstance().getArenaByInteger(slotTranslation) == null) {
+				return;
+			}
+			RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), player, target);
+			player.closeInventory();
+		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
@@ -61,7 +79,7 @@ public class InventoryListener implements Listener {
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
 			if (pm.getStatus() == PlayerStatus.MODERATION || (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isAllowedToBuild())) {
-				event.setCancelled(!pm.isAllowedToBuild());
+				event.setCancelled(true); //!pm.isAllowedToBuild()
 				player.updateInventory();
 			}
 		}

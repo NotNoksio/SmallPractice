@@ -2,6 +2,7 @@ us\noks\smallpractice\listeners\DuelListener.class
 us\noks\smallpractice\listeners\ChatListener.class
 us\noks\smallpractice\arena\Arena.class
 us\noks\smallpractice\objects\managers\ItemManager.class
+us\noks\smallpractice\objects\managers\InventoryManager.class
 us\noks\smallpractice\commands\MentionCommand.class
 us\noks\smallpractice\objects\managers\QueueManager.class
 us\noks\smallpractice\commands\DuelCommand.class
@@ -18,9 +19,11 @@ us\noks\smallpractice\commands\ResetTimeCommand.class
 us\noks\smallpractice\listeners\EnderDelay.class
 us\noks\smallpractice\listeners\ServerListeners.class
 us\noks\smallpractice\objects\managers\DuelManager.class
+us\noks\smallpractice\enums\Ladders.class
 us\noks\smallpractice\objects\managers\DuelManager$1.class
 us\noks\smallpractice\objects\managers\RequestManager.class
 us\noks\smallpractice\commands\DenyCommand.class
+us\noks\smallpractice\objects\Request.class
 us\noks\smallpractice\commands\BuildCommand.class
 us\noks\smallpractice\commands\RollCommand.class
 us\noks\smallpractice\objects\managers\PlayerManager.class

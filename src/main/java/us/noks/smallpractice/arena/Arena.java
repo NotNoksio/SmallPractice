@@ -67,6 +67,13 @@ public class Arena {
 	}
 	private <T> Predicate<T> not(Predicate<T> p) { return t -> !p.test(t); }
 	
+	public Arenas getArenaByInteger(int i) {
+		if (this.arenaList.containsKey(i)) {
+			return this.arenaList.get(i);
+		}
+		return null;
+	}
+	
 	public Map<Integer, Arenas> getArenaList() {
 		return this.arenaList;
 	}
