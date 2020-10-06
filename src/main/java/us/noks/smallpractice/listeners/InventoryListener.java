@@ -30,6 +30,9 @@ public class InventoryListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
+		if (!event.getInventory().getType().equals(InventoryType.CHEST)) {
+			return;
+		}
 		final ItemStack item = event.getCurrentItem();
 		
 		if (item == null || item.getType() == null || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null) {
@@ -39,6 +42,7 @@ public class InventoryListener implements Listener {
 		
 		if (title.endsWith("inventory")) {
             event.setCancelled(true);
+            return;
         }
 		final Player player = (Player) event.getWhoClicked();
 		if (title.equals("fight other parties")) {
@@ -55,7 +59,8 @@ public class InventoryListener implements Listener {
             player.closeInventory();
             Bukkit.dispatchCommand(player, "duel " + itemName[0]); 
 		}
-		if (title.toLowerCase().equals("arena selection")) {
+		if (title.equals("arena selection")) {
+			event.setCancelled(true);
 			Player target = Bukkit.getPlayer(InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId()));
 			
 			if (target == null) {
@@ -72,17 +77,18 @@ public class InventoryListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.LOWEST)
+	@EventHandler(priority=EventPriority.LOW)
 	public void onDrag(InventoryClickEvent event) {
 		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
 			final Player player = (Player) event.getWhoClicked();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
-			if (pm.getStatus() == PlayerStatus.MODERATION || (pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING && !pm.isAllowedToBuild())) {
-				event.setCancelled(!pm.isAllowedToBuild()); //!pm.isAllowedToBuild()
-				if (event.isCancelled()) {
-					player.updateInventory();
-				}
+			if (pm.isAllowedToBuild()) {
+				return;
+			}
+			if (pm.getStatus() == PlayerStatus.MODERATION || pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
+				event.setCancelled(true);
+				player.updateInventory();
 			}
 		}
 	}

@@ -161,9 +161,9 @@ public class Duel {
 	}
 	
 	public void setDuelPlayersStatusTo(PlayerStatus status) {
-		getFirstAndSecondTeams().forEach(playersUUID -> {
+		for (UUID playersUUID : getFirstAndSecondTeams()) {
 			PlayerManager.get(playersUUID).setStatus(status);
-		});
+		}
 	}
 	
 	public int getTimeBeforeDuel() {

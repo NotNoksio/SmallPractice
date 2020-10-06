@@ -82,13 +82,13 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
 		}
-		requesterManager.clearRequest();
 		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
         Party requestedParty = PartyManager.getInstance().getParty(requested.getUniqueId());
         if ((requesterParty != null && requestedParty == null) || (requestedParty != null && requesterParty == null)) {
             requested.sendMessage(ChatColor.RED + "Either you or this player are in a party!");
             return;
         }
+        requesterManager.clearRequest();
 		if (requestedParty != null && requesterParty != null) {
 			DuelManager.getInstance().startDuel(arena, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;
