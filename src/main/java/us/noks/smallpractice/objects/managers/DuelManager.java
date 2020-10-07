@@ -351,7 +351,7 @@ public class DuelManager {
 		if (currentDuel == null) return;
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
 		
-		InvView.getInstance().saveInv(player);
+		InvView.getInstance().saveInventory(player);
 		currentDuel.sendMessage(player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : ""));
 		
 		if (currentDuel.getFirstTeam().contains(player.getUniqueId())) {
@@ -364,7 +364,7 @@ public class DuelManager {
 		if (currentDuel.getFirstTeamAlive().isEmpty()) {
 			for (UUID lastPlayersUUID : currentDuel.getSecondTeamAlive()) {
                 Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
-                InvView.getInstance().saveInv(lastPlayers);
+                InvView.getInstance().saveInventory(lastPlayers);
                 
                 if (lastPlayers == null) continue;
                 PlayerManager lpm = PlayerManager.get(lastPlayers.getUniqueId());
@@ -396,7 +396,7 @@ public class DuelManager {
 		} else if (currentDuel.getSecondTeamAlive().isEmpty()) {
 			for (UUID lastPlayersUUID : currentDuel.getFirstTeamAlive()) {
                 Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
-                InvView.getInstance().saveInv(lastPlayers);
+                InvView.getInstance().saveInventory(lastPlayers);
                 
                 if (lastPlayers == null) continue;
                 PlayerManager lpm = PlayerManager.get(lastPlayers.getUniqueId());

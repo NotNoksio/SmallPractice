@@ -25,7 +25,7 @@ public class InventoryCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "UUID not found!");
 			return false;
 		}
-		InvView.getInstance().openInv((Player) sender, UUID.fromString(args[0]));
+		InvView.getInstance().openSavedInventory((Player) sender, UUID.fromString(args[0]));
 		return true;
 	}
 }

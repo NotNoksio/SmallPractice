@@ -29,7 +29,6 @@ public class EnderDelay implements Listener {
 	}
 	
 	private Map<UUID, Long> enderpearlCooldown = new WeakHashMap<UUID, Long>();
-	private final byte cooldowntime = 14;
 
 	@EventHandler(priority=EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -80,7 +79,7 @@ public class EnderDelay implements Listener {
 	}
 
 	private void applyCooldown(final Player player) {
-		this.enderpearlCooldown.put(player.getUniqueId(), Long.valueOf(System.currentTimeMillis() + this.cooldowntime * 1000));
+		this.enderpearlCooldown.put(player.getUniqueId(), Long.valueOf(System.currentTimeMillis() + 14 * 1000));
 	}
 
 	public void removeCooldown(final Player player) {

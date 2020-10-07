@@ -30,7 +30,7 @@ public class InvView {
 	  
     private Map<UUID, Inventory> inventories = new WeakHashMap<UUID, Inventory>();
     
-	public void saveInv(Player player) {
+	public void saveInventory(Player player) {
 		final MatchStats stats = PlayerManager.get(player.getUniqueId()).getMatchStats();
 		
 		stats.setLastFailedPotions(stats.getFailedPotions());
@@ -109,7 +109,7 @@ public class InvView {
 		this.inventories.put(player.getUniqueId(), inv);
 	}
     
-	public void openInv(final Player player, final UUID targetUUID) {
+	public void openSavedInventory(final Player player, final UUID targetUUID) {
 		if (!this.inventories.containsKey(targetUUID)) {
 			player.sendMessage(ChatColor.RED + "Inventory not found!");
 			return;

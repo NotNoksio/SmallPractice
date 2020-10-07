@@ -1,7 +1,6 @@
 package us.noks.smallpractice;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.noks.smallpractice.commands.AcceptCommand;
@@ -32,9 +31,7 @@ import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.QueueManager;
 
 public class Main extends JavaPlugin {
-	
 	private boolean permissionsPluginHere;
-	public Location bridgeLocation;
 	
 	private static Main instance;
 	public static Main getInstance() {
@@ -44,7 +41,6 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		bridgeLocation = new Location(Bukkit.getWorld("world"), -1193.5D, 109.5D, 4654.5D, 90.0F, 0.0F);
 		registerCommands();
 		registerListers();
 		getPermissionsPlugin();

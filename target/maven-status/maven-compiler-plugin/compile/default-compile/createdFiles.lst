@@ -33,6 +33,7 @@ us\noks\smallpractice\objects\managers\DuelManager$2.class
 us\noks\smallpractice\commands\SpawnCommand.class
 us\noks\smallpractice\objects\managers\PartyManager.class
 us\noks\smallpractice\commands\PingCommand.class
+us\noks\smallpractice\enums\Warps.class
 us\noks\smallpractice\party\PartyState.class
 us\noks\smallpractice\commands\NameMCCommand.class
 us\noks\smallpractice\objects\Duel.class

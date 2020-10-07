@@ -60,6 +60,10 @@ public class ForceDuelCommand implements CommandExecutor {
 		}
 		PlayerManager tm = PlayerManager.get(target.getUniqueId());
 		
+		if (!tm.isAlive()) {
+			player.sendMessage(ChatColor.RED + "This player is not in the spawn.");
+			return false;
+		}
 		if (tm.getStatus() != PlayerStatus.SPAWN) {
 			player.sendMessage(ChatColor.RED + "This player is not in the spawn.");
 			return false;

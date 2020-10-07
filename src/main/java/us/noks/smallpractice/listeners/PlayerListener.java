@@ -29,8 +29,10 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Lists;
 
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.enums.Warps;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.ItemManager;
@@ -39,6 +41,7 @@ import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
+import us.noks.smallpractice.utils.WebUtil;
 
 public class PlayerListener implements Listener {
 	private Main main;
@@ -52,6 +55,7 @@ public class PlayerListener implements Listener {
 		event.setJoinMessage(null);
 		final Player player = event.getPlayer();
 		
+		this.checkVote(player);
 		PlayerManager.create(player.getUniqueId());
 		
 		player.setExp(0.0F);
@@ -75,6 +79,33 @@ public class PlayerListener implements Listener {
 				player.hidePlayer(allPlayers);
 			}
 		}
+	}
+	
+	private void checkVote(Player player) {
+		String rank = PermissionsEx.getPermissionManager().getUser(player).getParentIdentifiers().get(0);
+
+        if (rank.equals("default") || rank.equals("verified")) {
+            WebUtil.getResponse(Main.getInstance(), "https://api.namemc.com/server/devmc.noks.io/votes?profile=" + player.getUniqueId(),
+                    response -> {
+                        switch (response) {
+                            case "false":
+                                if (rank.equals("verified")) {
+                                	PermissionsEx.getPermissionManager().getUser(player).removeGroup("verified");
+                                	PermissionsEx.getPermissionManager().getUser(player).addGroup("default");
+                                    player.sendMessage(ChatColor.RED + "Your voter rank has been removed because you removed your vote! :(");
+                                }
+                                break;
+                            case "true":
+                                if (rank.equals("default")) {
+                                	PermissionsEx.getPermissionManager().getUser(player).removeGroup("default");
+                                	PermissionsEx.getPermissionManager().getUser(player).addGroup("verified");
+                                    player.sendMessage(ChatColor.GREEN + "Thanks for voting! You've been given the Voter rank.");
+                                }
+                                break;
+                        }
+                    }
+            );
+        }
 	}
 	
 	private void sendJoinMessage(PlayerJoinEvent event) {
@@ -159,7 +190,7 @@ public class PlayerListener implements Listener {
 					player.setNoDamageTicks(40);
 					event.setCancelled(true);
 					ItemManager.getInstace().giveBridgeItems(player);
-					player.teleport(Main.getInstance().bridgeLocation);
+					player.teleport(Warps.BRIDGE.getLobbyLocation());
 					break;
 				default:
 					break;
@@ -276,7 +307,7 @@ public class PlayerListener implements Listener {
 		            }
 					if (item.getType() == Material.COMPASS && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "warps selection")) {
 						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge warps (because it's the only one ^^')");
-						player.teleport(main.bridgeLocation);
+						player.teleport(Warps.BRIDGE.getLobbyLocation());
 						pm.setStatus(PlayerStatus.BRIDGE);
 						ItemManager.getInstace().giveBridgeItems(player);
 						player.setNoDamageTicks(40);

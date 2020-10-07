@@ -35,9 +35,9 @@ public class ModerationCommand implements CommandExecutor {
 			
 			if (pm.getStatus() == PlayerStatus.MODERATION) {
 				player.teleport(player.getWorld().getSpawnLocation());
-                PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
+                pm.setStatus(PlayerStatus.SPAWN);
                 ItemManager.getInstace().giveSpawnItem(player);
-                PlayerManager.get(player.getUniqueId()).showAllPlayer();
+                pm.showAllPlayer();
                 return true;
 			}
 			if (pm.getStatus() != PlayerStatus.SPAWN) {
