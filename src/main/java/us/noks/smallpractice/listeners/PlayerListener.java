@@ -82,6 +82,9 @@ public class PlayerListener implements Listener {
 	}
 	
 	private void checkVote(Player player) {
+		if (!main.isPermissionsPluginHere()) {
+			return;
+		}
 		String rank = PermissionsEx.getPermissionManager().getUser(player).getParentIdentifiers().get(0);
 
         if (rank.equals("default") || rank.equals("verified")) {
