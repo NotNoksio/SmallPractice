@@ -9,14 +9,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
+import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.InventoryManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.objects.managers.QueueManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
 
 public class InventoryListener implements Listener {
@@ -45,6 +48,22 @@ public class InventoryListener implements Listener {
             return;
         }
 		final Player player = (Player) event.getWhoClicked();
+		if (title.equals("unranked selection")) {
+			event.setCancelled(true);
+			String itemName = item.getItemMeta().getDisplayName();
+			String itemNameWithoutColor = itemName.substring(2, itemName.length());
+			if (!Ladders.contains(itemNameWithoutColor)) {
+				return;
+			}
+			Ladders ladder = Ladders.getLadderFromName(itemNameWithoutColor);
+			if (!ladder.isEnable()) {
+				player.sendMessage(ChatColor.RED + "This gamemode is coming soon ^^");
+				player.closeInventory();
+				return;
+			}
+			QueueManager.getInstance().addToQueue(player.getUniqueId(), ladder, false, false);
+			player.closeInventory();
+		}
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);
 			
@@ -55,7 +74,6 @@ public class InventoryListener implements Listener {
             	player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
             	return;
             }
-            
             player.closeInventory();
             Bukkit.dispatchCommand(player, "duel " + itemName[0]); 
 		}
@@ -72,7 +90,7 @@ public class InventoryListener implements Listener {
 			if (Arena.getInstance().getArenaByInteger(slotTranslation) == null) {
 				return;
 			}
-			RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), player, target);
+			RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), Ladders.NODEBUFF, player, target);
 			player.closeInventory();
 		}
 	}
@@ -90,6 +108,19 @@ public class InventoryListener implements Listener {
 				event.setCancelled(true);
 				player.updateInventory();
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onCloseInventory(InventoryCloseEvent event) {
+		if (!event.getInventory().getType().equals(InventoryType.CHEST)) {
+			return;
+		}
+		final String title = event.getInventory().getTitle().toLowerCase();
+		
+		if (title.equals("arena selection")) {
+			final Player player = (Player) event.getPlayer();
+			InventoryManager.getInstance().removeSelectingDuel(player.getUniqueId());
 		}
 	}
 	

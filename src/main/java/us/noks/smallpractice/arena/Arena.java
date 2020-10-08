@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Maps;
 
@@ -50,17 +52,17 @@ public class Arena {
 		Location arena11_Pos1 = new Location(Bukkit.getWorld("world"), 751.5D, 4.0D, 971.5D, -43.0F, 0.0F);
 		Location arena11_Pos2 = new Location(Bukkit.getWorld("world"), 804.5D, 4.0D, 1025.5D, 134.0F, 0.0F);
 		    
-		arenaList.put(1, new Arenas("River", new Location[] {arena1_Pos1, arena1_Pos2}, false));
-		arenaList.put(2, new Arenas("Rock", new Location[] {arena2_Pos1, arena2_Pos2}, false));
-		arenaList.put(3, new Arenas("Logo", new Location[] {arena3_Pos1, arena3_Pos2}, false));
-		arenaList.put(4, new Arenas("Stalagmites", new Location[] {arena4_Pos1, arena4_Pos2}, false));
-		arenaList.put(5, new Arenas("Rocks", new Location[] {arena5_Pos1, arena5_Pos2}, false));
-		arenaList.put(6, new Arenas("Sphinx", new Location[] {arena6_Pos1, arena6_Pos2}, false));
-		arenaList.put(7, new Arenas("American-Foot", new Location[] {arena7_Pos1, arena7_Pos2}, false));
-		arenaList.put(8, new Arenas("Lava", new Location[] {arena8_Pos1, arena8_Pos2}, false));
-		arenaList.put(9, new Arenas("Book", new Location[] {arena9_Pos1, arena9_Pos2}, false));
-		arenaList.put(10, new Arenas("End", new Location[] {arena10_Pos1, arena10_Pos2}, false));
-		arenaList.put(11, new Arenas("WoolWorld", new Location[] {arena11_Pos1, arena11_Pos2}, false));
+		arenaList.put(1, new Arenas("River", new Location[] {arena1_Pos1, arena1_Pos2}, new ItemStack(Material.WATER_BUCKET, 1), false));
+		arenaList.put(2, new Arenas("Rock", new Location[] {arena2_Pos1, arena2_Pos2}, new ItemStack(Material.STONE, 1), false));
+		arenaList.put(3, new Arenas("Logo", new Location[] {arena3_Pos1, arena3_Pos2}, new ItemStack(Material.GOLDEN_APPLE, 1), false));
+		arenaList.put(4, new Arenas("Stalagmites", new Location[] {arena4_Pos1, arena4_Pos2}, new ItemStack(Material.BEDROCK, 1), false));
+		arenaList.put(5, new Arenas("Rocks", new Location[] {arena5_Pos1, arena5_Pos2}, new ItemStack(Material.COBBLESTONE, 1), false));
+		arenaList.put(6, new Arenas("Sphinx", new Location[] {arena6_Pos1, arena6_Pos2}, new ItemStack(Material.SAND, 1), false));
+		arenaList.put(7, new Arenas("American-Foot", new Location[] {arena7_Pos1, arena7_Pos2}, new ItemStack(Material.GRASS, 1), false));
+		arenaList.put(8, new Arenas("Lava", new Location[] {arena8_Pos1, arena8_Pos2}, new ItemStack(Material.LAVA_BUCKET, 1), false));
+		arenaList.put(9, new Arenas("Book", new Location[] {arena9_Pos1, arena9_Pos2}, new ItemStack(Material.BOOK, 1), false));
+		arenaList.put(10, new Arenas("End", new Location[] {arena10_Pos1, arena10_Pos2}, new ItemStack(Material.ENDER_STONE, 1), false));
+		arenaList.put(11, new Arenas("WoolWorld", new Location[] {arena11_Pos1, arena11_Pos2}, new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), false));
 	}
 	
 	public Arenas getRandomArena(boolean sumo) {
@@ -84,11 +86,13 @@ public class Arena {
 	public class Arenas {
 		private String name;
 		private Location[] locations;
+		private ItemStack icon;
 		private boolean sumo;
 		
-		public Arenas(String name, Location[] locations, boolean sumo) {
+		public Arenas(String name, Location[] locations, ItemStack icon, boolean sumo) {
 			this.name = name;
 			this.locations = locations;
+			this.icon = icon;
 			this.sumo = sumo;
 		}
 		
@@ -98,6 +102,10 @@ public class Arena {
 		
 		public Location[] getLocations() {
 			return this.locations;
+		}
+		
+		public ItemStack getIcon() {
+			return this.icon;
 		}
 		
 		public boolean isSumo() {

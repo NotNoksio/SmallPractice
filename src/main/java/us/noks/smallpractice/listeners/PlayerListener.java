@@ -35,6 +35,7 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.enums.Warps;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
+import us.noks.smallpractice.objects.managers.InventoryManager;
 import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
@@ -55,7 +56,7 @@ public class PlayerListener implements Listener {
 		event.setJoinMessage(null);
 		final Player player = event.getPlayer();
 		
-		this.checkVote(player);
+		this.checkLike(player);
 		PlayerManager.create(player.getUniqueId());
 		
 		player.setExp(0.0F);
@@ -81,7 +82,7 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
-	private void checkVote(Player player) {
+	private void checkLike(Player player) {
 		if (!main.isPermissionsPluginHere()) {
 			return;
 		}
@@ -179,6 +180,10 @@ public class PlayerListener implements Listener {
 			final Player player = (Player) event.getEntity();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
+			if (pm.getStatus() == PlayerStatus.SPECTATE) {
+				event.setCancelled(true);
+				return;
+			}
 			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE || pm.getStatus() == PlayerStatus.BRIDGE) {
 				switch (event.getCause()) {
 				case FALL:
@@ -190,7 +195,7 @@ public class PlayerListener implements Listener {
 						player.teleport(player.getWorld().getSpawnLocation());
 						break;
 					}
-					player.setNoDamageTicks(40);
+					player.setNoDamageTicks(50);
 					event.setCancelled(true);
 					ItemManager.getInstace().giveBridgeItems(player);
 					player.teleport(Warps.BRIDGE.getLobbyLocation());
@@ -199,20 +204,16 @@ public class PlayerListener implements Listener {
 					break;
 				}
 			}
-			if (pm.getStatus() == PlayerStatus.SPECTATE) {
-				event.setCancelled(true);
-				return;
-			}
 		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDamage(EntityDamageByEntityEvent event) {
 		if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-			final Player attacked = (Player) event.getEntity();
 			final Player attacker = (Player) event.getDamager();
-				
-			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.MODERATION || PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.BRIDGE) {
+			final PlayerManager attackerManager = PlayerManager.get(attacker.getUniqueId());	
+			
+			if (attackerManager.getStatus() == PlayerStatus.MODERATION || attackerManager.getStatus() == PlayerStatus.BRIDGE) {
 				if (attacker.getNoDamageTicks() > 0) {
 					event.setCancelled(true);
 					return;
@@ -220,11 +221,12 @@ public class PlayerListener implements Listener {
 				event.setDamage(0.0D);
 				return;
 			}
-			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.SPECTATE || PlayerManager.get(attacker.getUniqueId()).getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
+			final Player attacked = (Player) event.getEntity();
+			if (attackerManager.getStatus() == PlayerStatus.SPECTATE || attackerManager.getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 				return;
 			}
-			if (PlayerManager.get(attacker.getUniqueId()).getStatus() == PlayerStatus.DUEL) {
+			if (attackerManager.getStatus() == PlayerStatus.DUEL) {
 				Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(attacker.getUniqueId());
 				
 				if (currentDuel == null) {
@@ -295,7 +297,7 @@ public class PlayerListener implements Listener {
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
 					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "unranked direct queue")) {
 		                event.setCancelled(true);
-		                QueueManager.getInstance().addToQueue(player.getUniqueId(), false, false);
+		                player.openInventory(InventoryManager.getInstance().getUnrankedInventory());
 		                break;
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "ranked direct queue")) {

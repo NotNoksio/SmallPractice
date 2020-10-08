@@ -28,6 +28,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.arena.Arena.Arenas;
+import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.inventories.InvView;
 import us.noks.smallpractice.listeners.EnderDelay;
@@ -46,15 +47,15 @@ public class DuelManager {
         return this.uuidIdentifierToDuel.get(uuid);
     }
 	
-	public void startDuel(Arenas arena, UUID player1, UUID player2, boolean ranked) {
+	public void startDuel(Arenas arena, Ladders ladder, UUID player1, UUID player2, boolean ranked) {
 		List<UUID> firstTeam = Lists.newArrayList();
 		firstTeam.add(player1);
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(player2);
-		startDuel(arena, null, null, firstTeam, secondTeam, ranked);
+		startDuel(arena, ladder, null, null, firstTeam, secondTeam, ranked);
 	}
 	
-	public void startDuel(Arenas arena, UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
+	public void startDuel(Arenas arena, Ladders ladder, UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		Scoreboard firstPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
 		Team red1 = firstPlayerScoreboard.registerNewTeam("red");
 		red1.setPrefix(ChatColor.RED.toString());
@@ -135,7 +136,7 @@ public class DuelManager {
         List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         
-        startDuel(Arena.getInstance().getRandomArena(false), party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
+        startDuel(Arena.getInstance().getRandomArena(false), Ladders.NODEBUFF, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {

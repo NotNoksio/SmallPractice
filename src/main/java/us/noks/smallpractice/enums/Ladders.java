@@ -38,4 +38,17 @@ public enum Ladders {
 	public boolean isEnable() {
 		return this.enable;
 	}
+	
+	public static Ladders getLadderFromName(String name) {
+		for (Ladders ladders : values()) {
+			if (ladders.getName().toLowerCase().equals(name.toLowerCase())) {
+				return ladders;
+			}
+		} 
+		return null;
+	}
+	  
+	public static boolean contains(String name) { 
+		return getLadderFromName(name) != null; 
+	}
 }

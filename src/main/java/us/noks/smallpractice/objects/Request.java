@@ -1,26 +1,18 @@
 package us.noks.smallpractice.objects;
 
-import java.util.UUID;
-
 import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
 
 public class Request {
-	private UUID requestedUUID;
 	private Arenas arena;
 	private Ladders ladder;
 	
-	public Request(UUID requestedUUID, Arenas arena, Ladders ladder) {
-		this.requestedUUID = requestedUUID;
+	public Request(Arenas arena, Ladders ladder) {
 		this.arena = arena;
 		this.ladder = ladder;
 	}
 	
-	public UUID getRequestedUUID() {
-		return this.requestedUUID;
-	}
-	
-	public Arenas getArenas() {
+	public Arenas getArena() {
 		return this.arena;
 	}
 	

@@ -16,15 +16,17 @@ import com.google.common.collect.Maps;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena.Arenas;
+import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.CommandCooldown;
 import us.noks.smallpractice.objects.MatchStats;
+import us.noks.smallpractice.objects.Request;
 
 public class PlayerManager {
 	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
-	private Map<UUID, Arenas> request = new WeakHashMap<UUID, Arenas>();
+	private Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
 	private Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
 	private PlayerStatus status;
 	private Player spectate;
@@ -96,12 +98,11 @@ public class PlayerManager {
 		return this.invite;
 	}
 	
-	public void addRequest(UUID targetUUID, Arenas arena) {
-		//this.request.put(this.playerUUID, new Request(targetUUID, arena));
-		this.request.put(targetUUID, arena);
+	public void addRequest(UUID targetUUID, Arenas arena, Ladders ladder) {
+		this.request.put(targetUUID, new Request(arena, ladder));
 	}
 	
-	public Map<UUID, Arenas> getRequests() {
+	public Map<UUID, Request> getRequests() {
 		return this.request;
 	}
 	

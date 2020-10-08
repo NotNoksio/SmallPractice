@@ -8,6 +8,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import us.noks.smallpractice.arena.Arena.Arenas;
+import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.party.Party;
 
@@ -26,7 +27,7 @@ public class RequestManager {
 		requester.openInventory(InventoryManager.getInstance().getArenasInventory());
 	}
     
-    public void sendDuelRequest(Arenas arena, Player requester, Player requested) {
+    public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {
     	PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
@@ -68,11 +69,10 @@ public class RequestManager {
 	    
 		requested.spigot().sendMessage(line);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
-		requesterManager.addRequest(requested.getUniqueId(), arena);
-		InventoryManager.getInstance().removeSelectingDuel(requester.getUniqueId());
+		requesterManager.addRequest(requested.getUniqueId(), arena, ladder);
 	}
 	
-	public void acceptDuelRequest(Arenas arena, Player requested, Player requester) {
+	public void acceptDuelRequest(Arenas arena, Ladders ladder, Player requested, Player requester) {
 		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
@@ -90,10 +90,10 @@ public class RequestManager {
         }
         requesterManager.clearRequest();
 		if (requestedParty != null && requesterParty != null) {
-			DuelManager.getInstance().startDuel(arena, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
+			DuelManager.getInstance().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;
 		}
-		DuelManager.getInstance().startDuel(arena, requester.getUniqueId(), requested.getUniqueId(), false);
+		DuelManager.getInstance().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), false);
 	}
 	
 	public void denyDuelRequest(Player requested, Player requester) {

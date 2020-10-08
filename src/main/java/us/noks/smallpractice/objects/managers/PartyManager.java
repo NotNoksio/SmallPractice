@@ -159,6 +159,8 @@ public class PartyManager {
             	itemMeta.setLore(lores);
             	itemMeta.setDisplayName(ChatColor.DARK_AQUA + leaderName + " (" + ChatColor.YELLOW + party.getSize() + ChatColor.DARK_AQUA + ")");
             	itemStack.setItemMeta(itemMeta);
+            	this.partiesInventory.remove(itemStack);
+            	this.partiesInventory.addItem(itemStack);
             	break;
             }
         }
