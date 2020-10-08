@@ -6,4 +6,4 @@ Plugin used on Halka & Goneko (halka.rip & devmc.noks.io (1.7.x & 1.8.x))
 
 Soft Depend of PermissionsEx
 
-Only Nodebuff ladder are available
+Now contains more ladders
