@@ -23,13 +23,6 @@ public class DuelListener implements Listener {
 	public void onFailedPotion(PotionSplashEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			final Player shooter = (Player) event.getEntity().getShooter();
-			/*for (LivingEntity affectedEntities : event.getAffectedEntities()) {
-				Player affectedPlayers = (Player) affectedEntities;
-				if (!shooter.canSee(affectedPlayers)) {
-					event.setCancelled(true);
-				}
-			}
-			if (event.isCancelled()) return;*/
 			final PlayerManager sm = PlayerManager.get(shooter.getUniqueId());
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {

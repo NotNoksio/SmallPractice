@@ -2,6 +2,7 @@ us\noks\smallpractice\listeners\DuelListener.class
 us\noks\smallpractice\listeners\ChatListener.class
 us\noks\smallpractice\arena\Arena.class
 us\noks\smallpractice\objects\managers\ItemManager.class
+us\noks\smallpractice\objects\managers\DuelManager$4.class
 us\noks\smallpractice\objects\managers\InventoryManager.class
 us\noks\smallpractice\commands\MentionCommand.class
 us\noks\smallpractice\objects\managers\QueueManager.class
@@ -9,8 +10,9 @@ us\noks\smallpractice\commands\DuelCommand.class
 us\noks\smallpractice\utils\WebUtil.class
 us\noks\smallpractice\Main.class
 us\noks\smallpractice\objects\MatchStats.class
-us\noks\smallpractice\inventories\InvView.class
+us\noks\smallpractice\utils\DBUtils.class
 us\noks\smallpractice\listeners\InventoryListener.class
+us\noks\smallpractice\listeners\PlayerListener$2.class
 us\noks\smallpractice\objects\CommandCooldown.class
 us\noks\smallpractice\listeners\PlayerListener.class
 us\noks\smallpractice\commands\ModerationCommand.class
@@ -42,8 +44,10 @@ us\noks\smallpractice\commands\InventoryCommand.class
 us\noks\smallpractice\objects\managers\EloManager.class
 us\noks\smallpractice\listeners\PlayerListener$1.class
 us\noks\smallpractice\commands\ForceDuelCommand.class
+us\noks\smallpractice\objects\managers\ItemManager$1.class
 us\noks\smallpractice\commands\SpectateCommand.class
 us\noks\smallpractice\interfaces\WebCallback.class
+us\noks\smallpractice\objects\managers\QueueManager$Queue.class
 us\noks\smallpractice\enums\PlayerStatus.class
 us\noks\smallpractice\arena\Arena$Arenas.class
 us\noks\smallpractice\commands\ReportCommand.class

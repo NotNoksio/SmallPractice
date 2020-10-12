@@ -14,11 +14,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import us.noks.smallpractice.arena.Arena.Arenas;
+import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class Duel {
 	private Arenas arena;
+	private Ladders ladder;
 	private UUID firstTeamPartyLeaderUUID;
     private UUID secondTeamPartyLeaderUUID;
 	private List<UUID> firstTeam;
@@ -30,8 +32,9 @@ public class Duel {
 	private int timeBeforeDuel = 5;
 	private List<Item> drops;
 	
-	public Duel(Arenas arena, UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
+	public Duel(Arenas arena, Ladders ladder, UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		this.arena = arena;
+		this.ladder = ladder;
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
 		this.firstTeam = Lists.newArrayList(firstTeam);
@@ -44,6 +47,10 @@ public class Duel {
 	
 	public Arenas getArena() {
 		return this.arena;
+	}
+	
+	public Ladders getLadder() {
+		return this.ladder;
 	}
 	
 	public List<UUID> getFirstTeam() {
@@ -68,11 +75,11 @@ public class Duel {
 		return secondTeamAlive;
 	}
 	
-	public void killFirstTeamPlayer(UUID killedUUID) {
-		this.firstTeamAlive.remove(killedUUID);
-	}
-	
-	public void killSecondTeamPlayer(UUID killedUUID) {
+	public void killPlayer(UUID killedUUID) {
+		if (this.firstTeamAlive.contains(killedUUID)) {
+			this.firstTeamAlive.remove(killedUUID);
+			return;
+		}
 		this.secondTeamAlive.remove(killedUUID);
 	}
 

@@ -5,21 +5,23 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public enum Ladders {
-	NODEBUFF("NoDebuff", ChatColor.AQUA, new ItemStack(Material.POTION, 1, (short) 16421), true),
-	SUMO("Sumo", ChatColor.YELLOW, new ItemStack(Material.STICK, 1), false),
-	ARCHER("Archer", ChatColor.RED, new ItemStack(Material.BOW, 1), false),
-	AXE("Axe", ChatColor.GREEN, new ItemStack(Material.IRON_AXE, 1), false),
-	SOUP("Soup", ChatColor.GOLD, new ItemStack(Material.MUSHROOM_SOUP, 1), false);
+	NODEBUFF("NoDebuff", ChatColor.AQUA, new ItemStack(Material.POTION, 1, (short) 16421), true, true),
+	SUMO("Sumo", ChatColor.YELLOW, new ItemStack(Material.CLAY_BRICK, 1), false, false),
+	ARCHER("Archer", ChatColor.RED, new ItemStack(Material.BOW, 1), false, true),
+	AXE("Axe", ChatColor.GREEN, new ItemStack(Material.IRON_AXE, 1), false, true),
+	SOUP("Soup", ChatColor.GOLD, new ItemStack(Material.MUSHROOM_SOUP, 1), false, true);
 	
 	private String name;
 	private ChatColor color;
 	private ItemStack icon;
+	private boolean editable;
 	private boolean enable; // this will be removed
 	
-	Ladders(String name, ChatColor color, ItemStack icon, boolean enable) {
+	Ladders(String name, ChatColor color, ItemStack icon, boolean editable, boolean enable) {
 		this.name = name;
 		this.color = color;
 		this.icon = icon;
+		this.editable = editable;
 		this.enable = enable;
 	}
 	
@@ -33,6 +35,10 @@ public enum Ladders {
 	
 	public ItemStack getIcon() {
 		return this.icon;
+	}
+	
+	public boolean isEditable() {
+		return this.editable;
 	}
 	
 	public boolean isEnable() {

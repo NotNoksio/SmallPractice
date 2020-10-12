@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.party.Party;
 
 public class ItemManager {
@@ -26,13 +27,13 @@ public class ItemManager {
 		if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
 			ItemStack u = new ItemStack(Material.IRON_SWORD, 1);
 			ItemMeta um = u.getItemMeta();
-			um.setDisplayName(ChatColor.YELLOW + "Unranked Direct Queue");
+			um.setDisplayName(ChatColor.YELLOW + "Unranked Queue");
 			um.spigot().setUnbreakable(true);
 			u.setItemMeta(um);
 			
 			ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
 			ItemMeta rm = r.getItemMeta();
-			rm.setDisplayName(ChatColor.YELLOW + "Ranked Direct Queue");
+			rm.setDisplayName(ChatColor.YELLOW + "Ranked Queue");
 			rm.spigot().setUnbreakable(true);
 			r.setItemMeta(rm);
 			
@@ -161,64 +162,139 @@ public class ItemManager {
 		player.updateInventory();
 	}
 	
-	public void givePreFightItems(Player player) {
+	public void givePreFightItems(Player player, Ladders ladder) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 		player.setItemOnCursor(null);
 		
-		ItemStack b = new ItemStack(Material.ENCHANTED_BOOK, 1);
-		ItemMeta bm = b.getItemMeta();
-		bm.setDisplayName(ChatColor.YELLOW + "NoDebuff default kit");
-		b.setItemMeta(bm);
-		
-		player.getInventory().setItem(0, b);
+		if (ladder != Ladders.SUMO) {
+			ItemStack b = new ItemStack(Material.ENCHANTED_BOOK, 1);
+			ItemMeta bm = b.getItemMeta();
+			bm.setDisplayName(ChatColor.YELLOW + ladder.getName() + " default kit");
+			b.setItemMeta(bm);
+			
+			player.getInventory().setItem(0, b);
+		}
 		player.updateInventory();
 	}
-	public void giveFightItems(Player player) {
-		ItemStack swo = new ItemStack(Material.DIAMOND_SWORD, 1);
-		swo.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
-		swo.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 2);
-		swo.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+	public void giveFightItems(Player player, Ladders ladder) {
+		ItemStack attackItem = new ItemStack(Material.DIAMOND_SWORD, 1);
+		ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET, 1);
+		ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
+		ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
+		ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
 		
-		ItemStack hel = new ItemStack(Material.DIAMOND_HELMET, 1);
-		hel.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
-		hel.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-		
-		ItemStack che = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
-		che.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
-		che.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-		
-		ItemStack leg = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-		leg.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
-		leg.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-		
-		ItemStack boo = new ItemStack(Material.DIAMOND_BOOTS, 1);
-		boo.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
-		boo.addUnsafeEnchantment(Enchantment.PROTECTION_FALL, 4);
-		boo.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-		
-		ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
-		ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
-		ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
-		ItemStack fire = new ItemStack(Material.POTION, 1, (short) 8259);
-		
-		player.getInventory().setHelmet(hel);
-		player.getInventory().setChestplate(che);
-		player.getInventory().setLeggings(leg);
-		player.getInventory().setBoots(boo);
-		
-		while (player.getInventory().firstEmpty() != -1) {
-			player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
+		switch (ladder) {
+		case NODEBUFF: {
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
+			attackItem.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 2);
+			attackItem.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			helmet.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
+			helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			chestplate.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
+			chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			leggings.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
+			leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
+			boots.addUnsafeEnchantment(Enchantment.PROTECTION_FALL, 4);
+			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
+			ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
+			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
+			ItemStack fire = new ItemStack(Material.POTION, 1, (short) 8259);
+			
+			while (player.getInventory().firstEmpty() != -1) {
+				player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
+			}
+			
+			player.getInventory().setItem(1, pearl);
+			player.getInventory().setItem(2, speed);
+			player.getInventory().setItem(3, fire);
+			player.getInventory().setItem(8, steak);
+			
+			player.getInventory().setItem(17, speed);
+			player.getInventory().setItem(26, speed);
+			break;
 		}
+		case ARCHER: {
+			attackItem = new ItemStack(Material.BOW, 1);
+			attackItem.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 3);
+			attackItem.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+			
+			helmet = new ItemStack(Material.LEATHER_HELMET, 1);
+			helmet.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, 1);
+			
+			chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+			chestplate.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, 1);
+			
+			leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
+			leggings.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, 1);
+			
+			boots = new ItemStack(Material.LEATHER_BOOTS, 1);
+			boots.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, 1);
+			
+			ItemStack carrots = new ItemStack(Material.GOLDEN_CARROT, 16);
+			ItemStack arrow = new ItemStack(Material.ARROW, 1);
+			
+			player.getInventory().setItem(1, carrots);
+			player.getInventory().setItem(2, arrow);
+			break;
+		}
+		case AXE: {
+			attackItem = new ItemStack(Material.IRON_AXE, 1);
+			attackItem.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 3);
+			
+			helmet = new ItemStack(Material.IRON_HELMET, 1);
+			chestplate = new ItemStack(Material.IRON_CHESTPLATE, 1);
+			leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
+			boots = new ItemStack(Material.IRON_BOOTS, 1);
+			ItemStack apples = new ItemStack(Material.GOLDEN_APPLE, 16);
+			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
+			ItemStack heal = new ItemStack(Material.POTION, 1, (short) 16421);
+			
+			player.getInventory().setItem(1, apples);
+			player.getInventory().setItem(2, speed);
+			player.getInventory().setItem(3, heal);
+			player.getInventory().setItem(4, heal);
+			player.getInventory().setItem(5, heal);
+			player.getInventory().setItem(6, heal);
+			player.getInventory().setItem(7, heal);
+			player.getInventory().setItem(8, heal);
+			
+			player.getInventory().setItem(34, heal);
+			player.getInventory().setItem(35, speed);
+			break;
+		}
+		case SOUP: {
+			helmet = new ItemStack(Material.IRON_HELMET, 1);
+			chestplate = new ItemStack(Material.IRON_CHESTPLATE, 1);
+			leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
+			boots = new ItemStack(Material.IRON_BOOTS, 1);
+			
+			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
+			
+			while (player.getInventory().firstEmpty() != -1) {
+				player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
+			}
+			
+			player.getInventory().setItem(1, speed);
+			
+			player.getInventory().setItem(17, speed);
+			player.getInventory().setItem(26, speed);
+			player.getInventory().setItem(35, speed);
+			break;
+		}
+		default:
+			break;
+		}
+		player.getInventory().setArmorContents(new ItemStack[] {boots, leggings, chestplate, helmet});
+		player.getInventory().setItem(0, attackItem);
 		
-		player.getInventory().setItem(0, swo);
-		player.getInventory().setItem(1, pearl);
-		player.getInventory().setItem(2, speed);
-		player.getInventory().setItem(3, fire);
-		player.getInventory().setItem(8, steak);
-		
-		player.getInventory().setItem(17, speed);
-		player.getInventory().setItem(26, speed);
 		player.updateInventory();
 	}
 	

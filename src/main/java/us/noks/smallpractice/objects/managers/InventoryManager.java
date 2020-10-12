@@ -14,11 +14,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
+import us.noks.smallpractice.objects.Request;
 
 public class InventoryManager {
 	private Inventory arenasInventory;
 	private Inventory unrankedInventory;
-	private Map<UUID, UUID> selectingDuel;
+	private Inventory laddersInventory;
+	private Map<UUID, Request> selectingDuel;
 	
 	private static InventoryManager instance = new InventoryManager();
 	public static InventoryManager getInstance() {
@@ -26,11 +28,13 @@ public class InventoryManager {
 	}
 	
 	public InventoryManager() {
-		this.selectingDuel = new WeakHashMap<UUID, UUID>();
+		this.selectingDuel = new WeakHashMap<UUID, Request>();
 		this.arenasInventory = Bukkit.createInventory(null, 18, "Arena Selection");
 		this.unrankedInventory = Bukkit.createInventory(null, 9, "Unranked Selection");
-		setArenasInventory();
-		setUnrankedInventory();
+		this.laddersInventory = Bukkit.createInventory(null, 9, "Ladder Selection");
+		this.setArenasInventory();
+		this.setUnrankedInventory();
+		this.setLaddersInventory();
 	}
 	
 	private void setArenasInventory() {
@@ -47,16 +51,30 @@ public class InventoryManager {
 		}
 	}
 	
-	private void setUnrankedInventory() {
+	public void setUnrankedInventory() {
 		this.unrankedInventory.clear();
 		for (Ladders ladders : Ladders.values()) {
 			ItemStack item = ladders.getIcon();
 			ItemMeta itemm = item.getItemMeta();
 			itemm.setDisplayName(ladders.getColor() + ladders.getName());
-			itemm.setLore(Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.RED + "Soon..", ChatColor.DARK_AQUA + "Waiting: " + ChatColor.RED + "Soon.."}));
+			int fighting = DuelManager.getInstance().getUnrankedFightFromLadder(ladders, false);
+			int waiting = QueueManager.getInstance().getQueuedFromLadder(ladders, false);
+			itemm.setLore((ladders.isEnable() ? Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.YELLOW + fighting, ChatColor.DARK_AQUA + "Waiting: " + ChatColor.YELLOW + waiting}) : Arrays.asList(new String[] {ChatColor.RED + "No arena created"})));
 			item.setItemMeta(itemm);
 			
 			this.unrankedInventory.addItem(item);
+		}
+	}
+	
+	private void setLaddersInventory() {
+		this.laddersInventory.clear();
+		for (Ladders ladders : Ladders.values()) {
+			ItemStack item = ladders.getIcon();
+			ItemMeta itemm = item.getItemMeta();
+			itemm.setDisplayName(ladders.getColor() + ladders.getName());
+			item.setItemMeta(itemm);
+			
+			this.laddersInventory.addItem(item);
 		}
 	}
 	
@@ -68,15 +86,19 @@ public class InventoryManager {
 		return this.unrankedInventory;
 	}
 	
-	public void setSelectingDuel(UUID uuid, UUID uuid1) { 
-		this.selectingDuel.put(uuid, uuid1); 
+	public Inventory getLaddersInventory() {
+		return this.laddersInventory;
+	}
+	
+	public void setSelectingDuel(UUID requester, UUID requested) { 
+		this.selectingDuel.put(requester, new Request(requested, null, null)); 
 	}
 	  
-	public UUID getSelectingDuelPlayerUUID(UUID uuid) { 
-		return this.selectingDuel.get(uuid); 
+	public Request getSelectingDuelPlayerUUID(UUID requester) { 
+		return this.selectingDuel.get(requester); 
 	}
 	  
-	public void removeSelectingDuel(UUID uuid) { 
-		this.selectingDuel.remove(uuid); 
+	public void removeSelectingDuel(UUID requester) { 
+		this.selectingDuel.remove(requester); 
 	}
 }

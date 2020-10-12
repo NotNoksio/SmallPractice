@@ -17,6 +17,7 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.Request;
 import us.noks.smallpractice.objects.managers.InventoryManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
@@ -48,7 +49,7 @@ public class InventoryListener implements Listener {
             return;
         }
 		final Player player = (Player) event.getWhoClicked();
-		if (title.equals("unranked selection")) {
+		if (title.equals("unranked selection") || title.equals("ranked selection") || title.equals("ladder selection")) {
 			event.setCancelled(true);
 			String itemName = item.getItemMeta().getDisplayName();
 			String itemNameWithoutColor = itemName.substring(2, itemName.length());
@@ -57,19 +58,24 @@ public class InventoryListener implements Listener {
 			}
 			Ladders ladder = Ladders.getLadderFromName(itemNameWithoutColor);
 			if (!ladder.isEnable()) {
-				player.sendMessage(ChatColor.RED + "This gamemode is coming soon ^^");
+				player.sendMessage(ChatColor.RED + "No arena created!");
 				player.closeInventory();
 				return;
 			}
-			QueueManager.getInstance().addToQueue(player.getUniqueId(), ladder, false, false);
 			player.closeInventory();
+			if (title.contains("ladder")) {
+				Request request = InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId());
+				request.setLadder(ladder);
+				player.openInventory(InventoryManager.getInstance().getArenasInventory());
+				return;
+			}
+			QueueManager.getInstance().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"));
 		}
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);
 			
 			String[] itemName = splitString(item.getItemMeta().getDisplayName());
             itemName[0] = ChatColor.stripColor(itemName[0]);
-            
             if (player.getName().toLowerCase().equals(itemName[0].toLowerCase())) {
             	player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
             	return;
@@ -79,8 +85,8 @@ public class InventoryListener implements Listener {
 		}
 		if (title.equals("arena selection")) {
 			event.setCancelled(true);
-			Player target = Bukkit.getPlayer(InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId()));
-			
+			Request request = InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId());
+			Player target = Bukkit.getPlayer(request.getRequestedUUID());
 			if (target == null) {
 				player.sendMessage(ChatColor.RED + "Player not found!");
 				player.closeInventory();
@@ -90,7 +96,7 @@ public class InventoryListener implements Listener {
 			if (Arena.getInstance().getArenaByInteger(slotTranslation) == null) {
 				return;
 			}
-			RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), Ladders.NODEBUFF, player, target);
+			RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
 			player.closeInventory();
 		}
 	}
@@ -118,9 +124,8 @@ public class InventoryListener implements Listener {
 		}
 		final String title = event.getInventory().getTitle().toLowerCase();
 		
-		if (title.equals("arena selection")) {
-			final Player player = (Player) event.getPlayer();
-			InventoryManager.getInstance().removeSelectingDuel(player.getUniqueId());
+		if (title.equals("unranked selection")) {
+			InventoryManager.getInstance().setUnrankedInventory();
 		}
 	}
 	

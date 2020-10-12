@@ -18,13 +18,13 @@ public class RequestManager {
 		return instance;
 	}
 	
-	public void openArenasSelectionIventory(Player requester, Player requested) {
+	public void openLadderSelectionIventory(Player requester, Player requested) {
 		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
 		InventoryManager.getInstance().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
-		requester.openInventory(InventoryManager.getInstance().getArenasInventory());
+		requester.openInventory(InventoryManager.getInstance().getLaddersInventory());
 	}
     
     public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {
@@ -41,9 +41,19 @@ public class RequestManager {
 		lineA.setText(" has requested you to duel in ");
 		lineA.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		
+		TextComponent lineLadder = new TextComponent();
+		lineLadder.setText(ladder.getName());
+		lineLadder.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+		
+		TextComponent lineOn = new TextComponent(" on ");
+		lineOn.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+		
 		TextComponent lineArena = new TextComponent();
 		lineArena.setText(arena.getName() + " arena ");
 		lineArena.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+		
+		TextComponent lineDot = new TextComponent(". ");
+		lineDot.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
 		TextComponent lineB = new TextComponent();
 		lineB.setText("Click here to accept.");
@@ -62,7 +72,10 @@ public class RequestManager {
 		lineC.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/deny " + requester.getName()));
 	    
 		line.addExtra(lineA);
+		line.addExtra(lineLadder);
+		line.addExtra(lineOn);
 		line.addExtra(lineArena);
+		line.addExtra(lineDot);
 		line.addExtra(lineB);
 		line.addExtra(lineSpace);
 		line.addExtra(lineC);
@@ -70,6 +83,7 @@ public class RequestManager {
 		requested.spigot().sendMessage(line);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
 		requesterManager.addRequest(requested.getUniqueId(), arena, ladder);
+		InventoryManager.getInstance().removeSelectingDuel(requester.getUniqueId());
 	}
 	
 	public void acceptDuelRequest(Arenas arena, Ladders ladder, Player requested, Player requester) {

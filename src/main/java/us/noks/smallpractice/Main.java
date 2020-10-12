@@ -49,7 +49,7 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		QueueManager.getInstance().getQueue().clear();
+		QueueManager.getInstance().getQueueMap().clear();
 	}
 	
 	private void registerCommands() {

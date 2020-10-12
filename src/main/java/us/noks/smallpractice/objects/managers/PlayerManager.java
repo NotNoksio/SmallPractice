@@ -1,16 +1,25 @@
 package us.noks.smallpractice.objects.managers;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -34,12 +43,13 @@ public class PlayerManager {
 	private int elo;
 	private MatchStats matchStats;
 	private CommandCooldown cooldown;
+	private Inventory savedInventory;
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
 	    this.player = Bukkit.getPlayer(this.playerUUID);
 	    this.status = PlayerStatus.SPAWN;
-	    this.prefix = (!Main.getInstance().isPermissionsPluginHere() ? "&a" : PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix());
+	    this.prefix = (!Main.getInstance().isPermissionsPluginHere() ? (this.player.isOp() ? "&c" : "&a") : PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix());
 	    this.suffix = (!Main.getInstance().isPermissionsPluginHere() ? "" : PermissionsEx.getPermissionManager().getUser(getPlayer()).getSuffix());
 	    this.spectate = null;
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
@@ -99,7 +109,7 @@ public class PlayerManager {
 	}
 	
 	public void addRequest(UUID targetUUID, Arenas arena, Ladders ladder) {
-		this.request.put(targetUUID, new Request(arena, ladder));
+		this.request.put(targetUUID, new Request(ladder, arena));
 	}
 	
 	public Map<UUID, Request> getRequests() {
@@ -265,4 +275,105 @@ public class PlayerManager {
 		getPlayer().setFoodLevel(20);
 		getPlayer().setSaturation(forFight ? 20F : 1000F);
 	}
+	
+	public void saveInventory() {
+		final MatchStats stats = getMatchStats();
+		
+		stats.setLastFailedPotions(stats.getFailedPotions());
+		stats.setFailedPotions(0);
+		if(stats.getCombo() > stats.getLongestCombo()) {
+			stats.setLongestCombo(stats.getCombo());
+    	}
+		stats.setCombo(0);
+		
+		this.savedInventory = Bukkit.createInventory(null, 54, ChatColor.RED + player.getName() + "'s Inventory");
+		
+		for (int i = 0; i < 9; i++) {
+			this.savedInventory.setItem(i + 27, player.getInventory().getItem(i));
+		}
+		for (int i = 0; i < player.getInventory().getSize() - 9; i++) {
+			this.savedInventory.setItem(i, player.getInventory().getItem(i + 9));
+		}
+		
+		final ItemStack noarmor = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+		final ItemMeta nm = noarmor.getItemMeta();
+		nm.setDisplayName(ChatColor.RED + "No Armor");
+		noarmor.setItemMeta(nm);
+		
+		this.savedInventory.setItem(36, (player.getInventory().getHelmet() != null ? player.getInventory().getHelmet() : noarmor));
+		this.savedInventory.setItem(37, (player.getInventory().getChestplate() != null ? player.getInventory().getChestplate() : noarmor));
+		this.savedInventory.setItem(38, (player.getInventory().getLeggings() != null ? player.getInventory().getLeggings() : noarmor));
+		this.savedInventory.setItem(39, (player.getInventory().getBoots() != null ? player.getInventory().getBoots() : noarmor));
+		
+		final ItemStack life = (isAlive() ? new ItemStack(Material.SPECKLED_MELON, Integer.valueOf((int) player.getHealth()).intValue()) : new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.SKELETON.ordinal()));
+		final ItemMeta lm = life.getItemMeta();
+		lm.setDisplayName((isAlive() ? ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(player.getHealth() / 2.0D) + ChatColor.RED + " hp" : ChatColor.DARK_AQUA + "Player Died"));
+		life.setItemMeta(lm);
+		this.savedInventory.setItem(48, life);
+			
+		final ItemStack food = new ItemStack(Material.COOKED_BEEF, player.getFoodLevel());
+		final ItemMeta fm = food.getItemMeta();
+		fm.setDisplayName(ChatColor.DARK_AQUA + "Food points: " + ChatColor.RESET + player.getFoodLevel());
+		food.setItemMeta(fm);
+		this.savedInventory.setItem(49, food);
+      
+		final ItemStack potEffect = new ItemStack(Material.BREWING_STAND_ITEM, player.getActivePotionEffects().size());
+		final ItemMeta pem = potEffect.getItemMeta();
+		pem.setDisplayName(ChatColor.DARK_AQUA + "Potion Effects:");
+		List<String> potionEffectLore = Lists.newArrayList();
+		if (player.getActivePotionEffects().size() == 0) {
+			potionEffectLore.add(ChatColor.RED + "No potion effects");
+		} else {
+			for (PotionEffect pe : player.getActivePotionEffects()) {
+				final int realtime = pe.getDuration() / 20;
+				final String emp = convertToRoman(pe.getAmplifier() + 1);
+          
+				potionEffectLore.add(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.YELLOW + convertToPotionFormat(realtime));
+			}
+		}
+		pem.setLore(potionEffectLore);
+		potEffect.setItemMeta(pem);
+		this.savedInventory.setItem(50, potEffect);
+      
+		final int amount = (player.getInventory().contains(new ItemStack(Material.POTION, 1, (short)16421)) ? Integer.valueOf(player.getInventory().all(new ItemStack(Material.POTION, 1, (short)16421)).size()).intValue() : 0);
+		
+		final ItemStack pots = new ItemStack(Material.POTION, amount > 64 ? 64 : amount, (short)16421);
+		final ItemMeta po = pots.getItemMeta();
+		po.setDisplayName(ChatColor.YELLOW.toString() + amount + ChatColor.DARK_AQUA + " health pot(s) left");
+		po.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + stats.getLastFailedPotions()));
+		pots.setItemMeta(po);
+		this.savedInventory.setItem(45, pots);
+		
+		final ItemStack statistics = new ItemStack(Material.DIAMOND_SWORD, 1);
+		final ItemMeta sm = statistics.getItemMeta();
+		sm.setDisplayName(ChatColor.GOLD + "Statistics");
+		sm.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + stats.getHit(), ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + stats.getLongestCombo()));
+		statistics.setItemMeta(sm);
+		this.savedInventory.setItem(46, statistics);
+	}
+	
+	public Inventory getSavedInventory() {
+		return this.savedInventory;
+	}
+	
+	private String convertToPotionFormat(final long paramLong) {
+		if (paramLong < 0L) {
+			return null;
+		}
+		return String.format("%01dm %02ds", new Object[] { Long.valueOf(paramLong / 60L), Long.valueOf(paramLong % 60L) });
+	}
+	
+	private String convertToRoman(int number) {
+		String roman = "";
+		for (int i = 0; i < numbers.length; i++) {
+			while (number >= numbers[i]) {
+				roman = roman + letters[i];
+				number -= numbers[i];
+			}
+		}
+		return roman;
+	}
+	
+	private int[] numbers = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+	private String[] letters = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
 }

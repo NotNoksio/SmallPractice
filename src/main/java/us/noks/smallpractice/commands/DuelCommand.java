@@ -71,7 +71,7 @@ public class DuelCommand implements CommandExecutor {
 	                return false;
 	            }
 			}
-			RequestManager.getInstance().openArenasSelectionIventory(player, target);
+			RequestManager.getInstance().openLadderSelectionIventory(player, target);
 			cooldown.addCooldown("Duel", System.currentTimeMillis());
 		}
 		return false;

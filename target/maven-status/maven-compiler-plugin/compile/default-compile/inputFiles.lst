@@ -11,6 +11,7 @@ D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\Elo
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\QueueManager.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\PartyCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\DuelManager.java
+D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\utils\DBUtils.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\listeners\DuelListener.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\party\Party.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\ForceDuelCommand.java
@@ -28,7 +29,6 @@ D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\DenyCommand
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\NameMCCommand.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\CommandCooldown.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\commands\NightCommand.java
-D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\inventories\InvView.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\RequestManager.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\ItemManager.java
 D:\Coding\SmallPractice\src\main\java\us\noks\smallpractice\objects\managers\PartyManager.java

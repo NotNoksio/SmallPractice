@@ -26,11 +26,13 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Lists;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.enums.Warps;
 import us.noks.smallpractice.objects.Duel;
@@ -138,8 +140,8 @@ public class PlayerListener implements Listener {
             	PartyManager.getInstance().leaveParty(player.getUniqueId());
             }
         }
-		if (QueueManager.getInstance().getQueue().contains(player.getUniqueId())) {
-			QueueManager.getInstance().getQueue().remove(player.getUniqueId());
+		if (QueueManager.getInstance().getQueueMap().containsKey(player.getUniqueId())) {
+			QueueManager.getInstance().getQueueMap().remove(player.getUniqueId());
 		}
 		if ((PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING)) {
 			DuelManager.getInstance().removePlayerFromDuel(player);
@@ -158,10 +160,19 @@ public class PlayerListener implements Listener {
 			//Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(killed.getUniqueId());
 			//duel.addDrops(event.getDrops());
 			DuelManager.getInstance().removePlayerFromDuel(killed);
+			new BukkitRunnable() {
+				
+				@Override
+				public void run() {
+					if (killed.isDead()) {
+						killed.spigot().respawn();
+					}
+				}
+			}.runTaskLater(main, 45L);
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.HIGHEST)
+	@EventHandler
 	public void onRespawn(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
 		
@@ -295,12 +306,12 @@ public class PlayerListener implements Listener {
         	switch (pm.getStatus()) {
 			case SPAWN:
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
-					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "unranked direct queue")) {
+					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "unranked queue")) {
 		                event.setCancelled(true);
 		                player.openInventory(InventoryManager.getInstance().getUnrankedInventory());
 		                break;
 		            }
-					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "ranked direct queue")) {
+					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "ranked queue")) {
 		                event.setCancelled(true);
 		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 		                break;
@@ -403,15 +414,21 @@ public class PlayerListener implements Listener {
 	            }
 				break;
 			case WAITING:
-				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "nodebuff default kit")) {
-	                ItemManager.getInstace().giveFightItems(player);
-	                player.sendMessage(ChatColor.GREEN + "NoDebuff kit successfully given.");
+				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().contains("default kit")) {
+					String itemName = item.getItemMeta().getDisplayName();
+					String itemNameWithoutColor = itemName.substring(2, itemName.length());
+					String[] ladderName = itemNameWithoutColor.split(" ");
+	                ItemManager.getInstace().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
+	                player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
 	            }
 				break;
 			case DUEL:
-				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "nodebuff default kit")) {
-	                ItemManager.getInstace().giveFightItems(player);
-	                player.sendMessage(ChatColor.GREEN + "NoDebuff kit successfully given.");
+				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().contains("default kit")) {
+					String itemName = item.getItemMeta().getDisplayName();
+					String itemNameWithoutColor = itemName.substring(2, itemName.length());
+					String[] ladderName = itemNameWithoutColor.split(" ");
+	                ItemManager.getInstace().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
+	                player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
 	            }
 				break;
 			case SPECTATE:
@@ -486,6 +503,19 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
+	@EventHandler
+	public void onPlayerInteractSoup(PlayerInteractEvent event) {
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			Player player = event.getPlayer();
+			if (!player.isDead() && player.getItemInHand().getType() == Material.MUSHROOM_SOUP && player.getHealth() < player.getMaxHealth()) {
+				double newHealth = Math.min(player.getHealth() + 7.0D, player.getMaxHealth());
+				player.setHealth(newHealth);
+				player.getItemInHand().setType(Material.BOWL);
+				player.updateInventory();
+			} 
+		} 
+	}
+	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onClickPlayer(PlayerInteractEntityEvent event) {
 		if (event.getRightClicked() instanceof Player) {
@@ -511,9 +541,15 @@ public class PlayerListener implements Listener {
 		if (event.getEntity() instanceof Player) {
 			final Player player = (Player) event.getEntity();
 			
-			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
-				event.setCancelled(true);
+			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL) {
+				Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId());
+				
+				if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP) {
+					event.setCancelled(true);
+				}
+				return;
 			}
+			event.setCancelled(true);
 		}
 	}
 }

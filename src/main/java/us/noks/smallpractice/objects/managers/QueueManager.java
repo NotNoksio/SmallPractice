@@ -1,14 +1,12 @@
 package us.noks.smallpractice.objects.managers;
 
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import com.google.common.collect.Lists;
-
+import net.minecraft.util.com.google.common.collect.Maps;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
@@ -19,54 +17,77 @@ public class QueueManager {
 		return instance;
 	}
 
-	private List<UUID> queue = Lists.newArrayList();
-	public List<UUID> getQueue() {
+	private Map<UUID, Queue> queue = Maps.newConcurrentMap();
+	public Map<UUID, Queue> getQueueMap() {
 		return this.queue;
 	}
 	
-	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked, boolean sumo) {
-		final PlayerManager pm = PlayerManager.get(uuid);
-		
-		if (pm.getStatus() != PlayerStatus.SPAWN) {
-			return;
-		}
-		if (!this.queue.contains(uuid)) {
-			final Player player = Bukkit.getPlayer(uuid);
-			this.queue.add(uuid);
+	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked) {
+		if (!this.queue.containsKey(uuid)) {
+			final PlayerManager pm = PlayerManager.get(uuid);
+			final Player player = pm.getPlayer();
+			this.queue.put(uuid, new Queue(ladder, ranked));
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
-			if (this.queue.size() == 1) {
-				ItemManager.getInstace().giveLeaveItem(player, "Queue");
-			}
-			player.sendMessage(ChatColor.GREEN + "You have been added to the queue. Waiting for another player..");
-		}
-		if (this.queue.size() < 2 && this.queue.contains(uuid)) {
-			addToQueue(uuid, ladder, ranked, sumo);
-			return;
+			ItemManager.getInstace().giveLeaveItem(player, "Queue");
+			player.sendMessage(ChatColor.GREEN + "You have been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " queue. Waiting for another player..");
 		}
 		if (this.queue.size() >= 2) {
-			final UUID firstUUID = this.queue.get(0);
-			final UUID secondUUID = this.queue.get(1);
-			
-			if (firstUUID == secondUUID) {
-				this.queue.remove(0);
-				this.queue.remove(1);
-				addToQueue(uuid, ladder, ranked, sumo);
+			UUID secondUUID = uuid;
+			for (Map.Entry<UUID, Queue> map : this.queue.entrySet()) {
+			    UUID key = map.getKey();
+			    Queue value = map.getValue();
+			    
+			    if (uuid == key || ladder.getName() != value.getLadder().getName() || ranked != value.isRanked()) {
+			    	continue;
+			    }
+			    secondUUID = key;
+			}
+			if (secondUUID == uuid) {
 				return;
 			}
-			this.queue.remove(firstUUID);
+			this.queue.remove(uuid);
 			this.queue.remove(secondUUID);
-			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(sumo), ladder, firstUUID, secondUUID, ranked);
+			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
 		}
 	}
 	
 	public void quitQueue(Player player) {
-		if (!this.queue.contains(player.getUniqueId())) {
+		if (!this.queue.containsKey(player.getUniqueId())) {
 			return;
 		}
 		this.queue.remove(player.getUniqueId());
 		PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
 		ItemManager.getInstace().giveSpawnItem(player);
 		player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
+	}
+	
+	public int getQueuedFromLadder(Ladders ladder, boolean ranked) {
+		int count = 0;
+		for (Map.Entry<UUID, Queue> map : this.queue.entrySet()) {
+			Queue value = map.getValue();
+			if (value.getLadder() == ladder && value.isRanked() == ranked) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	public class Queue {
+		private Ladders ladder;
+		private boolean ranked;
+		
+		public Queue(Ladders ladder, boolean ranked) {
+			this.ladder = ladder;
+			this.ranked = ranked;
+		}
+		
+		public Ladders getLadder() {
+			return this.ladder;
+		}
+		
+		public boolean isRanked() {
+			return this.ranked;
+		}
 	}
 }

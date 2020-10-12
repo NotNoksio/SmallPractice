@@ -63,7 +63,7 @@ public class ChatListener implements Listener {
 				for (Player staff : Bukkit.getOnlinePlayers()) {
 					if (staff.hasPermission("chat.staff")) {
 						event.setCancelled(true);
-						staff.sendMessage(ChatColor.GREEN + "(" + ChatColor.DARK_AQUA + "Staff" + ChatColor.GREEN + ") " + pm.getPrefixColors() + player.getName() + ChatColor.GOLD + " » " + message);
+						staff.sendMessage(ChatColor.GREEN + "(" + ChatColor.RED + "Staff" + ChatColor.GREEN + ") " + pm.getPrefixColors() + player.getName() + ChatColor.GOLD + " » " + message);
 					}
 				}
 			}
