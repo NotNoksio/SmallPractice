@@ -142,6 +142,7 @@ public class PlayerListener implements Listener {
         }
 		if (QueueManager.getInstance().getQueueMap().containsKey(player.getUniqueId())) {
 			QueueManager.getInstance().getQueueMap().remove(player.getUniqueId());
+			InventoryManager.getInstance().updateUnrankedInventory();
 		}
 		if ((PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING)) {
 			DuelManager.getInstance().removePlayerFromDuel(player);
@@ -279,7 +280,7 @@ public class PlayerListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (event.getItemDrop().getItemStack().getType() == Material.GLASS_BOTTLE) {
+		if (event.getItemDrop().getItemStack().getType() == Material.GLASS_BOTTLE || event.getItemDrop().getItemStack().getType() == Material.BOWL) {
 			event.getItemDrop().remove();
 			return;
 		}
@@ -326,7 +327,7 @@ public class PlayerListener implements Listener {
 						player.teleport(Warps.BRIDGE.getLobbyLocation());
 						pm.setStatus(PlayerStatus.BRIDGE);
 						ItemManager.getInstace().giveBridgeItems(player);
-						player.setNoDamageTicks(40);
+						player.setNoDamageTicks(50);
 						break;
 					}
 					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "edit kit/settings")) {
@@ -397,13 +398,7 @@ public class PlayerListener implements Listener {
 					}
 					if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave party")) {
 						event.setCancelled(true);
-						if (currentParty.getLeader().equals(player.getUniqueId())) {
-			                PartyManager.getInstance().transferLeader(player.getUniqueId());
-			            } else {
-			                PartyManager.getInstance().notifyParty(currentParty, ChatColor.RED + player.getName() + " has left the party");
-			                PartyManager.getInstance().leaveParty(player.getUniqueId());
-			            }
-			        	ItemManager.getInstace().giveSpawnItem(player);
+						Bukkit.dispatchCommand(player, "party leave");
 					}
 				}
 				break;

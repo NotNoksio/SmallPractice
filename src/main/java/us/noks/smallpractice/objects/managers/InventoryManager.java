@@ -51,7 +51,10 @@ public class InventoryManager {
 		}
 	}
 	
-	public void setUnrankedInventory() {
+	public void updateUnrankedInventory() {
+		this.setUnrankedInventory();
+	}
+	private void setUnrankedInventory() {
 		this.unrankedInventory.clear();
 		for (Ladders ladders : Ladders.values()) {
 			ItemStack item = ladders.getIcon();

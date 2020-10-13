@@ -1,6 +1,11 @@
 package us.noks.smallpractice;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.WeakHashMap;
+
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.noks.smallpractice.commands.AcceptCommand;
@@ -33,6 +38,8 @@ import us.noks.smallpractice.objects.managers.QueueManager;
 public class Main extends JavaPlugin {
 	private boolean permissionsPluginHere;
 	
+	private Map<UUID, Inventory> offlineInventory = new WeakHashMap<UUID, Inventory>();
+	
 	private static Main instance;
 	public static Main getInstance() {
 		return instance;
@@ -50,6 +57,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		QueueManager.getInstance().getQueueMap().clear();
+		this.offlineInventory.clear();
 	}
 	
 	private void registerCommands() {
@@ -97,5 +105,9 @@ public class Main extends JavaPlugin {
 	
 	public boolean isPermissionsPluginHere() {
 		return this.permissionsPluginHere;
+	}
+	
+	public Map<UUID, Inventory> getOfflineInventoryMap() {
+		return this.offlineInventory;
 	}
 }

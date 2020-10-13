@@ -1,9 +1,6 @@
 package us.noks.smallpractice.listeners;
 
 import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -28,8 +25,6 @@ public class EnderDelay implements Listener {
 		return instance;
 	}
 	
-	private Map<UUID, Long> enderpearlCooldown = new WeakHashMap<UUID, Long>();
-
 	@EventHandler(priority=EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getPlayer() instanceof Player) {
@@ -40,18 +35,19 @@ public class EnderDelay implements Listener {
 			}
 			final ItemStack item = event.getItem();
 			if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && player.getGameMode() != GameMode.CREATIVE) {
-				if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
+				PlayerManager pm = PlayerManager.get(player.getUniqueId());
+				if (pm.getStatus() != PlayerStatus.DUEL) {
 					event.setUseItemInHand(Result.DENY);
 					player.sendMessage(ChatColor.RED + "You cannot use enderpearl here!");
 					player.updateInventory();
 					return;
 				}
-				if (!isEnderPearlCooldownActive(player)) {
-					applyCooldown(player);
+				if (!pm.isEnderPearlCooldownActive()) {
+					pm.applyCooldown();
 					return;
 				}
 				event.setUseItemInHand(Result.DENY);
-				final double time = getEnderPearlCooldown(player) / 1000.0D;
+				final double time = pm.getEnderPearlCooldown() / 1000.0D;
 				final DecimalFormat df = new DecimalFormat("#.#");
 				player.sendMessage(ChatColor.DARK_AQUA + "Pearl cooldown: " + ChatColor.YELLOW + df.format(time) + " second" + (time > 1.0D ? "s" : ""));
 				player.updateInventory();
@@ -66,23 +62,5 @@ public class EnderDelay implements Listener {
 			
 			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) event.setCancelled(true);
 		}
-	}
-
-	private boolean isEnderPearlCooldownActive(final Player player) {
-		if (!this.enderpearlCooldown.containsKey(player.getUniqueId())) return false;
-		return this.enderpearlCooldown.get(player.getUniqueId()).longValue() > System.currentTimeMillis();
-	}
-
-	private long getEnderPearlCooldown(final Player player) {
-		if (!this.enderpearlCooldown.containsKey(player.getUniqueId())) return 0L;
-		return Math.max(0L, this.enderpearlCooldown.get(player.getUniqueId()).longValue() - System.currentTimeMillis());
-	}
-
-	private void applyCooldown(final Player player) {
-		this.enderpearlCooldown.put(player.getUniqueId(), Long.valueOf(System.currentTimeMillis() + 14 * 1000));
-	}
-
-	public void removeCooldown(final Player player) {
-		if (this.enderpearlCooldown.containsKey(player.getUniqueId())) this.enderpearlCooldown.remove(player.getUniqueId());
 	}
 }

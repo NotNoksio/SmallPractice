@@ -125,7 +125,7 @@ public class InventoryListener implements Listener {
 		final String title = event.getInventory().getTitle().toLowerCase();
 		
 		if (title.equals("unranked selection")) {
-			InventoryManager.getInstance().setUnrankedInventory();
+			InventoryManager.getInstance().updateUnrankedInventory();
 		}
 	}
 	

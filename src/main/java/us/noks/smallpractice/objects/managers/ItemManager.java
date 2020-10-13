@@ -247,7 +247,7 @@ public class ItemManager {
 		}
 		case AXE: {
 			attackItem = new ItemStack(Material.IRON_AXE, 1);
-			attackItem.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 3);
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 3);
 			
 			helmet = new ItemStack(Material.IRON_HELMET, 1);
 			chestplate = new ItemStack(Material.IRON_CHESTPLATE, 1);

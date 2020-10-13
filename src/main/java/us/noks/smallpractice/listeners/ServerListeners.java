@@ -77,6 +77,9 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onTnt(EntityExplodeEvent event) {
+		if (event.blockList().isEmpty()) {
+			return;
+		}
 		event.blockList().clear();
 	}
 	

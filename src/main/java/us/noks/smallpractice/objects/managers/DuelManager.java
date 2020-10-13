@@ -30,7 +30,6 @@ import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
-import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
@@ -169,7 +168,7 @@ public class DuelManager {
 			
 			if (membersManager.getStatus() != PlayerStatus.SPAWN) {
 				Bukkit.getPlayer(party.getLeader()).sendMessage(ChatColor.RED + "A member in your party isn't in the spawn!");
-				break;
+				return;
 			}
 		}
 		List<UUID> shuffle = Lists.newArrayList(party.getAllMembersOnline());
@@ -470,7 +469,7 @@ public class DuelManager {
 			}
 			dpm.getMatchStats().resetDuelStats();
 			
-			EnderDelay.getInstance().removeCooldown(duelPlayer);
+			dpm.removeCooldown();
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
 		}
 		duelPlayerUUID.clear();

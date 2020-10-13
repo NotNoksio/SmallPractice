@@ -44,6 +44,7 @@ public class PlayerManager {
 	private MatchStats matchStats;
 	private CommandCooldown cooldown;
 	private Inventory savedInventory;
+	private Long enderpearlCooldown;
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
@@ -55,6 +56,7 @@ public class PlayerManager {
 	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
 	    this.matchStats = new MatchStats();
 	    this.cooldown = new CommandCooldown();
+	    this.enderpearlCooldown = 0L;
 	}
 
 	public static void create(UUID uuid) {
@@ -69,6 +71,9 @@ public class PlayerManager {
 	}
 
 	public void remove() {
+		if (this.savedInventory != null) {
+			Main.getInstance().getOfflineInventoryMap().put(this.playerUUID, this.savedInventory);
+		}
 		players.remove(this.playerUUID);
 	}
 
@@ -354,6 +359,22 @@ public class PlayerManager {
 	
 	public Inventory getSavedInventory() {
 		return this.savedInventory;
+	}
+	
+	public boolean isEnderPearlCooldownActive() {
+		return this.enderpearlCooldown > System.currentTimeMillis();
+	}
+
+	public long getEnderPearlCooldown() {
+		return Math.max(0L, this.enderpearlCooldown - System.currentTimeMillis());
+	}
+
+	public void applyCooldown() {
+		this.enderpearlCooldown = Long.valueOf(System.currentTimeMillis() + 14 * 1000);
+	}
+
+	public void removeCooldown() {
+		this.enderpearlCooldown = 0L;
 	}
 	
 	private String convertToPotionFormat(final long paramLong) {

@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class InventoryCommand implements CommandExecutor {
@@ -25,13 +26,18 @@ public class InventoryCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "UUID not found!");
 			return false;
 		}
-		PlayerManager tm = PlayerManager.get(UUID.fromString(args[0]));
+		UUID targetUUID = UUID.fromString(args[0]);
+		PlayerManager tm = PlayerManager.get(targetUUID);
+		Player player = (Player) sender;
 		
 		if (tm.getSavedInventory() == null) {
-			sender.sendMessage(ChatColor.RED + "Inventory expired!");
+			if (Main.getInstance().getOfflineInventoryMap().containsKey(targetUUID)) {
+				player.openInventory(Main.getInstance().getOfflineInventoryMap().get(targetUUID));
+				return true;
+			}
+			player.sendMessage(ChatColor.RED + "Inventory expired!");
 			return false;
 		}
-		Player player = (Player) sender;
 		player.openInventory(tm.getSavedInventory());
 		return true;
 	}

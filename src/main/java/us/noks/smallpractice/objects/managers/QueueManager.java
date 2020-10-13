@@ -31,6 +31,7 @@ public class QueueManager {
 			player.getInventory().clear();
 			ItemManager.getInstace().giveLeaveItem(player, "Queue");
 			player.sendMessage(ChatColor.GREEN + "You have been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " queue. Waiting for another player..");
+			InventoryManager.getInstance().updateUnrankedInventory();
 		}
 		if (this.queue.size() >= 2) {
 			UUID secondUUID = uuid;
@@ -60,6 +61,7 @@ public class QueueManager {
 		PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
 		ItemManager.getInstace().giveSpawnItem(player);
 		player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
+		InventoryManager.getInstance().updateUnrankedInventory();
 	}
 	
 	public int getQueuedFromLadder(Ladders ladder, boolean ranked) {
