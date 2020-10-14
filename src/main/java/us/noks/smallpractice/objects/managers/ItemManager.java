@@ -44,7 +44,7 @@ public class ItemManager {
 			
 			ItemStack c = new ItemStack(Material.COMPASS, 1);
 			ItemMeta cm = c.getItemMeta();
-			cm.setDisplayName(ChatColor.YELLOW + "Warps Selection");
+			cm.setDisplayName(ChatColor.YELLOW + "Mini-Games");
 			c.setItemMeta(cm);
 			
 			ItemStack b = new ItemStack(Material.BOOK, 1);

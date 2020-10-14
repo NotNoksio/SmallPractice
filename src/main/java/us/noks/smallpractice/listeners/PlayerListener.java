@@ -187,7 +187,7 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onVoidDamage(EntityDamageEvent event) {
+	public void onDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			final Player player = (Player) event.getEntity();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
@@ -212,6 +212,9 @@ public class PlayerListener implements Listener {
 					ItemManager.getInstace().giveBridgeItems(player);
 					player.teleport(Warps.BRIDGE.getLobbyLocation());
 					break;
+				case BLOCK_EXPLOSION:
+					event.setDamage(0.0D);
+					break;
 				default:
 					break;
 				}
@@ -220,7 +223,7 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onDamage(EntityDamageByEntityEvent event) {
+	public void onEntityDamage(EntityDamageByEntityEvent event) {
 		if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
 			final Player attacker = (Player) event.getDamager();
 			final PlayerManager attackerManager = PlayerManager.get(attacker.getUniqueId());	
@@ -280,11 +283,16 @@ public class PlayerListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (event.getItemDrop().getItemStack().getType() == Material.GLASS_BOTTLE || event.getItemDrop().getItemStack().getType() == Material.BOWL) {
+		ItemStack item = event.getItemDrop().getItemStack();
+		if (item.getType() == Material.GLASS_BOTTLE || item.getType() == Material.BOWL) {
 			event.getItemDrop().remove();
 			return;
 		}
 		if (pm.getStatus() == PlayerStatus.WAITING || pm.getStatus() == PlayerStatus.DUEL) {
+			if (item.getType() == Material.ENCHANTED_BOOK) {
+				event.setCancelled(true);
+				return;
+			}
 			Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(event.getPlayer().getUniqueId());
 			
 			if (duel == null) {
@@ -322,8 +330,8 @@ public class PlayerListener implements Listener {
 		                Bukkit.dispatchCommand(player, "party create");
 		                break;
 		            }
-					if (item.getType() == Material.COMPASS && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "warps selection")) {
-						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge warps (because it's the only one ^^')");
+					if (item.getType() == Material.COMPASS && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "mini-games")) {
+						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge game (because it's the only one ^^')");
 						player.teleport(Warps.BRIDGE.getLobbyLocation());
 						pm.setStatus(PlayerStatus.BRIDGE);
 						ItemManager.getInstace().giveBridgeItems(player);
@@ -489,6 +497,9 @@ public class PlayerListener implements Listener {
 			if (s.getLine(0).equalsIgnoreCase("-*-") && s.getLine(1).equalsIgnoreCase("Back to spawn") && s.getLine(2).equalsIgnoreCase("-*-")) {
 				e.setCancelled(true);
 				Player p = e.getPlayer();
+				if (p.isSneaking()) {
+					return;
+				}
 				PlayerManager pm = PlayerManager.get(p.getUniqueId());
 				
 				pm.setStatus(PlayerStatus.SPAWN);

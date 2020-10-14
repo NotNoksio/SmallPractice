@@ -20,10 +20,6 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class EnderDelay implements Listener {	
-	private static EnderDelay instance = new EnderDelay();
-	public static EnderDelay getInstance() {
-		return instance;
-	}
 	
 	@EventHandler(priority=EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {

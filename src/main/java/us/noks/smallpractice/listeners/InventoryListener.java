@@ -43,7 +43,7 @@ public class InventoryListener implements Listener {
 			return;
 		}
 		final String title = event.getInventory().getTitle().toLowerCase();
-		
+
 		if (title.endsWith("inventory")) {
             event.setCancelled(true);
             return;

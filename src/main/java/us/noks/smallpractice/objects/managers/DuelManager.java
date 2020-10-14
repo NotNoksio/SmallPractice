@@ -156,6 +156,11 @@ public class DuelManager {
             }
             PartyManager.getInstance().updateParty(party);
         }
+        if (firstTeam.size() == 1 && secondTeam.size() == 1) {
+        	if (!ranked) {
+        		InventoryManager.getInstance().updateUnrankedInventory();
+        	}
+        }
 		teleportRandomArena(new Duel(arena, ladder, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
 	}
 	

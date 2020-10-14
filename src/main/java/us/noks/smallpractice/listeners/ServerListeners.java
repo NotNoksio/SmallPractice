@@ -2,6 +2,7 @@ package us.noks.smallpractice.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,7 +35,8 @@ public class ServerListeners implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (pm.getStatus() == PlayerStatus.BRIDGE) {
+		Block blockPlaced = event.getBlockPlaced();
+		if (pm.getStatus() == PlayerStatus.BRIDGE && blockPlaced.getType() != Material.TNT) {
 			for (int i = 0; i < 8; i++) {
 				if (event.getBlock().getLocation().subtract(0.0D, i, 0.0D).getBlock().getType() == Material.OBSIDIAN || event.getBlock().getLocation().subtract(0.0D, i, 0.0D).getBlock().getType() == Material.GLOWSTONE) {
 					event.setCancelled(true);
@@ -71,7 +73,7 @@ public class ServerListeners implements Listener {
 	
 	private final String getMotd() {
 		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Goneko " + ChatColor.GRAY + "(Practice "  + main.getDescription().getVersion() + ")\n";
-		final String line2 = ChatColor.YELLOW + "Pot pvp server" + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : "");
+		final String line2 = ChatColor.YELLOW + "US Pot pvp server" + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : "");
 		return (line1 + line2);
 	}
 	
