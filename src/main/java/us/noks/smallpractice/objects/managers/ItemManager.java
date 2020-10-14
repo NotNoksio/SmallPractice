@@ -291,6 +291,10 @@ public class ItemManager {
 		}
 		case EARLY_HG: {
 			attackItem = new ItemStack(Material.STONE_SWORD, 1);
+			ItemMeta im = attackItem.getItemMeta();
+			im.spigot().setUnbreakable(true);
+			attackItem.setItemMeta(im);
+			
 			helmet = null;
 			chestplate = null;
 			leggings = null;
@@ -298,10 +302,9 @@ public class ItemManager {
 			player.getInventory().setItem(14, new ItemStack(Material.BOWL, 32));
 			player.getInventory().setItem(13, new ItemStack(Material.RED_MUSHROOM, 32));
 			player.getInventory().setItem(15, new ItemStack(Material.BROWN_MUSHROOM, 32));
-		    while (player.getInventory().firstEmpty() != -1) {
-		    	player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
-		    } 
-		    player.updateInventory();
+			while (player.getInventory().firstEmpty() != -1) {
+				player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
+			} 
 			break;
 		}
 		default:
