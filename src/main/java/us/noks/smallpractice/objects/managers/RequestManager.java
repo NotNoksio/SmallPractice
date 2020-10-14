@@ -49,7 +49,7 @@ public class RequestManager {
 		lineOn.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		
 		TextComponent lineArena = new TextComponent();
-		lineArena.setText(arena.getName() + " arena ");
+		lineArena.setText(arena.getName() + " arena");
 		lineArena.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 		
 		TextComponent lineDot = new TextComponent(". ");

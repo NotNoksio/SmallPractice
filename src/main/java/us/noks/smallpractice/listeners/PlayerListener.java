@@ -34,6 +34,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.enums.RemoveReason;
 import us.noks.smallpractice.enums.Warps;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
@@ -145,7 +146,7 @@ public class PlayerListener implements Listener {
 			InventoryManager.getInstance().updateUnrankedInventory();
 		}
 		if ((PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING)) {
-			DuelManager.getInstance().removePlayerFromDuel(player);
+			DuelManager.getInstance().removePlayerFromDuel(player, RemoveReason.DISCONNECTED);
 		}
 		PlayerManager.get(player.getUniqueId()).remove();
 	}
@@ -160,7 +161,7 @@ public class PlayerListener implements Listener {
 			final Player killed = event.getEntity();
 			//Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(killed.getUniqueId());
 			//duel.addDrops(event.getDrops());
-			DuelManager.getInstance().removePlayerFromDuel(killed);
+			DuelManager.getInstance().removePlayerFromDuel(killed, RemoveReason.KILLED);
 			new BukkitRunnable() {
 				
 				@Override
@@ -247,9 +248,18 @@ public class PlayerListener implements Listener {
 				if (currentDuel == null) {
 					return;
 				}
+				double damage = event.getDamage();
 				if (currentDuel.getArena().isSumo()) {
-					event.setDamage(0.0D);
+					damage = 0.0D;
 				}
+				if (currentDuel.getLadder() == Ladders.EARLY_HG) {
+					ItemStack handItem = attacker.getItemInHand();
+					if (handItem.getType() == Material.MUSHROOM_SOUP) {
+						return;
+					}
+					if (handItem.getType() == Material.STONE_SWORD) damage -= 2.0D; // Fix too many damage (from my kitpvp soup plugin)
+				}
+				event.setDamage(damage);
 			}
 		}
 	}
@@ -551,7 +561,7 @@ public class PlayerListener implements Listener {
 				if (DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()) != null) {
 					Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId());
 					
-					if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP) {
+					if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP || duel.getLadder() == Ladders.EARLY_HG) {
 						event.setCancelled(true);
 					}
 				}

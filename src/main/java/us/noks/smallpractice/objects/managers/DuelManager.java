@@ -30,6 +30,7 @@ import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.enums.RemoveReason;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
@@ -388,7 +389,7 @@ public class DuelManager {
 		sendWaitingMessage(duel);
 	}
 	
-	public void removePlayerFromDuel(Player player) {
+	public void removePlayerFromDuel(Player player, RemoveReason reason) {
 		final Duel currentDuel = getDuelFromPlayerUUID(player.getUniqueId());
 		
 		if (currentDuel == null) return;
@@ -396,7 +397,8 @@ public class DuelManager {
 		PlayerManager.get(player.getUniqueId()).saveInventory();
 		
 		currentDuel.killPlayer(player.getUniqueId());
-		currentDuel.sendMessage(player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : ""));
+		final String message = (reason == RemoveReason.KILLED ? player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : "") : player.getName() + " has disconnected");
+		currentDuel.sendMessage(message);
 		
 		int winningTeamNumber = 0;
 		if (currentDuel.getFirstTeamAlive().isEmpty()) {

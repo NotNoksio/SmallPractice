@@ -24,22 +24,18 @@ public class PingCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.DARK_AQUA + "Your ping: " + ChatColor.YELLOW + player.getPing() + "ms");
 			return true;
 		}
-			
-		if (args.length == 1) {
-			Player target = Bukkit.getPlayer(args[0]);
+		Player target = Bukkit.getPlayer(args[0]);
 				
-			if (target == null) {
-				player.sendMessage(ChatColor.RED + "This player is not online.");
-				return false;
-			}
-			if (target == player) {
-				player.sendMessage(ChatColor.DARK_AQUA + "Your ping: " + ChatColor.YELLOW + player.getPing() + "ms");
-				return true;
-			}
-			player.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.DARK_AQUA + "'s ping: " + ChatColor.YELLOW + target.getPing() + "ms");
-			player.sendMessage(ChatColor.DARK_AQUA + "Ping difference: " + ChatColor.YELLOW + Math.abs(player.getPing() - target.getPing()) + "ms");
+		if (target == null) {
+			player.sendMessage(ChatColor.RED + "This player is not online.");
+			return false;
+		}
+		if (target == player) {
+			player.sendMessage(ChatColor.DARK_AQUA + "Your ping: " + ChatColor.YELLOW + player.getPing() + "ms");
 			return true;
 		}
-		return false;
+		player.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.DARK_AQUA + "'s ping: " + ChatColor.YELLOW + target.getPing() + "ms");
+		player.sendMessage(ChatColor.DARK_AQUA + "Ping difference: " + ChatColor.YELLOW + Math.abs(player.getPing() - target.getPing()) + "ms");
+		return true;
 	}
 }

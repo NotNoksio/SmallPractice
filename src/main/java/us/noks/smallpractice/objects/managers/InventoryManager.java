@@ -64,7 +64,7 @@ public class InventoryManager {
 			int waiting = QueueManager.getInstance().getQueuedFromLadder(ladders, false);
 			itemm.setLore((ladders.isEnable() ? Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.YELLOW + fighting, ChatColor.DARK_AQUA + "Waiting: " + ChatColor.YELLOW + waiting}) : Arrays.asList(new String[] {ChatColor.RED + "No arena created"})));
 			item.setItemMeta(itemm);
-			
+			item.setAmount(Math.min(Math.max(fighting, 1), 64));
 			this.unrankedInventory.addItem(item);
 		}
 	}

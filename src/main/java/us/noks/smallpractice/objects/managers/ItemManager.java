@@ -289,6 +289,21 @@ public class ItemManager {
 			player.getInventory().setItem(35, speed);
 			break;
 		}
+		case EARLY_HG: {
+			attackItem = new ItemStack(Material.STONE_SWORD, 1);
+			helmet = null;
+			chestplate = null;
+			leggings = null;
+			boots = null;
+			player.getInventory().setItem(14, new ItemStack(Material.BOWL, 32));
+			player.getInventory().setItem(13, new ItemStack(Material.RED_MUSHROOM, 32));
+			player.getInventory().setItem(15, new ItemStack(Material.BROWN_MUSHROOM, 32));
+		    while (player.getInventory().firstEmpty() != -1) {
+		    	player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
+		    } 
+		    player.updateInventory();
+			break;
+		}
 		default:
 			break;
 		}
