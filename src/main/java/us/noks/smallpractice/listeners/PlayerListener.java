@@ -537,12 +537,13 @@ public class PlayerListener implements Listener {
 			final Player player = (Player) event.getEntity();
 			
 			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL) {
-				Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId());
-				
-				if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP) {
-					event.setCancelled(true);
+				if (DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()) != null) {
+					Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId());
+					
+					if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP) {
+						event.setCancelled(true);
+					}
 				}
-				return;
 			}
 			event.setCancelled(true);
 		}
