@@ -20,7 +20,6 @@ import org.bukkit.scoreboard.Team;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -34,6 +33,7 @@ import us.noks.smallpractice.enums.RemoveReason;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
+import us.noks.smallpractice.utils.ComponentJoiner;
 
 public class DuelManager {
 	private static DuelManager instance = new DuelManager();
@@ -157,7 +157,7 @@ public class DuelManager {
             }
             PartyManager.getInstance().updateParty(party);
         }
-        if (firstTeam.size() == 1 && secondTeam.size() == 1) {
+        if (firstTeam.size() == 1 && secondTeam.size() == 1 && (firstPartyLeaderUUID == null && secondPartyLeaderUUID == null)) {
         	if (!ranked) {
         		InventoryManager.getInstance().updateUnrankedInventory();
         	}
@@ -225,6 +225,11 @@ public class DuelManager {
             }
             PartyManager.getInstance().updateParty(party);
         }
+        if (duel.getFirstTeam().size() == 1 && duel.getSecondTeam().size() == 1 && (duel.getFirstTeamPartyLeaderUUID() == null && duel.getSecondTeamPartyLeaderUUID() == null)) {
+        	if (!duel.isRanked()) {
+        		InventoryManager.getInstance().updateUnrankedInventory();
+        	}
+        }
 		duel.clearDrops();
 	}
 	
@@ -247,41 +252,35 @@ public class DuelManager {
 		final boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
 		final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
 			
-		TextComponent invTxt = new TextComponent();
-		invTxt.setText("Inventories (Click):");
+		TextComponent invTxt = new TextComponent("Inventories (Click): ");
 		invTxt.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		    
-		List<BaseComponent> inventoriesTextList = Lists.newArrayList();
-		    
+		ComponentJoiner joiner = new ComponentJoiner(ChatColor.DARK_AQUA + ", ", ChatColor.DARK_AQUA + ".");    
+		
 		for (UUID wUUID : winnerTeam) {
 			final Player winners = Bukkit.getPlayer(wUUID);
 			if (winners == null) continue;
-			TextComponent wtxt = new TextComponent();
+			TextComponent wtxt = new TextComponent(winners.getName());
 		    	
-			wtxt.setText(winners.getName());
 			wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 			wtxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winners.getName() + "'s inventory").create()));
 			wtxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winners.getUniqueId()));
 			    
-			inventoriesTextList.add(new TextComponent(" "));
-			inventoriesTextList.add(wtxt);
+			joiner.add(wtxt);
 		}
 		for (UUID lUUID : loserTeam) {
 			final Player losers = Bukkit.getPlayer(lUUID);
 			if (losers == null) continue;
-			TextComponent ltxt = new TextComponent();
+			TextComponent ltxt = new TextComponent(losers.getName());
 		    	
-			ltxt.setText(losers.getName());
 			ltxt.setColor(net.md_5.bungee.api.ChatColor.RED);
 			ltxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.RED + "Click to view " + losers.getName() + "'s inventory").create()));
 			ltxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + losers.getUniqueId()));
 			    
-			inventoriesTextList.add(new TextComponent(" "));
-			inventoriesTextList.add(ltxt);
+			joiner.add(ltxt);
 		}
 		    
-		invTxt.setExtra(inventoriesTextList);
-		invTxt.addExtra(net.md_5.bungee.api.ChatColor.DARK_AQUA + ".");
+		invTxt.addExtra(joiner.toTextComponent());
 		    
 		StringJoiner spect = new StringJoiner(ChatColor.DARK_AQUA + ", ");
 		if (duel.hasSpectator()) {
