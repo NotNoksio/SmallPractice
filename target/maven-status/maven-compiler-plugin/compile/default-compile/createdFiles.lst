@@ -2,7 +2,6 @@ us\noks\smallpractice\listeners\DuelListener.class
 us\noks\smallpractice\listeners\ChatListener.class
 us\noks\smallpractice\arena\Arena.class
 us\noks\smallpractice\objects\managers\ItemManager.class
-us\noks\smallpractice\objects\managers\DuelManager$4.class
 us\noks\smallpractice\objects\managers\InventoryManager.class
 us\noks\smallpractice\commands\MentionCommand.class
 us\noks\smallpractice\objects\managers\QueueManager.class

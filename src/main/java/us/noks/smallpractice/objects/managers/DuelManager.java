@@ -393,58 +393,49 @@ public class DuelManager {
 		
 		if (currentDuel == null) return;
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
-		PlayerManager.get(player.getUniqueId()).saveInventory();
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		pm.saveInventory();
 		
 		currentDuel.killPlayer(player.getUniqueId());
 		final String message = (reason == RemoveReason.KILLED ? player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : "") : player.getName() + " has disconnected");
 		currentDuel.sendMessage(message);
 		
+		if (!currentDuel.getFirstTeamAlive().isEmpty() && !currentDuel.getSecondTeamAlive().isEmpty()) {
+			return;
+		}
 		int winningTeamNumber = 0;
 		if (currentDuel.getFirstTeamAlive().isEmpty()) {
-			for (UUID lastPlayersUUID : currentDuel.getSecondTeamAlive()) {
-                Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
-                this.doEndDuelAction(lastPlayers);
-        			
-                new BukkitRunnable() {
-        				
-                	@Override
-                	public void run() {
-                		if (lastPlayers != null) {
-                			lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
-                			ItemManager.getInstace().giveSpawnItem(lastPlayers);
-                		}
-                	}
-                }.runTaskLater(Main.getInstance(), 50L);
-            }
 			winningTeamNumber = 2;
 		} else if (currentDuel.getSecondTeamAlive().isEmpty()) {
-			for (UUID lastPlayersUUID : currentDuel.getFirstTeamAlive()) {
-                Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
-                this.doEndDuelAction(lastPlayers);
-        			
-                new BukkitRunnable() {
-        				
-                	@Override
-                	public void run() {
-                		if (lastPlayers != null) {
-                			lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
-                			ItemManager.getInstace().giveSpawnItem(lastPlayers);
-                		}
-                	}
-                }.runTaskLater(Main.getInstance(), 50L);
-            }
 			winningTeamNumber = 1;
 		}
-		if (currentDuel.getFirstTeamAlive().isEmpty() || currentDuel.getSecondTeamAlive().isEmpty()) {
-			endDuel(currentDuel, winningTeamNumber);
-			new BukkitRunnable() {
-				
-				@Override
-				public void run() {
-					finishDuel(currentDuel);
-				}
-			}.runTaskLater(Main.getInstance(), 50L);
+		if (winningTeamNumber == 0) {
+			return;
 		}
+		for (UUID lastPlayersUUID : (winningTeamNumber == 1 ? currentDuel.getFirstTeamAlive() : currentDuel.getSecondTeamAlive())) {
+            Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
+            this.doEndDuelAction(lastPlayers);
+    			
+            new BukkitRunnable() {
+    				
+            	@Override
+            	public void run() {
+            		if (lastPlayers != null) {
+            			lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
+            			ItemManager.getInstace().giveSpawnItem(lastPlayers);
+            		}
+            	}
+            }.runTaskLater(Main.getInstance(), 50L);
+        }
+		endDuel(currentDuel, winningTeamNumber);
+		new BukkitRunnable() {
+				
+			@Override
+			public void run() {
+				finishDuel(currentDuel);
+			}
+		}.runTaskLater(Main.getInstance(), 50L);
+
 	}
 	
 	public int getUnrankedFightFromLadder(Ladders ladder, boolean ranked) {

@@ -33,30 +33,25 @@ public class RequestManager {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		TextComponent line = new TextComponent();
-		line.setText(requester.getName());
+		TextComponent line = new TextComponent(requester.getName());
 		line.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 	    
-		TextComponent lineA = new TextComponent();
-		lineA.setText(" has requested you to duel in ");
+		TextComponent lineA = new TextComponent(" has requested you to duel in ");
 		lineA.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		
-		TextComponent lineLadder = new TextComponent();
-		lineLadder.setText(ladder.getName());
+		TextComponent lineLadder = new TextComponent(ladder.getName());
 		lineLadder.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 		
 		TextComponent lineOn = new TextComponent(" on ");
 		lineOn.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		
-		TextComponent lineArena = new TextComponent();
-		lineArena.setText(arena.getName() + " arena");
+		TextComponent lineArena = new TextComponent(arena.getName() + " arena");
 		lineArena.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 		
 		TextComponent lineDot = new TextComponent(". ");
 		lineDot.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
-		TextComponent lineB = new TextComponent();
-		lineB.setText("Click here to accept.");
+		TextComponent lineB = new TextComponent("Click here to accept.");
 		lineB.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 		lineB.setBold(true);
 		lineB.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
@@ -64,8 +59,7 @@ public class RequestManager {
 		
 		TextComponent lineSpace = new TextComponent(" ");
 		
-		TextComponent lineC = new TextComponent();
-		lineC.setText("Click here to deny.");
+		TextComponent lineC = new TextComponent("Click here to deny.");
 		lineC.setColor(net.md_5.bungee.api.ChatColor.RED);
 		lineC.setBold(true);
 		lineC.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.RED + "Click this message to deny " + requester.getName()).create()));
@@ -131,16 +125,13 @@ public class RequestManager {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		TextComponent line = new TextComponent();
-		line.setText(requester.getName());
+		TextComponent line = new TextComponent(requester.getName());
 		line.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 	    
-		TextComponent lineA = new TextComponent();
-		lineA.setText(" has invited you to his party ");
+		TextComponent lineA = new TextComponent(" has invited you into his party. ");
 		lineA.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
-		TextComponent lineB = new TextComponent();
-		lineB.setText("Click here to accept.");
+		TextComponent lineB = new TextComponent("Click here to accept.");
 		lineB.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 		lineB.setBold(true);
 		lineB.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
@@ -148,8 +139,7 @@ public class RequestManager {
 		
 		TextComponent lineSpace = new TextComponent(" ");
 		
-		TextComponent lineC = new TextComponent();
-		lineC.setText("Click here to deny.");
+		TextComponent lineC = new TextComponent("Click here to deny.");
 		lineC.setColor(net.md_5.bungee.api.ChatColor.RED);
 		lineC.setBold(true);
 		lineC.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.RED + "Click this message to deny " + requester.getName()).create()));
