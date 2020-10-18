@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.party.Party;
+import us.noks.smallpractice.party.PartyState;
 
 public class ItemManager {
 	private static ItemManager instance = new ItemManager();
@@ -60,22 +61,46 @@ public class ItemManager {
 		} else {
 			Party party = PartyManager.getInstance().getParty(player.getUniqueId());
 			
-			ItemStack u = new ItemStack(Material.IRON_SWORD, 1);
-			ItemMeta um = u.getItemMeta();
-			um.setDisplayName(ChatColor.YELLOW + "2v2 Unranked Queue");
-			um.spigot().setUnbreakable(true);
-			u.setItemMeta(um);
+			ItemStack glass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+			ItemMeta glassm = glass.getItemMeta();
+			glassm.setDisplayName(ChatColor.RED + "2 players needed");
+			glass.setItemMeta(glassm);
 			
-			ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
-			ItemMeta rm = r.getItemMeta();
-			rm.setDisplayName(ChatColor.YELLOW + "2v2 Ranked Queue");
-			rm.spigot().setUnbreakable(true);
-			r.setItemMeta(rm);
+			player.getInventory().setItem(0, glass);
+			player.getInventory().setItem(1, glass);
+			player.getInventory().setItem(5, glass);
 			
-			ItemStack a = new ItemStack(Material.ARROW, 1);
-			ItemMeta am = a.getItemMeta();
-			am.setDisplayName(ChatColor.YELLOW + "Split Teams");
-			a.setItemMeta(am);
+			final boolean able = party.getSize() > 1;
+			if (able) {
+				ItemStack u = new ItemStack(Material.IRON_SWORD, 1);
+				ItemMeta um = u.getItemMeta();
+				um.setDisplayName(ChatColor.YELLOW + "2v2 Unranked Queue");
+				um.spigot().setUnbreakable(true);
+				u.setItemMeta(um);
+				
+				ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
+				ItemMeta rm = r.getItemMeta();
+				rm.setDisplayName(ChatColor.YELLOW + "2v2 Ranked Queue");
+				rm.spigot().setUnbreakable(true);
+				r.setItemMeta(rm);
+				
+				ItemStack a = new ItemStack(Material.ARROW, 1);
+				ItemMeta am = a.getItemMeta();
+				am.setDisplayName(ChatColor.YELLOW + "Split Teams");
+				a.setItemMeta(am);
+				
+				player.getInventory().setItem(0, u);
+				player.getInventory().setItem(1, r);
+				player.getInventory().setItem(5, a);
+			}
+			if (party.getPartyState() == PartyState.DUELING) {
+				ItemStack d = new ItemStack(Material.BONE, 1);
+				ItemMeta dm = d.getItemMeta();
+				dm.setDisplayName(ChatColor.YELLOW + "Spectate Actual Match");
+				d.setItemMeta(dm);
+				
+				player.getInventory().setItem(2, d);
+			}
 			
 			ItemStack b = new ItemStack(Material.BOOK, 1);
 			ItemMeta bm = b.getItemMeta();
@@ -87,18 +112,9 @@ public class ItemManager {
 			pm.setDisplayName(ChatColor.YELLOW + "Party Information");
 			p.setItemMeta(pm);
 			
-			ItemStack glass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
-			ItemMeta glassm = glass.getItemMeta();
-			glassm.setDisplayName(ChatColor.RED + "2 players needed");
-			glass.setItemMeta(glassm);
-			
 			giveLeaveItem(player, "Party", false);
 			
-			final boolean able = party.getSize() > 1;
-			player.getInventory().setItem(0, (able ? u : glass));
-			player.getInventory().setItem(1, (able ? r : glass));
 			player.getInventory().setItem(4, b);
-			player.getInventory().setItem(5, (able ? a : glass));
 			player.getInventory().setItem(7, p);
 		}
 		player.updateInventory();

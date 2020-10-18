@@ -399,6 +399,7 @@ public class DuelManager {
 		currentDuel.killPlayer(player.getUniqueId());
 		final String message = (reason == RemoveReason.KILLED ? player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : "") : player.getName() + " has disconnected");
 		currentDuel.sendMessage(message);
+		pm.setStatus(PlayerStatus.SPAWN);
 		
 		if (!currentDuel.getFirstTeamAlive().isEmpty() && !currentDuel.getSecondTeamAlive().isEmpty()) {
 			return;
@@ -473,9 +474,6 @@ public class DuelManager {
 	}
 	
 	private void doEndDuelAction(Player player) {
-		if (player == null) {
-			return;
-		}
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
         
 		pm.saveInventory();
