@@ -369,11 +369,11 @@ public class PlayerManager {
 		return Math.max(0L, this.enderpearlCooldown - System.currentTimeMillis());
 	}
 
-	public void applyCooldown() {
+	public void applyEnderPearlCooldown() {
 		this.enderpearlCooldown = Long.valueOf(System.currentTimeMillis() + 14 * 1000);
 	}
 
-	public void removeCooldown() {
+	public void removeEnderPearlCooldown() {
 		this.enderpearlCooldown = 0L;
 	}
 	

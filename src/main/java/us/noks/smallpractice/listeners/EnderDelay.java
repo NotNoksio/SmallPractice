@@ -39,7 +39,7 @@ public class EnderDelay implements Listener {
 					return;
 				}
 				if (!pm.isEnderPearlCooldownActive()) {
-					pm.applyCooldown();
+					pm.applyEnderPearlCooldown();
 					return;
 				}
 				event.setUseItemInHand(Result.DENY);

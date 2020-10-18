@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -74,6 +75,11 @@ public class InventoryListener implements Listener {
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);
 			
+			if (item.getData().getData() == SkullType.WITHER.ordinal()) {
+				player.sendMessage(ChatColor.RED + "This party is not in spawn!");
+				player.closeInventory();
+				return;
+			}
 			String[] itemName = splitString(item.getItemMeta().getDisplayName());
             itemName[0] = ChatColor.stripColor(itemName[0]);
             if (player.getName().toLowerCase().equals(itemName[0].toLowerCase())) {

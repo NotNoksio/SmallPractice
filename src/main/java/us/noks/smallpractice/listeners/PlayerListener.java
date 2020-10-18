@@ -86,13 +86,13 @@ public class PlayerListener implements Listener {
 	}
 	
 	private void checkLike(Player player) {
-		if (!main.isPermissionsPluginHere()) {
+		if (!this.main.isPermissionsPluginHere()) {
 			return;
 		}
 		String rank = PermissionsEx.getPermissionManager().getUser(player).getParentIdentifiers().get(0);
 
         if (rank.equals("default") || rank.equals("verified")) {
-            WebUtil.getResponse(Main.getInstance(), "https://api.namemc.com/server/devmc.noks.io/votes?profile=" + player.getUniqueId(),
+            WebUtil.getResponse(this.main, "https://api.namemc.com/server/devmc.noks.io/votes?profile=" + player.getUniqueId(),
                     response -> {
                         switch (response) {
                             case "false":
@@ -145,10 +145,11 @@ public class PlayerListener implements Listener {
 			QueueManager.getInstance().getQueueMap().remove(player.getUniqueId());
 			InventoryManager.getInstance().updateUnrankedInventory();
 		}
-		if ((PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING)) {
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
 			DuelManager.getInstance().removePlayerFromDuel(player, RemoveReason.DISCONNECTED);
 		}
-		PlayerManager.get(player.getUniqueId()).remove();
+		pm.remove();
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
