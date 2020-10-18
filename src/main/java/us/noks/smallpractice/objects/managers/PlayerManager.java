@@ -53,10 +53,13 @@ public class PlayerManager {
 	    this.prefix = (!Main.getInstance().isPermissionsPluginHere() ? (this.player.isOp() ? "&c" : "&a") : PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix());
 	    this.suffix = (!Main.getInstance().isPermissionsPluginHere() ? "" : PermissionsEx.getPermissionManager().getUser(getPlayer()).getSuffix());
 	    this.spectate = null;
-	    this.elo = EloManager.getInstance().getPlayerElo(this.player.getUniqueId());
+	    this.elo = EloManager.getInstance().getPlayerElo(playerUUID);
 	    this.matchStats = new MatchStats();
 	    this.cooldown = new CommandCooldown();
 	    this.enderpearlCooldown = 0L;
+	    if (Main.getInstance().getOfflineInventoryMap().containsKey(playerUUID)) {
+	    	this.savedInventory = Main.getInstance().getOfflineInventoryMap().get(playerUUID);
+	    }
 	}
 
 	public static void create(UUID uuid) {

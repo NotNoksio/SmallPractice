@@ -414,20 +414,20 @@ public class DuelManager {
 			return;
 		}
 		for (UUID lastPlayersUUID : (winningTeamNumber == 1 ? currentDuel.getFirstTeamAlive() : currentDuel.getSecondTeamAlive())) {
-            Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
-            this.doEndDuelAction(lastPlayers);
+			Player lastPlayers = Bukkit.getPlayer(lastPlayersUUID);
+			this.doEndDuelAction(lastPlayers);
     			
-            new BukkitRunnable() {
+			new BukkitRunnable() {
     				
-            	@Override
-            	public void run() {
-            		if (lastPlayers != null) {
-            			lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
-            			ItemManager.getInstace().giveSpawnItem(lastPlayers);
-            		}
-            	}
-            }.runTaskLater(Main.getInstance(), 50L);
-        }
+				@Override
+				public void run() {
+					if (lastPlayers != null) {
+						lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
+						ItemManager.getInstace().giveSpawnItem(lastPlayers);
+					}
+				}
+			}.runTaskLater(Main.getInstance(), 50L);
+		}
 		endDuel(currentDuel, winningTeamNumber);
 		new BukkitRunnable() {
 				
@@ -436,7 +436,6 @@ public class DuelManager {
 				finishDuel(currentDuel);
 			}
 		}.runTaskLater(Main.getInstance(), 50L);
-
 	}
 	
 	public int getUnrankedFightFromLadder(Ladders ladder, boolean ranked) {
