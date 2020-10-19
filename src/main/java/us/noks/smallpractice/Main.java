@@ -37,7 +37,6 @@ import us.noks.smallpractice.objects.managers.QueueManager;
 
 public class Main extends JavaPlugin {
 	private boolean permissionsPluginHere;
-	
 	private Map<UUID, Inventory> offlineInventory = new WeakHashMap<UUID, Inventory>();
 	
 	private static Main instance;

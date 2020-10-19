@@ -6,6 +6,7 @@ public class MatchStats {
 	private int hit = 0;
 	private int combo = 0;
 	private int longestCombo = 0;
+	private Long enderpearlCooldown = 0L;
 	
 	public int getFailedPotions() {
 		return failedPotions;
@@ -47,10 +48,27 @@ public class MatchStats {
 		this.longestCombo = longestCombo;
 	}
 	
+	public boolean isEnderPearlCooldownActive() {
+		return this.enderpearlCooldown > System.currentTimeMillis();
+	}
+
+	public long getEnderPearlCooldown() {
+		return Math.max(0L, this.enderpearlCooldown - System.currentTimeMillis());
+	}
+
+	public void applyEnderPearlCooldown() {
+		this.enderpearlCooldown = Long.valueOf(System.currentTimeMillis() + 14 * 1000);
+	}
+
+	public void removeEnderPearlCooldown() {
+		this.enderpearlCooldown = 0L;
+	}
+	
 	public void resetDuelStats() {
 		this.failedPotions = 0;
 		this.hit = 0;
 		this.combo = 0;
 		this.longestCombo = 0;
+		this.removeEnderPearlCooldown();
 	}
 }

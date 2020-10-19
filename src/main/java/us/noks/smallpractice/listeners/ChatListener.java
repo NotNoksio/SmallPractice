@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import us.noks.smallpractice.Main;
@@ -25,9 +26,10 @@ public class ChatListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		PlayerManager pm = PlayerManager.get(event.getPlayer().getUniqueId());
+		final Player player = event.getPlayer();
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		String prefix = pm.getColoredPrefix() + "%1$s" + pm.getColoredSuffix() + ChatColor.RESET;
-		event.setFormat(prefix + ChatColor.WHITE + ": %2$s");
+		event.setFormat(prefix + ChatColor.WHITE + ": " + (player.isOp() ? ChatColor.translateAlternateColorCodes('&', "%2$s") : "%2$s"));
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
@@ -67,6 +69,16 @@ public class ChatListener implements Listener {
 					}
 				}
 			}
+		}
+	}
+	
+	@EventHandler
+	public void translateColorWhenSignPlaced(SignChangeEvent event) {
+		if (!event.getPlayer().isOp()) {
+			return;
+		}
+		for (int i = 0; i < 4; i++) {
+			event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));  
 		}
 	}
 }

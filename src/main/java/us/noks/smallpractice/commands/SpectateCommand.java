@@ -52,6 +52,13 @@ public class SpectateCommand implements CommandExecutor {
 			return false;
 		}
 		PlayerManager tm = PlayerManager.get(target.getUniqueId());
+		/*if (PartyManager.getInstance().hasParty(target.getUniqueId()) && tm.getStatus() == PlayerStatus.SPAWN) {
+			Party party = PartyManager.getInstance().getParty(target.getUniqueId());
+			
+			if (party.getPartyState() == PartyState.DUELING) {
+				
+			}
+		}*/
 		
 		if (tm.getStatus() != PlayerStatus.WAITING && tm.getStatus() != PlayerStatus.DUEL) {
 			player.sendMessage(ChatColor.RED + "That player isn't in duel!");

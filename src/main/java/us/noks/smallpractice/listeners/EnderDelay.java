@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class EnderDelay implements Listener {	
@@ -38,12 +39,13 @@ public class EnderDelay implements Listener {
 					player.updateInventory();
 					return;
 				}
-				if (!pm.isEnderPearlCooldownActive()) {
-					pm.applyEnderPearlCooldown();
+				MatchStats matchStats = pm.getMatchStats();
+				if (!matchStats.isEnderPearlCooldownActive()) {
+					matchStats.applyEnderPearlCooldown();
 					return;
 				}
 				event.setUseItemInHand(Result.DENY);
-				final double time = pm.getEnderPearlCooldown() / 1000.0D;
+				final double time = matchStats.getEnderPearlCooldown() / 1000.0D;
 				final DecimalFormat df = new DecimalFormat("#.#");
 				player.sendMessage(ChatColor.DARK_AQUA + "Pearl cooldown: " + ChatColor.YELLOW + df.format(time) + " second" + (time > 1.0D ? "s" : ""));
 				player.updateInventory();

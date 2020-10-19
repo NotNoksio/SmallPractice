@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class DBUtils {
@@ -16,10 +17,10 @@ public class DBUtils {
 	}
 
 	private boolean connected = true;
-	private String address = "localhost";
-	private String name = "";
-	private String username = "";
-	private String password = "";
+	private String address = Main.getInstance().getConfig().getString("database.address");
+	private String name = Main.getInstance().getConfig().getString("database.name");
+	private String username = Main.getInstance().getConfig().getString("database.username");
+	private String password = Main.getInstance().getConfig().getString("database.password");
 
 	private HikariDataSource hikari;
 	private final String SAVE = "UPDATE players SET kills=? WHERE uuid=?";

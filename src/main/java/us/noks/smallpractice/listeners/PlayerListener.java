@@ -217,6 +217,9 @@ public class PlayerListener implements Listener {
 				case BLOCK_EXPLOSION:
 					event.setDamage(0.0D);
 					break;
+				case FIRE:
+					event.setCancelled(true);
+					break;
 				default:
 					break;
 				}
@@ -341,7 +344,7 @@ public class PlayerListener implements Listener {
 		                Bukkit.dispatchCommand(player, "party create");
 		                break;
 		            }
-					if (item.getType() == Material.COMPASS && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "mini-games")) {
+					if (item.getType() == Material.GOLD_AXE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "mini-games")) {
 						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge game (because it's the only one ^^')");
 						player.teleport(Warps.BRIDGE.getLobbyLocation());
 						pm.setStatus(PlayerStatus.BRIDGE);
@@ -547,7 +550,7 @@ public class PlayerListener implements Listener {
 				Bukkit.dispatchCommand(player, "verif " + target.getName());
 				return;
 			}
-			if (player.getItemInHand().getType() == Material.PACKED_ICE && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "freeze player")) {
+			if (player.getItemInHand().getType() == Material.PACKED_ICE && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "freeze someone")) {
 				Bukkit.dispatchCommand(player, "freeze " + target.getName());
 			}
 		} 

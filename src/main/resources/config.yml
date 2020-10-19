@@ -1,0 +1,6 @@
+# For secret informations >:) #
+database:
+  address: "localhost"
+  name: ""
+  username: ""
+  password: ""

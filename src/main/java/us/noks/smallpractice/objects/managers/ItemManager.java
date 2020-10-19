@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
+import us.noks.smallpractice.utils.ItemBuilder;
 
 public class ItemManager {
 	private static ItemManager instance = new ItemManager();
@@ -26,45 +27,14 @@ public class ItemManager {
 		player.setGameMode(GameMode.SURVIVAL);
 		
 		if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
-			ItemStack u = new ItemStack(Material.IRON_SWORD, 1);
-			ItemMeta um = u.getItemMeta();
-			um.setDisplayName(ChatColor.YELLOW + "Unranked Queue");
-			um.spigot().setUnbreakable(true);
-			u.setItemMeta(um);
-			
-			ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
-			ItemMeta rm = r.getItemMeta();
-			rm.setDisplayName(ChatColor.YELLOW + "Ranked Queue");
-			rm.spigot().setUnbreakable(true);
-			r.setItemMeta(rm);
-			
-			ItemStack n = new ItemStack(Material.NAME_TAG, 1);
-			ItemMeta nm = n.getItemMeta();
-			nm.setDisplayName(ChatColor.YELLOW + "Create Party");
-			n.setItemMeta(nm);
-			
-			ItemStack c = new ItemStack(Material.COMPASS, 1);
-			ItemMeta cm = c.getItemMeta();
-			cm.setDisplayName(ChatColor.YELLOW + "Mini-Games");
-			c.setItemMeta(cm);
-			
-			ItemStack b = new ItemStack(Material.BOOK, 1);
-			ItemMeta bm = b.getItemMeta();
-			bm.setDisplayName(ChatColor.YELLOW + "Edit Kit/Settings");
-			b.setItemMeta(bm);
-			
-			player.getInventory().setItem(0, u);
-			player.getInventory().setItem(1, r);
-			player.getInventory().setItem(4, n);
-			player.getInventory().setItem(5, c);
-			player.getInventory().setItem(8, b);
+			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
+			player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
+			player.getInventory().setItem(4, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
+			player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.GOLD_AXE, ChatColor.YELLOW + "Mini-Games", true));
+			player.getInventory().setItem(8, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Edit Kit/Settings"));
 		} else {
 			Party party = PartyManager.getInstance().getParty(player.getUniqueId());
-			
-			ItemStack glass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
-			ItemMeta glassm = glass.getItemMeta();
-			glassm.setDisplayName(ChatColor.RED + "2 players needed");
-			glass.setItemMeta(glassm);
+			ItemStack glass = ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
 			
 			player.getInventory().setItem(0, glass);
 			player.getInventory().setItem(1, glass);
@@ -72,50 +42,17 @@ public class ItemManager {
 			
 			final boolean able = party.getSize() > 1;
 			if (able) {
-				ItemStack u = new ItemStack(Material.IRON_SWORD, 1);
-				ItemMeta um = u.getItemMeta();
-				um.setDisplayName(ChatColor.YELLOW + "2v2 Unranked Queue");
-				um.spigot().setUnbreakable(true);
-				u.setItemMeta(um);
-				
-				ItemStack r = new ItemStack(Material.DIAMOND_SWORD, 1);
-				ItemMeta rm = r.getItemMeta();
-				rm.setDisplayName(ChatColor.YELLOW + "2v2 Ranked Queue");
-				rm.spigot().setUnbreakable(true);
-				r.setItemMeta(rm);
-				
-				ItemStack a = new ItemStack(Material.ARROW, 1);
-				ItemMeta am = a.getItemMeta();
-				am.setDisplayName(ChatColor.YELLOW + "Split Teams");
-				a.setItemMeta(am);
-				
-				player.getInventory().setItem(0, u);
-				player.getInventory().setItem(1, r);
-				player.getInventory().setItem(5, a);
+				player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "2v2 Unranked Queue", true));
+				player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "2v2 Ranked Queue", true));
+				player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.ARROW, ChatColor.YELLOW + "Split Teams"));
 			}
 			if (party.getPartyState() == PartyState.DUELING) {
-				ItemStack d = new ItemStack(Material.BONE, 1);
-				ItemMeta dm = d.getItemMeta();
-				dm.setDisplayName(ChatColor.YELLOW + "Spectate Actual Match");
-				d.setItemMeta(dm);
-				
-				player.getInventory().setItem(2, d);
+				player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BONE, ChatColor.YELLOW + "Spectate Actual Match"));
 			}
 			
-			ItemStack b = new ItemStack(Material.BOOK, 1);
-			ItemMeta bm = b.getItemMeta();
-			bm.setDisplayName(ChatColor.YELLOW + "Fight Other Parties");
-			b.setItemMeta(bm);
-			
-			ItemStack p = new ItemStack(Material.PAPER, 1);
-			ItemMeta pm = p.getItemMeta();
-			pm.setDisplayName(ChatColor.YELLOW + "Party Information");
-			p.setItemMeta(pm);
-			
 			giveLeaveItem(player, "Party", false);
-			
-			player.getInventory().setItem(4, b);
-			player.getInventory().setItem(7, p);
+			player.getInventory().setItem(4, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Fight Other Parties"));
+			player.getInventory().setItem(7, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.PAPER, ChatColor.YELLOW + "Party Information"));
 		}
 		player.updateInventory();
 	}
@@ -130,14 +67,7 @@ public class ItemManager {
 			player.getInventory().setArmorContents(null);
 			player.setItemOnCursor(null);
 		}
-		
-		ItemStack r = new ItemStack(Material.REDSTONE, 1);
-		ItemMeta rm = r.getItemMeta();
-		rm.setDisplayName(ChatColor.RED + "Leave " + string);
-		r.setItemMeta(rm);
-		
-		player.getInventory().setItem(8, r);
-		player.updateInventory();
+		player.getInventory().setItem(8, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.REDSTONE, ChatColor.RED + "Leave " + string));
 	}
 	
 	public void giveModerationItem(Player player) {
@@ -147,34 +77,15 @@ public class ItemManager {
 		
 		player.setGameMode(GameMode.CREATIVE);
 		
-		ItemStack s = new ItemStack(Material.WOOD_SWORD, 1);
-		ItemMeta sm = s.getItemMeta();
-		sm.setDisplayName(ChatColor.RED + "Knockback V");
-		sm.spigot().setUnbreakable(true);
-		s.setItemMeta(sm);
+		ItemStack s = ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WOOD_SWORD, ChatColor.RED + "Knockback V", true);
 		s.addUnsafeEnchantment(Enchantment.KNOCKBACK, 5);
-		
-		ItemStack a = new ItemStack(Material.WATCH, 1);
-		ItemMeta am = a.getItemMeta();
-		am.setDisplayName(ChatColor.RED + "See Random Player");
-		a.setItemMeta(am);
-		
-		ItemStack ice = new ItemStack(Material.PACKED_ICE, 1);
-	    ItemMeta icem = ice.getItemMeta();
-	    icem.setDisplayName(ChatColor.RED + "Freeze Player");
-	    ice.setItemMeta(icem);
-	    
-	    ItemStack b = new ItemStack(Material.BOOK, 1);
-	    ItemMeta bm = b.getItemMeta();
-	    bm.setDisplayName(ChatColor.RED + "Inspection Tool");
-	    b.setItemMeta(bm);
 		
 		giveLeaveItem(player, "Moderation", false);
 		
 		player.getInventory().setItem(0, s);
-		player.getInventory().setItem(1, a);
-		player.getInventory().setItem(2, ice);
-		player.getInventory().setItem(3, b);
+		player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WATCH, ChatColor.RED + "See Random Player"));
+		player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.PACKED_ICE, ChatColor.RED + "Freeze Someone"));
+		player.getInventory().setItem(3, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.RED + "Inspection Tool"));
 		player.updateInventory();
 	}
 	
@@ -184,12 +95,7 @@ public class ItemManager {
 		player.setItemOnCursor(null);
 		
 		if (ladder != Ladders.SUMO) {
-			ItemStack b = new ItemStack(Material.ENCHANTED_BOOK, 1);
-			ItemMeta bm = b.getItemMeta();
-			bm.setDisplayName(ChatColor.YELLOW + ladder.getName() + " default kit");
-			b.setItemMeta(bm);
-			
-			player.getInventory().setItem(0, b);
+			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.ENCHANTED_BOOK, ChatColor.YELLOW + ladder.getName() + " default kit"));
 		}
 		player.updateInventory();
 	}
@@ -333,6 +239,7 @@ public class ItemManager {
 	}
 	
 	public void giveBridgeItems(Player player) {
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 		player.setItemOnCursor(null);
@@ -353,7 +260,6 @@ public class ItemManager {
 	    player.getInventory().setItem(0, i);
 	    
 	    player.updateInventory();
-	    PlayerManager pm = PlayerManager.get(player.getUniqueId());
 	    pm.showAllPlayer();
 	}
 }

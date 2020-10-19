@@ -151,15 +151,15 @@ public class PartyManager {
         for (ItemStack itemStack : this.partiesInventory.getContents()) {
             if (itemStack == null) continue;
             if (itemStack.getItemMeta().hasDisplayName() && itemStack.getItemMeta().getDisplayName().contains(leaderName)) {
+            	this.partiesInventory.remove(itemStack);
             	itemStack = (party.getPartyState() == PartyState.LOBBY ? new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)SkullType.PLAYER.ordinal()) : new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)SkullType.WITHER.ordinal()));
             	SkullMeta itemMeta = (SkullMeta) itemStack.getItemMeta();
             	if (party.getPartyState() == PartyState.LOBBY) {
             		itemMeta.setOwner(leader.getName());
             	}
-            	itemMeta.setLore(lores);
             	itemMeta.setDisplayName(ChatColor.DARK_AQUA + leaderName + " (" + ChatColor.YELLOW + party.getSize() + ChatColor.DARK_AQUA + ")");
+            	itemMeta.setLore(lores);
             	itemStack.setItemMeta(itemMeta);
-            	this.partiesInventory.remove(itemStack);
             	this.partiesInventory.addItem(itemStack);
             	break;
             }

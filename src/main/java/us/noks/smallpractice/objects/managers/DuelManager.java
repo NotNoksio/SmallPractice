@@ -466,7 +466,7 @@ public class DuelManager {
 			}
 			dpm.getMatchStats().resetDuelStats();
 			
-			dpm.removeEnderPearlCooldown();
+			dpm.getMatchStats().removeEnderPearlCooldown();
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
 		}
 		duelPlayerUUID.clear();
