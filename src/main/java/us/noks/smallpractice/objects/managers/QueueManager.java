@@ -29,7 +29,7 @@ public class QueueManager {
 			this.queue.put(uuid, new Queue(ladder, ranked));
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
-			ItemManager.getInstace().giveLeaveItem(player, "Queue");
+			ItemManager.getInstace().giveLeaveItem(player, "Queue", true);
 			player.sendMessage(ChatColor.GREEN + "You have been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " queue. Waiting for another player..");
 			InventoryManager.getInstance().updateUnrankedInventory();
 		}
@@ -50,6 +50,7 @@ public class QueueManager {
 			this.queue.remove(uuid);
 			this.queue.remove(secondUUID);
 			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
+			InventoryManager.getInstance().updateUnrankedInventory();
 		}
 	}
 	

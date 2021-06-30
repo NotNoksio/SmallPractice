@@ -336,7 +336,7 @@ public class PlayerListener implements Listener {
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "ranked queue")) {
 		                event.setCancelled(true);
-		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
+		                player.openInventory(InventoryManager.getInstance().getRankedInventory());
 		                break;
 		            }
 					if (item.getType() == Material.NAME_TAG && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "create party")) {
@@ -344,7 +344,7 @@ public class PlayerListener implements Listener {
 		                Bukkit.dispatchCommand(player, "party create");
 		                break;
 		            }
-					if (item.getType() == Material.GOLD_AXE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "mini-games")) {
+					if (item.getType() == Material.GOLD_AXE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "mini-game")) {
 						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge game (because it's the only one ^^')");
 						player.teleport(Warps.BRIDGE.getLobbyLocation());
 						pm.setStatus(PlayerStatus.BRIDGE);
@@ -352,8 +352,8 @@ public class PlayerListener implements Listener {
 						player.setNoDamageTicks(50);
 						break;
 					}
-					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "edit kit/settings")) {
-						player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
+					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "kit creator/settings")) {
+						player.openInventory(InventoryManager.getInstance().getSelectionInventory());
 						break;
 					}
 				} else {
@@ -432,20 +432,12 @@ public class PlayerListener implements Listener {
 				break;
 			case WAITING:
 				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().contains("default kit")) {
-					String itemName = item.getItemMeta().getDisplayName();
-					String itemNameWithoutColor = itemName.substring(2, itemName.length());
-					String[] ladderName = itemNameWithoutColor.split(" ");
-	                ItemManager.getInstace().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
-	                player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
+					this.giveFightItems(player, item.getItemMeta().getDisplayName());
 	            }
 				break;
 			case DUEL:
 				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().contains("default kit")) {
-					String itemName = item.getItemMeta().getDisplayName();
-					String itemNameWithoutColor = itemName.substring(2, itemName.length());
-					String[] ladderName = itemNameWithoutColor.split(" ");
-	                ItemManager.getInstace().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
-	                player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
+					this.giveFightItems(player, item.getItemMeta().getDisplayName());
 	            }
 				break;
 			case SPECTATE:
@@ -466,6 +458,17 @@ public class PlayerListener implements Listener {
 	        		pm.setSpectate(null);
 	        		player.teleport(player.getWorld().getSpawnLocation());
 	        		ItemManager.getInstace().giveSpawnItem(player);
+	        		break;
+	            }
+				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.GREEN + "see current arena")) {
+	                event.setCancelled(true);
+	                final Player spectatePlayer = pm.getSpectate();
+	                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
+	                
+	                if (spectatedDuel == null) {
+	                	return;
+	                }
+	                // TODO: SEE ALL PLAYERS IN THE CURRENT ARENA
 	            }
 				break;
 			case MODERATION:
@@ -502,6 +505,13 @@ public class PlayerListener implements Listener {
 				break;
 			}
         }
+	}
+	
+	private void giveFightItems(Player player, String name) {
+		String itemName = ChatColor.stripColor(name);
+		String[] ladderName = itemName.split(" ");
+        ItemManager.getInstace().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
+        player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
 	}
 	
 	@EventHandler

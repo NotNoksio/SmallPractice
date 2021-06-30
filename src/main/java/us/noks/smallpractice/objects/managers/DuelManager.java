@@ -438,7 +438,7 @@ public class DuelManager {
 		}.runTaskLater(Main.getInstance(), 50L);
 	}
 	
-	public int getUnrankedFightFromLadder(Ladders ladder, boolean ranked) {
+	public int getFightFromLadder(Ladders ladder, boolean ranked) {
 		int count = 0;
 		for (Duel duel : this.uuidIdentifierToDuel.values()) {
 			if (duel.getLadder() == ladder && duel.isRanked() == ranked) {

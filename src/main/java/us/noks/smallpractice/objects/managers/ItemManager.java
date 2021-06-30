@@ -30,8 +30,8 @@ public class ItemManager {
 			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
 			player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
 			player.getInventory().setItem(4, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
-			player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.GOLD_AXE, ChatColor.YELLOW + "Mini-Games", true));
-			player.getInventory().setItem(8, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Edit Kit/Settings"));
+			player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.GOLD_AXE, ChatColor.YELLOW + "Mini-Game", true));
+			player.getInventory().setItem(8, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings"));
 		} else {
 			Party party = PartyManager.getInstance().getParty(player.getUniqueId());
 			ItemStack glass = ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
@@ -57,10 +57,10 @@ public class ItemManager {
 		player.updateInventory();
 	}
 	
-	public void giveLeaveItem(Player player, String string) {
-		giveLeaveItem(player, string, true);
+	public void giveLeaveItem(Player player, String string, boolean updateInventory) {
+		giveLeaveItem(player, string, true, updateInventory);
 	}
-	private void giveLeaveItem(Player player, String string, boolean clearInventory) {
+	private void giveLeaveItem(Player player, String string, boolean clearInventory, boolean updateInventory) {
 		// Queue - Spectate - Party - Moderation
 		if (clearInventory) {
 			player.getInventory().clear();
@@ -68,6 +68,9 @@ public class ItemManager {
 			player.setItemOnCursor(null);
 		}
 		player.getInventory().setItem(8, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.REDSTONE, ChatColor.RED + "Leave " + string));
+		if (updateInventory) {
+			player.updateInventory();
+		}
 	}
 	
 	public void giveModerationItem(Player player) {
@@ -86,6 +89,19 @@ public class ItemManager {
 		player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WATCH, ChatColor.RED + "See Random Player"));
 		player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.PACKED_ICE, ChatColor.RED + "Freeze Someone"));
 		player.getInventory().setItem(3, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.RED + "Inspection Tool"));
+		player.updateInventory();
+	}
+	
+	public void giveSpectatorItems(Player player) {
+		player.getInventory().clear();
+		player.getInventory().setArmorContents(null);
+		player.setItemOnCursor(null);
+		
+		giveLeaveItem(player, "Spectate", false);
+		
+		player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WATCH, ChatColor.GREEN + "See current arena"));
+		player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EMERALD, ChatColor.GREEN + "See all spectators"));
+		player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.WOOL, 1, (short) 0), ChatColor.GREEN + "Fly/Walk speed " + player.getFlySpeed() + "/" + player.getWalkSpeed()));
 		player.updateInventory();
 	}
 	

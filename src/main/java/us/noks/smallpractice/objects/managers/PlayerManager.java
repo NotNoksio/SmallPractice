@@ -58,6 +58,7 @@ public class PlayerManager {
 	    this.cooldown = new CommandCooldown();
 	    if (Main.getInstance().getOfflineInventoryMap().containsKey(playerUUID)) {
 	    	this.savedInventory = Main.getInstance().getOfflineInventoryMap().get(playerUUID);
+	    	Main.getInstance().getOfflineInventoryMap().remove(playerUUID);
 	    }
 	}
 
@@ -197,9 +198,6 @@ public class PlayerManager {
 	}
 	
 	public String getPrefixColors() {
-		if (!Main.getInstance().isPermissionsPluginHere()) {
-			return "";
-		}
 		if (getPrefix().isEmpty()) {
 			return "";
 		}
@@ -230,7 +228,7 @@ public class PlayerManager {
 		return count == 1 ? color.toString() : color.toString() + magicColor.toString();
 
 		//                 |Tab||   Chat Prefix    |
-		//                 ↓   ↓↓                  ↓
+		//                 |   ||                  |
 		// PREFIX FORMAT -> &3&l&f[&3Developer&f] &3
 	}
 	

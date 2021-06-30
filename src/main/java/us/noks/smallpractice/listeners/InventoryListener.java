@@ -52,12 +52,11 @@ public class InventoryListener implements Listener {
 		final Player player = (Player) event.getWhoClicked();
 		if (title.equals("unranked selection") || title.equals("ranked selection") || title.equals("ladder selection")) {
 			event.setCancelled(true);
-			String itemName = item.getItemMeta().getDisplayName();
-			String itemNameWithoutColor = itemName.substring(2, itemName.length());
-			if (!Ladders.contains(itemNameWithoutColor)) {
+			String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+			if (!Ladders.contains(itemName)) {
 				return;
 			}
-			Ladders ladder = Ladders.getLadderFromName(itemNameWithoutColor);
+			Ladders ladder = Ladders.getLadderFromName(itemName);
 			if (!ladder.isEnable()) {
 				player.sendMessage(ChatColor.RED + "No arena created!");
 				player.closeInventory();
@@ -80,8 +79,8 @@ public class InventoryListener implements Listener {
 				player.closeInventory();
 				return;
 			}
-			String[] itemName = splitString(item.getItemMeta().getDisplayName());
-            itemName[0] = ChatColor.stripColor(itemName[0]);
+			String[] itemName = splitString(ChatColor.stripColor(item.getItemMeta().getDisplayName()));
+            //itemName[0] = ChatColor.stripColor(itemName[0]);
             if (player.getName().toLowerCase().equals(itemName[0].toLowerCase())) {
             	player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
             	return;
@@ -104,6 +103,19 @@ public class InventoryListener implements Listener {
 			}
 			RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
 			player.closeInventory();
+		}
+		if (title.equals("selector")) {
+			event.setCancelled(true);
+			String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
+			if (itemName.equals("kit creator")) {
+				player.closeInventory();
+				player.openInventory(InventoryManager.getInstance().getEditingInventory());
+				return;
+			}
+			if (itemName.equals("configurate settings")) {
+				player.closeInventory();
+				player.openInventory(InventoryManager.getInstance().getSettingsInventory());
+			}
 		}
 	}
 	

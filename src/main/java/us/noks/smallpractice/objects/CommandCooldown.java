@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class CommandCooldown {
-	
 	private Map<String, Long> cooldown = new WeakHashMap<String, Long>();
 	
 	public void addCooldown(String name, Long time) {

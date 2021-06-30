@@ -29,7 +29,7 @@ public class ChatListener implements Listener {
 		final Player player = event.getPlayer();
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		String prefix = pm.getColoredPrefix() + "%1$s" + pm.getColoredSuffix() + ChatColor.RESET;
-		event.setFormat(prefix + ChatColor.WHITE + ": " + (player.isOp() ? ChatColor.translateAlternateColorCodes('&', "%2$s") : "%2$s"));
+		event.setFormat(prefix + ChatColor.WHITE + ": %2$s");
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
