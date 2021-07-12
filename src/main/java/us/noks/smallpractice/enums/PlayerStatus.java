@@ -8,5 +8,5 @@ public enum PlayerStatus {
 	BUILD, 
 	WAITING, 
 	DUEL,
-	BRIDGE; 
+	BRIDGE; // TODO: THIS GAMEMODE WILL BE AN ADD-ON ASAP
 }

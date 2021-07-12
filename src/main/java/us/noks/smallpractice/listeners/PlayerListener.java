@@ -2,6 +2,7 @@ package us.noks.smallpractice.listeners;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,6 +33,8 @@ import com.google.common.collect.Lists;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.arena.Arena;
+import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.enums.RemoveReason;
@@ -117,8 +120,10 @@ public class PlayerListener implements Listener {
 	
 	private void sendJoinMessage(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		for (int i = 0; i < 100; i++) {
-			player.sendMessage(""); 
+		if (Main.getInstance().clearChatOnJoin) {
+			for (int i = 0; i < 100; i++) {
+				player.sendMessage(""); 
+			}
 		}
 		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
@@ -146,6 +151,12 @@ public class PlayerListener implements Listener {
 			InventoryManager.getInstance().updateUnrankedInventory();
 		}
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
+			for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
+				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
+				allArenas.removeSpectator(player.getUniqueId());
+			}
+		}
 		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
 			DuelManager.getInstance().removePlayerFromDuel(player, RemoveReason.DISCONNECTED);
 		}
@@ -443,19 +454,25 @@ public class PlayerListener implements Listener {
 			case SPECTATE:
 				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave spectate")) {
 	                event.setCancelled(true);
-	                final Player spectatePlayer = pm.getSpectate();
-	                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
-	                
-	                if (spectatedDuel != null) {
-	                	spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
-	                	spectatedDuel.removeSpectator(player.getUniqueId());
+	                if (pm.getSpectate() != null) {
+		                final Player spectatePlayer = pm.getSpectate();
+		                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
+		                
+		                if (spectatedDuel != null) {
+		                	spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
+		                	spectatedDuel.removeSpectator(player.getUniqueId());
+		                }
+		                pm.setSpectate(null);
+	                } else {
+	                	for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
+	        				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
+	        				allArenas.removeSpectator(player.getUniqueId());
+	        			}
 	                }
-	        		
 	        		player.setAllowFlight(false);
 	        		player.setFlying(false);
 	        		pm.setStatus(PlayerStatus.SPAWN);
 	        		pm.showAllPlayer();
-	        		pm.setSpectate(null);
 	        		player.teleport(player.getWorld().getSpawnLocation());
 	        		ItemManager.getInstace().giveSpawnItem(player);
 	        		break;
@@ -464,11 +481,25 @@ public class PlayerListener implements Listener {
 	                event.setCancelled(true);
 	                final Player spectatePlayer = pm.getSpectate();
 	                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
+	                final Arenas currentArena = spectatedDuel.getArena();
 	                
-	                if (spectatedDuel == null) {
-	                	return;
+	                if (spectatedDuel != null) {
+	                	spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
+	                	spectatedDuel.removeSpectator(player.getUniqueId());
+	                	pm.setSpectate(null);
 	                }
-	                // TODO: SEE ALL PLAYERS IN THE CURRENT ARENA
+	                List <UUID> playersInArena = Lists.newArrayList();
+	                for (Duel duel : DuelManager.getInstance().getAllDuels()) {
+	                	if (currentArena != duel.getArena()) continue;
+	                	playersInArena.addAll(duel.getFirstAndSecondTeamsAlive());
+	                }
+	                currentArena.addSpectator(player.getUniqueId());
+	                for (UUID playerInArenaUUID : playersInArena) {
+	                	Player playerInArena = Bukkit.getPlayer(playerInArenaUUID);
+	                	if (!player.canSee(playerInArena)) player.showPlayer(playerInArena);
+	                }
+	                ItemManager.getInstace().giveSpectatorItems(player, false);
+	                playersInArena.clear();
 	            }
 				break;
 			case MODERATION:

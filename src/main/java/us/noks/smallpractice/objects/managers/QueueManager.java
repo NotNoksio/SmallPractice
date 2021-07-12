@@ -50,7 +50,11 @@ public class QueueManager {
 			this.queue.remove(uuid);
 			this.queue.remove(secondUUID);
 			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
-			InventoryManager.getInstance().updateUnrankedInventory();
+			if (!ranked) {
+				InventoryManager.getInstance().updateUnrankedInventory();
+			} else {
+				InventoryManager.getInstance().updateRankedInventory();
+			}
 		}
 	}
 	
@@ -58,11 +62,16 @@ public class QueueManager {
 		if (!this.queue.containsKey(player.getUniqueId())) {
 			return;
 		}
+		final boolean ranked = this.queue.get(player.getUniqueId()).isRanked();
 		this.queue.remove(player.getUniqueId());
 		PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
 		ItemManager.getInstace().giveSpawnItem(player);
 		player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
-		InventoryManager.getInstance().updateUnrankedInventory();
+		if (!ranked) {
+			InventoryManager.getInstance().updateUnrankedInventory();
+		} else {
+			InventoryManager.getInstance().updateRankedInventory();
+		}
 	}
 	
 	public int getQueuedFromLadder(Ladders ladder, boolean ranked) {

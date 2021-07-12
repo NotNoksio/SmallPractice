@@ -16,43 +16,43 @@ public class ModerationCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player) {
-			if (!sender.hasPermission("command.moderation")) {
-				sender.sendMessage(ChatColor.RED + "No permission.");
-				return false;
-			}
-			if (args.length > 0) {
-				sender.sendMessage(ChatColor.RED + "Usage: /mod");
-				return false;
-			}
-			Player player = (Player) sender;
+		if (!(sender instanceof Player)) {
+			return false;
+		}
+		if (!sender.hasPermission("command.moderation")) {
+			sender.sendMessage(ChatColor.RED + "No permission.");
+			return false;
+		}
+		if (args.length > 0) {
+			sender.sendMessage(ChatColor.RED + "Usage: /mod");
+			return false;
+		}
+		Player player = (Player) sender;
 			
-			if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
-				player.sendMessage(ChatColor.RED + "You are in party!");
-				return false;
-			}
-			PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+			player.sendMessage(ChatColor.RED + "You are in party!");
+			return false;
+		}
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
-			if (pm.getStatus() == PlayerStatus.MODERATION) {
-				player.teleport(player.getWorld().getSpawnLocation());
-                pm.setStatus(PlayerStatus.SPAWN);
-                ItemManager.getInstace().giveSpawnItem(player);
-                pm.showAllPlayer();
-                return true;
-			}
-			if (pm.getStatus() != PlayerStatus.SPAWN) {
-				player.sendMessage(ChatColor.RED + "You cant execute this command on your current state!");
-				return false;
-			}
-			
-			pm.setStatus(PlayerStatus.MODERATION);
-			for (Player allPlayers : Bukkit.getOnlinePlayers()) {
-				allPlayers.hidePlayer(player);
-				player.showPlayer(allPlayers);
-			}
-			ItemManager.getInstace().giveModerationItem(player);
+		if (pm.getStatus() == PlayerStatus.MODERATION) {
+			player.teleport(player.getWorld().getSpawnLocation());
+			pm.setStatus(PlayerStatus.SPAWN);
+			ItemManager.getInstace().giveSpawnItem(player);
+			pm.showAllPlayer();
 			return true;
 		}
-		return false;
+		if (pm.getStatus() != PlayerStatus.SPAWN) {
+			player.sendMessage(ChatColor.RED + "You cant execute this command on your current state!");
+			return false;
+		}
+			
+		pm.setStatus(PlayerStatus.MODERATION);
+		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
+			allPlayers.hidePlayer(player);
+			player.showPlayer(allPlayers);
+		}
+		ItemManager.getInstace().giveModerationItem(player);
+		return true;
 	}
 }

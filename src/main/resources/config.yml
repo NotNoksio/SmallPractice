@@ -4,3 +4,4 @@ database:
   name: ""
   username: ""
   password: ""
+clear-chat-on-join: true

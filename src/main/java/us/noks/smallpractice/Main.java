@@ -38,6 +38,7 @@ import us.noks.smallpractice.objects.managers.QueueManager;
 public class Main extends JavaPlugin {
 	private boolean permissionsPluginHere;
 	private Map<UUID, Inventory> offlineInventory = new WeakHashMap<UUID, Inventory>();
+	public boolean clearChatOnJoin = true;
 	
 	private static Main instance;
 	public static Main getInstance() {
@@ -47,6 +48,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		clearChatOnJoin = this.getConfig().getBoolean("clear-chat-on-join");
 		registerCommands();
 		registerListers();
 		getPermissionsPlugin();

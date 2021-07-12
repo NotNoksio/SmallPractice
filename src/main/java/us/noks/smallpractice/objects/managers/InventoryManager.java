@@ -156,7 +156,7 @@ public class InventoryManager {
 		this.selectingDuel.remove(requester); 
 	}
 	
-	private int calculateSize(int amountOfLadders) {
+	private int calculateSize(int amountOfLadders) { // TODO: AUTOMATIZE IT
 		if (amountOfLadders > 9) {
 			return 18;
 		}

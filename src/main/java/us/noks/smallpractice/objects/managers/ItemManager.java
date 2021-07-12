@@ -92,14 +92,19 @@ public class ItemManager {
 		player.updateInventory();
 	}
 	
-	public void giveSpectatorItems(Player player) {
+	// TODO: Spectating a player/spectating an arena (different inventory)
+	public void giveSpectatorItems(Player player, boolean spectatingPlayer) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 		player.setItemOnCursor(null);
 		
 		giveLeaveItem(player, "Spectate", false);
 		
-		player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WATCH, ChatColor.GREEN + "See current arena"));
+		if (spectatingPlayer) {
+			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WATCH, ChatColor.GREEN + "See current arena"));
+		} else {
+			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.MAP, ChatColor.GREEN + "Change arena"));
+		}
 		player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EMERALD, ChatColor.GREEN + "See all spectators"));
 		player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.WOOL, 1, (short) 0), ChatColor.GREEN + "Fly/Walk speed " + player.getFlySpeed() + "/" + player.getWalkSpeed()));
 		player.updateInventory();

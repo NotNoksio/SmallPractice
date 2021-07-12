@@ -36,6 +36,7 @@ public class DBUtils {
 			this.hikari.addDataSourceProperty("databaseName", this.name);
 			this.hikari.addDataSourceProperty("user", this.username);
 			this.hikari.addDataSourceProperty("password", this.password);
+			// KEEP THE CONNECTION OPEN WITH HIKARI - start
 			this.hikari.addDataSourceProperty("autoReconnect", Boolean.valueOf(true));
 			this.hikari.addDataSourceProperty("cachePrepStmts", Boolean.valueOf(true));
 			this.hikari.addDataSourceProperty("prepStmtCacheSize", Integer.valueOf(250));
@@ -44,6 +45,7 @@ public class DBUtils {
 			this.hikari.addDataSourceProperty("cacheResultSetMetadata", Boolean.valueOf(true));
 			this.hikari.setMaximumPoolSize(20);
 			this.hikari.setConnectionTimeout(30000L);
+			// KEEP THE CONNECTION OPEN WITH HIKARI - end
 			createTable();
 		} catch (Exception exception) {
 		}

@@ -1,6 +1,5 @@
 package us.noks.smallpractice.objects;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -42,7 +40,7 @@ public class Duel {
 		this.firstTeamAlive = Lists.newArrayList(firstTeam);
 		this.secondTeamAlive = Lists.newArrayList(secondTeam);
 		this.ranked = ranked;
-		this.drops = Lists.newArrayList();
+		this.drops = Lists.newLinkedList();
 	}
 	
 	public Arenas getArena() {
@@ -64,6 +62,12 @@ public class Duel {
 	public List<UUID> getFirstAndSecondTeams() {
 		List<UUID> teams = Lists.newArrayList(this.firstTeam);
 		teams.addAll(this.secondTeam);
+		return teams;
+	}
+	
+	public List<UUID> getFirstAndSecondTeamsAlive() {
+		List<UUID> teams = Lists.newArrayList(this.firstTeamAlive);
+		teams.addAll(this.secondTeamAlive);
 		return teams;
 	}
 	
@@ -115,8 +119,8 @@ public class Duel {
 		sendSoundedMessage(message, sound, 1.0f, 1.0f);
 	}
 	public void sendSoundedMessage(String message, Sound sound, float volume, float pitch) {
-		List<UUID> duelPlayers = Lists.newArrayList(getFirstAndSecondTeams());
-		duelPlayers.addAll(getAllSpectators());
+		List<UUID> duelPlayers = getFirstAndSecondTeams();
+		if (!getAllSpectators().isEmpty()) duelPlayers.addAll(getAllSpectators());
 		
 		for (UUID uuid : duelPlayers) {
 			final Player player = Bukkit.getPlayer(uuid);
@@ -132,12 +136,14 @@ public class Duel {
 		if (!isValid()) {
 			return;
 		}
-		for (UUID firstUUID : this.firstTeamAlive) {
-			for (UUID secondUUID : this.secondTeamAlive) {
-                Player first = Bukkit.getPlayer(firstUUID);
-                Player second = Bukkit.getPlayer(secondUUID);
-				first.showPlayer(second);
-				second.showPlayer(first);
+		if (!getFirstAndSecondTeams().isEmpty()) {
+			for (UUID firstUUID : this.firstTeamAlive) {
+				for (UUID secondUUID : this.secondTeamAlive) {
+	                Player first = Bukkit.getPlayer(firstUUID);
+	                Player second = Bukkit.getPlayer(secondUUID);
+					first.showPlayer(second);
+					second.showPlayer(first);
+				}
 			}
 		}
 	}
@@ -146,16 +152,8 @@ public class Duel {
 		return firstTeamPartyLeaderUUID;
 	}
 
-	public void setFirstTeamPartyLeaderUUID(UUID firstTeamPartyLeaderUUID) {
-		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
-	}
-
 	public UUID getSecondTeamPartyLeaderUUID() {
 		return secondTeamPartyLeaderUUID;
-	}
-
-	public void setSecondTeamPartyLeaderUUID(UUID secondTeamPartyLeaderUUID) {
-		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
 	}
 	
 	public boolean containPlayer(Player player) {
@@ -177,10 +175,8 @@ public class Duel {
 		return this.timeBeforeDuel;
 	}
 	
-	public void addDrops(List<ItemStack> item) {
-		for (ItemStack items : item) {
-			this.drops.add((Item) items);
-		}
+	public void addDrops(List<Item> items) {
+		this.drops.addAll(items);
 	}
 	
 	public void addDrops(Item item) {
@@ -192,10 +188,8 @@ public class Duel {
 	}
 	
 	public void clearDrops() {
-		Iterator<Item> it = this.drops.iterator();
-		while (it.hasNext()) {
-			Item items = it.next();
-			items.remove();
+		for (Item itemsOnTheGround : this.drops) {
+			itemsOnTheGround.remove();
 		}
 	}
 }

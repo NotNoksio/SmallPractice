@@ -3,15 +3,19 @@ package us.noks.smallpractice.arena;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Maps;
+
+import net.minecraft.util.com.google.common.collect.Lists;
 
 public class Arena {
 	private Map<Integer, Arenas> arenaList = Maps.newConcurrentMap();
@@ -77,12 +81,18 @@ public class Arena {
 		private Location[] locations;
 		private ItemStack icon;
 		private boolean sumo;
+		private List<UUID> spectators;
 		
 		public Arenas(String name, Location[] locations, ItemStack icon, boolean sumo) {
 			this.name = name;
 			this.locations = locations;
 			this.icon = icon;
 			this.sumo = sumo;
+			this.spectators = Lists.newArrayList();
+		}
+		
+		public World getWorld() { // In case we need someday
+			return this.locations[0].getWorld();
 		}
 		
 		public String getName() {
@@ -99,6 +109,22 @@ public class Arena {
 		
 		public boolean isSumo() {
 			return this.sumo;
+		}
+		
+		public void addSpectator(UUID uuid) {
+			this.spectators.add(uuid);
+		}
+		
+		public void removeSpectator(UUID uuid) {
+			this.spectators.remove(uuid);
+		}
+		
+		public List<UUID> getAllSpectators() {
+			return this.spectators;
+		}
+		
+		public boolean hasSpectators() {
+			return !this.spectators.isEmpty();
 		}
 	}
 }

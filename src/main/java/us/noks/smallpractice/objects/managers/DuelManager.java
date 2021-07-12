@@ -46,6 +46,14 @@ public class DuelManager {
         return this.uuidIdentifierToDuel.get(uuid);
     }
 	
+	public List<Duel> getAllDuels() {
+		List<Duel> list = Lists.newArrayList();
+		for (Duel allDuels : uuidIdentifierToDuel.values()) {
+			list.add(allDuels);
+		}
+		return list;
+	}
+	
 	public void startDuel(Arenas arena, Ladders ladder, UUID player1, UUID player2, boolean ranked) {
 		List<UUID> firstTeam = Lists.newArrayList();
 		firstTeam.add(player1);
@@ -369,7 +377,16 @@ public class DuelManager {
 			second.teleport(duel.getArena().getLocations()[1]);
 			second.setSneaking(false);
 		}
+		Arenas arena = duel.getArena();
+		// TODO: CHANGE THAT! THAT'S ABSOLUTE TRASH - start
 		for (UUID firstUUID : duel.getFirstTeamAlive()) {
+			if (arena.hasSpectators()) {
+				for (UUID spectatorsUUID : arena.getAllSpectators()) {
+					Player spectator = Bukkit.getPlayer(spectatorsUUID);
+					Player first = Bukkit.getPlayer(firstUUID);
+					spectator.showPlayer(first);
+				}
+			}
 			for (UUID secondFirstUUID : duel.getFirstTeamAlive()) {
 				Player first = Bukkit.getPlayer(firstUUID);
 				Player secondFirst = Bukkit.getPlayer(secondFirstUUID);
@@ -378,6 +395,13 @@ public class DuelManager {
 			}
 		}
 		for (UUID firstSecondUUID : duel.getSecondTeamAlive()) {
+			if (arena.hasSpectators()) {
+				for (UUID spectatorsUUID : arena.getAllSpectators()) {
+					Player spectator = Bukkit.getPlayer(spectatorsUUID);
+					Player second = Bukkit.getPlayer(firstSecondUUID);
+					spectator.showPlayer(second);
+				}
+			}
 			for (UUID secondUUID : duel.getSecondTeamAlive()) {
 				Player firstSecond = Bukkit.getPlayer(firstSecondUUID);
 				Player second = Bukkit.getPlayer(secondUUID);
@@ -385,9 +409,11 @@ public class DuelManager {
 				second.showPlayer(firstSecond);
 			}
 		}
+		// TODO: CHANGE THAT! THAT'S ABSOLUTE TRASH - end
 		sendWaitingMessage(duel);
 	}
 	
+	// TODO: SETTING > RESPAWN AS A SPECTATOR
 	public void removePlayerFromDuel(Player player, RemoveReason reason) {
 		final Duel currentDuel = getDuelFromPlayerUUID(player.getUniqueId());
 		
