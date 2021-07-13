@@ -1,5 +1,7 @@
 package us.noks.smallpractice.listeners;
 
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -14,11 +16,16 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.collect.Lists;
+
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
+import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.Request;
+import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.InventoryManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
@@ -90,18 +97,41 @@ public class InventoryListener implements Listener {
 		}
 		if (title.equals("arena selection")) {
 			event.setCancelled(true);
-			Request request = InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId());
-			Player target = Bukkit.getPlayer(request.getRequestedUUID());
-			if (target == null) {
-				player.sendMessage(ChatColor.RED + "Player not found!");
-				player.closeInventory();
-				return;
-			} 
 			int slotTranslation = event.getSlot() + 1;
 			if (Arena.getInstance().getArenaByInteger(slotTranslation) == null) {
 				return;
 			}
-			RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
+			if (InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
+				final Request request = InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId());
+				final Player target = Bukkit.getPlayer(request.getRequestedUUID());
+				if (target == null) {
+					player.sendMessage(ChatColor.RED + "Player not found!");
+					player.closeInventory();
+					return;
+				} 
+				RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
+			} else {
+				final Arenas selectedArena = Arena.getInstance().getArenaByInteger(slotTranslation);
+				for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
+    				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
+    				allArenas.removeSpectator(player.getUniqueId());
+    			}
+				
+				final List <UUID> playersInArena = Lists.newArrayList();
+                for (Duel duel : DuelManager.getInstance().getAllDuels()) {
+                	if (selectedArena != duel.getArena()) continue;
+                	playersInArena.addAll(duel.getFirstAndSecondTeamsAlive());
+                }
+                if (!playersInArena.isEmpty()) {
+	                for (UUID playerInArenaUUID : playersInArena) {
+	                	Player playerInArena = Bukkit.getPlayer(playerInArenaUUID);
+	                	if (!player.canSee(playerInArena)) player.showPlayer(playerInArena);
+	                }
+                }
+                selectedArena.addSpectator(player.getUniqueId());
+				player.teleport(selectedArena.getLocations()[0]);
+				playersInArena.clear();
+			}
 			player.closeInventory();
 		}
 		if (title.equals("selector")) {

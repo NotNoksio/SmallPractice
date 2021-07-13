@@ -1,5 +1,7 @@
 package us.noks.smallpractice.objects.managers;
 
+import java.util.Random;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -100,13 +102,9 @@ public class ItemManager {
 		
 		giveLeaveItem(player, "Spectate", false);
 		
-		if (spectatingPlayer) {
-			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WATCH, ChatColor.GREEN + "See current arena"));
-		} else {
-			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.MAP, ChatColor.GREEN + "Change arena"));
-		}
-		player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EMERALD, ChatColor.GREEN + "See all spectators"));
-		player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.WOOL, 1, (short) 0), ChatColor.GREEN + "Fly/Walk speed " + player.getFlySpeed() + "/" + player.getWalkSpeed()));
+		player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial((spectatingPlayer ? Material.WATCH : Material.MAP), ChatColor.GREEN + (spectatingPlayer ? "See current arena" : "Change arena")));
+		player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.GREEN + "See all spectators"));
+		player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), ChatColor.GREEN + "Change Fly/Walk Speed"));
 		player.updateInventory();
 	}
 	

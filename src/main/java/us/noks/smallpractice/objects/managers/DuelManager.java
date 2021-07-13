@@ -108,7 +108,8 @@ public class DuelManager {
 		Team green2 = secondPlayerScoreboard.registerNewTeam("green");
 		green2.setPrefix(ChatColor.GREEN.toString());
 		green2.setAllowFriendlyFire(false);
-        
+		
+		final boolean teamFight = (firstPartyLeaderUUID != null && secondPartyLeaderUUID != null);
 		for (UUID firstUUID : firstTeam) {
 			Player first = Bukkit.getPlayer(firstUUID);
 			
@@ -123,7 +124,7 @@ public class DuelManager {
 			fm.setStatus(PlayerStatus.WAITING);
 			
 			first.setGameMode(GameMode.SURVIVAL);
-			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (secondPartyLeaderUUID != null ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()));
+			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName()));
 			fm.heal(true);
 			
 			green1.addEntry(first.getName());
@@ -144,30 +145,27 @@ public class DuelManager {
 			sm.setStatus(PlayerStatus.WAITING);
 			
 			second.setGameMode(GameMode.SURVIVAL);
-			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (firstPartyLeaderUUID != null ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()));
+			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName()));
 			sm.heal(true);
 			
 			green2.addEntry(second.getName());
 			red1.addEntry(second.getName());
 			second.setScoreboard(secondPlayerScoreboard);
 		}
-		if (firstPartyLeaderUUID != null) {
-            Party party = PartyManager.getInstance().getParty(firstPartyLeaderUUID);
-            if (party != null) {
-                party.setPartyState(PartyState.DUELING);
+		if (teamFight) {
+			List<Party> partyList = Lists.newArrayList(PartyManager.getInstance().getParty(firstPartyLeaderUUID), PartyManager.getInstance().getParty(secondPartyLeaderUUID));
+            for (Party parties : partyList) {
+            	if (parties == null) continue;
+            	parties.setPartyState(PartyState.DUELING);
+            	PartyManager.getInstance().updateParty(parties);
             }
-            PartyManager.getInstance().updateParty(party);
-        }
-        if (secondPartyLeaderUUID != null) {
-        	Party party = PartyManager.getInstance().getParty(secondPartyLeaderUUID);
-            if (party != null) {
-                party.setPartyState(PartyState.DUELING);
-            }
-            PartyManager.getInstance().updateParty(party);
+            partyList.clear(); // TODO: console error = remove
         }
         if (firstTeam.size() == 1 && secondTeam.size() == 1 && (firstPartyLeaderUUID == null && secondPartyLeaderUUID == null)) {
         	if (!ranked) {
         		InventoryManager.getInstance().updateUnrankedInventory();
+        	} else {
+        		InventoryManager.getInstance().updateRankedInventory();
         	}
         }
 		teleportRandomArena(new Duel(arena, ladder, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
@@ -191,7 +189,7 @@ public class DuelManager {
         List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         
-        startDuel(Arena.getInstance().getRandomArena(false), Ladders.NODEBUFF, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
+        startDuel(Arena.getInstance().getRandomArena(false), Ladders.NODEBUFF, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false); // TODO: MORE LADDERS MF
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
@@ -219,23 +217,20 @@ public class DuelManager {
 			ItemManager.getInstace().giveSpawnItem(spec);
 			specIt.remove();
 		}
-		if (duel.getFirstTeamPartyLeaderUUID() != null) {
-            Party party = PartyManager.getInstance().getParty(duel.getFirstTeamPartyLeaderUUID());
-            if (party != null) {
-                party.setPartyState(PartyState.LOBBY);
+		if (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null) {
+			List<Party> partyList = Lists.newArrayList(PartyManager.getInstance().getParty(duel.getFirstTeamPartyLeaderUUID()), PartyManager.getInstance().getParty(duel.getSecondTeamPartyLeaderUUID()));
+            for (Party parties : partyList) {
+            	if (parties == null) continue;
+            	parties.setPartyState(PartyState.LOBBY);
+            	PartyManager.getInstance().updateParty(parties);
             }
-            PartyManager.getInstance().updateParty(party);
-        }
-        if (duel.getSecondTeamPartyLeaderUUID() != null) {
-            Party party = PartyManager.getInstance().getParty(duel.getSecondTeamPartyLeaderUUID());
-            if (party != null) {
-                party.setPartyState(PartyState.LOBBY);
-            }
-            PartyManager.getInstance().updateParty(party);
+            partyList.clear(); // TODO: console error = remove
         }
         if (duel.getFirstTeam().size() == 1 && duel.getSecondTeam().size() == 1 && (duel.getFirstTeamPartyLeaderUUID() == null && duel.getSecondTeamPartyLeaderUUID() == null)) {
         	if (!duel.isRanked()) {
         		InventoryManager.getInstance().updateUnrankedInventory();
+        	} else {
+        		InventoryManager.getInstance().updateRankedInventory();
         	}
         }
 		duel.clearDrops();

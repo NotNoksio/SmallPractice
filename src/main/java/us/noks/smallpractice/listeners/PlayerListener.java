@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -171,8 +172,6 @@ public class PlayerListener implements Listener {
 		
 		if (event.getEntity() instanceof Player) {
 			final Player killed = event.getEntity();
-			//Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(killed.getUniqueId());
-			//duel.addDrops(event.getDrops());
 			DuelManager.getInstance().removePlayerFromDuel(killed, RemoveReason.KILLED);
 			new BukkitRunnable() {
 				
@@ -294,10 +293,28 @@ public class PlayerListener implements Listener {
 			if (DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
 				final Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId());
 				
-				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item)) event.setCancelled(true);
+				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item)) event.setCancelled(true); // TODO: Does containPlayer can affect the event? | Does the containDrop will affect all the same drops?
 				return;
 			}
 			if (!receiver.canSee(owner)) event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onEntitySpawnInWorld(EntitySpawnEvent event) {
+		if (event.getEntity() instanceof Item) {
+			Item itemDropped = (Item) event.getEntity();
+			
+			if (itemDropped.getOwner() != null && itemDropped.getOwner() instanceof Player) {
+				UUID playerUUID = itemDropped.getOwner().getUniqueId();
+				Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(playerUUID);
+				
+				if (duel == null) {
+					return;
+				}
+				
+				duel.addDrops(itemDropped);
+			}
 		}
 	}
 	
@@ -316,14 +333,7 @@ public class PlayerListener implements Listener {
 		if (pm.getStatus() == PlayerStatus.WAITING || pm.getStatus() == PlayerStatus.DUEL) {
 			if (item.getType() == Material.ENCHANTED_BOOK) {
 				event.setCancelled(true);
-				return;
 			}
-			Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(event.getPlayer().getUniqueId());
-			
-			if (duel == null) {
-				return;
-			}
-			duel.addDrops(event.getItemDrop());
 		}
 	}
 	
@@ -333,29 +343,30 @@ public class PlayerListener implements Listener {
         if (player.getInventory().getItemInHand() == null || !player.getInventory().getItemInHand().hasItemMeta() || !player.getInventory().getItemInHand().getItemMeta().hasDisplayName()) {
             return;
         }
-        final ItemStack item = player.getItemInHand();
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-        	PlayerManager pm = PlayerManager.get(player.getUniqueId());
+        	final ItemStack item = player.getItemInHand();
+        	final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+        	final String itemName = item.getItemMeta().getDisplayName().toLowerCase();
         	
         	switch (pm.getStatus()) {
 			case SPAWN:
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
-					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "unranked queue")) {
+					if (item.getType() == Material.IRON_SWORD && itemName.equals(ChatColor.YELLOW + "unranked queue")) {
 		                event.setCancelled(true);
 		                player.openInventory(InventoryManager.getInstance().getUnrankedInventory());
 		                break;
 		            }
-					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "ranked queue")) {
+					if (item.getType() == Material.DIAMOND_SWORD && itemName.equals(ChatColor.YELLOW + "ranked queue")) {
 		                event.setCancelled(true);
 		                player.openInventory(InventoryManager.getInstance().getRankedInventory());
 		                break;
 		            }
-					if (item.getType() == Material.NAME_TAG && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "create party")) {
+					if (item.getType() == Material.NAME_TAG && itemName.equals(ChatColor.YELLOW + "create party")) {
 		                event.setCancelled(true);
 		                Bukkit.dispatchCommand(player, "party create");
 		                break;
 		            }
-					if (item.getType() == Material.GOLD_AXE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "mini-game")) {
+					if (item.getType() == Material.GOLD_AXE && itemName.equals(ChatColor.YELLOW + "mini-game")) {
 						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge game (because it's the only one ^^')");
 						player.teleport(Warps.BRIDGE.getLobbyLocation());
 						pm.setStatus(PlayerStatus.BRIDGE);
@@ -363,7 +374,7 @@ public class PlayerListener implements Listener {
 						player.setNoDamageTicks(50);
 						break;
 					}
-					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "kit creator/settings")) {
+					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "kit creator/settings")) {
 						player.openInventory(InventoryManager.getInstance().getSelectionInventory());
 						break;
 					}
@@ -371,7 +382,7 @@ public class PlayerListener implements Listener {
 					final Party currentParty = PartyManager.getInstance().getParty(player.getUniqueId());
 					final boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
 					
-					if (item.getType() == Material.IRON_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "2v2 unranked queue")) {
+					if (item.getType() == Material.IRON_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 unranked queue")) {
 		                event.setCancelled(true);
 		                if (!isPartyLeader) {
 							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
@@ -388,7 +399,7 @@ public class PlayerListener implements Listener {
 		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 		                break;
 		            }
-					if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "2v2 ranked queue")) {
+					if (item.getType() == Material.DIAMOND_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 ranked queue")) {
 		                event.setCancelled(true);
 		                if (!isPartyLeader) {
 							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
@@ -405,7 +416,7 @@ public class PlayerListener implements Listener {
 		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
 		                break;
 		            }
-					if (item.getType() == Material.ARROW && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "split teams")) {
+					if (item.getType() == Material.ARROW && itemName.equals(ChatColor.YELLOW + "split teams")) {
 						if (!isPartyLeader) {
 							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
 							break;
@@ -421,39 +432,39 @@ public class PlayerListener implements Listener {
                         DuelManager.getInstance().createSplitTeamsDuel(currentParty);
                         break;
 		            }
-					if (item.getType() == Material.BOOK && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "fight other parties")) {
+					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "fight other parties")) {
 						player.openInventory(PartyManager.getInstance().getPartiesInventory());
 						break;
 					}
-					if (item.getType() == Material.PAPER && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.YELLOW + "party information")) {
+					if (item.getType() == Material.PAPER && itemName.equals(ChatColor.YELLOW + "party information")) {
 						Bukkit.dispatchCommand(player, "party info");
 						break;
 					}
-					if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave party")) {
+					if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave party")) {
 						event.setCancelled(true);
 						Bukkit.dispatchCommand(player, "party leave");
 					}
 				}
 				break;
 			case QUEUE:
-				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave queue")) {
+				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave queue")) {
 	                event.setCancelled(true);
 	                QueueManager.getInstance().quitQueue(player);
 	            }
 				break;
 			case WAITING:
-				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().contains("default kit")) {
+				if (item.getType() == Material.ENCHANTED_BOOK && itemName.contains("default kit")) {
 					this.giveFightItems(player, item.getItemMeta().getDisplayName());
 	            }
 				break;
 			case DUEL:
-				if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().toLowerCase().contains("default kit")) {
+				if (item.getType() == Material.ENCHANTED_BOOK && itemName.contains("default kit")) {
 					this.giveFightItems(player, item.getItemMeta().getDisplayName());
 	            }
 				break;
 			case SPECTATE:
-				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave spectate")) {
-	                event.setCancelled(true);
+				event.setCancelled(true);
+				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave spectate")) {
 	                if (pm.getSpectate() != null) {
 		                final Player spectatePlayer = pm.getSpectate();
 		                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
@@ -477,8 +488,7 @@ public class PlayerListener implements Listener {
 	        		ItemManager.getInstace().giveSpawnItem(player);
 	        		break;
 	            }
-				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.GREEN + "see current arena")) {
-	                event.setCancelled(true);
+				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.GREEN + "see current arena")) {
 	                final Player spectatePlayer = pm.getSpectate();
 	                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
 	                final Arenas currentArena = spectatedDuel.getArena();
@@ -488,27 +498,39 @@ public class PlayerListener implements Listener {
 	                	spectatedDuel.removeSpectator(player.getUniqueId());
 	                	pm.setSpectate(null);
 	                }
-	                List <UUID> playersInArena = Lists.newArrayList();
+	                final List <UUID> playersInArena = Lists.newArrayList();
 	                for (Duel duel : DuelManager.getInstance().getAllDuels()) {
 	                	if (currentArena != duel.getArena()) continue;
 	                	playersInArena.addAll(duel.getFirstAndSecondTeamsAlive());
 	                }
+	                PlayerManager.get(player.getUniqueId()).hideAllPlayer(); // TODO: When see all spectators will be done; dont hide spectators
 	                currentArena.addSpectator(player.getUniqueId());
-	                for (UUID playerInArenaUUID : playersInArena) {
-	                	Player playerInArena = Bukkit.getPlayer(playerInArenaUUID);
-	                	if (!player.canSee(playerInArena)) player.showPlayer(playerInArena);
+	                if (!playersInArena.isEmpty()) {
+		                for (UUID playerInArenaUUID : playersInArena) {
+		                	Player playerInArena = Bukkit.getPlayer(playerInArenaUUID);
+		                	if (!player.canSee(playerInArena)) player.showPlayer(playerInArena);
+		                }
 	                }
 	                ItemManager.getInstace().giveSpectatorItems(player, false);
 	                playersInArena.clear();
 	            }
+				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.GREEN + "see all spectators")) {
+					// TODO
+				}
+				if (item.getType() == Material.MAP && itemName.equals(ChatColor.GREEN + "change arena")) {
+					//player.openInventory(InventoryManager.getInstance().getArenasInventory());
+				}
+				if (item.getType() == Material.WOOL && itemName.equals(ChatColor.GREEN + "change fly/walk speed")) {
+					// TODO
+				}
 				break;
 			case MODERATION:
-				if (item.getType() == Material.REDSTONE && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "leave moderation")) {
+				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave moderation")) {
 	                event.setCancelled(true);
 	                Bukkit.dispatchCommand(player, "mod");
 	                break;
 	            }
-				if (item.getType() == Material.WATCH && item.getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "see random player")) {
+				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.RED + "see random player")) {
 	                event.setCancelled(true);
 	                List<Player> online = Lists.newArrayList();
 	                

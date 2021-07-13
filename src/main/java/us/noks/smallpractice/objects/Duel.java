@@ -175,10 +175,6 @@ public class Duel {
 		return this.timeBeforeDuel;
 	}
 	
-	public void addDrops(List<Item> items) {
-		this.drops.addAll(items);
-	}
-	
 	public void addDrops(Item item) {
 		this.drops.add(item);
 	}

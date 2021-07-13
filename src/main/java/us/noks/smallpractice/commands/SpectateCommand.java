@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import us.noks.smallpractice.arena.Arena;
+import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
@@ -37,7 +39,7 @@ public class SpectateCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You are in party!");
 			return false;
 		}
-		if (pm.getStatus() != PlayerStatus.SPAWN) {
+		if (pm.getStatus() != PlayerStatus.SPAWN && pm.getStatus() != PlayerStatus.SPECTATE) {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return false;
 		}
@@ -64,7 +66,17 @@ public class SpectateCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "That player isn't in duel!");
 			return false;
 		}
-		pm.setStatus(PlayerStatus.SPECTATE);
+		if (pm.getStatus() != PlayerStatus.SPECTATE) {
+			pm.setStatus(PlayerStatus.SPECTATE);
+		} else if (pm.getSpectate() != null) {
+			Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(pm.getSpectate().getUniqueId());
+			duel.removeSpectator(player.getUniqueId());
+		} else {
+			for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
+				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
+				allArenas.removeSpectator(player.getUniqueId());
+			}
+		}
 		pm.hideAllPlayer();
 		pm.setSpectate(target);
 		
