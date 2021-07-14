@@ -33,12 +33,19 @@ import us.noks.smallpractice.listeners.EnderDelay;
 import us.noks.smallpractice.listeners.InventoryListener;
 import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
+import us.noks.smallpractice.objects.managers.ConfigManager;
+import us.noks.smallpractice.objects.managers.EloManager;
+import us.noks.smallpractice.objects.managers.InventoryManager;
+import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
 
 public class Main extends JavaPlugin {
 	private boolean permissionsPluginHere;
 	private Map<UUID, Inventory> offlineInventory = new WeakHashMap<UUID, Inventory>();
-	public boolean clearChatOnJoin = true;
+	private EloManager eloManager;
+	private ItemManager itemManager;
+	private InventoryManager inventoryManager;
+	private ConfigManager configManager;
 	
 	private static Main instance;
 	public static Main getInstance() {
@@ -48,10 +55,15 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		clearChatOnJoin = this.getConfig().getBoolean("clear-chat-on-join");
+		this.eloManager = new EloManager();
+		this.itemManager = new ItemManager();
+		this.inventoryManager = new InventoryManager();
+		this.configManager = new ConfigManager(this);
+		
 		registerCommands();
 		registerListers();
 		getPermissionsPlugin();
+		
 		System.out.println("PermissionsEx is " + (permissionsPluginHere ? "" : "not ") + "present");
 	}
 	
@@ -110,5 +122,21 @@ public class Main extends JavaPlugin {
 	
 	public Map<UUID, Inventory> getOfflineInventoryMap() {
 		return this.offlineInventory;
+	}
+	
+	public EloManager getEloManager() {
+		return this.eloManager;
+	}
+	
+	public ItemManager getItemManager() {
+		return this.itemManager;
+	}
+	
+	public InventoryManager getInventoryManager() {
+		return this.inventoryManager;
+	}
+	
+	public ConfigManager getConfigManager() {
+		return this.configManager;
 	}
 }

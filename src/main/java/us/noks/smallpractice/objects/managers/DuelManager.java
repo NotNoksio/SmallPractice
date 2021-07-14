@@ -76,7 +76,7 @@ public class DuelManager {
 				PlayerManager fm = PlayerManager.get(firstUUID);
 				fm.clearRequest();
 				fm.setStatus(PlayerStatus.SPAWN);
-				ItemManager.getInstace().giveSpawnItem(first);
+				Main.getInstance().getItemManager().giveSpawnItem(first);
 				first.sendMessage(ChatColor.RED + "No arena created in this gamemode!");
 			}
 			for (UUID secondUUID : secondTeam) {
@@ -90,7 +90,7 @@ public class DuelManager {
 				
 				PlayerManager sm = PlayerManager.get(secondUUID);
 				sm.setStatus(PlayerStatus.SPAWN);
-				ItemManager.getInstace().giveSpawnItem(second);
+				Main.getInstance().getItemManager().giveSpawnItem(second);
 				second.sendMessage(ChatColor.RED + "No arena created in this gamemode!");
 			}
 			return;
@@ -163,9 +163,9 @@ public class DuelManager {
         }
         if (firstTeam.size() == 1 && secondTeam.size() == 1 && (firstPartyLeaderUUID == null && secondPartyLeaderUUID == null)) {
         	if (!ranked) {
-        		InventoryManager.getInstance().updateUnrankedInventory();
+        		Main.getInstance().getInventoryManager().updateUnrankedInventory();
         	} else {
-        		InventoryManager.getInstance().updateRankedInventory();
+        		Main.getInstance().getInventoryManager().updateRankedInventory();
         	}
         }
 		teleportRandomArena(new Duel(arena, ladder, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
@@ -199,7 +199,7 @@ public class DuelManager {
 			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeam().get(0) : duel.getSecondTeam().get(0));
 			UUID loserUUID = (winnerUUID == duel.getFirstTeam().get(0) ? duel.getSecondTeam().get(0) : duel.getFirstTeam().get(0));
 			
-			EloManager.getInstance().tranferElo(winnerUUID, loserUUID);
+			Main.getInstance().getEloManager().tranferElo(winnerUUID, loserUUID);
 		}
 		
 		Iterator<UUID> specIt = duel.getAllSpectators().iterator();
@@ -214,7 +214,7 @@ public class DuelManager {
 			sm.showAllPlayer();
 			sm.setSpectate(null);
 			spec.teleport(spec.getWorld().getSpawnLocation());
-			ItemManager.getInstace().giveSpawnItem(spec);
+			Main.getInstance().getItemManager().giveSpawnItem(spec);
 			specIt.remove();
 		}
 		if (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null) {
@@ -228,9 +228,9 @@ public class DuelManager {
         }
         if (duel.getFirstTeam().size() == 1 && duel.getSecondTeam().size() == 1 && (duel.getFirstTeamPartyLeaderUUID() == null && duel.getSecondTeamPartyLeaderUUID() == null)) {
         	if (!duel.isRanked()) {
-        		InventoryManager.getInstance().updateUnrankedInventory();
+        		Main.getInstance().getInventoryManager().updateUnrankedInventory();
         	} else {
-        		InventoryManager.getInstance().updateRankedInventory();
+        		Main.getInstance().getInventoryManager().updateRankedInventory();
         	}
         }
 		duel.clearDrops();
@@ -350,7 +350,7 @@ public class DuelManager {
 			first.setNoDamageTicks(50);
 			
 			pmf.hideAllPlayer();
-			ItemManager.getInstace().givePreFightItems(first, duel.getLadder());
+			Main.getInstance().getItemManager().givePreFightItems(first, duel.getLadder());
 			
 			first.teleport(duel.getArena().getLocations()[0]);
 			first.setSneaking(false);
@@ -367,7 +367,7 @@ public class DuelManager {
 			second.setNoDamageTicks(50);
 			
 			pms.hideAllPlayer();
-			ItemManager.getInstace().givePreFightItems(second, duel.getLadder());
+			Main.getInstance().getItemManager().givePreFightItems(second, duel.getLadder());
 			
 			second.teleport(duel.getArena().getLocations()[1]);
 			second.setSneaking(false);
@@ -420,6 +420,7 @@ public class DuelManager {
 		currentDuel.killPlayer(player.getUniqueId());
 		final String message = (reason == RemoveReason.KILLED ? player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : "") : player.getName() + " has disconnected");
 		currentDuel.sendMessage(message);
+		
 		pm.setStatus(PlayerStatus.SPAWN);
 		
 		if (!currentDuel.getFirstTeamAlive().isEmpty() && !currentDuel.getSecondTeamAlive().isEmpty()) {
@@ -444,7 +445,7 @@ public class DuelManager {
 				public void run() {
 					if (lastPlayers != null) {
 						lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
-						ItemManager.getInstace().giveSpawnItem(lastPlayers);
+						Main.getInstance().getItemManager().giveSpawnItem(lastPlayers);
 					}
 				}
 			}.runTaskLater(Main.getInstance(), 50L);

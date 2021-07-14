@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import net.minecraft.util.com.google.common.collect.Maps;
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
@@ -29,9 +30,9 @@ public class QueueManager {
 			this.queue.put(uuid, new Queue(ladder, ranked));
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
-			ItemManager.getInstace().giveLeaveItem(player, "Queue", true);
+			Main.getInstance().getItemManager().giveLeaveItem(player, "Queue", true);
 			player.sendMessage(ChatColor.GREEN + "You have been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " queue. Waiting for another player..");
-			InventoryManager.getInstance().updateUnrankedInventory();
+			Main.getInstance().getInventoryManager().updateUnrankedInventory();
 		}
 		if (this.queue.size() >= 2) {
 			UUID secondUUID = uuid;
@@ -51,9 +52,9 @@ public class QueueManager {
 			this.queue.remove(secondUUID);
 			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
 			if (!ranked) {
-				InventoryManager.getInstance().updateUnrankedInventory();
+				Main.getInstance().getInventoryManager().updateUnrankedInventory();
 			} else {
-				InventoryManager.getInstance().updateRankedInventory();
+				Main.getInstance().getInventoryManager().updateRankedInventory();
 			}
 		}
 	}
@@ -65,12 +66,12 @@ public class QueueManager {
 		final boolean ranked = this.queue.get(player.getUniqueId()).isRanked();
 		this.queue.remove(player.getUniqueId());
 		PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
-		ItemManager.getInstace().giveSpawnItem(player);
+		Main.getInstance().getItemManager().giveSpawnItem(player);
 		player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 		if (!ranked) {
-			InventoryManager.getInstance().updateUnrankedInventory();
+			Main.getInstance().getInventoryManager().updateUnrankedInventory();
 		} else {
-			InventoryManager.getInstance().updateRankedInventory();
+			Main.getInstance().getInventoryManager().updateRankedInventory();
 		}
 	}
 	

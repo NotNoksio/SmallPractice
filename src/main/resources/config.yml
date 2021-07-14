@@ -5,3 +5,4 @@ database:
   username: ""
   password: ""
 clear-chat-on-join: true
+server-domain-name: "devmc.noks.io"

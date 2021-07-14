@@ -27,14 +27,9 @@ public class InventoryManager {
 	private Inventory selectionInventory;
 	private Map<UUID, Request> selectingDuel;
 	
-	private static InventoryManager instance = new InventoryManager();
-	public static InventoryManager getInstance() {
-		return instance;
-	}
-	
 	public InventoryManager() {
 		this.selectingDuel = new WeakHashMap<UUID, Request>();
-		this.arenasInventory = Bukkit.createInventory(null, 18, "Arena Selection");
+		this.arenasInventory = Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection");
 		this.unrankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
 		this.rankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
 		this.laddersInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
@@ -156,10 +151,11 @@ public class InventoryManager {
 		this.selectingDuel.remove(requester); 
 	}
 	
-	private int calculateSize(int amountOfLadders) { // TODO: AUTOMATIZE IT
-		if (amountOfLadders > 9) {
-			return 18;
+	private int calculateSize(int size) {
+		int sizeNeeded = size / 9;
+		if ((size % 9) != 0) {
+			sizeNeeded += 1;
 		}
-		return 9;
+		return (sizeNeeded * 9);
 	}
 }

@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
@@ -66,7 +67,7 @@ public class PartyManager {
     		party = this.leaderUUIDtoParty.get(newLeader);
     		
     		notifyParty(party, ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
-    		if (party.getPartyState() == PartyState.LOBBY) ItemManager.getInstace().giveSpawnItem(Bukkit.getPlayer(newLeader));
+    		if (party.getPartyState() == PartyState.LOBBY) Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(newLeader));
     		updateParty(party);
     		return;
     	}
@@ -136,7 +137,7 @@ public class PartyManager {
     public void updateParty(Party party) {
         Player leader = Bukkit.getPlayer(party.getLeader());
         if (party.getSize() < 3) {
-        	ItemManager.getInstace().giveSpawnItem(leader);
+        	Main.getInstance().getItemManager().giveSpawnItem(leader);
         }
         String leaderName = (leader == null ? party.getLeaderName() : leader.getName());
         List<String> lores = Lists.newArrayList();
@@ -145,7 +146,7 @@ public class PartyManager {
             if (members == null) continue;
             lores.add(ChatColor.GRAY + "-> " + ChatColor.YELLOW + members.getName());
             if (PlayerManager.get(members.getUniqueId()).getStatus() == PlayerStatus.SPAWN && party.getSize() < 3) {
-            	ItemManager.getInstace().giveSpawnItem(members);
+            	Main.getInstance().getItemManager().giveSpawnItem(members);
             }
         }
         for (ItemStack itemStack : this.partiesInventory.getContents()) {

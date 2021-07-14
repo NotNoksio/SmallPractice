@@ -7,6 +7,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
@@ -23,8 +24,8 @@ public class RequestManager {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		InventoryManager.getInstance().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
-		requester.openInventory(InventoryManager.getInstance().getLaddersInventory());
+		Main.getInstance().getInventoryManager().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
+		requester.openInventory(Main.getInstance().getInventoryManager().getLaddersInventory());
 	}
     
     public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {
@@ -77,7 +78,7 @@ public class RequestManager {
 		requested.spigot().sendMessage(line);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
 		requesterManager.addRequest(requested.getUniqueId(), arena, ladder);
-		InventoryManager.getInstance().removeSelectingDuel(requester.getUniqueId());
+		Main.getInstance().getInventoryManager().removeSelectingDuel(requester.getUniqueId());
 	}
 	
 	public void acceptDuelRequest(Arenas arena, Ladders ladder, Player requested, Player requester) {
@@ -170,7 +171,7 @@ public class RequestManager {
 		PartyManager.getInstance().joinParty(requesterParty.getLeader(), requested.getUniqueId());
 		PartyManager.getInstance().notifyParty(requesterParty, ChatColor.GREEN + requested.getName() + " has joined the party");
         requested.sendMessage(ChatColor.GREEN + "You have joined the party!");
-        ItemManager.getInstace().giveSpawnItem(requested);
+        Main.getInstance().getItemManager().giveSpawnItem(requested);
         PartyManager.getInstance().updateParty(requesterParty);
 	}
 	

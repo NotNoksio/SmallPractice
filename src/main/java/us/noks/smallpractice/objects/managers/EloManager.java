@@ -10,12 +10,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Maps;
 
 public class EloManager {
-	private static EloManager instance = new EloManager();
-	public static EloManager getInstance() {
-		return instance;
-	}
-	
-	public Map<UUID, Integer> playersElo = Maps.newHashMap();
+	private Map<UUID, Integer> playersElo = Maps.newHashMap();
 	private int DEFAULT_ELO = 1000;
 	
 	public void tranferElo(UUID winnerUUID, UUID loserUUID) {

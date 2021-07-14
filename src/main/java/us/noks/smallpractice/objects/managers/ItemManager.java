@@ -16,10 +16,6 @@ import us.noks.smallpractice.party.PartyState;
 import us.noks.smallpractice.utils.ItemBuilder;
 
 public class ItemManager {
-	private static ItemManager instance = new ItemManager();
-	public static ItemManager getInstace() {
-		return instance;
-	}
 	
 	public void giveSpawnItem(Player player) {
 		player.getInventory().clear();

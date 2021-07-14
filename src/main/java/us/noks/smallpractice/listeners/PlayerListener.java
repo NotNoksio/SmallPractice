@@ -42,8 +42,6 @@ import us.noks.smallpractice.enums.RemoveReason;
 import us.noks.smallpractice.enums.Warps;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
-import us.noks.smallpractice.objects.managers.InventoryManager;
-import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
@@ -77,7 +75,7 @@ public class PlayerListener implements Listener {
 		player.setScoreboard(this.main.getServer().getScoreboardManager().getNewScoreboard());
 		
 		player.teleport(player.getWorld().getSpawnLocation());
-		ItemManager.getInstace().giveSpawnItem(player);
+		this.main.getItemManager().giveSpawnItem(player);
 		
 		this.sendJoinMessage(event);
 		
@@ -93,24 +91,25 @@ public class PlayerListener implements Listener {
 		if (!this.main.isPermissionsPluginHere()) {
 			return;
 		}
-		String rank = PermissionsEx.getPermissionManager().getUser(player).getParentIdentifiers().get(0);
-
+		final String rank = PermissionsEx.getPermissionManager().getUser(player).getParentIdentifiers().get(0);
+		final String domainName = this.main.getConfigManager().serverDomainName;
+		
         if (rank.equals("default") || rank.equals("verified")) {
-            WebUtil.getResponse(this.main, "https://api.namemc.com/server/devmc.noks.io/votes?profile=" + player.getUniqueId(),
+            WebUtil.getResponse(this.main, "https://api.namemc.com/server/" + domainName + "/votes?profile=" + player.getUniqueId(),
                     response -> {
                         switch (response) {
                             case "false":
                                 if (rank.equals("verified")) {
                                 	PermissionsEx.getPermissionManager().getUser(player).removeGroup("verified");
                                 	PermissionsEx.getPermissionManager().getUser(player).addGroup("default");
-                                    player.sendMessage(ChatColor.RED + "Your voter rank has been removed because you removed your vote! :(");
+                                    player.sendMessage(ChatColor.RED + "Your rank has been removed due to your unlike!");
                                 }
                                 break;
                             case "true":
                                 if (rank.equals("default")) {
                                 	PermissionsEx.getPermissionManager().getUser(player).removeGroup("default");
                                 	PermissionsEx.getPermissionManager().getUser(player).addGroup("verified");
-                                    player.sendMessage(ChatColor.GREEN + "Thanks for voting! You've been given the Voter rank.");
+                                    player.sendMessage(ChatColor.GREEN + "Thanks for liking the server on NameMC! You've now got the Verified rank.");
                                 }
                                 break;
                         }
@@ -121,7 +120,7 @@ public class PlayerListener implements Listener {
 	
 	private void sendJoinMessage(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		if (Main.getInstance().clearChatOnJoin) {
+		if (this.main.getConfigManager().clearChatOnJoin) {
 			for (int i = 0; i < 100; i++) {
 				player.sendMessage(""); 
 			}
@@ -129,7 +128,7 @@ public class PlayerListener implements Listener {
 		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
 		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/8v8Mzhd");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "https://namemc.com/server/devmc.noks.io");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "https://namemc.com/server/" + this.main.getConfigManager().serverDomainName);
 		player.sendMessage("");
 		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 	}
@@ -138,7 +137,12 @@ public class PlayerListener implements Listener {
 	public void onQuit(PlayerQuitEvent event) {
 		event.setQuitMessage(null);
 		final Player player = event.getPlayer();
-		
+		if (QueueManager.getInstance().getQueueMap().containsKey(player.getUniqueId())) {
+			QueueManager.getInstance().getQueueMap().remove(player.getUniqueId());
+			this.main.getInventoryManager().updateUnrankedInventory();
+			this.main.getInventoryManager().updateRankedInventory();
+		}
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
         if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
         	final Party party = PartyManager.getInstance().getParty(player.getUniqueId());
             if (party.getLeader().equals(player.getUniqueId())) {
@@ -147,11 +151,6 @@ public class PlayerListener implements Listener {
             	PartyManager.getInstance().leaveParty(player.getUniqueId());
             }
         }
-		if (QueueManager.getInstance().getQueueMap().containsKey(player.getUniqueId())) {
-			QueueManager.getInstance().getQueueMap().remove(player.getUniqueId());
-			InventoryManager.getInstance().updateUnrankedInventory();
-		}
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
 			for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
 				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
@@ -159,7 +158,7 @@ public class PlayerListener implements Listener {
 			}
 		}
 		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
-			DuelManager.getInstance().removePlayerFromDuel(player, RemoveReason.DISCONNECTED);
+			DuelManager.getInstance().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected
 		}
 		pm.remove();
 	}
@@ -194,7 +193,7 @@ public class PlayerListener implements Listener {
 			pm.heal(false);
 			player.teleport(player.getWorld().getSpawnLocation());
 			pm.showAllPlayer();
-			ItemManager.getInstace().giveSpawnItem(player);
+			this.main.getItemManager().giveSpawnItem(player);
 		}
 	}
 	
@@ -221,7 +220,7 @@ public class PlayerListener implements Listener {
 					}
 					player.setNoDamageTicks(50);
 					event.setCancelled(true);
-					ItemManager.getInstace().giveBridgeItems(player);
+					this.main.getItemManager().giveBridgeItems(player);
 					player.teleport(Warps.BRIDGE.getLobbyLocation());
 					break;
 				case BLOCK_EXPLOSION:
@@ -353,12 +352,12 @@ public class PlayerListener implements Listener {
 				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
 					if (item.getType() == Material.IRON_SWORD && itemName.equals(ChatColor.YELLOW + "unranked queue")) {
 		                event.setCancelled(true);
-		                player.openInventory(InventoryManager.getInstance().getUnrankedInventory());
+		                player.openInventory(this.main.getInventoryManager().getUnrankedInventory());
 		                break;
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && itemName.equals(ChatColor.YELLOW + "ranked queue")) {
 		                event.setCancelled(true);
-		                player.openInventory(InventoryManager.getInstance().getRankedInventory());
+		                player.openInventory(this.main.getInventoryManager().getRankedInventory());
 		                break;
 		            }
 					if (item.getType() == Material.NAME_TAG && itemName.equals(ChatColor.YELLOW + "create party")) {
@@ -370,12 +369,12 @@ public class PlayerListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge game (because it's the only one ^^')");
 						player.teleport(Warps.BRIDGE.getLobbyLocation());
 						pm.setStatus(PlayerStatus.BRIDGE);
-						ItemManager.getInstace().giveBridgeItems(player);
+						this.main.getItemManager().giveBridgeItems(player);
 						player.setNoDamageTicks(50);
 						break;
 					}
 					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "kit creator/settings")) {
-						player.openInventory(InventoryManager.getInstance().getSelectionInventory());
+						player.openInventory(this.main.getInventoryManager().getSelectionInventory());
 						break;
 					}
 				} else {
@@ -485,7 +484,7 @@ public class PlayerListener implements Listener {
 	        		pm.setStatus(PlayerStatus.SPAWN);
 	        		pm.showAllPlayer();
 	        		player.teleport(player.getWorld().getSpawnLocation());
-	        		ItemManager.getInstace().giveSpawnItem(player);
+	        		this.main.getItemManager().giveSpawnItem(player);
 	        		break;
 	            }
 				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.GREEN + "see current arena")) {
@@ -511,7 +510,7 @@ public class PlayerListener implements Listener {
 		                	if (!player.canSee(playerInArena)) player.showPlayer(playerInArena);
 		                }
 	                }
-	                ItemManager.getInstace().giveSpectatorItems(player, false);
+	                this.main.getItemManager().giveSpectatorItems(player, false);
 	                playersInArena.clear();
 	            }
 				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.GREEN + "see all spectators")) {
@@ -563,17 +562,17 @@ public class PlayerListener implements Listener {
 	private void giveFightItems(Player player, String name) {
 		String itemName = ChatColor.stripColor(name);
 		String[] ladderName = itemName.split(" ");
-        ItemManager.getInstace().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
+		this.main.getItemManager().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
         player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
 	}
 	
 	@EventHandler
-	public void onInteractWithBlock(PlayerInteractEvent e) {
-		if (e.getClickedBlock() != null && (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.SIGN || (e.getClickedBlock().getType() == Material.WALL_SIGN && e.getAction() == Action.RIGHT_CLICK_BLOCK))) {
-			Sign s = (Sign)e.getClickedBlock().getState();
+	public void onInteractWithBlock(PlayerInteractEvent event) {
+		if (event.getClickedBlock() != null && (event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.SIGN || (event.getClickedBlock().getType() == Material.WALL_SIGN && event.getAction() == Action.RIGHT_CLICK_BLOCK))) {
+			Sign s = (Sign)event.getClickedBlock().getState();
 			if (s.getLine(0).equalsIgnoreCase("-*-") && s.getLine(1).equalsIgnoreCase("Back to spawn") && s.getLine(2).equalsIgnoreCase("-*-")) {
-				e.setCancelled(true);
-				Player p = e.getPlayer();
+				event.setCancelled(true);
+				Player p = event.getPlayer();
 				if (p.isSneaking()) {
 					return;
 				}
@@ -581,7 +580,7 @@ public class PlayerListener implements Listener {
 				
 				pm.setStatus(PlayerStatus.SPAWN);
 				p.teleport(p.getWorld().getSpawnLocation());
-				ItemManager.getInstace().giveSpawnItem(p);
+				this.main.getItemManager().giveSpawnItem(p);
 			}
 		}
 	}

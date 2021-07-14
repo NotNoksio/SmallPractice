@@ -12,12 +12,12 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.managers.DuelManager;
-import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
@@ -94,7 +94,7 @@ public class SpectateCommand implements CommandExecutor {
 			Player dplayers = Bukkit.getPlayer(uuid);
 			player.showPlayer(dplayers);
 		}
-		ItemManager.getInstace().giveSpectatorItems(player, true);
+		Main.getInstance().getItemManager().giveSpectatorItems(player, true);
 		player.sendMessage(ChatColor.GREEN + "You are now spectating " + ChatColor.YELLOW + target.getName());
 		duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 		return true;

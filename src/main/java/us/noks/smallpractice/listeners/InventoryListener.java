@@ -26,7 +26,6 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.Request;
 import us.noks.smallpractice.objects.managers.DuelManager;
-import us.noks.smallpractice.objects.managers.InventoryManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
 import us.noks.smallpractice.objects.managers.RequestManager;
@@ -71,9 +70,9 @@ public class InventoryListener implements Listener {
 			}
 			player.closeInventory();
 			if (title.contains("ladder")) {
-				Request request = InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId());
+				Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
 				request.setLadder(ladder);
-				player.openInventory(InventoryManager.getInstance().getArenasInventory());
+				player.openInventory(this.main.getInventoryManager().getArenasInventory());
 				return;
 			}
 			QueueManager.getInstance().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"));
@@ -101,8 +100,8 @@ public class InventoryListener implements Listener {
 			if (Arena.getInstance().getArenaByInteger(slotTranslation) == null) {
 				return;
 			}
-			if (InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
-				final Request request = InventoryManager.getInstance().getSelectingDuelPlayerUUID(player.getUniqueId());
+			if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
+				final Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
 				final Player target = Bukkit.getPlayer(request.getRequestedUUID());
 				if (target == null) {
 					player.sendMessage(ChatColor.RED + "Player not found!");
@@ -139,12 +138,12 @@ public class InventoryListener implements Listener {
 			String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
 			if (itemName.equals("kit creator")) {
 				player.closeInventory();
-				player.openInventory(InventoryManager.getInstance().getEditingInventory());
+				player.openInventory(this.main.getInventoryManager().getEditingInventory());
 				return;
 			}
 			if (itemName.equals("configurate settings")) {
 				player.closeInventory();
-				player.openInventory(InventoryManager.getInstance().getSettingsInventory());
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory());
 			}
 		}
 	}
@@ -173,7 +172,10 @@ public class InventoryListener implements Listener {
 		final String title = event.getInventory().getTitle().toLowerCase();
 		
 		if (title.equals("unranked selection")) {
-			InventoryManager.getInstance().updateUnrankedInventory();
+			this.main.getInventoryManager().updateUnrankedInventory();
+		} 
+		if (title.equals("ranked selection")) {
+			this.main.getInventoryManager().updateRankedInventory();
 		}
 	}
 	

@@ -147,6 +147,14 @@ public class Duel {
 			}
 		}
 	}
+	
+	public void switchFirstTeamPartyLeader(UUID newPartyLeaderUUID) {
+		this.firstTeamPartyLeaderUUID = newPartyLeaderUUID;
+	}
+	
+	public void switchSecondTeamPartyLeader(UUID newPartyLeaderUUID) {
+		this.secondTeamPartyLeaderUUID = newPartyLeaderUUID;
+	}
 
 	public UUID getFirstTeamPartyLeaderUUID() {
 		return firstTeamPartyLeaderUUID;
