@@ -40,7 +40,7 @@ public class PlayerManager {
 	private PlayerStatus status;
 	private Player spectate;
 	private String prefix, suffix;
-	private int elo;
+	private EloManager eloManager;
 	private MatchStats matchStats;
 	private CommandCooldown cooldown;
 	private Inventory savedInventory;
@@ -53,7 +53,7 @@ public class PlayerManager {
 	    this.prefix = (!Main.getInstance().isPermissionsPluginHere() ? (this.player.isOp() ? "&c" : "&a") : PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix());
 	    this.suffix = (!Main.getInstance().isPermissionsPluginHere() ? "" : PermissionsEx.getPermissionManager().getUser(getPlayer()).getSuffix());
 	    this.spectate = null;
-	    this.elo = Main.getInstance().getEloManager().getPlayerElo(playerUUID);
+	    this.eloManager = new EloManager();
 	    this.matchStats = new MatchStats();
 	    this.cooldown = new CommandCooldown();
 	    if (Main.getInstance().getOfflineInventoryMap().containsKey(playerUUID)) {
@@ -140,16 +140,8 @@ public class PlayerManager {
 		this.status = status;
 	}
 	
-	public int getElo() {
-		return elo;
-	}
-	
-	public void addElo(int elo) {
-		this.elo += elo;
-	}
-	
-	public void removeElo(int elo) {
-		this.elo -= elo;
+	public EloManager getEloManager() {
+		return this.eloManager;
 	}
 	
 	public MatchStats getMatchStats() {

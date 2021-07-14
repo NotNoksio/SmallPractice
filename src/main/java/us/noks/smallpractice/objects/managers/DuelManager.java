@@ -34,6 +34,7 @@ import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 import us.noks.smallpractice.utils.ComponentJoiner;
+import us.noks.smallpractice.utils.MathUtils;
 
 public class DuelManager {
 	private static DuelManager instance = new DuelManager();
@@ -199,7 +200,7 @@ public class DuelManager {
 			UUID winnerUUID = (winningTeamNumber == 1 ? duel.getFirstTeam().get(0) : duel.getSecondTeam().get(0));
 			UUID loserUUID = (winnerUUID == duel.getFirstTeam().get(0) ? duel.getSecondTeam().get(0) : duel.getFirstTeam().get(0));
 			
-			Main.getInstance().getEloManager().tranferElo(winnerUUID, loserUUID);
+			this.tranferElo(winnerUUID, loserUUID, duel.getLadder());
 		}
 		
 		Iterator<UUID> specIt = duel.getAllSpectators().iterator();
@@ -234,6 +235,23 @@ public class DuelManager {
         	}
         }
 		duel.clearDrops();
+	}
+	
+	private void tranferElo(UUID winnerUUID, UUID loserUUID, Ladders ladder) {
+		final EloManager wm = PlayerManager.get(winnerUUID).getEloManager();
+		final EloManager lm = PlayerManager.get(loserUUID).getEloManager();
+		final double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (wm.getElo(ladder) - lm.getElo(ladder)) / 400.0D));
+		final int scoreChange = MathUtils.limit((expectedp * 32.0D), 4, 25);
+		
+		wm.addElo(ladder, scoreChange);
+		lm.removeElo(ladder, scoreChange);
+		
+		final Player winner = Bukkit.getPlayer(winnerUUID);
+		final Player loser = Bukkit.getPlayer(loserUUID);
+
+		final String eloMessage = ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + winner.getName() + " (+" + scoreChange + ") " + ChatColor.RED + loser.getName() + " (-" + scoreChange + ")";
+		winner.sendMessage(eloMessage);
+		loser.sendMessage(eloMessage);
 	}
 	
 	// TODO: Sometimes there's an NULLPOINTEREXCEPTION appear

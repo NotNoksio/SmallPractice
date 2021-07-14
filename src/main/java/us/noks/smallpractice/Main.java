@@ -34,7 +34,6 @@ import us.noks.smallpractice.listeners.InventoryListener;
 import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.ConfigManager;
-import us.noks.smallpractice.objects.managers.EloManager;
 import us.noks.smallpractice.objects.managers.InventoryManager;
 import us.noks.smallpractice.objects.managers.ItemManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
@@ -42,7 +41,6 @@ import us.noks.smallpractice.objects.managers.QueueManager;
 public class Main extends JavaPlugin {
 	private boolean permissionsPluginHere;
 	private Map<UUID, Inventory> offlineInventory = new WeakHashMap<UUID, Inventory>();
-	private EloManager eloManager;
 	private ItemManager itemManager;
 	private InventoryManager inventoryManager;
 	private ConfigManager configManager;
@@ -55,7 +53,6 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		this.eloManager = new EloManager();
 		this.itemManager = new ItemManager();
 		this.inventoryManager = new InventoryManager();
 		this.configManager = new ConfigManager(this);
@@ -122,10 +119,6 @@ public class Main extends JavaPlugin {
 	
 	public Map<UUID, Inventory> getOfflineInventoryMap() {
 		return this.offlineInventory;
-	}
-	
-	public EloManager getEloManager() {
-		return this.eloManager;
 	}
 	
 	public ItemManager getItemManager() {
