@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
@@ -24,31 +25,32 @@ public class ItemManager {
 		
 		player.setGameMode(GameMode.SURVIVAL);
 		
-		if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
+		if (!Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
 			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
 			player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
 			player.getInventory().setItem(4, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
 			player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.GOLD_AXE, ChatColor.YELLOW + "Mini-Game", true));
 			player.getInventory().setItem(8, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings"));
 		} else {
-			Party party = PartyManager.getInstance().getParty(player.getUniqueId());
-			ItemStack glass = ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
+			Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
+			final ItemStack glass = ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
 			
 			player.getInventory().setItem(0, glass);
 			player.getInventory().setItem(1, glass);
 			player.getInventory().setItem(5, glass);
 			
-			final boolean able = party.getSize() > 1;
-			if (able) {
+			if (party.getSize() == 2) {
 				player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "2v2 Unranked Queue", true));
 				player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "2v2 Ranked Queue", true));
+			}
+			if (party.getSize() > 1) {
 				player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.ARROW, ChatColor.YELLOW + "Split Teams"));
 			}
 			if (party.getPartyState() == PartyState.DUELING) {
-				player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BONE, ChatColor.YELLOW + "Spectate Actual Match"));
+				player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.YELLOW + "Spectate Actual Match"));
 			}
 			
-			giveLeaveItem(player, "Party", false);
+			giveLeaveItem(player, "Party", false, false);
 			player.getInventory().setItem(4, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Fight Other Parties"));
 			player.getInventory().setItem(7, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.PAPER, ChatColor.YELLOW + "Party Information"));
 		}
@@ -90,17 +92,20 @@ public class ItemManager {
 		player.updateInventory();
 	}
 	
-	// TODO: Spectating a player/spectating an arena (different inventory)
-	public void giveSpectatorItems(Player player, boolean spectatingPlayer) {
+	public void giveSpectatorItems(Player player) {
+		final boolean spectatingPlayer = PlayerManager.get(player.getUniqueId()).getSpectate() != null;
+		final boolean hasParty = Main.getInstance().getPartyManager().hasParty(player.getUniqueId());
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 		player.setItemOnCursor(null);
 		
 		giveLeaveItem(player, "Spectate", false);
 		
-		player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial((spectatingPlayer ? Material.WATCH : Material.MAP), ChatColor.GREEN + (spectatingPlayer ? "See current arena" : "Change arena")));
-		player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.GREEN + "See all spectators"));
-		player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), ChatColor.GREEN + "Change Fly/Walk Speed"));
+		if (!hasParty) {
+			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial((spectatingPlayer ? Material.WATCH : Material.MAP), ChatColor.GREEN + (spectatingPlayer ? "See current arena" : "Change arena")));
+		}
+		player.getInventory().setItem((!hasParty ? 1 : 0), ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.GREEN + "See all spectators"));
+		player.getInventory().setItem((!hasParty ? 2 : 1), ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), ChatColor.GREEN + "Change Fly/Walk Speed"));
 		player.updateInventory();
 	}
 	

@@ -96,7 +96,7 @@ public class ReportCommand implements CommandExecutor {
 		l1i.setColor(ChatColor.GOLD);
 		l1i.setBold(Boolean.valueOf(true));
 		l1i.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "Click to inspect " + target.getName()).create()));
-		l1i.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/verif " + target.getName()));
+		l1i.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inspect " + target.getName()));
 
 		l1.addExtra(l1a);
 		l1.addExtra(l1b);

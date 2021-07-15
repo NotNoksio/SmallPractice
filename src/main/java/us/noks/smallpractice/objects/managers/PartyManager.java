@@ -22,11 +22,6 @@ import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 
 public class PartyManager {
-	private static PartyManager instance = new PartyManager();
-	public static PartyManager getInstance() {
-		return instance;
-	}
-	
 	private Map<UUID, Party> leaderUUIDtoParty = Maps.newHashMap();
     private Map<UUID, UUID> playerUUIDtoLeaderUUID = Maps.newHashMap();
     private Inventory partiesInventory = Bukkit.createInventory(null, 54, "Fight other parties");

@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,10 +42,7 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.enums.RemoveReason;
 import us.noks.smallpractice.enums.Warps;
 import us.noks.smallpractice.objects.Duel;
-import us.noks.smallpractice.objects.managers.DuelManager;
-import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.objects.managers.QueueManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 import us.noks.smallpractice.utils.WebUtil;
@@ -66,6 +64,8 @@ public class PlayerListener implements Listener {
 		
 		player.setExp(0.0F);
 		player.setLevel(0);
+		player.setFlySpeed(0.1f);
+		player.setWalkSpeed(0.2f);
 		
 		PlayerManager.get(player.getUniqueId()).heal(false);
 		player.setAllowFlight(false);
@@ -137,18 +137,18 @@ public class PlayerListener implements Listener {
 	public void onQuit(PlayerQuitEvent event) {
 		event.setQuitMessage(null);
 		final Player player = event.getPlayer();
-		if (QueueManager.getInstance().getQueueMap().containsKey(player.getUniqueId())) {
-			QueueManager.getInstance().getQueueMap().remove(player.getUniqueId());
+		if (this.main.getQueueManager().getQueueMap().containsKey(player.getUniqueId())) {
+			this.main.getQueueManager().getQueueMap().remove(player.getUniqueId());
 			this.main.getInventoryManager().updateUnrankedInventory();
 			this.main.getInventoryManager().updateRankedInventory();
 		}
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
-        if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
-        	final Party party = PartyManager.getInstance().getParty(player.getUniqueId());
+        if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
+        	final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
             if (party.getLeader().equals(player.getUniqueId())) {
-            	PartyManager.getInstance().transferLeader(player.getUniqueId());
+            	this.main.getPartyManager().transferLeader(player.getUniqueId());
             } else {
-            	PartyManager.getInstance().leaveParty(player.getUniqueId());
+            	this.main.getPartyManager().leaveParty(player.getUniqueId());
             }
         }
 		if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
@@ -158,7 +158,7 @@ public class PlayerListener implements Listener {
 			}
 		}
 		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
-			DuelManager.getInstance().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected
+			this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected
 		}
 		pm.remove();
 	}
@@ -171,7 +171,7 @@ public class PlayerListener implements Listener {
 		
 		if (event.getEntity() instanceof Player) {
 			final Player killed = event.getEntity();
-			DuelManager.getInstance().removePlayerFromDuel(killed, RemoveReason.KILLED);
+			this.main.getDuelManager().removePlayerFromDuel(killed, RemoveReason.KILLED);
 			new BukkitRunnable() {
 				
 				@Override
@@ -180,7 +180,7 @@ public class PlayerListener implements Listener {
 						killed.spigot().respawn();
 					}
 				}
-			}.runTaskLater(main, 45L);
+			}.runTaskLater(this.main, 45L);
 		}
 	}
 	
@@ -188,7 +188,7 @@ public class PlayerListener implements Listener {
 	public void onRespawn(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
 		
-		if (DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()) == null) {
+		if (this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId()) == null) {
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			pm.heal(false);
 			player.teleport(player.getWorld().getSpawnLocation());
@@ -256,7 +256,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			if (attackerManager.getStatus() == PlayerStatus.DUEL) {
-				Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(attacker.getUniqueId());
+				Duel currentDuel = this.main.getDuelManager().getDuelFromPlayerUUID(attacker.getUniqueId());
 				
 				if (currentDuel == null) {
 					return;
@@ -289,8 +289,8 @@ public class PlayerListener implements Listener {
 			}
 			Item item = event.getItem();
 			final Player owner = (Player) item.getOwner();
-			if (DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
-				final Duel currentDuel = DuelManager.getInstance().getDuelFromPlayerUUID(receiver.getUniqueId());
+			if (this.main.getDuelManager().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
+				final Duel currentDuel = this.main.getDuelManager().getDuelFromPlayerUUID(receiver.getUniqueId());
 				
 				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item)) event.setCancelled(true); // TODO: Does containPlayer can affect the event? | Does the containDrop will affect all the same drops?
 				return;
@@ -306,7 +306,7 @@ public class PlayerListener implements Listener {
 			
 			if (itemDropped.getOwner() != null && itemDropped.getOwner() instanceof Player) {
 				UUID playerUUID = itemDropped.getOwner().getUniqueId();
-				Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(playerUUID);
+				Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
 				
 				if (duel == null) {
 					return;
@@ -349,7 +349,7 @@ public class PlayerListener implements Listener {
         	
         	switch (pm.getStatus()) {
 			case SPAWN:
-				if (!PartyManager.getInstance().hasParty(player.getUniqueId())) {
+				if (!this.main.getPartyManager().hasParty(player.getUniqueId())) {
 					if (item.getType() == Material.IRON_SWORD && itemName.equals(ChatColor.YELLOW + "unranked queue")) {
 		                event.setCancelled(true);
 		                player.openInventory(this.main.getInventoryManager().getUnrankedInventory());
@@ -378,7 +378,7 @@ public class PlayerListener implements Listener {
 						break;
 					}
 				} else {
-					final Party currentParty = PartyManager.getInstance().getParty(player.getUniqueId());
+					final Party currentParty = this.main.getPartyManager().getParty(player.getUniqueId());
 					final boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
 					
 					if (item.getType() == Material.IRON_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 unranked queue")) {
@@ -428,15 +428,42 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
-                        DuelManager.getInstance().createSplitTeamsDuel(currentParty);
+                        player.openInventory(this.main.getInventoryManager().getLaddersInventory());
                         break;
 		            }
 					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "fight other parties")) {
-						player.openInventory(PartyManager.getInstance().getPartiesInventory());
+						player.openInventory(this.main.getPartyManager().getPartiesInventory());
 						break;
 					}
 					if (item.getType() == Material.PAPER && itemName.equals(ChatColor.YELLOW + "party information")) {
 						Bukkit.dispatchCommand(player, "party info");
+						break;
+					}
+					if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.YELLOW + "spectate actual match")) {
+						event.setUseItemInHand(Result.DENY);
+						if (currentParty.getPartyState() != PartyState.DUELING) {
+							player.getItemInHand().setType(null);
+							player.updateInventory();
+							break;
+						}
+						Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(currentParty.getLeader());
+						pm.hideAllPlayer();
+						duel.addSpectator(player.getUniqueId());
+						
+						player.setAllowFlight(true);
+						player.setFlying(true);
+						player.teleport(duel.getArena().getLocations()[0].add(0, 2, 0));
+						
+						List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
+						duelPlayers.addAll(duel.getSecondTeamAlive());
+							
+						for (UUID uuid : duelPlayers) {
+							Player dplayers = Bukkit.getPlayer(uuid);
+							player.showPlayer(dplayers);
+						}
+						Main.getInstance().getItemManager().giveSpectatorItems(player);
+						player.sendMessage(ChatColor.GREEN + "You are now spectating the current party duel");
+						duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 						break;
 					}
 					if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave party")) {
@@ -448,12 +475,13 @@ public class PlayerListener implements Listener {
 			case QUEUE:
 				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave queue")) {
 	                event.setCancelled(true);
-	                QueueManager.getInstance().quitQueue(player);
+	                this.main.getQueueManager().quitQueue(player);
 	            }
 				break;
 			case WAITING:
 				if (item.getType() == Material.ENCHANTED_BOOK && itemName.contains("default kit")) {
 					this.giveFightItems(player, item.getItemMeta().getDisplayName());
+					break;
 	            }
 				break;
 			case DUEL:
@@ -466,7 +494,7 @@ public class PlayerListener implements Listener {
 				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave spectate")) {
 	                if (pm.getSpectate() != null) {
 		                final Player spectatePlayer = pm.getSpectate();
-		                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
+		                final Duel spectatedDuel = this.main.getDuelManager().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
 		                
 		                if (spectatedDuel != null) {
 		                	spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");
@@ -479,6 +507,8 @@ public class PlayerListener implements Listener {
 	        				allArenas.removeSpectator(player.getUniqueId());
 	        			}
 	                }
+	                player.setFlySpeed(0.1f);
+	        		player.setWalkSpeed(0.2f);
 	        		player.setAllowFlight(false);
 	        		player.setFlying(false);
 	        		pm.setStatus(PlayerStatus.SPAWN);
@@ -489,7 +519,7 @@ public class PlayerListener implements Listener {
 	            }
 				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.GREEN + "see current arena")) {
 	                final Player spectatePlayer = pm.getSpectate();
-	                final Duel spectatedDuel = DuelManager.getInstance().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
+	                final Duel spectatedDuel = this.main.getDuelManager().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
 	                final Arenas currentArena = spectatedDuel.getArena();
 	                
 	                if (spectatedDuel != null) {
@@ -498,11 +528,11 @@ public class PlayerListener implements Listener {
 	                	pm.setSpectate(null);
 	                }
 	                final List <UUID> playersInArena = Lists.newArrayList();
-	                for (Duel duel : DuelManager.getInstance().getAllDuels()) {
+	                for (Duel duel : this.main.getDuelManager().getAllDuels()) {
 	                	if (currentArena != duel.getArena()) continue;
 	                	playersInArena.addAll(duel.getFirstAndSecondTeamsAlive());
 	                }
-	                PlayerManager.get(player.getUniqueId()).hideAllPlayer(); // TODO: When see all spectators will be done; dont hide spectators
+	                pm.hideAllPlayer(); // TODO: When see all spectators will be done; dont hide spectators
 	                currentArena.addSpectator(player.getUniqueId());
 	                if (!playersInArena.isEmpty()) {
 		                for (UUID playerInArenaUUID : playersInArena) {
@@ -510,14 +540,16 @@ public class PlayerListener implements Listener {
 		                	if (!player.canSee(playerInArena)) player.showPlayer(playerInArena);
 		                }
 	                }
-	                this.main.getItemManager().giveSpectatorItems(player, false);
+	                this.main.getItemManager().giveSpectatorItems(player);
 	                playersInArena.clear();
+	                break;
 	            }
 				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.GREEN + "see all spectators")) {
 					// TODO
 				}
 				if (item.getType() == Material.MAP && itemName.equals(ChatColor.GREEN + "change arena")) {
-					//player.openInventory(InventoryManager.getInstance().getArenasInventory());
+					player.openInventory(this.main.getInventoryManager().getArenasInventory());
+					break;
 				}
 				if (item.getType() == Material.WOOL && itemName.equals(ChatColor.GREEN + "change fly/walk speed")) {
 					// TODO
@@ -624,8 +656,8 @@ public class PlayerListener implements Listener {
 			final Player player = (Player) event.getEntity();
 			
 			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL) {
-				if (DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId()) != null) {
-					Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(player.getUniqueId());
+				if (this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId()) != null) {
+					Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
 					
 					if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP || duel.getLadder() == Ladders.EARLY_HG) {
 						event.setCancelled(true);

@@ -25,6 +25,7 @@ commands:
   day:
   night:
   resettime:
+    aliases: [timereset]
   roll:
   mention:
   namemc:

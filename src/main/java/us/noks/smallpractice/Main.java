@@ -34,16 +34,23 @@ import us.noks.smallpractice.listeners.InventoryListener;
 import us.noks.smallpractice.listeners.PlayerListener;
 import us.noks.smallpractice.listeners.ServerListeners;
 import us.noks.smallpractice.objects.managers.ConfigManager;
+import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.InventoryManager;
 import us.noks.smallpractice.objects.managers.ItemManager;
+import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.QueueManager;
+import us.noks.smallpractice.objects.managers.RequestManager;
 
 public class Main extends JavaPlugin {
 	private boolean permissionsPluginHere;
 	private Map<UUID, Inventory> offlineInventory = new WeakHashMap<UUID, Inventory>();
+	private DuelManager duelManager;
 	private ItemManager itemManager;
 	private InventoryManager inventoryManager;
 	private ConfigManager configManager;
+	private QueueManager queueManager;
+	private RequestManager requestManager;
+	private PartyManager partyManager;
 	
 	private static Main instance;
 	public static Main getInstance() {
@@ -53,9 +60,13 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		this.duelManager = new DuelManager();
 		this.itemManager = new ItemManager();
-		this.inventoryManager = new InventoryManager();
 		this.configManager = new ConfigManager(this);
+		this.queueManager = new QueueManager();
+		this.requestManager = new RequestManager();
+		this.partyManager = new PartyManager();
+		this.inventoryManager = new InventoryManager();
 		
 		registerCommands();
 		registerListers();
@@ -66,7 +77,7 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		QueueManager.getInstance().getQueueMap().clear();
+		this.queueManager.getQueueMap().clear();
 		this.offlineInventory.clear();
 	}
 	
@@ -121,6 +132,10 @@ public class Main extends JavaPlugin {
 		return this.offlineInventory;
 	}
 	
+	public DuelManager getDuelManager() {
+		return this.duelManager;
+	}
+	
 	public ItemManager getItemManager() {
 		return this.itemManager;
 	}
@@ -131,5 +146,17 @@ public class Main extends JavaPlugin {
 	
 	public ConfigManager getConfigManager() {
 		return this.configManager;
+	}
+	
+	public QueueManager getQueueManager() {
+		return this.queueManager;
+	}
+	
+	public RequestManager getRequestManager() {
+		return this.requestManager;
+	}
+	
+	public PartyManager getPartyManager() {
+		return this.partyManager;
 	}
 }

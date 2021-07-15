@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.PlayerStatus;
-import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ModerationCommand implements CommandExecutor {
@@ -29,7 +28,7 @@ public class ModerationCommand implements CommandExecutor {
 		}
 		Player player = (Player) sender;
 			
-		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+		if (Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "You are in party!");
 			return false;
 		}

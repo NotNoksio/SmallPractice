@@ -12,11 +12,10 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
-import us.noks.smallpractice.objects.managers.DuelManager;
-import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ForceDuelCommand implements CommandExecutor {
@@ -41,7 +40,7 @@ public class ForceDuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn.");
 			return false;
 		}
-		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+		if (Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "You are in a party!");
 			return false;
 		}
@@ -55,7 +54,7 @@ public class ForceDuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		if (PartyManager.getInstance().hasParty(target.getUniqueId())) {
+		if (Main.getInstance().getPartyManager().hasParty(target.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "That player is in a party!");
 			return false;
 		}
@@ -74,7 +73,7 @@ public class ForceDuelCommand implements CommandExecutor {
 		List<UUID> secondTeam = Lists.newArrayList();
 		secondTeam.add(target.getUniqueId());
 		
-		DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(false), Ladders.NODEBUFF, null, null, firstTeam, secondTeam, false);
+		Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(false), Ladders.NODEBUFF, null, null, firstTeam, secondTeam, false);
 		return true;
 	}
 }

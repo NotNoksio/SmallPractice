@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.noks.smallpractice.objects.managers.PartyManager;
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.party.Party;
 
 // Copying Osu! !roll <integer>
@@ -34,9 +34,9 @@ public class RollCommand implements CommandExecutor {
 		}
 		final Player player = (Player) sender;
 		final String rollMessage = ChatColor.GREEN + sender.getName() + ChatColor.YELLOW + " rolls " + ChatColor.RED + rollNumber + ChatColor.YELLOW + " point(s).";
-		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
-			Party party = PartyManager.getInstance().getParty(player.getUniqueId());
-			PartyManager.getInstance().notifyParty(party, rollMessage);
+		if (Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
+			Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
+			Main.getInstance().getPartyManager().notifyParty(party, rollMessage);
 			return true;
 		}
 		player.sendMessage(rollMessage);

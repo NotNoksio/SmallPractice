@@ -14,11 +14,6 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.party.Party;
 
 public class RequestManager {
-	private static RequestManager instance = new RequestManager();
-	public static RequestManager getInstance() {
-		return instance;
-	}
-	
 	public void openLadderSelectionIventory(Player requester, Player requested) {
 		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
@@ -91,18 +86,18 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
 		}
-		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
-        Party requestedParty = PartyManager.getInstance().getParty(requested.getUniqueId());
+		Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
+        Party requestedParty = Main.getInstance().getPartyManager().getParty(requested.getUniqueId());
         if ((requesterParty != null && requestedParty == null) || (requestedParty != null && requesterParty == null)) {
             requested.sendMessage(ChatColor.RED + "Either you or this player are in a party!");
             return;
         }
         requesterManager.clearRequest();
 		if (requestedParty != null && requesterParty != null) {
-			DuelManager.getInstance().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
+			Main.getInstance().getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;
 		}
-		DuelManager.getInstance().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), false);
+		Main.getInstance().getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), false);
 	}
 	
 	public void denyDuelRequest(Player requested, Player requester) {
@@ -166,13 +161,13 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "This player doesn't invite you to his party!");
 			return;
 		}
-		Party requesterParty = PartyManager.getInstance().getParty(requester.getUniqueId());
+		Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
 		requesterManager.getInvites().remove(requested.getUniqueId());
-		PartyManager.getInstance().joinParty(requesterParty.getLeader(), requested.getUniqueId());
-		PartyManager.getInstance().notifyParty(requesterParty, ChatColor.GREEN + requested.getName() + " has joined the party");
+		Main.getInstance().getPartyManager().joinParty(requesterParty.getLeader(), requested.getUniqueId());
+		Main.getInstance().getPartyManager().notifyParty(requesterParty, ChatColor.GREEN + requested.getName() + " has joined the party");
         requested.sendMessage(ChatColor.GREEN + "You have joined the party!");
         Main.getInstance().getItemManager().giveSpawnItem(requested);
-        PartyManager.getInstance().updateParty(requesterParty);
+        Main.getInstance().getPartyManager().updateParty(requesterParty);
 	}
 	
 	public void denyPartyInvite(Player requested, Player requester) {

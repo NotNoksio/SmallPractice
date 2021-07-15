@@ -25,10 +25,7 @@ import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.Request;
-import us.noks.smallpractice.objects.managers.DuelManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.objects.managers.QueueManager;
-import us.noks.smallpractice.objects.managers.RequestManager;
 
 public class InventoryListener implements Listener {
 	private Main main;
@@ -70,12 +67,16 @@ public class InventoryListener implements Listener {
 			}
 			player.closeInventory();
 			if (title.contains("ladder")) {
-				Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
-				request.setLadder(ladder);
-				player.openInventory(this.main.getInventoryManager().getArenasInventory());
+				if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
+					Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
+					request.setLadder(ladder);
+					player.openInventory(this.main.getInventoryManager().getArenasInventory());
+					return;
+				}
+				this.main.getDuelManager().createSplitTeamsDuel(this.main.getPartyManager().getParty(player.getUniqueId()), ladder);
 				return;
 			}
-			QueueManager.getInstance().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"));
+			this.main.getQueueManager().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"));
 		}
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);
@@ -108,7 +109,7 @@ public class InventoryListener implements Listener {
 					player.closeInventory();
 					return;
 				} 
-				RequestManager.getInstance().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
+				this.main.getRequestManager().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
 			} else {
 				final Arenas selectedArena = Arena.getInstance().getArenaByInteger(slotTranslation);
 				for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
@@ -117,7 +118,7 @@ public class InventoryListener implements Listener {
     			}
 				
 				final List <UUID> playersInArena = Lists.newArrayList();
-                for (Duel duel : DuelManager.getInstance().getAllDuels()) {
+                for (Duel duel : this.main.getDuelManager().getAllDuels()) {
                 	if (selectedArena != duel.getArena()) continue;
                 	playersInArena.addAll(duel.getFirstAndSecondTeamsAlive());
                 }

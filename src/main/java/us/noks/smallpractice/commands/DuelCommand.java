@@ -7,10 +7,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.CommandCooldown;
-import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.objects.managers.RequestManager;
 import us.noks.smallpractice.party.Party;
 import us.noks.smallpractice.party.PartyState;
 
@@ -37,8 +36,8 @@ public class DuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		Party party = PartyManager.getInstance().getParty(player.getUniqueId());
-		Party targetParty = PartyManager.getInstance().getParty(target.getUniqueId());
+		Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
+		Party targetParty = Main.getInstance().getPartyManager().getParty(target.getUniqueId());
 		if (party != null) {
 			if (!party.getLeader().equals(player.getUniqueId())) {
 				player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
@@ -73,7 +72,7 @@ public class DuelCommand implements CommandExecutor {
 				return false;
 			}
 		}
-		RequestManager.getInstance().openLadderSelectionIventory(player, target);
+		Main.getInstance().getRequestManager().openLadderSelectionIventory(player, target);
 		cooldown.addCooldown("Duel", System.currentTimeMillis());
 		return true;
 	}

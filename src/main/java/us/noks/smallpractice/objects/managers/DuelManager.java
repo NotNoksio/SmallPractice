@@ -37,11 +37,6 @@ import us.noks.smallpractice.utils.ComponentJoiner;
 import us.noks.smallpractice.utils.MathUtils;
 
 public class DuelManager {
-	private static DuelManager instance = new DuelManager();
-	public static DuelManager getInstance() {
-		return instance;
-	}
-	
 	private Map<UUID, Duel> uuidIdentifierToDuel = Maps.newHashMap();
 	public Duel getDuelFromPlayerUUID(UUID uuid) {
         return this.uuidIdentifierToDuel.get(uuid);
@@ -154,11 +149,11 @@ public class DuelManager {
 			second.setScoreboard(secondPlayerScoreboard);
 		}
 		if (teamFight) {
-			List<Party> partyList = Lists.newArrayList(PartyManager.getInstance().getParty(firstPartyLeaderUUID), PartyManager.getInstance().getParty(secondPartyLeaderUUID));
+			List<Party> partyList = Lists.newArrayList(Main.getInstance().getPartyManager().getParty(firstPartyLeaderUUID), Main.getInstance().getPartyManager().getParty(secondPartyLeaderUUID));
             for (Party parties : partyList) {
             	if (parties == null) continue;
             	parties.setPartyState(PartyState.DUELING);
-            	PartyManager.getInstance().updateParty(parties);
+            	Main.getInstance().getPartyManager().updateParty(parties);
             }
             partyList.clear(); // TODO: console error = remove
         }
@@ -172,7 +167,7 @@ public class DuelManager {
 		teleportRandomArena(new Duel(arena, ladder, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
 	}
 	
-	public void createSplitTeamsDuel(Party party) {
+	public void createSplitTeamsDuel(Party party, Ladders ladder) {
 		for (UUID membersUUID : party.getMembers()) {
 			Player members = Bukkit.getPlayer(membersUUID);
 			
@@ -190,7 +185,7 @@ public class DuelManager {
         List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         
-        startDuel(Arena.getInstance().getRandomArena(false), Ladders.NODEBUFF, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false); // TODO: MORE LADDERS MF
+        startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
@@ -209,6 +204,8 @@ public class DuelManager {
 			if (spec == null) continue;
 			PlayerManager sm = PlayerManager.get(spec.getUniqueId());
 			
+			spec.setFlySpeed(0.1f);
+			spec.setWalkSpeed(0.2f);
 			spec.setAllowFlight(false);
 			spec.setFlying(false);
 			sm.setStatus(PlayerStatus.SPAWN);
@@ -219,11 +216,11 @@ public class DuelManager {
 			specIt.remove();
 		}
 		if (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null) {
-			List<Party> partyList = Lists.newArrayList(PartyManager.getInstance().getParty(duel.getFirstTeamPartyLeaderUUID()), PartyManager.getInstance().getParty(duel.getSecondTeamPartyLeaderUUID()));
+			List<Party> partyList = Lists.newArrayList(Main.getInstance().getPartyManager().getParty(duel.getFirstTeamPartyLeaderUUID()), Main.getInstance().getPartyManager().getParty(duel.getSecondTeamPartyLeaderUUID()));
             for (Party parties : partyList) {
             	if (parties == null) continue;
             	parties.setPartyState(PartyState.LOBBY);
-            	PartyManager.getInstance().updateParty(parties);
+            	Main.getInstance().getPartyManager().updateParty(parties);
             }
             partyList.clear(); // TODO: console error = remove
         }

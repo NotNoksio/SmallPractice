@@ -4,8 +4,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class ComponentJoiner {
-    private String delimiter;
-    private String endLimiter;
+    private String delimiter, endLimiter;
     private TextComponent component = new TextComponent("");
 
     public ComponentJoiner(String delimiter) {

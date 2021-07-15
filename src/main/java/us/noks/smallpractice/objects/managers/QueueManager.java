@@ -13,17 +13,12 @@ import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 
 public class QueueManager {
-	private static QueueManager instance = new QueueManager();
-	public static QueueManager getInstance() {
-		return instance;
-	}
-
 	private Map<UUID, Queue> queue = Maps.newConcurrentMap();
 	public Map<UUID, Queue> getQueueMap() {
 		return this.queue;
 	}
 	
-	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked) {
+	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked) { // TODO: Do 2v2 queue & ping detector due to 20ms vs 220ms
 		if (!this.queue.containsKey(uuid)) {
 			final PlayerManager pm = PlayerManager.get(uuid);
 			final Player player = pm.getPlayer();
@@ -50,7 +45,7 @@ public class QueueManager {
 			}
 			this.queue.remove(uuid);
 			this.queue.remove(secondUUID);
-			DuelManager.getInstance().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
+			Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
 			if (!ranked) {
 				Main.getInstance().getInventoryManager().updateUnrankedInventory();
 			} else {

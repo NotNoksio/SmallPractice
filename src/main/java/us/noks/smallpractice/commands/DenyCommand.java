@@ -7,8 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.PlayerManager;
-import us.noks.smallpractice.objects.managers.RequestManager;
 
 public class DenyCommand implements CommandExecutor {
 
@@ -37,7 +37,7 @@ public class DenyCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "No request found!");
 			return false;
 		}
-		RequestManager.getInstance().denyDuelRequest(player, dueler);
+		Main.getInstance().getRequestManager().denyDuelRequest(player, dueler);
 		return true;
 	}
 }

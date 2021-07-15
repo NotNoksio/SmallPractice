@@ -17,8 +17,6 @@ import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.Duel;
-import us.noks.smallpractice.objects.managers.DuelManager;
-import us.noks.smallpractice.objects.managers.PartyManager;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
 public class SpectateCommand implements CommandExecutor {
@@ -35,7 +33,7 @@ public class SpectateCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
-		if (PartyManager.getInstance().hasParty(player.getUniqueId())) {
+		if (Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "You are in party!");
 			return false;
 		}
@@ -69,7 +67,7 @@ public class SpectateCommand implements CommandExecutor {
 		if (pm.getStatus() != PlayerStatus.SPECTATE) {
 			pm.setStatus(PlayerStatus.SPECTATE);
 		} else if (pm.getSpectate() != null) {
-			Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(pm.getSpectate().getUniqueId());
+			Duel duel = Main.getInstance().getDuelManager().getDuelFromPlayerUUID(pm.getSpectate().getUniqueId());
 			duel.removeSpectator(player.getUniqueId());
 		} else {
 			for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
@@ -80,7 +78,7 @@ public class SpectateCommand implements CommandExecutor {
 		pm.hideAllPlayer();
 		pm.setSpectate(target);
 		
-		Duel duel = DuelManager.getInstance().getDuelFromPlayerUUID(target.getUniqueId());
+		Duel duel = Main.getInstance().getDuelManager().getDuelFromPlayerUUID(target.getUniqueId());
 		duel.addSpectator(player.getUniqueId());
 		
 		player.setAllowFlight(true);
@@ -94,7 +92,7 @@ public class SpectateCommand implements CommandExecutor {
 			Player dplayers = Bukkit.getPlayer(uuid);
 			player.showPlayer(dplayers);
 		}
-		Main.getInstance().getItemManager().giveSpectatorItems(player, true);
+		Main.getInstance().getItemManager().giveSpectatorItems(player);
 		player.sendMessage(ChatColor.GREEN + "You are now spectating " + ChatColor.YELLOW + target.getName());
 		duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 		return true;
