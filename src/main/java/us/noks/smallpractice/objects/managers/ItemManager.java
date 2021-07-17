@@ -9,6 +9,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffectType;
 
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.enums.Ladders;
@@ -247,6 +248,34 @@ public class ItemManager {
 			while (player.getInventory().firstEmpty() != -1) {
 				player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
 			} 
+			break;
+		}
+		case GAPPLE: {
+			attackItem = new ItemStack(Material.DIAMOND_SWORD, 1);
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 5);
+			attackItem.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 2);
+			attackItem.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			helmet = new ItemStack(Material.DIAMOND_HELMET, 1);
+			helmet.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+			helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
+			chestplate.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+			chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
+			leggings.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+			leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
+			boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			player.getInventory().setItem(1, new ItemStack(Material.GOLDEN_APPLE, 64, (short) 1));
+			player.getInventory().setItem(2, helmet);
+			player.getInventory().setItem(3, chestplate);
+			player.getInventory().setItem(4, leggings);
+			player.getInventory().setItem(5, boots);
+			player.getInventory().setItem(7, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.SPEED, (20 * 24), 1));
+			player.getInventory().setItem(8, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, (20 * 24), 1));
 			break;
 		}
 		default:

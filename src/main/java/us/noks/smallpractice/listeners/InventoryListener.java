@@ -76,7 +76,7 @@ public class InventoryListener implements Listener {
 				this.main.getDuelManager().createSplitTeamsDuel(this.main.getPartyManager().getParty(player.getUniqueId()), ladder);
 				return;
 			}
-			this.main.getQueueManager().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"));
+			this.main.getQueueManager().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"), this.main.getPartyManager().hasParty(player.getUniqueId()));
 		}
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);

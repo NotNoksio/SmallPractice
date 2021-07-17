@@ -60,12 +60,12 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		this.partyManager = new PartyManager();
 		this.duelManager = new DuelManager();
 		this.itemManager = new ItemManager();
 		this.configManager = new ConfigManager(this);
 		this.queueManager = new QueueManager();
 		this.requestManager = new RequestManager();
-		this.partyManager = new PartyManager();
 		this.inventoryManager = new InventoryManager();
 		
 		registerCommands();

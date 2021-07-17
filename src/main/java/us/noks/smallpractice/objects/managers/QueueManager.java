@@ -11,6 +11,7 @@ import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.party.Party;
 
 public class QueueManager {
 	private Map<UUID, Queue> queue = Maps.newConcurrentMap();
@@ -18,15 +19,20 @@ public class QueueManager {
 		return this.queue;
 	}
 	
-	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked) { // TODO: Do 2v2 queue & ping detector due to 20ms vs 220ms
+	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked, boolean to2) { // TODO: ping detector due to 20ms vs 220ms
+		Party party = (to2 ? party = Main.getInstance().getPartyManager().getParty(uuid) : null);
 		if (!this.queue.containsKey(uuid)) {
 			final PlayerManager pm = PlayerManager.get(uuid);
 			final Player player = pm.getPlayer();
-			this.queue.put(uuid, new Queue(ladder, ranked));
+			this.queue.put(uuid, new Queue(ladder, ranked, to2));
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
 			Main.getInstance().getItemManager().giveLeaveItem(player, "Queue", true);
-			player.sendMessage(ChatColor.GREEN + "You have been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " queue. Waiting for another player..");
+			if (!to2) {
+				player.sendMessage(ChatColor.GREEN + "You have been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " queue. Waiting for another player..");
+			} else {
+				Main.getInstance().getPartyManager().notifyParty(party, ChatColor.GREEN + "Your party has been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " 2v2 queue. Waiting for another party..");
+			}
 			Main.getInstance().getInventoryManager().updateUnrankedInventory();
 		}
 		if (this.queue.size() >= 2) {
@@ -35,7 +41,7 @@ public class QueueManager {
 			    UUID key = map.getKey();
 			    Queue value = map.getValue();
 			    
-			    if (uuid == key || ladder.getName() != value.getLadder().getName() || ranked != value.isRanked()) {
+			    if (uuid == key || ladder.getName() != value.getLadder().getName() || ranked != value.isRanked() || to2 != value.isTeamOf2()) {
 			    	continue;
 			    }
 			    secondUUID = key;
@@ -45,7 +51,11 @@ public class QueueManager {
 			}
 			this.queue.remove(uuid);
 			this.queue.remove(secondUUID);
-			Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
+			if (!to2) {
+				Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
+			} else {
+				Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, party.getMembersIncludeLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludeLeader(), ranked);
+			}
 			if (!ranked) {
 				Main.getInstance().getInventoryManager().updateUnrankedInventory();
 			} else {
@@ -84,10 +94,12 @@ public class QueueManager {
 	public class Queue {
 		private Ladders ladder;
 		private boolean ranked;
+		private boolean teamOf2;
 		
-		public Queue(Ladders ladder, boolean ranked) {
+		public Queue(Ladders ladder, boolean ranked, boolean to2) {
 			this.ladder = ladder;
 			this.ranked = ranked;
+			this.teamOf2 = to2;
 		}
 		
 		public Ladders getLadder() {
@@ -96,6 +108,10 @@ public class QueueManager {
 		
 		public boolean isRanked() {
 			return this.ranked;
+		}
+		
+		public boolean isTeamOf2() {
+			return this.teamOf2;
 		}
 	}
 }

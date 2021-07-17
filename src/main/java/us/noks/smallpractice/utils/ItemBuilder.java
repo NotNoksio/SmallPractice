@@ -5,6 +5,9 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 // For the pleasure of some
 public class ItemBuilder {
@@ -39,5 +42,12 @@ public class ItemBuilder {
 		item.setItemMeta(itemMeta);
 		item.setAmount(Math.max(amount, 1));
 		return item;
+	}
+	public ItemStack createCustomPotionItem(PotionEffectType type, int duration, int amplifier) {
+		ItemStack potion = new ItemStack(Material.POTION, 1);
+		PotionMeta pMeta = (PotionMeta) potion.getItemMeta();
+		pMeta.addCustomEffect(new PotionEffect(type, duration, amplifier), true);
+		potion.setItemMeta(pMeta);
+		return potion;
 	}
 }

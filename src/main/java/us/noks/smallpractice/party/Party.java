@@ -8,18 +8,22 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import us.noks.smallpractice.objects.managers.EloManager;
+
 public class Party {
 	private List<UUID> memberUUIDs;
     private UUID partyLeader;
     private String leaderName;
     private PartyState partyState;
     private boolean open;
+    private EloManager partyEloManager;
     
     public Party(UUID partyLeader, String leaderName) {
         this.memberUUIDs = Lists.newArrayList();
         this.partyLeader = partyLeader;
         this.leaderName = leaderName;
         this.partyState = PartyState.LOBBY;
+        this.partyEloManager = new EloManager();
     }
     
     public void addMember(UUID uuid) {
@@ -40,6 +44,12 @@ public class Party {
     
     public List<UUID> getMembers() {
         return this.memberUUIDs;
+    }
+    
+    public List<UUID> getMembersIncludeLeader() {
+    	List<UUID> list = Lists.newArrayList(this.memberUUIDs);
+    	list.add(partyLeader);
+        return list;
     }
     
     public void setNewLeader(UUID newLeader, String newLeaderName) {
@@ -81,5 +91,9 @@ public class Party {
         }
         membersOnline.add(partyLeader);
         return membersOnline;
+    }
+    
+    public EloManager getPartyEloManager() {
+    	return this.partyEloManager;
     }
 }
