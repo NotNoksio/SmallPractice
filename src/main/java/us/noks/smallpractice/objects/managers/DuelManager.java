@@ -122,6 +122,9 @@ public class DuelManager {
 			first.setGameMode(GameMode.SURVIVAL);
 			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(secondTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(secondPartyLeaderUUID).getPartyEloManager().getElo(ladder)) : "") + ")"));
 			fm.heal(true);
+			if (ladder == Ladders.COMBO) {
+				first.setMaximumNoDamageTicks(2);
+			}
 			
 			green1.addEntry(first.getName());
 			red2.addEntry(first.getName());
@@ -143,6 +146,9 @@ public class DuelManager {
 			second.setGameMode(GameMode.SURVIVAL);
 			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(firstTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(firstPartyLeaderUUID).getPartyEloManager().getElo(ladder)) : "") + ")"));
 			sm.heal(true);
+			if (ladder == Ladders.COMBO) {
+				second.setMaximumNoDamageTicks(2);
+			}
 			
 			green2.addEntry(second.getName());
 			red1.addEntry(second.getName());
@@ -445,6 +451,7 @@ public class DuelManager {
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		pm.saveInventory();
+		pm.getPlayer().setMaximumNoDamageTicks(10);
 		
 		currentDuel.killPlayer(player.getUniqueId());
 		final String message = (reason == RemoveReason.KILLED ? player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : "") : player.getName() + " has disconnected");
@@ -509,6 +516,7 @@ public class DuelManager {
 			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
+			duelPlayer.setMaximumNoDamageTicks(10);
 			
 			dpm.setStatus(PlayerStatus.SPAWN);
 			dpm.heal(false);

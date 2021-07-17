@@ -395,7 +395,7 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
-		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
+                        player.openInventory(this.main.getInventoryManager().getUnrankedInventory());
 		                break;
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 ranked queue")) {
@@ -412,7 +412,7 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
-		                player.sendMessage(ChatColor.GOLD + "This action coming soon ^^");
+                        player.openInventory(this.main.getInventoryManager().getRankedInventory());
 		                break;
 		            }
 					if (item.getType() == Material.ARROW && itemName.equals(ChatColor.YELLOW + "split teams")) {
