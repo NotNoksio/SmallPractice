@@ -88,7 +88,7 @@ public class RequestManager {
 		}
 		Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
         Party requestedParty = Main.getInstance().getPartyManager().getParty(requested.getUniqueId());
-        if ((requesterParty != null && requestedParty == null) || (requestedParty != null && requesterParty == null)) {
+        if (requesterParty != null ^ requestedParty != null) {
             requested.sendMessage(ChatColor.RED + "Either you or this player are in a party!");
             return;
         }

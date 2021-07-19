@@ -120,7 +120,7 @@ public class DuelManager {
 			fm.setStatus(PlayerStatus.WAITING);
 			
 			first.setGameMode(GameMode.SURVIVAL);
-			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(secondTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(secondPartyLeaderUUID).getPartyEloManager().getElo(ladder)) : "") + ")"));
+			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(secondTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(secondPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : "")));
 			fm.heal(true);
 			if (ladder == Ladders.COMBO) {
 				first.setMaximumNoDamageTicks(2);
@@ -144,7 +144,7 @@ public class DuelManager {
 			sm.setStatus(PlayerStatus.WAITING);
 			
 			second.setGameMode(GameMode.SURVIVAL);
-			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(firstTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(firstPartyLeaderUUID).getPartyEloManager().getElo(ladder)) : "") + ")"));
+			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(firstTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(firstPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : "")));
 			sm.heal(true);
 			if (ladder == Ladders.COMBO) {
 				second.setMaximumNoDamageTicks(2);
@@ -161,7 +161,7 @@ public class DuelManager {
             	parties.setPartyState(PartyState.DUELING);
             	Main.getInstance().getPartyManager().updateParty(parties);
             }
-            partyList.clear(); // TODO: console error = remove
+            partyList.clear();
         }
         if (firstTeam.size() == 1 && secondTeam.size() == 1 && (firstPartyLeaderUUID == null && secondPartyLeaderUUID == null)) {
         	if (!ranked) {
@@ -228,7 +228,7 @@ public class DuelManager {
             	parties.setPartyState(PartyState.LOBBY);
             	Main.getInstance().getPartyManager().updateParty(parties);
             }
-            partyList.clear(); // TODO: console error = remove
+            partyList.clear();
         }
         if (duel.getFirstTeam().size() == 1 && duel.getSecondTeam().size() == 1 && (duel.getFirstTeamPartyLeaderUUID() == null && duel.getSecondTeamPartyLeaderUUID() == null)) {
         	if (!duel.isRanked()) {
