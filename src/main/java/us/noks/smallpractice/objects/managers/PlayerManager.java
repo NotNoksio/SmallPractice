@@ -56,9 +56,9 @@ public class PlayerManager {
 	    this.eloManager = new EloManager();
 	    this.matchStats = new MatchStats();
 	    this.cooldown = new CommandCooldown();
-	    if (Main.getInstance().getOfflineInventoryMap().containsKey(playerUUID)) {
-	    	this.savedInventory = Main.getInstance().getOfflineInventoryMap().get(playerUUID);
-	    	Main.getInstance().getOfflineInventoryMap().remove(playerUUID);
+	    if (Main.getInstance().getOfflineInventories().containsKey(playerUUID)) {
+	    	this.savedInventory = Main.getInstance().getOfflineInventories().get(playerUUID);
+	    	Main.getInstance().getOfflineInventories().remove(playerUUID);
 	    }
 	}
 
@@ -75,7 +75,7 @@ public class PlayerManager {
 
 	public void remove() {
 		if (this.savedInventory != null) {
-			Main.getInstance().getOfflineInventoryMap().put(this.playerUUID, this.savedInventory);
+			Main.getInstance().getOfflineInventories().put(this.playerUUID, this.savedInventory);
 		}
 		players.remove(this.playerUUID);
 	}

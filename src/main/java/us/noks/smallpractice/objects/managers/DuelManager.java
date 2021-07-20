@@ -60,35 +60,20 @@ public class DuelManager {
 	
 	public void startDuel(Arenas arena, Ladders ladder, UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		if (arena == null) {
-			for (UUID firstUUID : firstTeam) {
-				Player first = Bukkit.getPlayer(firstUUID);
+			List<UUID> allTeam = Lists.newArrayList(firstTeam);
+			allTeam.addAll(secondTeam);
+			for (UUID uuids : allTeam) {
+				Player player = Bukkit.getPlayer(uuids);
 				
-				if (first == null) {
-					firstTeam.remove(firstUUID);
-					continue;
-				}
-				if (firstTeam.isEmpty()) continue;
+				if (allTeam.isEmpty()) continue;
 				
-				PlayerManager fm = PlayerManager.get(firstUUID);
-				fm.clearRequest();
-				fm.setStatus(PlayerStatus.SPAWN);
-				Main.getInstance().getItemManager().giveSpawnItem(first);
-				first.sendMessage(ChatColor.RED + "No arena created in this gamemode!");
+				PlayerManager pm = PlayerManager.get(uuids);
+				pm.clearRequest();
+				pm.setStatus(PlayerStatus.SPAWN);
+				Main.getInstance().getItemManager().giveSpawnItem(player);
+				player.sendMessage(ChatColor.RED + "No arena created in this gamemode!");
 			}
-			for (UUID secondUUID : secondTeam) {
-				Player second = Bukkit.getPlayer(secondUUID);
-				
-				if (second == null) {
-					secondTeam.remove(secondUUID);
-					continue;
-				}
-				if (secondTeam.isEmpty()) continue;
-				
-				PlayerManager sm = PlayerManager.get(secondUUID);
-				sm.setStatus(PlayerStatus.SPAWN);
-				Main.getInstance().getItemManager().giveSpawnItem(second);
-				second.sendMessage(ChatColor.RED + "No arena created in this gamemode!");
-			}
+			allTeam.clear();
 			return;
 		}
 		Scoreboard firstPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
@@ -106,54 +91,9 @@ public class DuelManager {
 		green2.setAllowFriendlyFire(false);
 		
 		final boolean teamFight = (firstPartyLeaderUUID != null && secondPartyLeaderUUID != null);
-		for (UUID firstUUID : firstTeam) {
-			Player first = Bukkit.getPlayer(firstUUID);
-			
-			if (first == null) {
-				firstTeam.remove(firstUUID);
-				continue;
-			}
-			if (firstTeam.isEmpty()) continue;
-			
-			PlayerManager fm = PlayerManager.get(firstUUID);
-			fm.clearRequest();
-			fm.setStatus(PlayerStatus.WAITING);
-			
-			first.setGameMode(GameMode.SURVIVAL);
-			first.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(secondPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(secondTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(secondTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(secondPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : "")));
-			fm.heal(true);
-			if (ladder == Ladders.COMBO) {
-				first.setMaximumNoDamageTicks(2);
-			}
-			
-			green1.addEntry(first.getName());
-			red2.addEntry(first.getName());
-			first.setScoreboard(firstPlayerScoreboard);
-		}
-		for (UUID secondUUID : secondTeam) {
-			Player second = Bukkit.getPlayer(secondUUID);
-			
-			if (second == null) {
-				secondTeam.remove(secondUUID);
-				continue;
-			}
-			if (secondTeam.isEmpty()) continue;
-			
-			PlayerManager sm = PlayerManager.get(secondUUID);
-			sm.clearRequest();
-			sm.setStatus(PlayerStatus.WAITING);
-			
-			second.setGameMode(GameMode.SURVIVAL);
-			second.sendMessage(ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(firstPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(firstTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(firstTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(firstPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : "")));
-			sm.heal(true);
-			if (ladder == Ladders.COMBO) {
-				second.setMaximumNoDamageTicks(2);
-			}
-			
-			green2.addEntry(second.getName());
-			red1.addEntry(second.getName());
-			second.setScoreboard(secondPlayerScoreboard);
-		}
+		this.setupTeam(firstTeam, secondPartyLeaderUUID, secondTeam, ladder, firstPlayerScoreboard, green1, red2, teamFight, ranked);
+		this.setupTeam(secondTeam, firstPartyLeaderUUID, firstTeam, ladder, secondPlayerScoreboard, green2, red1, teamFight, ranked);
+		
 		if (teamFight) {
 			List<Party> partyList = Lists.newArrayList(Main.getInstance().getPartyManager().getParty(firstPartyLeaderUUID), Main.getInstance().getPartyManager().getParty(secondPartyLeaderUUID));
             for (Party parties : partyList) {
@@ -171,6 +111,34 @@ public class DuelManager {
         	}
         }
 		teleportRandomArena(new Duel(arena, ladder, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
+	}
+	
+	private void setupTeam(List<UUID> team, UUID enemyPartyLeaderUUID, List<UUID> enemyTeam, Ladders ladder, Scoreboard scoreboard, Team team1, Team team2, boolean teamFight, boolean ranked) {
+		final String duelMessage = ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : ""));
+		for (UUID teamUUID : team) {
+			Player player = Bukkit.getPlayer(teamUUID);
+			
+			if (player == null) {
+				team.remove(teamUUID);
+				continue;
+			}
+			if (team.isEmpty()) continue;
+			
+			PlayerManager pm = PlayerManager.get(teamUUID);
+			pm.clearRequest();
+			pm.setStatus(PlayerStatus.WAITING);
+			
+			player.setGameMode(GameMode.SURVIVAL);
+			player.sendMessage(duelMessage);
+			pm.heal(true);
+			if (ladder == Ladders.COMBO) {
+				player.setMaximumNoDamageTicks(2);
+			}
+			
+			team1.addEntry(player.getName());
+			team2.addEntry(player.getName());
+			player.setScoreboard(scoreboard);
+		}
 	}
 	 
 	public void createSplitTeamsDuel(Party party, Ladders ladder) {

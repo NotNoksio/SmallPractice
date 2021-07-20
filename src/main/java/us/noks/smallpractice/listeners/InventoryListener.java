@@ -34,8 +34,6 @@ public class InventoryListener implements Listener {
 	    this.main.getServer().getPluginManager().registerEvents(this, this.main);
 	}
 	
-	private Pattern splitPattern = Pattern.compile("\\s");
-	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (!event.getInventory().getType().equals(InventoryType.CHEST)) {
@@ -180,6 +178,7 @@ public class InventoryListener implements Listener {
 		}
 	}
 	
+	private Pattern splitPattern = Pattern.compile("\\s");
 	private String[] splitString(final String string) {
 		return string.split(this.splitPattern.pattern());
 	}

@@ -31,8 +31,8 @@ public class InventoryCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (tm.getSavedInventory() == null) {
-			if (Main.getInstance().getOfflineInventoryMap().containsKey(targetUUID)) {
-				player.openInventory(Main.getInstance().getOfflineInventoryMap().get(targetUUID));
+			if (Main.getInstance().getOfflineInventories().containsKey(targetUUID)) {
+				player.openInventory(Main.getInstance().getOfflineInventories().get(targetUUID));
 				return true;
 			}
 			player.sendMessage(ChatColor.RED + "Inventory expired!");

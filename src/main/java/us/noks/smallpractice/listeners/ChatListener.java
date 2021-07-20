@@ -13,6 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.objects.managers.PlayerManager;
+import us.noks.smallpractice.party.Party;
 
 public class ChatListener implements Listener {
 	private Main main;
@@ -51,24 +52,32 @@ public class ChatListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onStaffChat(AsyncPlayerChatEvent event) {
+	public void onStaffOrPartyChat(AsyncPlayerChatEvent event) {
 		final Player player = event.getPlayer();
-		if (event.getMessage().charAt(0) == '@') {
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (event.getMessage().charAt(0) == '@' && player.hasPermission("chat.staff")) {
 			String message = event.getMessage();
 	      
 			if (message.length() == 1) {
 				return;
 			}
 			message = message.replaceFirst("@", "");
-			if (player.hasPermission("chat.staff")) {
-				final PlayerManager pm = PlayerManager.get(player.getUniqueId());
-				for (Player staff : Bukkit.getOnlinePlayers()) {
-					if (staff.hasPermission("chat.staff")) {
-						event.setCancelled(true);
-						staff.sendMessage(ChatColor.GREEN + "(" + ChatColor.RED + "Staff" + ChatColor.GREEN + ") " + pm.getPrefixColors() + player.getName() + ChatColor.GOLD + " » " + message);
-					}
+			for (Player staff : Bukkit.getOnlinePlayers()) {
+				if (staff.hasPermission("chat.staff")) {
+					event.setCancelled(true);
+					staff.sendMessage(ChatColor.GREEN + "(" + ChatColor.RED + "Staff" + ChatColor.GREEN + ") " + pm.getPrefixColors() + player.getName() + ChatColor.GOLD + " » " + message);
 				}
 			}
+		}
+		if (event.getMessage().charAt(0) == '!' && this.main.getPartyManager().hasParty(player.getUniqueId())) {
+			String message = event.getMessage();
+	      
+			if (message.length() == 1) {
+				return;
+			}
+			message = message.replaceFirst("!", "");
+			Party party = this.main.getPartyManager().getParty(player.getUniqueId());
+			party.notify(ChatColor.YELLOW + "(" + ChatColor.RED + "Party" + ChatColor.YELLOW + ") " + pm.getPrefixColors() + player.getName() + ChatColor.GOLD + " » " + message);
 		}
 	}
 	
@@ -78,6 +87,7 @@ public class ChatListener implements Listener {
 			return;
 		}
 		for (int i = 0; i < 4; i++) {
+			if (event.getLine(i).length() == 0) continue;
 			event.setLine(i, ChatColor.translateAlternateColorCodes('&', event.getLine(i)));  
 		}
 	}

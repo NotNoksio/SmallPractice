@@ -43,7 +43,7 @@ import us.noks.smallpractice.objects.managers.RequestManager;
 
 public class Main extends JavaPlugin {
 	private boolean permissionsPluginHere;
-	private Map<UUID, Inventory> offlineInventory = new WeakHashMap<UUID, Inventory>();
+	private Map<UUID, Inventory> offlineInventories = new WeakHashMap<UUID, Inventory>();
 	private DuelManager duelManager;
 	private ItemManager itemManager;
 	private InventoryManager inventoryManager;
@@ -78,7 +78,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		this.queueManager.getQueueMap().clear();
-		this.offlineInventory.clear();
+		this.offlineInventories.clear();
 	}
 	
 	private void registerCommands() {
@@ -128,8 +128,8 @@ public class Main extends JavaPlugin {
 		return this.permissionsPluginHere;
 	}
 	
-	public Map<UUID, Inventory> getOfflineInventoryMap() {
-		return this.offlineInventory;
+	public Map<UUID, Inventory> getOfflineInventories() {
+		return this.offlineInventories;
 	}
 	
 	public DuelManager getDuelManager() {
