@@ -172,7 +172,7 @@ public class DuelManager {
         }
 		teleportRandomArena(new Duel(arena, ladder, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
 	}
-	
+	 
 	public void createSplitTeamsDuel(Party party, Ladders ladder) {
 		for (UUID membersUUID : party.getMembers()) {
 			Player members = Bukkit.getPlayer(membersUUID);
@@ -252,7 +252,7 @@ public class DuelManager {
 			to2 = true;
 		}
 		final double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (winnersElo - losersElo) / 400.0D));
-		final int scoreChange = MathUtils.limit((expectedp * 32.0D), 4, 25);
+		final int scoreChange = MathUtils.limit((expectedp * 32.0D), 4, 40);
 		final String eloMessage = ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + Bukkit.getPlayer(winnerUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(winners.get(1)).getName() : "") +  " (+" + scoreChange + ") " + ChatColor.RED + Bukkit.getPlayer(loserUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(losers.get(1)).getName() : "") + " (-" + scoreChange + ")";
 		if (!to2) {
 			PlayerManager.get(winnerUUID).getEloManager().addElo(ladder, scoreChange);

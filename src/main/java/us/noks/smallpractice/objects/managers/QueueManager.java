@@ -31,7 +31,7 @@ public class QueueManager {
 			if (!to2) {
 				player.sendMessage(ChatColor.GREEN + "You have been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " queue. Waiting for another player..");
 			} else {
-				Main.getInstance().getPartyManager().notifyParty(party, ChatColor.GREEN + "Your party has been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " 2v2 queue. Waiting for another party..");
+				party.notify(ChatColor.GREEN + "Your party has been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " 2v2 queue. Waiting for another party..");
 			}
 			Main.getInstance().getInventoryManager().updateUnrankedInventory();
 		}

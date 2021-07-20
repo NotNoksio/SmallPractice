@@ -61,7 +61,7 @@ public class PartyManager {
     		this.leaderUUIDtoParty.put(newLeader, party);
     		party = this.leaderUUIDtoParty.get(newLeader);
     		
-    		notifyParty(party, ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
+    		party.notify(ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
     		if (party.getPartyState() == PartyState.LOBBY) Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(newLeader));
     		updateParty(party);
     		return;
@@ -87,16 +87,6 @@ public class PartyManager {
         party.addMember(player);
         this.playerUUIDtoLeaderUUID.put(player, leader);
         updateParty(party);
-    }
-    
-    public void notifyParty(Party party, String message) {
-        Player leaderPlayer = Bukkit.getPlayer(party.getLeader());
-        leaderPlayer.sendMessage(message);
-        for (UUID uuid : party.getMembers()) {
-            Player memberPlayer = Bukkit.getPlayer(uuid);
-            if (memberPlayer == null) continue;
-            memberPlayer.sendMessage(message);
-        }
     }
     
     public Inventory getPartiesInventory() {

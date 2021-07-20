@@ -36,7 +36,7 @@ public class RollCommand implements CommandExecutor {
 		final String rollMessage = ChatColor.GREEN + sender.getName() + ChatColor.YELLOW + " rolls " + ChatColor.RED + rollNumber + ChatColor.YELLOW + " point(s).";
 		if (Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
 			Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
-			Main.getInstance().getPartyManager().notifyParty(party, rollMessage);
+			party.notify(rollMessage);
 			return true;
 		}
 		player.sendMessage(rollMessage);

@@ -93,6 +93,16 @@ public class Party {
         return membersOnline;
     }
     
+    public void notify(String message) {
+        Player leaderPlayer = Bukkit.getPlayer(this.partyLeader);
+        leaderPlayer.sendMessage(message);
+        for (UUID uuid : this.memberUUIDs) {
+            Player memberPlayer = Bukkit.getPlayer(uuid);
+            if (memberPlayer == null) continue;
+            memberPlayer.sendMessage(message);
+        }
+    }
+    
     public EloManager getPartyEloManager() {
     	return this.partyEloManager;
     }

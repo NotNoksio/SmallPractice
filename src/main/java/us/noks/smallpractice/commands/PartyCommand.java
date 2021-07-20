@@ -101,13 +101,13 @@ public class PartyCommand implements CommandExecutor {
 	        	if (party.getPartyState() == PartyState.QUEUING) {
 	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()));
 	        		if (args[0].equalsIgnoreCase("leave")) {
-	        			Main.getInstance().getPartyManager().notifyParty(party, ChatColor.RED + "Your party has been removed from the queue! Your teammate has left your party.");
+	        			party.notify(ChatColor.RED + "Your party has been removed from the queue! Your teammate has left your party.");
 	        		}
 	        	}
 	        	if (party.getLeader().equals(player.getUniqueId())) {
 	        		Main.getInstance().getPartyManager().transferLeader(player.getUniqueId());
 	            } else {
-	            	Main.getInstance().getPartyManager().notifyParty(party, ChatColor.RED + player.getName() + " has left the party");
+	            	party.notify(ChatColor.RED + player.getName() + " has left the party");
 	            	Main.getInstance().getPartyManager().leaveParty(player.getUniqueId());
 	            }
 	        	Main.getInstance().getItemManager().giveSpawnItem(player);
@@ -174,7 +174,7 @@ public class PartyCommand implements CommandExecutor {
                 }
             	if (targetParty.isOpen()) {
             		Main.getInstance().getPartyManager().joinParty(targetParty.getLeader(), player.getUniqueId());
-            		Main.getInstance().getPartyManager().notifyParty(targetParty, ChatColor.GREEN + player.getName() + " has joined the party");
+            		targetParty.notify(ChatColor.GREEN + player.getName() + " has joined the party");
                     player.sendMessage(ChatColor.GREEN + "You have joined the party!");
                     Main.getInstance().getItemManager().giveSpawnItem(target);
                     Main.getInstance().getPartyManager().updateParty(targetParty);
@@ -224,7 +224,7 @@ public class PartyCommand implements CommandExecutor {
             		player.sendMessage(ChatColor.RED + "This player is not in your party!");
             		return false;
             	}
-            	Main.getInstance().getPartyManager().notifyParty(party, ChatColor.RED + target.getName() + " has been kicked from the party!");
+            	party.notify(ChatColor.RED + target.getName() + " has been kicked from the party!");
             	Main.getInstance().getPartyManager().leaveParty(target.getUniqueId());
                 Main.getInstance().getItemManager().giveSpawnItem(target);
             	return true;

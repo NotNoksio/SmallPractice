@@ -35,7 +35,7 @@ public class RequestManager {
 		TextComponent lineA = new TextComponent(" has requested you to duel in ");
 		lineA.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		
-		TextComponent lineLadder = new TextComponent(ladder.getName());
+		TextComponent lineLadder = new TextComponent(ladder.getName()); // TODO: if in a party show party size
 		lineLadder.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 		
 		TextComponent lineOn = new TextComponent(" on ");
@@ -164,7 +164,7 @@ public class RequestManager {
 		Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
 		requesterManager.getInvites().remove(requested.getUniqueId());
 		Main.getInstance().getPartyManager().joinParty(requesterParty.getLeader(), requested.getUniqueId());
-		Main.getInstance().getPartyManager().notifyParty(requesterParty, ChatColor.GREEN + requested.getName() + " has joined the party");
+		requesterParty.notify(ChatColor.GREEN + requested.getName() + " has joined the party");
         requested.sendMessage(ChatColor.GREEN + "You have joined the party!");
         Main.getInstance().getItemManager().giveSpawnItem(requested);
         Main.getInstance().getPartyManager().updateParty(requesterParty);
