@@ -86,7 +86,7 @@ public class PartyCommand implements CommandExecutor {
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 	                    ChatColor.RED + "Your party informations:",
 	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
-	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString(),
+	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + party.getPartyEloManager().getGlobalElo() + ")" : ""),
 	                    ChatColor.DARK_AQUA + "Privacy: " + (party.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
 	            };
@@ -247,7 +247,7 @@ public class PartyCommand implements CommandExecutor {
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 	                    ChatColor.RED + leader.getName() + "'s party informations:",
 	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
-	                    ChatColor.DARK_AQUA + "Members (" + (targetParty.getSize()) + "): " + ChatColor.GRAY + members.toString(),
+	                    ChatColor.DARK_AQUA + "Members (" + (targetParty.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + targetParty.getPartyEloManager().getGlobalElo() + ")" : ""),
 	                    ChatColor.DARK_AQUA + "Privacy: " + (targetParty.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
 	            };

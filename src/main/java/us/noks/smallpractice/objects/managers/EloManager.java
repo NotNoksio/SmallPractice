@@ -36,4 +36,12 @@ public class EloManager {
 		final int currentElo = getElo(ladder);
 		this.laddersElo.put(ladder, currentElo - amount);
 	}
+	
+	public int getGlobalElo() {
+		int global = 0;
+		for (Ladders ladders : Ladders.values()) {
+			global += getElo(ladders);
+		}
+		return (global / Ladders.values().length);
+	}
 }

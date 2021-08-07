@@ -11,8 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
@@ -64,17 +63,7 @@ public class ServerListeners implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onBucketFill(PlayerBucketFillEvent event) {
-		final Player player = event.getPlayer();
-		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
-		
-		if (!pm.isAllowedToBuild()) {
-			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler(priority=EventPriority.LOWEST)
-	public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+	public void onBucketFill(PlayerBucketEvent event) {
 		final Player player = event.getPlayer();
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		

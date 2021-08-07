@@ -537,7 +537,7 @@ public class PlayerListener implements Listener {
 	                if (!playersInArena.isEmpty()) {
 		                for (UUID playerInArenaUUID : playersInArena) {
 		                	Player playerInArena = Bukkit.getPlayer(playerInArenaUUID);
-		                	if (!player.canSee(playerInArena)) player.showPlayer(playerInArena);
+		                	player.showPlayer(playerInArena);
 		                }
 	                }
 	                this.main.getItemManager().giveSpectatorItems(player);
@@ -552,7 +552,12 @@ public class PlayerListener implements Listener {
 					break;
 				}
 				if (item.getType() == Material.WOOL && itemName.equals(ChatColor.GREEN + "change fly/walk speed")) {
+					if (player.isOnGround()) {
+						// TODO
+						break;
+					}
 					// TODO
+					break;
 				}
 				break;
 			case MODERATION:
@@ -641,7 +646,7 @@ public class PlayerListener implements Listener {
 			}
 			Player target = (Player)event.getRightClicked();
 			if (player.getItemInHand().getType() == Material.BOOK && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "inspection tool")) {
-				Bukkit.dispatchCommand(player, "verif " + target.getName());
+				Bukkit.dispatchCommand(player, "inspect " + target.getName());
 				return;
 			}
 			if (player.getItemInHand().getType() == Material.PACKED_ICE && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "freeze someone")) {
