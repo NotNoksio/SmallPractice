@@ -552,11 +552,28 @@ public class PlayerListener implements Listener {
 					break;
 				}
 				if (item.getType() == Material.WOOL && itemName.equals(ChatColor.GREEN + "change fly/walk speed")) {
+					float speed = 0.0f;
 					if (player.isOnGround()) {
-						// TODO
+						speed = player.getWalkSpeed();
+						if (speed == 1.0f) {
+							player.setWalkSpeed(0.2f);
+							player.sendMessage(ChatColor.GREEN + "Walk speed has been reset");
+							break;
+						}
+						speed += 0.2f;
+						player.setWalkSpeed(speed);
+						player.sendMessage(ChatColor.GREEN + "Walk speed x" + ((speed / 2) * 10));
 						break;
 					}
-					// TODO
+					speed = player.getFlySpeed();
+					if (speed == 0.5f) {
+						player.setFlySpeed(0.1f);
+						player.sendMessage(ChatColor.GREEN + "Fly speed has been reset");
+						break;
+					}
+					speed += 0.1f;
+					player.setFlySpeed(speed);
+					player.sendMessage(ChatColor.GREEN + "Fly speed x" + (speed * 10));
 					break;
 				}
 				break;
@@ -606,18 +623,18 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onInteractWithBlock(PlayerInteractEvent event) {
 		if (event.getClickedBlock() != null && (event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.SIGN || (event.getClickedBlock().getType() == Material.WALL_SIGN && event.getAction() == Action.RIGHT_CLICK_BLOCK))) {
-			Sign s = (Sign)event.getClickedBlock().getState();
-			if (s.getLine(0).equalsIgnoreCase("-*-") && s.getLine(1).equalsIgnoreCase("Back to spawn") && s.getLine(2).equalsIgnoreCase("-*-")) {
+			Sign sign = (Sign)event.getClickedBlock().getState();
+			if (sign.getLine(0).equalsIgnoreCase("-*-") && sign.getLine(1).equalsIgnoreCase("Back to spawn") && sign.getLine(2).equalsIgnoreCase("-*-")) {
 				event.setCancelled(true);
-				Player p = event.getPlayer();
-				if (p.isSneaking()) {
+				Player player = event.getPlayer();
+				if (player.isSneaking()) {
 					return;
 				}
-				PlayerManager pm = PlayerManager.get(p.getUniqueId());
+				PlayerManager pm = PlayerManager.get(player.getUniqueId());
 				
 				pm.setStatus(PlayerStatus.SPAWN);
-				p.teleport(p.getWorld().getSpawnLocation());
-				this.main.getItemManager().giveSpawnItem(p);
+				player.teleport(player.getWorld().getSpawnLocation());
+				this.main.getItemManager().giveSpawnItem(player);
 			}
 		}
 	}
