@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -262,7 +263,7 @@ public class PlayerListener implements Listener {
 					return;
 				}
 				double damage = event.getDamage();
-				if (currentDuel.getArena().isSumo()) {
+				if (currentDuel.getArena().isSumo() || currentDuel.getLadder() == Ladders.BOXING) {
 					damage = 0.0D;
 				}
 				if (currentDuel.getLadder() == Ladders.EARLY_HG) {
@@ -687,6 +688,18 @@ public class PlayerListener implements Listener {
 				}
 			}
 			event.setCancelled(true);
+		}
+	}
+	
+	// My PlayerMoveEvent is not like everyone event (be careful)
+	@EventHandler
+	public void onMove(PlayerMoveEvent event) {
+		final Player player = event.getPlayer();
+		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
+		if (duel != null && duel.getLadder() == Ladders.SUMO) {
+			if (player.getLocation().getBlock().getType() == Material.WATER) {
+				this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.KILLED);
+			}
 		}
 	}
 }

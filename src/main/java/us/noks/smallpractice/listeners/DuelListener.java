@@ -8,7 +8,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
+import us.noks.smallpractice.enums.RemoveReason;
+import us.noks.smallpractice.objects.Duel;
 import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.managers.PlayerManager;
 
@@ -42,7 +45,7 @@ public class DuelListener implements Listener {
             final PlayerManager dm = PlayerManager.get(e.getEntity().getUniqueId());
             final PlayerManager am = PlayerManager.get(e.getDamager().getUniqueId());
             
-            if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) {
+            if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) { // TODO: Allow different target
             	final MatchStats damagedStats = dm.getMatchStats();
             	final MatchStats attackerStats = am.getMatchStats();
             	attackerStats.setHit(attackerStats.getHit() + 1);
@@ -51,6 +54,10 @@ public class DuelListener implements Listener {
             		damagedStats.setLongestCombo(damagedStats.getCombo());
             	}
             	damagedStats.setCombo(0);
+            	Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(am.getPlayerUUID());
+            	if (duel.getLadder() == Ladders.BOXING && attackerStats.getHit() == 100) {
+            		this.main.getDuelManager().removePlayerFromDuel(dm.getPlayer(), RemoveReason.KILLED);
+            	}
             }
         }
     }

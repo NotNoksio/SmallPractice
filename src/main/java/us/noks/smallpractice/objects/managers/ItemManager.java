@@ -251,21 +251,16 @@ public class ItemManager {
 			break;
 		}
 		case GAPPLE: {
-			attackItem = new ItemStack(Material.DIAMOND_SWORD, 1);
 			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 5);
 			attackItem.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 2);
 			attackItem.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 			
-			helmet = new ItemStack(Material.DIAMOND_HELMET, 1);
 			helmet.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
 			helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
 			chestplate.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
 			chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
 			leggings.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
 			leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
 			boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
 			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 			
@@ -276,6 +271,17 @@ public class ItemManager {
 			player.getInventory().setItem(5, boots);
 			player.getInventory().setItem(7, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.SPEED, (20 * 24), 1));
 			player.getInventory().setItem(8, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, (20 * 24), 1));
+			break;
+		}
+		case BOXING: {
+			ItemMeta swordMeta = attackItem.getItemMeta();
+			swordMeta.spigot().setUnbreakable(true);
+			attackItem.setItemMeta(swordMeta);
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+			helmet = null;
+			chestplate = null;
+			leggings = null;
+			boots = null;
 			break;
 		}
 		default:

@@ -488,8 +488,10 @@ public class DuelManager {
 			
 			dpm.setStatus(PlayerStatus.SPAWN);
 			dpm.heal(false);
-			if (dpm.isAlive()) {
-				dpm.showAllPlayer();
+			dpm.showAllPlayer();
+			if (duel.getFirstTeamAlive().contains(duelPlayer.getUniqueId()) || duel.getSecondTeamAlive().contains(duelPlayer.getUniqueId())) { // TODO: SUMO & BOXING DUEL killed player doesnt teleport to spawn at the end
+				duelPlayer.teleport(duelPlayer.getWorld().getSpawnLocation());
+				Main.getInstance().getItemManager().giveSpawnItem(duelPlayer);
 			}
 			dpm.getMatchStats().resetDuelStats();
 			
