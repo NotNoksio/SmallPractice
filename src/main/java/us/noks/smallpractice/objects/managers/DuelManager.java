@@ -489,7 +489,7 @@ public class DuelManager {
 			dpm.setStatus(PlayerStatus.SPAWN);
 			dpm.heal(false);
 			dpm.showAllPlayer();
-			if (duel.getFirstTeamAlive().contains(duelPlayer.getUniqueId()) || duel.getSecondTeamAlive().contains(duelPlayer.getUniqueId())) { // TODO: SUMO & BOXING DUEL killed player doesnt teleport to spawn at the end
+			if (dpm.isAlive()) {
 				duelPlayer.teleport(duelPlayer.getWorld().getSpawnLocation());
 				Main.getInstance().getItemManager().giveSpawnItem(duelPlayer);
 			}
@@ -514,6 +514,7 @@ public class DuelManager {
 				player.removePotionEffect(effect.getType());
 			}
 		}
+        player.setLevel(0);
         player.extinguish();
         player.setItemOnCursor(null);
 	}

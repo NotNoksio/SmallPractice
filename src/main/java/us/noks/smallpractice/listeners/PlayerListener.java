@@ -682,7 +682,7 @@ public class PlayerListener implements Listener {
 				if (this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId()) != null) {
 					Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
 					
-					if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP || duel.getLadder() == Ladders.EARLY_HG) {
+					if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP || duel.getLadder() == Ladders.EARLY_HG || duel.getLadder() == Ladders.BOXING) {
 						event.setCancelled(true);
 					}
 				}
