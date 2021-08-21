@@ -56,11 +56,10 @@ public class DuelListener implements Listener {
             	damagedStats.setCombo(0);
             	Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(am.getPlayerUUID());
             	if (duel.getLadder() == Ladders.BOXING) {
+            		am.getPlayer().setLevel(attackerStats.getHit());
             		if (attackerStats.getHit() == 100) {
             			this.main.getDuelManager().removePlayerFromDuel(dm.getPlayer(), RemoveReason.KILLED);
-            			return;
             		}
-            		am.getPlayer().setLevel(attackerStats.getHit());
             	}
             }
         }
