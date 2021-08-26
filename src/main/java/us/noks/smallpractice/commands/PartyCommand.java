@@ -177,7 +177,6 @@ public class PartyCommand implements CommandExecutor {
             		targetParty.notify(ChatColor.GREEN + player.getName() + " has joined the party");
                     player.sendMessage(ChatColor.GREEN + "You have joined the party!");
                     Main.getInstance().getItemManager().giveSpawnItem(target);
-                    Main.getInstance().getPartyManager().updateParty(targetParty);
             		return true;
             	}
             	if (!tm.hasInvited(player.getUniqueId())) {

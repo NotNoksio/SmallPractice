@@ -46,12 +46,13 @@ public class PartyManager {
     public Party createParty(UUID leader, String leadername) {
         Party party = new Party(leader, leadername);
         this.leaderUUIDtoParty.put(leader, party);
-        addParty(party);
+        addPartyToInventory(party);
         return party;
     }
     
     public void transferLeader(UUID actualLeader) {
     	Party party = this.leaderUUIDtoParty.get(actualLeader);
+    	deletePartyFromInventory(party); // Just added
     	if (party.getSize() > 1) {
     		UUID newLeader = party.getMembers().get(0);
     		
@@ -63,14 +64,14 @@ public class PartyManager {
     		
     		party.notify(ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
     		if (party.getPartyState() == PartyState.LOBBY) Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(newLeader));
-    		updateParty(party);
+    		addPartyToInventory(party);
     		return;
     	}
     	destroyParty(actualLeader);
     }
     
     public void destroyParty(UUID leader) {
-    	deleteParty(this.leaderUUIDtoParty.get(leader));
+    	deletePartyFromInventory(this.leaderUUIDtoParty.get(leader));
         this.leaderUUIDtoParty.remove(leader);
     }
     
@@ -79,21 +80,21 @@ public class PartyManager {
         this.playerUUIDtoLeaderUUID.remove(player);
         Party party = this.leaderUUIDtoParty.get(leader);
         party.removeMember(player);
-        updateParty(party);
+        updatePartyInventory(party);
     }
     
     public void joinParty(UUID leader, UUID player) {
         Party party = this.leaderUUIDtoParty.get(leader);
         party.addMember(player);
         this.playerUUIDtoLeaderUUID.put(player, leader);
-        updateParty(party);
+        updatePartyInventory(party);
     }
     
     public Inventory getPartiesInventory() {
     	return this.partiesInventory;
     }
     
-    public void addParty(Party party) {
+    public void addPartyToInventory(Party party) {
         Player player = Bukkit.getPlayer(party.getLeader());
         ItemStack skull = new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)SkullType.PLAYER.ordinal());
         SkullMeta skullm = (SkullMeta) skull.getItemMeta();
@@ -106,7 +107,7 @@ public class PartyManager {
         this.partiesInventory.addItem(skull);
     }
     
-    public void deleteParty(Party party) {
+    public void deletePartyFromInventory(Party party) {
         Player player = Bukkit.getPlayer(party.getLeader());
         String leaderName = (player == null ? party.getLeaderName() : player.getName());
         for (ItemStack itemStack : this.partiesInventory.getContents()) {
@@ -119,7 +120,7 @@ public class PartyManager {
     }
     
     // TODO: need optimization & put the head of the leader on the first empty slot
-    public void updateParty(Party party) {
+    public void updatePartyInventory(Party party) {
         Player leader = Bukkit.getPlayer(party.getLeader());
         if (party.getSize() < 3) {
         	Main.getInstance().getItemManager().giveSpawnItem(leader);

@@ -96,26 +96,24 @@ public class PlayerListener implements Listener {
 		final String domainName = this.main.getConfigManager().serverDomainName;
 		
         if (rank.equals("default") || rank.equals("verified")) {
-            WebUtil.getResponse(this.main, "https://api.namemc.com/server/" + domainName + "/votes?profile=" + player.getUniqueId(),
-                    response -> {
-                        switch (response) {
-                            case "false":
-                                if (rank.equals("verified")) {
-                                	PermissionsEx.getPermissionManager().getUser(player).removeGroup("verified");
-                                	PermissionsEx.getPermissionManager().getUser(player).addGroup("default");
-                                    player.sendMessage(ChatColor.RED + "Your rank has been removed due to your unlike!");
-                                }
-                                break;
-                            case "true":
-                                if (rank.equals("default")) {
-                                	PermissionsEx.getPermissionManager().getUser(player).removeGroup("default");
-                                	PermissionsEx.getPermissionManager().getUser(player).addGroup("verified");
-                                    player.sendMessage(ChatColor.GREEN + "Thanks for liking the server on NameMC! You've now got the Verified rank.");
-                                }
-                                break;
-                        }
-                    }
-            );
+            WebUtil.getResponse(this.main, "https://api.namemc.com/server/" + domainName + "/votes?profile=" + player.getUniqueId(), response -> {
+            	switch (response) {
+            	case "false":
+            		if (rank.equals("verified")) {
+            			PermissionsEx.getPermissionManager().getUser(player).removeGroup("verified");
+            			PermissionsEx.getPermissionManager().getUser(player).addGroup("default");
+            			player.sendMessage(ChatColor.RED + "Your rank has been removed due to your unlike!");
+            		}
+            		break;
+            	case "true":
+            		if (rank.equals("default")) {
+            			PermissionsEx.getPermissionManager().getUser(player).removeGroup("default");
+            			PermissionsEx.getPermissionManager().getUser(player).addGroup("verified");
+            			player.sendMessage(ChatColor.GREEN + "Thanks for liking the server on NameMC! You've now got the Verified rank.");
+            		}
+            		break;
+            	}
+            });
         }
 	}
 	
@@ -188,11 +186,11 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
+		event.setRespawnLocation(player.getWorld().getSpawnLocation());
 		
 		if (this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId()) == null) {
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			pm.heal(false);
-			player.teleport(player.getWorld().getSpawnLocation());
 			pm.showAllPlayer();
 			this.main.getItemManager().giveSpawnItem(player);
 		}
@@ -653,7 +651,7 @@ public class PlayerListener implements Listener {
 		} 
 	}
 	
-	@EventHandler(priority=EventPriority.LOWEST)
+	@EventHandler(priority=EventPriority.LOW)
 	public void onClickPlayer(PlayerInteractEntityEvent event) {
 		if (event.getRightClicked() instanceof Player) {
 			Player player = event.getPlayer();
@@ -673,7 +671,7 @@ public class PlayerListener implements Listener {
 		} 
 	}
 	
-	@EventHandler(priority=EventPriority.LOWEST)
+	@EventHandler(priority=EventPriority.LOW)
 	public void onFeed(FoodLevelChangeEvent event) {
 		if (event.getEntity() instanceof Player) {
 			final Player player = (Player) event.getEntity();
@@ -692,7 +690,7 @@ public class PlayerListener implements Listener {
 	}
 	
 	// My PlayerMoveEvent is not like everyone event (be careful)
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onMove(PlayerMoveEvent event) {
 		final Player player = event.getPlayer();
 		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());

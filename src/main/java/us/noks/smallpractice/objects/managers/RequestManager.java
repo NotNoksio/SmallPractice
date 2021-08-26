@@ -167,7 +167,6 @@ public class RequestManager {
 		requesterParty.notify(ChatColor.GREEN + requested.getName() + " has joined the party");
         requested.sendMessage(ChatColor.GREEN + "You have joined the party!");
         Main.getInstance().getItemManager().giveSpawnItem(requested);
-        Main.getInstance().getPartyManager().updateParty(requesterParty);
 	}
 	
 	public void denyPartyInvite(Player requested, Player requester) {

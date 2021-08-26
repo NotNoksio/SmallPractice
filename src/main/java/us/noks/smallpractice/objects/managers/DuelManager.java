@@ -99,7 +99,7 @@ public class DuelManager {
             for (Party parties : partyList) {
             	if (parties == null) continue;
             	parties.setPartyState(PartyState.DUELING);
-            	Main.getInstance().getPartyManager().updateParty(parties);
+            	Main.getInstance().getPartyManager().updatePartyInventory(parties);
             }
             partyList.clear();
         }
@@ -194,7 +194,7 @@ public class DuelManager {
             for (Party parties : partyList) {
             	if (parties == null) continue;
             	parties.setPartyState(PartyState.LOBBY);
-            	Main.getInstance().getPartyManager().updateParty(parties);
+            	Main.getInstance().getPartyManager().updatePartyInventory(parties);
             }
             partyList.clear();
         }
