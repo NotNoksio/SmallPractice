@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Ladder;
 import org.bukkit.potion.PotionEffect;
 
 import com.google.common.collect.Lists;
@@ -28,6 +29,7 @@ import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.CommandCooldown;
+import us.noks.smallpractice.objects.CustomInventory;
 import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.Request;
 
@@ -45,6 +47,7 @@ public class PlayerManager {
 	private CommandCooldown cooldown;
 	private Inventory savedInventory;
 	private UUID msgedUUID;
+	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
@@ -359,6 +362,10 @@ public class PlayerManager {
 	
 	public UUID getMessagedUUID() {
 		return this.msgedUUID;
+	}
+	
+	public void saveDuelInventory(Ladder ladder, String name, int slot) {
+		this.savedDuelInventory.add(new CustomInventory(ladder, name, slot, this.player.getInventory(), this.getPlayer().getInventory().getArmorContents()));
 	}
 	
 	private String convertToPotionFormat(final long paramLong) {

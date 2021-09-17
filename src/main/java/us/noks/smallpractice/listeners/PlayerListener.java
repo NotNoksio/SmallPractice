@@ -414,7 +414,7 @@ public class PlayerListener implements Listener {
                         player.openInventory(this.main.getInventoryManager().getRankedInventory());
 		                break;
 		            }
-					if (item.getType() == Material.ARROW && itemName.equals(ChatColor.YELLOW + "split teams")) {
+					if (item.getType() == Material.ARROW && itemName.equals(ChatColor.YELLOW + "party game")) {
 						if (!isPartyLeader) {
 							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
 							break;

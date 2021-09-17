@@ -23,7 +23,7 @@ public class DBUtils {
 	private String password = Main.getInstance().getConfig().getString("database.password");
 
 	private HikariDataSource hikari;
-	private final String SAVE = "UPDATE players SET kills=? WHERE uuid=?";
+	private final String SAVE = "UPDATE players SET =? WHERE uuid=?";
 	private final String INSERT = "INSERT INTO players VALUES(?, ?) ON DUPLICATE KEY UPDATE uuid=?";
 	private final String SELECT = "SELECT kills FROM players WHERE uuid=?";
 

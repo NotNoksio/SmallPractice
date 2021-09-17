@@ -45,7 +45,7 @@ public class ItemManager {
 				player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "2v2 Ranked Queue", true));
 			}
 			if (party.getSize() > 1) {
-				player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.ARROW, ChatColor.YELLOW + "Split Teams"));
+				player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.ARROW, ChatColor.YELLOW + "Party Game"));
 			}
 			if (party.getPartyState() == PartyState.DUELING) {
 				player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.YELLOW + "Spectate Actual Match"));
@@ -269,8 +269,8 @@ public class ItemManager {
 			player.getInventory().setItem(3, chestplate);
 			player.getInventory().setItem(4, leggings);
 			player.getInventory().setItem(5, boots);
-			player.getInventory().setItem(7, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.SPEED, (20 * 24), 1));
-			player.getInventory().setItem(8, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, (20 * 24), 1));
+			player.getInventory().setItem(7, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.SPEED, 480, 1));
+			player.getInventory().setItem(8, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, 480, 1));
 			break;
 		}
 		case BOXING: {

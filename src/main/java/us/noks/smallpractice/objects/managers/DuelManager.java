@@ -163,7 +163,7 @@ public class DuelManager {
 	}
 	
 	public void endDuel(Duel duel, int winningTeamNumber) {
-		deathMessage(duel, winningTeamNumber);
+		this.deathMessage(duel, winningTeamNumber);
 		
 		if (duel.isRanked()) {
 			List<UUID> winnersList = (winningTeamNumber == 1 ? duel.getFirstTeam() : duel.getSecondTeam());
@@ -198,6 +198,7 @@ public class DuelManager {
             }
             partyList.clear();
         }
+		duel.clearDrops();
         if (duel.getFirstTeam().size() == 1 && duel.getSecondTeam().size() == 1 && (duel.getFirstTeamPartyLeaderUUID() == null && duel.getSecondTeamPartyLeaderUUID() == null)) {
         	if (!duel.isRanked()) {
         		Main.getInstance().getInventoryManager().updateUnrankedInventory();
@@ -205,7 +206,6 @@ public class DuelManager {
         		Main.getInstance().getInventoryManager().updateRankedInventory();
         	}
         }
-		duel.clearDrops();
 	}
 	
 	private void tranferElo(List<UUID> winners, List<UUID> losers, Ladders ladder) {
@@ -451,17 +451,11 @@ public class DuelManager {
 						lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
 						Main.getInstance().getItemManager().giveSpawnItem(lastPlayers);
 					}
+					finishDuel(currentDuel);
 				}
 			}.runTaskLater(Main.getInstance(), 50L);
 		}
 		endDuel(currentDuel, winningTeamNumber);
-		new BukkitRunnable() {
-				
-			@Override
-			public void run() {
-				finishDuel(currentDuel);
-			}
-		}.runTaskLater(Main.getInstance(), 50L);
 	}
 	
 	public int getFightFromLadder(Ladders ladder, boolean ranked) {
@@ -489,7 +483,7 @@ public class DuelManager {
 			dpm.setStatus(PlayerStatus.SPAWN);
 			dpm.heal(false);
 			dpm.showAllPlayer();
-			if (dpm.isAlive()) {
+			if (duelPlayer.getInventory().getContents() == null) {
 				duelPlayer.teleport(duelPlayer.getWorld().getSpawnLocation());
 				Main.getInstance().getItemManager().giveSpawnItem(duelPlayer);
 			}

@@ -43,10 +43,10 @@ public class ItemBuilder {
 		item.setAmount(Math.max(amount, 1));
 		return item;
 	}
-	public ItemStack createCustomPotionItem(PotionEffectType type, int duration, int amplifier) {
+	public ItemStack createCustomPotionItem(PotionEffectType type, int durationInSecond, int amplifier) {
 		ItemStack potion = new ItemStack(Material.POTION, 1);
 		PotionMeta pMeta = (PotionMeta) potion.getItemMeta();
-		pMeta.addCustomEffect(new PotionEffect(type, duration, amplifier), true);
+		pMeta.addCustomEffect(new PotionEffect(type, (durationInSecond * 20), amplifier), true);
 		potion.setItemMeta(pMeta);
 		return potion;
 	}
