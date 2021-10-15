@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -134,7 +135,6 @@ public class DuelManager {
 			if (ladder == Ladders.COMBO) {
 				player.setMaximumNoDamageTicks(2);
 			}
-			
 			team1.addEntry(player.getName());
 			team2.addEntry(player.getName());
 			player.setScoreboard(scoreboard);
@@ -264,8 +264,7 @@ public class DuelManager {
 		ComponentJoiner joiner = new ComponentJoiner(ChatColor.DARK_AQUA + ", ", ChatColor.DARK_AQUA + ".");    
 		
 		for (UUID wUUID : winnerTeam) {
-			final Player winners = Bukkit.getPlayer(wUUID);
-			if (winners == null) continue;
+			final OfflinePlayer winners = Bukkit.getOfflinePlayer(wUUID);
 			TextComponent wtxt = new TextComponent(winners.getName());
 		    	
 			wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);
@@ -275,8 +274,7 @@ public class DuelManager {
 			joiner.add(wtxt);
 		}
 		for (UUID lUUID : loserTeam) {
-			final Player losers = Bukkit.getPlayer(lUUID);
-			if (losers == null) continue;
+			final OfflinePlayer losers = Bukkit.getOfflinePlayer(lUUID);
 			TextComponent ltxt = new TextComponent(losers.getName());
 		    	
 			ltxt.setColor(net.md_5.bungee.api.ChatColor.RED);
@@ -501,6 +499,7 @@ public class DuelManager {
 		pm.saveInventory();
         pm.heal(false);
         pm.setStatus(PlayerStatus.SPAWN);
+        player.setMaximumNoDamageTicks(20);
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         if (!player.getActivePotionEffects().isEmpty()) {
