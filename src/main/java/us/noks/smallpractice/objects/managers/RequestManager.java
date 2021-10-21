@@ -1,5 +1,6 @@
 package us.noks.smallpractice.objects.managers;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -14,13 +15,13 @@ import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.party.Party;
 
 public class RequestManager {
-	public void openLadderSelectionIventory(Player requester, Player requested) {
+	public void openLadderSelectionIventory(Player requester, Player requested, boolean partyFight) {
 		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
 		Main.getInstance().getInventoryManager().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
-		requester.openInventory(Main.getInstance().getInventoryManager().getLaddersInventory());
+		requester.openInventory(Main.getInstance().getInventoryManager().getLaddersInventory()[BooleanUtils.toInteger(!partyFight)]);
 	}
     
     public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {

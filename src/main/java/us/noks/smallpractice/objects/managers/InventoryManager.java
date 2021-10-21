@@ -22,7 +22,7 @@ public class InventoryManager {
 	private Inventory arenasInventory;
 	private Inventory unrankedInventory;
 	private Inventory rankedInventory;
-	private Inventory laddersInventory;
+	private Inventory[] laddersInventory;
 	private Inventory editingInventory;
 	private Inventory settingsInventory;
 	private Inventory selectionInventory;
@@ -33,7 +33,7 @@ public class InventoryManager {
 		this.arenasInventory = Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection");
 		this.unrankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
 		this.rankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
-		this.laddersInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
+		this.laddersInventory[0] = this.laddersInventory[1] = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
 		this.editingInventory = Bukkit.createInventory(null, 9, "Editing Selection");
 		this.settingsInventory = Bukkit.createInventory(null, 27, "Settings Configuration");
 		this.selectionInventory = Bukkit.createInventory(null, 27, "Selector");
@@ -81,10 +81,13 @@ public class InventoryManager {
 	}
 	
 	private void setLaddersInventory() {
-		this.laddersInventory.clear();
+		this.laddersInventory[0].clear();
+		this.laddersInventory[1].clear();
 		for (Ladders ladders : Ladders.values()) {
 			ItemStack item = ItemBuilder.getInstance().createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName());
-			this.laddersInventory.addItem(item);
+			this.laddersInventory[0].addItem(item);
+			if (!ladders.isMultiplayer()) continue;
+			this.laddersInventory[1].addItem(item);
 		}
 	}
 	
@@ -125,7 +128,7 @@ public class InventoryManager {
 		return this.rankedInventory;
 	}
 	
-	public Inventory getLaddersInventory() {
+	public Inventory[] getLaddersInventory() {
 		return this.laddersInventory;
 	}
 	

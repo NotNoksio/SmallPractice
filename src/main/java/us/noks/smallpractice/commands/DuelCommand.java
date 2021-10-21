@@ -55,7 +55,8 @@ public class DuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "This player is in a party!");
 			return false;
 		}
-		if (party != null && targetParty != null) {
+		boolean partyFight = party != null && targetParty != null;
+		if (partyFight) {
 			if (party == targetParty) {
 				player.sendMessage(ChatColor.RED + "This player is in your own party.");
 				return false;
@@ -72,7 +73,7 @@ public class DuelCommand implements CommandExecutor {
 				return false;
 			}
 		}
-		Main.getInstance().getRequestManager().openLadderSelectionIventory(player, target);
+		Main.getInstance().getRequestManager().openLadderSelectionIventory(player, target, partyFight);
 		cooldown.addCooldown("Duel", System.currentTimeMillis());
 		return true;
 	}

@@ -68,14 +68,7 @@ public class InventoryListener implements Listener {
 				if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
 					Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
 					request.setLadder(ladder);
-					if (this.main.getPartyManager().hasParty(player.getUniqueId()) && !ladder.isMultiplayer()) { // TODO: Remove when fixed
-						player.sendMessage(ChatColor.RED + "This gamemode has been disabled in party fight due to a end fight bug");
-					}
 					player.openInventory(this.main.getInventoryManager().getArenasInventory());
-					return;
-				}
-				if (!ladder.isMultiplayer()) { // TODO: Remove when fixed
-					player.sendMessage(ChatColor.RED + "This gamemode has been disabled in party fight due to a end fight bug");
 					return;
 				}
 				this.main.getDuelManager().createSplitTeamsDuel(this.main.getPartyManager().getParty(player.getUniqueId()), ladder);
