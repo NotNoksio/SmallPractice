@@ -25,6 +25,9 @@ public class Duel {
 	private List<UUID> secondTeam;
 	private List<UUID> firstTeamAlive;
 	private List<UUID> secondTeamAlive;
+	private UUID ffaPartyLeaderUUID;
+    private List<UUID> ffaPlayers;
+    private List<UUID> ffaAlivePlayers;
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
 	private int timeBeforeDuel = 5;
@@ -43,6 +46,16 @@ public class Duel {
 		this.drops = Lists.newLinkedList();
 	}
 	
+	public Duel(Arenas arena, Ladders ladder, UUID ffaPartyLeaderUUID, List<UUID> ffaPlayers) {
+		this.arena = arena;
+		this.ladder = ladder;
+		this.ffaPartyLeaderUUID = ffaPartyLeaderUUID;
+		this.ffaPlayers = Lists.newArrayList(ffaPlayers);
+		this.ffaAlivePlayers = Lists.newArrayList(ffaPlayers);
+		this.drops = Lists.newLinkedList();
+		this.ranked = false;
+    }
+	
 	public Arenas getArena() {
 		return this.arena;
 	}
@@ -59,15 +72,31 @@ public class Duel {
 		return secondTeam;
 	}
 	
-	public List<UUID> getFirstAndSecondTeams() {
-		List<UUID> teams = Lists.newArrayList(this.firstTeam);
-		teams.addAll(this.secondTeam);
+	public List<UUID> getAllTeams() {
+		List<UUID> teams = Lists.newArrayList();
+		if (!this.firstTeam.isEmpty()){
+			teams.addAll(firstTeam);
+		}
+		if (!this.secondTeam.isEmpty()){
+			teams.addAll(secondTeam);
+		}
+		if (!this.ffaPlayers.isEmpty()) {
+			teams.addAll(ffaPlayers);
+		}
 		return teams;
 	}
 	
-	public List<UUID> getFirstAndSecondTeamsAlive() {
-		List<UUID> teams = Lists.newArrayList(this.firstTeamAlive);
-		teams.addAll(this.secondTeamAlive);
+	public List<UUID> getAllAliveTeams() {
+		List<UUID> teams = Lists.newArrayList();
+		if (!this.firstTeamAlive.isEmpty()){
+			teams.addAll(firstTeamAlive);
+		}
+		if (!this.secondTeamAlive.isEmpty()){
+			teams.addAll(secondTeamAlive);
+		}
+		if (!this.ffaAlivePlayers.isEmpty()) {
+			teams.addAll(ffaAlivePlayers);
+		}
 		return teams;
 	}
 	
@@ -84,7 +113,11 @@ public class Duel {
 			this.firstTeamAlive.remove(killedUUID);
 			return;
 		}
-		this.secondTeamAlive.remove(killedUUID);
+		if (this.secondTeamAlive.contains(killedUUID)) {
+			this.secondTeamAlive.remove(killedUUID);
+			return;
+		}
+		this.ffaAlivePlayers.remove(killedUUID);
 	}
 
 	public boolean isRanked() {
@@ -119,7 +152,7 @@ public class Duel {
 		sendSoundedMessage(message, sound, 1.0f, 1.0f);
 	}
 	public void sendSoundedMessage(String message, Sound sound, float volume, float pitch) {
-		List<UUID> duelPlayers = getFirstAndSecondTeams();
+		List<UUID> duelPlayers = getAllTeams();
 		if (!getAllSpectators().isEmpty()) duelPlayers.addAll(getAllSpectators());
 		
 		for (UUID uuid : duelPlayers) {
@@ -136,7 +169,7 @@ public class Duel {
 		if (!isValid()) {
 			return;
 		}
-		if (!getFirstAndSecondTeams().isEmpty()) {
+		if (!firstTeamAlive.isEmpty() && !secondTeamAlive.isEmpty()) {
 			for (UUID firstUUID : this.firstTeamAlive) {
 				for (UUID secondUUID : this.secondTeamAlive) {
 	                Player first = Bukkit.getPlayer(firstUUID);
@@ -145,6 +178,9 @@ public class Duel {
 					second.showPlayer(first);
 				}
 			}
+		}
+		if (!ffaAlivePlayers.isEmpty()) {
+			// TODO: see all players in a ffa fight
 		}
 	}
 	
@@ -164,6 +200,18 @@ public class Duel {
 		return secondTeamPartyLeaderUUID;
 	}
 	
+	public UUID getFfaPartyLeaderUUID() {
+        return this.ffaPartyLeaderUUID;
+    }
+    
+    public List<UUID> getFfaPlayers() {
+        return this.ffaPlayers;
+    }
+    
+    public List<UUID> getFfaAlivePlayers() {
+        return this.ffaAlivePlayers;
+    }
+	
 	public boolean containPlayer(Player player) {
 		Preconditions.checkNotNull(player, "Player cannot be null");
 		return (this.firstTeam.contains(player.getUniqueId()) || this.secondTeam.contains(player.getUniqueId()));
@@ -174,7 +222,7 @@ public class Duel {
 	}
 	
 	public void setDuelPlayersStatusTo(PlayerStatus status) {
-		for (UUID playersUUID : getFirstAndSecondTeams()) {
+		for (UUID playersUUID : getAllTeams()) {
 			PlayerManager.get(playersUUID).setStatus(status);
 		}
 	}

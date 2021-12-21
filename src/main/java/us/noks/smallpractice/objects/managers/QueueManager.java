@@ -33,7 +33,7 @@ public class QueueManager {
 			} else {
 				party.notify(ChatColor.GREEN + "Your party has been added to the " + ladder.getColor() + ladder.getName() + ChatColor.GREEN + " 2v2 queue. Waiting for another party..");
 			}
-			Main.getInstance().getInventoryManager().updateUnrankedInventory();
+			Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
 		}
 		if (this.queue.size() >= 2) {
 			UUID secondUUID = uuid;
@@ -56,11 +56,7 @@ public class QueueManager {
 			} else {
 				Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, party.getMembersIncludeLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludeLeader(), ranked);
 			}
-			if (!ranked) {
-				Main.getInstance().getInventoryManager().updateUnrankedInventory();
-			} else {
-				Main.getInstance().getInventoryManager().updateRankedInventory();
-			}
+			Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
 		}
 	}
 	
@@ -73,11 +69,7 @@ public class QueueManager {
 		PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
 		Main.getInstance().getItemManager().giveSpawnItem(player);
 		player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
-		if (!ranked) {
-			Main.getInstance().getInventoryManager().updateUnrankedInventory();
-		} else {
-			Main.getInstance().getInventoryManager().updateRankedInventory();
-		}
+		Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
 	}
 	
 	public int getQueuedFromLadder(Ladders ladder, boolean ranked) {

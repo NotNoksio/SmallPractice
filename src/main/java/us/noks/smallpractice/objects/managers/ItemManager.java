@@ -27,33 +27,33 @@ public class ItemManager {
 		player.setGameMode(GameMode.SURVIVAL);
 		
 		if (!Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
-			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
-			player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
-			player.getInventory().setItem(4, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
-			player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.GOLD_AXE, ChatColor.YELLOW + "Mini-Game", true));
-			player.getInventory().setItem(8, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings"));
+			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
+			player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
+			player.getInventory().setItem(4, ItemBuilder.createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
+			player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.GOLD_AXE, ChatColor.YELLOW + "Mini-Game", true));
+			player.getInventory().setItem(8, ItemBuilder.createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings"));
 		} else {
 			Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
-			final ItemStack glass = ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
+			final ItemStack glass = ItemBuilder.createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
 			
 			player.getInventory().setItem(0, glass);
 			player.getInventory().setItem(1, glass);
 			player.getInventory().setItem(5, glass);
 			
 			if (party.getSize() == 2) {
-				player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "2v2 Unranked Queue", true));
-				player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "2v2 Ranked Queue", true));
+				player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.IRON_AXE, ChatColor.YELLOW + "2v2 Unranked Queue", true));
+				player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_AXE, ChatColor.YELLOW + "2v2 Ranked Queue", true));
 			}
 			if (party.getSize() > 1) {
-				player.getInventory().setItem(5, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.ARROW, ChatColor.YELLOW + "Party Game"));
+				player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.GOLD_HOE, ChatColor.YELLOW + "Party Game"));
 			}
 			if (party.getPartyState() == PartyState.DUELING) {
-				player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.YELLOW + "Spectate Actual Match"));
+				player.getInventory().setItem(2, ItemBuilder.createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.YELLOW + "Spectate Actual Match"));
 			}
 			
 			giveLeaveItem(player, "Party", false, false);
-			player.getInventory().setItem(4, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Fight Other Parties"));
-			player.getInventory().setItem(7, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.PAPER, ChatColor.YELLOW + "Party Information"));
+			player.getInventory().setItem(4, ItemBuilder.createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Fight Other Parties"));
+			player.getInventory().setItem(7, ItemBuilder.createNewItemStackByMaterial(Material.PAPER, ChatColor.YELLOW + "Party Information"));
 		}
 		player.updateInventory();
 	}
@@ -68,7 +68,7 @@ public class ItemManager {
 			player.getInventory().setArmorContents(null);
 			player.setItemOnCursor(null);
 		}
-		player.getInventory().setItem(8, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.REDSTONE, ChatColor.RED + "Leave " + string));
+		player.getInventory().setItem(8, ItemBuilder.createNewItemStackByMaterial(Material.REDSTONE, ChatColor.RED + "Leave " + string));
 		if (updateInventory) {
 			player.updateInventory();
 		}
@@ -81,15 +81,15 @@ public class ItemManager {
 		
 		player.setGameMode(GameMode.CREATIVE);
 		
-		ItemStack s = ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WOOD_SWORD, ChatColor.RED + "Knockback V", true);
+		ItemStack s = ItemBuilder.createNewItemStackByMaterial(Material.WOOD_SWORD, ChatColor.RED + "Knockback V", true);
 		s.addUnsafeEnchantment(Enchantment.KNOCKBACK, 5);
 		
 		giveLeaveItem(player, "Moderation", false);
 		
 		player.getInventory().setItem(0, s);
-		player.getInventory().setItem(1, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.WATCH, ChatColor.RED + "See Random Player"));
-		player.getInventory().setItem(2, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.PACKED_ICE, ChatColor.RED + "Freeze Someone"));
-		player.getInventory().setItem(3, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.BOOK, ChatColor.RED + "Inspection Tool"));
+		player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.WATCH, ChatColor.RED + "See Random Player"));
+		player.getInventory().setItem(2, ItemBuilder.createNewItemStackByMaterial(Material.PACKED_ICE, ChatColor.RED + "Freeze Someone"));
+		player.getInventory().setItem(3, ItemBuilder.createNewItemStackByMaterial(Material.BOOK, ChatColor.RED + "Inspection Tool"));
 		player.updateInventory();
 	}
 	
@@ -103,10 +103,10 @@ public class ItemManager {
 		giveLeaveItem(player, "Spectate", false);
 		
 		if (!hasParty) {
-			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial((spectatingPlayer ? Material.WATCH : Material.MAP), ChatColor.GREEN + (spectatingPlayer ? "See current arena" : "Change arena")));
+			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial((spectatingPlayer ? Material.WATCH : Material.MAP), ChatColor.GREEN + (spectatingPlayer ? "See current arena" : "Change arena")));
 		}
-		player.getInventory().setItem((!hasParty ? 1 : 0), ItemBuilder.getInstance().createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.GREEN + "See all spectators"));
-		player.getInventory().setItem((!hasParty ? 2 : 1), ItemBuilder.getInstance().createNewItemStack(new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), ChatColor.GREEN + "Change Fly/Walk Speed"));
+		player.getInventory().setItem((!hasParty ? 1 : 0), ItemBuilder.createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.GREEN + "See all spectators"));
+		player.getInventory().setItem((!hasParty ? 2 : 1), ItemBuilder.createNewItemStack(new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), ChatColor.GREEN + "Change Fly/Walk Speed"));
 		player.updateInventory();
 	}
 	
@@ -116,7 +116,7 @@ public class ItemManager {
 		player.setItemOnCursor(null);
 		
 		if (ladder != Ladders.SUMO) {
-			player.getInventory().setItem(0, ItemBuilder.getInstance().createNewItemStackByMaterial(Material.ENCHANTED_BOOK, ChatColor.YELLOW + ladder.getName() + " default kit"));
+			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.ENCHANTED_BOOK, ChatColor.YELLOW + ladder.getName() + " default kit"));
 		}
 		player.updateInventory();
 	}
@@ -269,8 +269,8 @@ public class ItemManager {
 			player.getInventory().setItem(3, chestplate);
 			player.getInventory().setItem(4, leggings);
 			player.getInventory().setItem(5, boots);
-			player.getInventory().setItem(7, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.SPEED, 480, 1));
-			player.getInventory().setItem(8, ItemBuilder.getInstance().createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, 480, 1));
+			player.getInventory().setItem(7, ItemBuilder.createCustomPotionItem(PotionEffectType.SPEED, 480, 1));
+			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, 480, 1));
 			break;
 		}
 		case BOXING: {

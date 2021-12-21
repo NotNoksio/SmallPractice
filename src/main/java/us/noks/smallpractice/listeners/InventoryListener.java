@@ -118,7 +118,7 @@ public class InventoryListener implements Listener {
 				final List <UUID> playersInArena = Lists.newArrayList();
                 for (Duel duel : this.main.getDuelManager().getAllDuels()) {
                 	if (selectedArena != duel.getArena()) continue;
-                	playersInArena.addAll(duel.getFirstAndSecondTeamsAlive());
+                	playersInArena.addAll(duel.getAllAliveTeams());
                 }
                 if (!playersInArena.isEmpty()) {
 	                for (UUID playerInArenaUUID : playersInArena) {
@@ -170,12 +170,9 @@ public class InventoryListener implements Listener {
 		}
 		final String title = event.getInventory().getTitle().toLowerCase();
 		
-		if (title.equals("unranked selection")) {
-			this.main.getInventoryManager().updateUnrankedInventory();
+		if (title.contains("selection")) {
+			this.main.getInventoryManager().updateQueueInventory(title.contains("ranked"));
 		} 
-		if (title.equals("ranked selection")) {
-			this.main.getInventoryManager().updateRankedInventory();
-		}
 	}
 	
 	private Pattern splitPattern = Pattern.compile("\\s");

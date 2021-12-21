@@ -51,6 +51,10 @@ public class DuelManager {
 		return list;
 	}
 	
+	public void startDuel(Arenas arena, Ladders ladder, UUID partyLeaderUUID, List<UUID> ffaPlayers) {
+		
+	}
+	
 	public void startDuel(Arenas arena, Ladders ladder, UUID player1, UUID player2, boolean ranked) {
 		List<UUID> firstTeam = Lists.newArrayList();
 		firstTeam.add(player1);
@@ -105,11 +109,7 @@ public class DuelManager {
             partyList.clear();
         }
         if (firstTeam.size() == 1 && secondTeam.size() == 1 && (firstPartyLeaderUUID == null && secondPartyLeaderUUID == null)) {
-        	if (!ranked) {
-        		Main.getInstance().getInventoryManager().updateUnrankedInventory();
-        	} else {
-        		Main.getInstance().getInventoryManager().updateRankedInventory();
-        	}
+        	Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
         }
 		teleportRandomArena(new Duel(arena, ladder, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
 	}
@@ -162,6 +162,7 @@ public class DuelManager {
         startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
 	}
 	
+	// TODO: FFA END
 	public void endDuel(Duel duel, int winningTeamNumber) {
 		this.deathMessage(duel, winningTeamNumber);
 		
@@ -200,11 +201,7 @@ public class DuelManager {
         }
 		duel.clearDrops();
         if (duel.getFirstTeam().size() == 1 && duel.getSecondTeam().size() == 1 && (duel.getFirstTeamPartyLeaderUUID() == null && duel.getSecondTeamPartyLeaderUUID() == null)) {
-        	if (!duel.isRanked()) {
-        		Main.getInstance().getInventoryManager().updateUnrankedInventory();
-        	} else {
-        		Main.getInstance().getInventoryManager().updateRankedInventory();
-        	}
+        	Main.getInstance().getInventoryManager().updateQueueInventory(duel.isRanked());
         }
 	}
 	
@@ -255,6 +252,9 @@ public class DuelManager {
 		default:
 			break;
 		}
+		if (winningTeamNumber == 0) { // TODO: USELESS?
+			return;
+		}
 		final boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
 		final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
 			
@@ -263,25 +263,39 @@ public class DuelManager {
 		    
 		ComponentJoiner joiner = new ComponentJoiner(ChatColor.DARK_AQUA + ", ", ChatColor.DARK_AQUA + ".");    
 		
-		for (UUID wUUID : winnerTeam) {
-			final OfflinePlayer winners = Bukkit.getOfflinePlayer(wUUID);
-			TextComponent wtxt = new TextComponent(winners.getName());
-		    	
-			wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-			wtxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winners.getName() + "'s inventory").create()));
-			wtxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winners.getUniqueId()));
-			    
-			joiner.add(wtxt);
-		}
-		for (UUID lUUID : loserTeam) {
-			final OfflinePlayer losers = Bukkit.getOfflinePlayer(lUUID);
-			TextComponent ltxt = new TextComponent(losers.getName());
-		    	
-			ltxt.setColor(net.md_5.bungee.api.ChatColor.RED);
-			ltxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.RED + "Click to view " + losers.getName() + "'s inventory").create()));
-			ltxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + losers.getUniqueId()));
-			    
-			joiner.add(ltxt);
+		if (winningTeamNumber != 3) {
+			for (UUID wUUID : winnerTeam) {
+				final OfflinePlayer winners = Bukkit.getOfflinePlayer(wUUID);
+				TextComponent wtxt = new TextComponent(winners.getName());
+			    	
+				wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+				wtxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.GREEN + "Click to view " + winners.getName() + "'s inventory").create()));
+				wtxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + winners.getUniqueId()));
+				    
+				joiner.add(wtxt);
+			}
+			for (UUID lUUID : loserTeam) {
+				final OfflinePlayer losers = Bukkit.getOfflinePlayer(lUUID);
+				TextComponent ltxt = new TextComponent(losers.getName());
+			    	
+				ltxt.setColor(net.md_5.bungee.api.ChatColor.RED);
+				ltxt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.RED + "Click to view " + losers.getName() + "'s inventory").create()));
+				ltxt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + losers.getUniqueId()));
+				    
+				joiner.add(ltxt);
+			}
+		} else {
+			for (UUID uuids : duel.getFfaPlayers()) {
+				final OfflinePlayer player = Bukkit.getOfflinePlayer(uuids);
+				TextComponent txt = new TextComponent(player.getName());
+				boolean isWinner = duel.getFfaAlivePlayers().contains(uuids);
+				
+				txt.setColor((isWinner ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED));
+				txt.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder((isWinner ? ChatColor.GREEN : ChatColor.RED) + "Click to view " + player.getName() + "'s inventory").create()));
+				txt.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/inventory " + player.getUniqueId()));
+				    
+				joiner.add(txt);
+			}
 		}
 		    
 		invTxt.addExtra(joiner.toTextComponent());
@@ -295,7 +309,7 @@ public class DuelManager {
 		}
 		final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
 		    
-		List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstAndSecondTeams());
+		List<UUID> duelPlayers = Lists.newArrayList(duel.getAllTeams());
 		duelPlayers.addAll(duel.getAllSpectators());
 		    
 		for (UUID dpUUID : duelPlayers) {

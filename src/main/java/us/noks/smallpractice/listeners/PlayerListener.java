@@ -34,6 +34,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.util.org.apache.commons.lang3.BooleanUtils;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
@@ -138,8 +139,9 @@ public class PlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		if (this.main.getQueueManager().getQueueMap().containsKey(player.getUniqueId())) {
 			this.main.getQueueManager().getQueueMap().remove(player.getUniqueId());
-			this.main.getInventoryManager().updateUnrankedInventory();
-			this.main.getInventoryManager().updateRankedInventory();
+			for (int i = 0; i != 2; i++) {
+				Main.getInstance().getInventoryManager().updateQueueInventory(BooleanUtils.toBoolean(i));
+			}
 		}
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
         if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
@@ -529,7 +531,7 @@ public class PlayerListener implements Listener {
 	                final List <UUID> playersInArena = Lists.newArrayList();
 	                for (Duel duel : this.main.getDuelManager().getAllDuels()) {
 	                	if (currentArena != duel.getArena()) continue;
-	                	playersInArena.addAll(duel.getFirstAndSecondTeamsAlive());
+	                	playersInArena.addAll(duel.getAllAliveTeams());
 	                }
 	                pm.hideAllPlayer(); // TODO: When see all spectators will be done; dont hide spectators
 	                currentArena.addSpectator(player.getUniqueId());

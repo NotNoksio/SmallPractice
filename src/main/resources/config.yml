@@ -6,3 +6,4 @@ database:
   password: ""
 clear-chat-on-join: true
 server-domain-name: "devmc.noks.io"
+enable-in-fight-scoreboard: false # FUCK IN FIGHT SCOREBOARD #
