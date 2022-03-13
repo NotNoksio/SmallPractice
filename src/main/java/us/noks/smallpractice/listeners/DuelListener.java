@@ -1,13 +1,16 @@
 package us.noks.smallpractice.listeners;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import us.noks.smallpractice.Main;
+import us.noks.smallpractice.arena.Arena.Arenas;
 import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.enums.RemoveReason;
@@ -64,4 +67,17 @@ public class DuelListener implements Listener {
             }
         }
     }
+	
+	// My PlayerMoveEvent is not like everyone event (be careful)
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onMove(PlayerMoveEvent event) {
+		final Player player = event.getPlayer();
+		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
+		if (duel != null && duel.getLadder() == Ladders.SUMO) {
+			final Arenas arena = duel.getArena();
+			if (player.getLocation().getBlockY() < arena.getMiddle().getBlockY() || player.getLocation().distance(arena.getMiddle()) > 10 || player.getLocation().getBlock().getType() == Material.WATER) { // Put multiple end check
+				this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.KILLED);
+			}
+		}
+	}
 }

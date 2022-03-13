@@ -126,5 +126,9 @@ public class Arena {
 		public boolean hasSpectators() {
 			return !this.spectators.isEmpty();
 		}
+		
+		public Location getMiddle() {
+			return new Location(getWorld(), (this.locations[0].getX() + this.locations[1].getX()) / 2, (this.locations[0].getY() + this.locations[1].getY()) / 2, (this.locations[0].getZ() + this.locations[1].getZ()) / 2);
+		}
 	}
 }
