@@ -16,6 +16,7 @@ import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Ladder;
 import org.bukkit.potion.PotionEffect;
@@ -30,6 +31,7 @@ import us.noks.smallpractice.enums.Ladders;
 import us.noks.smallpractice.enums.PlayerStatus;
 import us.noks.smallpractice.objects.CommandCooldown;
 import us.noks.smallpractice.objects.CustomInventory;
+import us.noks.smallpractice.objects.EditedLadderKit;
 import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.Request;
 
@@ -48,6 +50,7 @@ public class PlayerManager {
 	private Inventory savedInventory;
 	private UUID msgedUUID;
 	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
+	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
@@ -337,7 +340,7 @@ public class PlayerManager {
       
 		final int amount = (player.getInventory().contains(new ItemStack(Material.POTION, 1, (short)16421)) ? Integer.valueOf(player.getInventory().all(new ItemStack(Material.POTION, 1, (short)16421)).size()).intValue() : 0);
 		
-		final ItemStack pots = new ItemStack(Material.POTION, amount > 64 ? 64 : amount, (short)16421);
+		final ItemStack pots = new ItemStack(Material.POTION, Math.min(amount, 64), (short)16421);
 		final ItemMeta po = pots.getItemMeta();
 		po.setDisplayName(ChatColor.YELLOW.toString() + amount + ChatColor.DARK_AQUA + " health pot(s) left");
 		po.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + stats.getLastFailedPotions()));
@@ -354,6 +357,14 @@ public class PlayerManager {
 	
 	public Inventory getSavedInventory() {
 		return this.savedInventory;
+	}
+	
+	public List<EditedLadderKit> getCustomLadderKit() {
+		return this.customLadderKit;
+	}
+	
+	public void saveCustomLadderKit(Ladder ladder, String name, int slot, PlayerInventory inventory) {
+		this.customLadderKit.add(new EditedLadderKit(ladder, name, slot, inventory));
 	}
 	
 	public void setMessagedUUID(UUID newUUID) {
