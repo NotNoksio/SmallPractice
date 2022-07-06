@@ -12,13 +12,16 @@ us\noks\smallpractice\objects\MatchStats.class
 us\noks\smallpractice\utils\DBUtils.class
 us\noks\smallpractice\listeners\InventoryListener.class
 us\noks\smallpractice\listeners\PlayerListener$2.class
+us\noks\smallpractice\objects\PlayerSettings.class
 us\noks\smallpractice\objects\CommandCooldown.class
 us\noks\smallpractice\listeners\PlayerListener.class
 us\noks\smallpractice\enums\RemoveReason.class
+us\noks\smallpractice\objects\EditedLadderKit.class
 us\noks\smallpractice\commands\ModerationCommand.class
 us\noks\smallpractice\commands\AcceptCommand.class
 us\noks\smallpractice\utils\ItemBuilder.class
 us\noks\smallpractice\commands\ResetTimeCommand.class
+us\noks\smallpractice\objects\CustomInventory.class
 us\noks\smallpractice\listeners\EnderDelay.class
 us\noks\smallpractice\listeners\ServerListeners.class
 us\noks\smallpractice\objects\managers\DuelManager.class

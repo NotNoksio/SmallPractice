@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import us.noks.smallpractice.Main;
 import us.noks.smallpractice.arena.Arena;
@@ -27,6 +28,8 @@ public class InventoryManager {
 	private Inventory settingsInventory;
 	private Inventory selectionInventory;
 	private Map<UUID, Request> selectingDuel;
+	private Map<UUID, Inventory> editKitSelection;
+	private Map<UUID, PlayerInventory> editKitEditor;
 	
 	public InventoryManager() {
 		this.selectingDuel = new WeakHashMap<UUID, Request>();

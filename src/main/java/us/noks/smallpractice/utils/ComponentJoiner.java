@@ -34,7 +34,9 @@ public class ComponentJoiner {
     }
 
     public TextComponent toTextComponent() {
-        if (endLimiter != null) this.component.addExtra(this.endLimiter);
+        if (endLimiter != null) {
+        	this.component.addExtra(this.endLimiter);
+        }
         return this.component;
     }
 }
