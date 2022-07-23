@@ -28,7 +28,7 @@ public class ChatListener implements Listener {
 			return;
 		}
 		final Player player = event.getPlayer();
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		PlayerManager pm = new PlayerManager().get(player.getUniqueId());
 		String prefix = pm.getColoredPrefix() + "%1$s" + pm.getColoredSuffix() + ChatColor.RESET;
 		event.setFormat(prefix + ChatColor.WHITE + ": %2$s");
 	}
@@ -54,7 +54,7 @@ public class ChatListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onStaffOrPartyChat(AsyncPlayerChatEvent event) {
 		final Player player = event.getPlayer();
-		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final PlayerManager pm = new PlayerManager().get(player.getUniqueId());
 		if (event.getMessage().charAt(0) == '@' && player.hasPermission("chat.staff")) {
 			String message = event.getMessage();
 	      

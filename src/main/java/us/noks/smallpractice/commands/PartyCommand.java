@@ -45,7 +45,7 @@ public class PartyCommand implements CommandExecutor {
         	return true;
         }
         Player player = (Player) sender;
-        PlayerManager pm = PlayerManager.get(player.getUniqueId());
+        PlayerManager pm = new PlayerManager().get(player.getUniqueId());
         
         if (pm.getStatus() != PlayerStatus.SPAWN) {
         	player.sendMessage(ChatColor.RED + "You cant do this command in your current state!");
@@ -160,7 +160,7 @@ public class PartyCommand implements CommandExecutor {
             	player.sendMessage(ChatColor.RED + "You cant do that on yourself.");
             	return false;
             }
-            PlayerManager tm = PlayerManager.get(target.getUniqueId());
+            PlayerManager tm = new PlayerManager().get(target.getUniqueId());
             Party targetParty = Main.getInstance().getPartyManager().getParty(target.getUniqueId());
             
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {

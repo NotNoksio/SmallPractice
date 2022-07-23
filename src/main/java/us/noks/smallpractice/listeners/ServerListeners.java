@@ -31,7 +31,7 @@ public class ServerListeners implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlace(BlockPlaceEvent event) {
 		final Player player = event.getPlayer();
-		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final PlayerManager pm = new PlayerManager().get(player.getUniqueId());
 		
 		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);
@@ -50,7 +50,7 @@ public class ServerListeners implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBreak(BlockBreakEvent event) {
 		final Player player = event.getPlayer();
-		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final PlayerManager pm = new PlayerManager().get(player.getUniqueId());
 		
 		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);
@@ -66,7 +66,7 @@ public class ServerListeners implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST) 
 	public void onBucketFill(PlayerBucketFillEvent event) {
 		final Player player = event.getPlayer();
-		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final PlayerManager pm = new PlayerManager().get(player.getUniqueId());
 		
 		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);
@@ -76,7 +76,7 @@ public class ServerListeners implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBucketEmpty(PlayerBucketEmptyEvent event) {
 		final Player player = event.getPlayer();
-		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final PlayerManager pm = new PlayerManager().get(player.getUniqueId());
 		
 		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);

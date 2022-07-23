@@ -22,7 +22,7 @@ public class QueueManager {
 	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked, boolean to2) { // TODO: ping detector due to 20ms vs 220ms
 		Party party = (to2 ? party = Main.getInstance().getPartyManager().getParty(uuid) : null);
 		if (!this.queue.containsKey(uuid)) {
-			final PlayerManager pm = PlayerManager.get(uuid);
+			final PlayerManager pm = new PlayerManager().get(uuid);
 			final Player player = pm.getPlayer();
 			this.queue.put(uuid, new Queue(ladder, ranked, to2));
 			pm.setStatus(PlayerStatus.QUEUE);
@@ -66,7 +66,7 @@ public class QueueManager {
 		}
 		final boolean ranked = this.queue.get(player.getUniqueId()).isRanked();
 		this.queue.remove(player.getUniqueId());
-		PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
+		new PlayerManager().get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
 		Main.getInstance().getItemManager().giveSpawnItem(player);
 		player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
 		Main.getInstance().getInventoryManager().updateQueueInventory(ranked);

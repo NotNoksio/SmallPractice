@@ -223,7 +223,7 @@ public class Duel {
 	
 	public void setDuelPlayersStatusTo(PlayerStatus status) {
 		for (UUID playersUUID : getAllTeams()) {
-			PlayerManager.get(playersUUID).setStatus(status);
+			new PlayerManager().get(playersUUID).setStatus(status);
 		}
 	}
 	

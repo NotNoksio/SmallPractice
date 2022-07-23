@@ -16,7 +16,7 @@ import us.noks.smallpractice.party.Party;
 
 public class RequestManager {
 	public void openLadderSelectionIventory(Player requester, Player requested, boolean partyFight) {
-		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		if (new PlayerManager().get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || new PlayerManager().get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
@@ -25,8 +25,8 @@ public class RequestManager {
 	}
     
     public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {
-    	PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
-		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+    	PlayerManager requesterManager = new PlayerManager().get(requester.getUniqueId());
+		if (requesterManager.getStatus() != PlayerStatus.SPAWN || new PlayerManager().get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
@@ -78,8 +78,8 @@ public class RequestManager {
 	}
 	
 	public void acceptDuelRequest(Arenas arena, Ladders ladder, Player requested, Player requester) {
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
-		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		PlayerManager requesterManager = new PlayerManager().get(requester.getUniqueId());
+		if (requesterManager.getStatus() != PlayerStatus.SPAWN || new PlayerManager().get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
@@ -102,11 +102,11 @@ public class RequestManager {
 	}
 	
 	public void denyDuelRequest(Player requested, Player requester) {
-		if (PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		if (new PlayerManager().get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return;
 		}
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		PlayerManager requesterManager = new PlayerManager().get(requester.getUniqueId());
 		if (!requesterManager.hasRequested(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
@@ -117,8 +117,8 @@ public class RequestManager {
 	}
 	
 	public void sendPartyInvite(Player requester, Player requested) {
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
-		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		PlayerManager requesterManager = new PlayerManager().get(requester.getUniqueId());
+		if (requesterManager.getStatus() != PlayerStatus.SPAWN || new PlayerManager().get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
@@ -153,8 +153,8 @@ public class RequestManager {
 	}
 	
 	public void acceptPartyInvite(Player requested, Player requester) {
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
-		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		PlayerManager requesterManager = new PlayerManager().get(requester.getUniqueId());
+		if (requesterManager.getStatus() != PlayerStatus.SPAWN || new PlayerManager().get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
@@ -171,11 +171,11 @@ public class RequestManager {
 	}
 	
 	public void denyPartyInvite(Player requested, Player requester) {
-		if (PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
+		if (new PlayerManager().get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return;
 		}
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		PlayerManager requesterManager = new PlayerManager().get(requester.getUniqueId());
 		if (!requesterManager.hasInvited(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't invite you to his party!");
 			return;

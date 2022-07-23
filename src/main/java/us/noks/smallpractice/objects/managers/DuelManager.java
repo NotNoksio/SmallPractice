@@ -72,7 +72,7 @@ public class DuelManager {
 				
 				if (allTeam.isEmpty()) continue;
 				
-				PlayerManager pm = PlayerManager.get(uuids);
+				PlayerManager pm = new PlayerManager().get(uuids);
 				pm.clearRequest();
 				pm.setStatus(PlayerStatus.SPAWN);
 				Main.getInstance().getItemManager().giveSpawnItem(player);
@@ -115,7 +115,7 @@ public class DuelManager {
 	}
 	
 	private void setupTeam(List<UUID> team, UUID enemyPartyLeaderUUID, List<UUID> enemyTeam, Ladders ladder, Scoreboard scoreboard, Team team1, Team team2, boolean teamFight, boolean ranked) {
-		final String duelMessage = ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : ""));
+		final String duelMessage = ChatColor.DARK_AQUA + "Starting duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? new PlayerManager().get(enemyTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : ""));
 		for (UUID teamUUID : team) {
 			Player player = Bukkit.getPlayer(teamUUID);
 			
@@ -125,7 +125,7 @@ public class DuelManager {
 			}
 			if (team.isEmpty()) continue;
 			
-			PlayerManager pm = PlayerManager.get(teamUUID);
+			PlayerManager pm = new PlayerManager().get(teamUUID);
 			pm.clearRequest();
 			pm.setStatus(PlayerStatus.WAITING);
 			
@@ -146,7 +146,7 @@ public class DuelManager {
 			Player members = Bukkit.getPlayer(membersUUID);
 			
 			if (members == null) continue;
-			PlayerManager membersManager = PlayerManager.get(membersUUID);
+			PlayerManager membersManager = new PlayerManager().get(membersUUID);
 			
 			if (membersManager.getStatus() != PlayerStatus.SPAWN) {
 				Bukkit.getPlayer(party.getLeader()).sendMessage(ChatColor.RED + "A member in your party isn't in the spawn!");
@@ -177,7 +177,7 @@ public class DuelManager {
 		while (specIt.hasNext()) {
 			Player spec = Bukkit.getPlayer(specIt.next());
 			if (spec == null) continue;
-			PlayerManager sm = PlayerManager.get(spec.getUniqueId());
+			PlayerManager sm = new PlayerManager().get(spec.getUniqueId());
 			
 			spec.setFlySpeed(0.1f);
 			spec.setWalkSpeed(0.2f);
@@ -208,8 +208,8 @@ public class DuelManager {
 	private void tranferElo(List<UUID> winners, List<UUID> losers, Ladders ladder) {
 		final UUID winnerUUID = winners.get(0);
 		final UUID loserUUID = losers.get(0);
-		int winnersElo = PlayerManager.get(winnerUUID).getEloManager().getElo(ladder);
-		int losersElo = PlayerManager.get(loserUUID).getEloManager().getElo(ladder);
+		int winnersElo = new PlayerManager().get(winnerUUID).getEloManager().getElo(ladder);
+		int losersElo = new PlayerManager().get(loserUUID).getEloManager().getElo(ladder);
 		boolean to2 = false;
 		if (winners.size() == 2 && losers.size() == 2) {
 			winnersElo = Main.getInstance().getPartyManager().getParty(winnerUUID).getPartyEloManager().getElo(ladder);
@@ -220,8 +220,8 @@ public class DuelManager {
 		final int scoreChange = MathUtils.limit((expectedp * 32.0D), 4, 40);
 		final String eloMessage = ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + Bukkit.getPlayer(winnerUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(winners.get(1)).getName() : "") +  " (+" + scoreChange + ") " + ChatColor.RED + Bukkit.getPlayer(loserUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(losers.get(1)).getName() : "") + " (-" + scoreChange + ")";
 		if (!to2) {
-			PlayerManager.get(winnerUUID).getEloManager().addElo(ladder, scoreChange);
-			PlayerManager.get(loserUUID).getEloManager().removeElo(ladder, scoreChange);
+			new PlayerManager().get(winnerUUID).getEloManager().addElo(ladder, scoreChange);
+			new PlayerManager().get(loserUUID).getEloManager().removeElo(ladder, scoreChange);
 		} else {
 			Main.getInstance().getPartyManager().getParty(winnerUUID).getPartyEloManager().addElo(ladder, scoreChange);
 			Main.getInstance().getPartyManager().getParty(loserUUID).getPartyEloManager().removeElo(ladder, scoreChange);
@@ -358,14 +358,14 @@ public class DuelManager {
 			
 			if (first == null) continue;
 			
-			PlayerManager pmf = PlayerManager.get(firstUUID);
+			PlayerManager pmf = new PlayerManager().get(firstUUID);
 			this.uuidIdentifierToDuel.put(firstUUID, duel);
 			
 			pmf.heal(true);
 			first.setNoDamageTicks(50);
 			
 			pmf.hideAllPlayer();
-			Main.getInstance().getItemManager().givePreFightItems(first, duel.getLadder());
+			Main.getInstance().getItemManager().giveKitSelectionItems(first, duel.getLadder());
 			
 			first.teleport(duel.getArena().getLocations()[0]);
 			first.setSneaking(false);
@@ -375,14 +375,14 @@ public class DuelManager {
 			
 			if (second == null) continue;
 			
-			PlayerManager pms = PlayerManager.get(secondUUID);
+			PlayerManager pms = new PlayerManager().get(secondUUID);
 			this.uuidIdentifierToDuel.put(secondUUID, duel);
 			
 			pms.heal(true);
 			second.setNoDamageTicks(50);
 			
 			pms.hideAllPlayer();
-			Main.getInstance().getItemManager().givePreFightItems(second, duel.getLadder());
+			Main.getInstance().getItemManager().giveKitSelectionItems(second, duel.getLadder());
 			
 			second.teleport(duel.getArena().getLocations()[1]);
 			second.setSneaking(false);
@@ -429,7 +429,7 @@ public class DuelManager {
 		
 		if (currentDuel == null) return;
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		PlayerManager pm = new PlayerManager().get(player.getUniqueId());
 		pm.saveInventory();
 		pm.getPlayer().setMaximumNoDamageTicks(10);
 		
@@ -487,7 +487,7 @@ public class DuelManager {
 		for (UUID dpUUID : duelPlayerUUID) {
 			Player duelPlayer = Bukkit.getPlayer(dpUUID);
 			if (duelPlayer == null) continue;
-			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
+			PlayerManager dpm = new PlayerManager().get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
 			duelPlayer.setMaximumNoDamageTicks(10);
@@ -508,7 +508,7 @@ public class DuelManager {
 	}
 	
 	private void doEndDuelAction(Player player) {
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		PlayerManager pm = new PlayerManager().get(player.getUniqueId());
         
 		pm.saveInventory();
         pm.heal(false);

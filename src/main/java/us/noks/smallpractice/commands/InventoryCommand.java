@@ -27,7 +27,7 @@ public class InventoryCommand implements CommandExecutor {
 			return false;
 		}
 		UUID targetUUID = UUID.fromString(args[0]);
-		PlayerManager tm = PlayerManager.get(targetUUID);
+		PlayerManager tm = new PlayerManager().get(targetUUID);
 		Player player = (Player) sender;
 		
 		if (tm.getSavedInventory() == null) {

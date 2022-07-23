@@ -26,7 +26,7 @@ public class SeeallCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		PlayerManager pm = new PlayerManager().get(player.getUniqueId());
 		if (pm.getStatus() != PlayerStatus.MODERATION) {
 			player.sendMessage(ChatColor.RED + "You are not in the appropriate state for use this command!");
 			return false;

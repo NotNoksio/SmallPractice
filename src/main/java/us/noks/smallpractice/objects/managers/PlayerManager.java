@@ -36,7 +36,7 @@ import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.Request;
 
 public class PlayerManager {
-	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
+	private final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
 	private Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
@@ -52,6 +52,10 @@ public class PlayerManager {
 	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
 	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
 	
+	public PlayerManager() {
+		
+	}
+	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
 	    this.player = Bukkit.getPlayer(this.playerUUID);
@@ -66,13 +70,10 @@ public class PlayerManager {
 	    	this.savedInventory = Main.getInstance().getOfflineInventories().get(playerUUID);
 	    	Main.getInstance().getOfflineInventories().remove(playerUUID);
 	    }
+	    players.putIfAbsent(playerUUID, this);
 	}
 
-	public static void create(UUID uuid) {
-		players.putIfAbsent(uuid, new PlayerManager(uuid));
-	}
-
-	public static PlayerManager get(UUID playerUUID) {
+	public PlayerManager get(UUID playerUUID) {
 		if (!players.containsKey(playerUUID)) {
 			return null;
 		}
@@ -373,6 +374,10 @@ public class PlayerManager {
 	
 	public UUID getMessagedUUID() {
 		return this.msgedUUID;
+	}
+	
+	public boolean hasCustomInventory() {
+		return this.savedDuelInventory.isEmpty();
 	}
 	
 	public void saveDuelInventory(Ladder ladder, String name, int slot) {
