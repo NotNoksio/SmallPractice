@@ -126,7 +126,7 @@ public class PlayerListener implements Listener {
 		}
 		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/8v8Mzhd");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/CXx2u3phWn");
 		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "https://namemc.com/server/" + this.main.getConfigManager().serverDomainName);
 		player.sendMessage("");
 		player.setPlayerListName(new PlayerManager().get(player.getUniqueId()).getPrefixColors() + player.getName());
