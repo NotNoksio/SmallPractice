@@ -36,7 +36,7 @@ import us.noks.smallpractice.objects.MatchStats;
 import us.noks.smallpractice.objects.Request;
 
 public class PlayerManager {
-	private final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
+	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private Player player;
 	private UUID playerUUID;
 	private Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
