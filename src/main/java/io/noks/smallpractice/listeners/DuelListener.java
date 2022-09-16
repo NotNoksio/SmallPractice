@@ -75,7 +75,7 @@ public class DuelListener implements Listener {
 		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
 		if (duel != null && duel.getLadder() == Ladders.SUMO) {
 			final Arenas arena = duel.getArena();
-			if (player.getLocation().getBlockY() < arena.getMiddle().getBlockY() || player.getLocation().distance(arena.getMiddle()) > 10 || player.getLocation().getBlock().getType() == Material.WATER) { // Put multiple end check
+			if (player.getLocation().getBlockY() < arena.getMiddle().getBlockY() || player.getLocation().distance(arena.getMiddle()) > 10 || player.getLocation().getBlock().isLiquid()) { // Put multiple end check
 				this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.KILLED);
 			}
 		}
