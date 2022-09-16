@@ -38,7 +38,7 @@ public class ReportCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		CommandCooldown cooldown = new PlayerManager().get(player.getUniqueId()).getCooldown();
+		CommandCooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 		if (cooldown.hasCooldown("Report")) {
 			long secondsLeft = ((cooldown.getCooldownTime("Report") / 1000) + 30) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {

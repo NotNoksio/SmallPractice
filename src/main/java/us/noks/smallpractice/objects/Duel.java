@@ -26,8 +26,8 @@ public class Duel {
 	private List<UUID> firstTeamAlive;
 	private List<UUID> secondTeamAlive;
 	private UUID ffaPartyLeaderUUID;
-    private List<UUID> ffaPlayers;
-    private List<UUID> ffaAlivePlayers;
+    //private List<UUID> ffaPlayers;
+    //private List<UUID> ffaAlivePlayers;
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
 	private int timeBeforeDuel = 5;
@@ -46,7 +46,7 @@ public class Duel {
 		this.drops = Lists.newLinkedList();
 	}
 	
-	public Duel(Arenas arena, Ladders ladder, UUID ffaPartyLeaderUUID, List<UUID> ffaPlayers) {
+	/*public Duel(Arenas arena, Ladders ladder, UUID ffaPartyLeaderUUID, List<UUID> ffaPlayers) {
 		this.arena = arena;
 		this.ladder = ladder;
 		this.ffaPartyLeaderUUID = ffaPartyLeaderUUID;
@@ -54,7 +54,7 @@ public class Duel {
 		this.ffaAlivePlayers = Lists.newArrayList(ffaPlayers);
 		this.drops = Lists.newLinkedList();
 		this.ranked = false;
-    }
+    }*/
 	
 	public Arenas getArena() {
 		return this.arena;
@@ -80,9 +80,9 @@ public class Duel {
 		if (!this.secondTeam.isEmpty()){
 			teams.addAll(secondTeam);
 		}
-		if (!this.ffaPlayers.isEmpty()) {
+		/*if (!this.ffaPlayers.isEmpty()) {
 			teams.addAll(ffaPlayers);
-		}
+		}*/
 		return teams;
 	}
 	
@@ -94,9 +94,9 @@ public class Duel {
 		if (!this.secondTeamAlive.isEmpty()){
 			teams.addAll(secondTeamAlive);
 		}
-		if (!this.ffaAlivePlayers.isEmpty()) {
+		/*if (!this.ffaAlivePlayers.isEmpty()) {
 			teams.addAll(ffaAlivePlayers);
-		}
+		}*/
 		return teams;
 	}
 	
@@ -115,9 +115,9 @@ public class Duel {
 		}
 		if (this.secondTeamAlive.contains(killedUUID)) {
 			this.secondTeamAlive.remove(killedUUID);
-			return;
+			//return;
 		}
-		this.ffaAlivePlayers.remove(killedUUID);
+		//this.ffaAlivePlayers.remove(killedUUID);
 	}
 
 	public boolean isRanked() {
@@ -179,9 +179,9 @@ public class Duel {
 				}
 			}
 		}
-		if (!ffaAlivePlayers.isEmpty()) {
+		/*if (!ffaAlivePlayers.isEmpty()) {
 			// TODO: see all players in a ffa fight
-		}
+		}*/
 	}
 	
 	public void switchFirstTeamPartyLeader(UUID newPartyLeaderUUID) {
@@ -204,13 +204,13 @@ public class Duel {
         return this.ffaPartyLeaderUUID;
     }
     
-    public List<UUID> getFfaPlayers() {
+    /*public List<UUID> getFfaPlayers() {
         return this.ffaPlayers;
     }
     
     public List<UUID> getFfaAlivePlayers() {
         return this.ffaAlivePlayers;
-    }
+    }*/
 	
 	public boolean containPlayer(Player player) {
 		Preconditions.checkNotNull(player, "Player cannot be null");
@@ -223,7 +223,7 @@ public class Duel {
 	
 	public void setDuelPlayersStatusTo(PlayerStatus status) {
 		for (UUID playersUUID : getAllTeams()) {
-			new PlayerManager().get(playersUUID).setStatus(status);
+			PlayerManager.get(playersUUID).setStatus(status);
 		}
 	}
 	

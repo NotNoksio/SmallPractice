@@ -34,7 +34,7 @@ public class ForceDuelCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
-		PlayerManager pm = new PlayerManager().get(player.getUniqueId());
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
 		if (pm.getStatus() != PlayerStatus.SPAWN) {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn.");
@@ -58,7 +58,7 @@ public class ForceDuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "That player is in a party!");
 			return false;
 		}
-		PlayerManager tm = new PlayerManager().get(target.getUniqueId());
+		PlayerManager tm = PlayerManager.get(target.getUniqueId());
 		
 		if (!tm.isAlive()) {
 			player.sendMessage(ChatColor.RED + "This player is not in the spawn.");

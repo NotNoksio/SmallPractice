@@ -31,7 +31,7 @@ public class SpectateCommand implements CommandExecutor {
 			return false;
 		}
 		Player player = (Player) sender;
-		PlayerManager pm = new PlayerManager().get(player.getUniqueId());
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
 		if (Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "You are in party!");
@@ -51,7 +51,7 @@ public class SpectateCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		PlayerManager tm = new PlayerManager().get(target.getUniqueId());
+		PlayerManager tm = PlayerManager.get(target.getUniqueId());
 		/*if (PartyManager.getInstance().hasParty(target.getUniqueId()) && tm.getStatus() == PlayerStatus.SPAWN) {
 			Party party = PartyManager.getInstance().getParty(target.getUniqueId());
 			

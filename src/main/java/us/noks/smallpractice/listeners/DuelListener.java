@@ -29,7 +29,7 @@ public class DuelListener implements Listener {
 	public void onFailedPotion(PotionSplashEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			final Player shooter = (Player) event.getEntity().getShooter();
-			final PlayerManager sm = new PlayerManager().get(shooter.getUniqueId());
+			final PlayerManager sm = PlayerManager.get(shooter.getUniqueId());
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
 				final MatchStats stats = sm.getMatchStats();
@@ -45,8 +45,8 @@ public class DuelListener implements Listener {
 			return;
 		}
         if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
-            final PlayerManager dm = new PlayerManager().get(e.getEntity().getUniqueId());
-            final PlayerManager am = new PlayerManager().get(e.getDamager().getUniqueId());
+            final PlayerManager dm = PlayerManager.get(e.getEntity().getUniqueId());
+            final PlayerManager am = PlayerManager.get(e.getDamager().getUniqueId());
             
             if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) { // TODO: Allow different target
             	final MatchStats damagedStats = dm.getMatchStats();

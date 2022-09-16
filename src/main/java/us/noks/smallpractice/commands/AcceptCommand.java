@@ -34,7 +34,7 @@ public class AcceptCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		PlayerManager dm = new PlayerManager().get(dueler.getUniqueId());
+		PlayerManager dm = PlayerManager.get(dueler.getUniqueId());
 		if (!dm.hasRequested(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "No request found!");
 			return false;

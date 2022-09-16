@@ -65,7 +65,7 @@ public class DuelCommand implements CommandExecutor {
 				target = Bukkit.getPlayer(targetParty.getLeader());
 			}
 		}
-		CommandCooldown cooldown = new PlayerManager().get(player.getUniqueId()).getCooldown();
+		CommandCooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 		if (cooldown.hasCooldown("Duel")) {
 			long secondsLeft = ((cooldown.getCooldownTime("Duel") / 1000) + 5) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {

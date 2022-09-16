@@ -52,10 +52,6 @@ public class PlayerManager {
 	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
 	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
 	
-	public PlayerManager() {
-		
-	}
-	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
 	    this.player = Bukkit.getPlayer(this.playerUUID);
@@ -73,7 +69,7 @@ public class PlayerManager {
 	    players.putIfAbsent(playerUUID, this);
 	}
 
-	public PlayerManager get(UUID playerUUID) {
+	public static PlayerManager get(UUID playerUUID) {
 		if (!players.containsKey(playerUUID)) {
 			return null;
 		}

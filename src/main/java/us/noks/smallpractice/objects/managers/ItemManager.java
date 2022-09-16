@@ -94,7 +94,7 @@ public class ItemManager {
 	}
 	
 	public void giveSpectatorItems(Player player) {
-		final boolean spectatingPlayer = new PlayerManager().get(player.getUniqueId()).getSpectate() != null;
+		final boolean spectatingPlayer = PlayerManager.get(player.getUniqueId()).getSpectate() != null;
 		final boolean hasParty = Main.getInstance().getPartyManager().hasParty(player.getUniqueId());
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
@@ -294,7 +294,7 @@ public class ItemManager {
 	}
 	
 	public void giveBridgeItems(Player player) {
-		PlayerManager pm = new PlayerManager().get(player.getUniqueId());
+		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 		player.setItemOnCursor(null);

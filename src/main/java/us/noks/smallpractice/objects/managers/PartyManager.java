@@ -131,7 +131,7 @@ public class PartyManager {
             Player members = Bukkit.getPlayer(uuid);
             if (members == null) continue;
             lores.add(ChatColor.GRAY + "-> " + ChatColor.YELLOW + members.getName());
-            if (new PlayerManager().get(members.getUniqueId()).getStatus() == PlayerStatus.SPAWN && party.getSize() < 3) {
+            if (PlayerManager.get(members.getUniqueId()).getStatus() == PlayerStatus.SPAWN && party.getSize() < 3) {
             	Main.getInstance().getItemManager().giveSpawnItem(members);
             }
         }

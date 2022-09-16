@@ -151,7 +151,7 @@ public class InventoryListener implements Listener {
 	public void onDrag(InventoryClickEvent event) {
 		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
 			final Player player = (Player) event.getWhoClicked();
-			final PlayerManager pm = new PlayerManager().get(player.getUniqueId());
+			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
 			if (pm.isAllowedToBuild()) {
 				return;

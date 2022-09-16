@@ -36,7 +36,7 @@ public class InventoryManager {
 		this.arenasInventory = Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection");
 		this.unrankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
 		this.rankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
-		this.laddersInventory[0] = this.laddersInventory[1] = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
+		this.laddersInventory = new Inventory[2];
 		this.editingInventory = Bukkit.createInventory(null, 9, "Editing Selection");
 		this.settingsInventory = Bukkit.createInventory(null, 27, "Settings Configuration");
 		this.selectionInventory = Bukkit.createInventory(null, 27, "Selector");
@@ -86,6 +86,9 @@ public class InventoryManager {
 	}
 	
 	private void setLaddersInventory() {
+		if (laddersInventory[0] == null && laddersInventory[1] == null) {
+			laddersInventory[0] = laddersInventory[1] = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
+		}
 		this.laddersInventory[0].clear();
 		this.laddersInventory[1].clear();
 		for (Ladders ladders : Ladders.values()) {

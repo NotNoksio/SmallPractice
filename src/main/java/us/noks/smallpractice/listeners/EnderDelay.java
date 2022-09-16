@@ -32,7 +32,7 @@ public class EnderDelay implements Listener {
 			}
 			final ItemStack item = event.getItem();
 			if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item.getType() == Material.ENDER_PEARL && player.getGameMode() != GameMode.CREATIVE) {
-				PlayerManager pm = new PlayerManager().get(player.getUniqueId());
+				PlayerManager pm = PlayerManager.get(player.getUniqueId());
 				if (pm.getStatus() != PlayerStatus.DUEL) {
 					event.setUseItemInHand(Result.DENY);
 					player.sendMessage(ChatColor.RED + "You cannot use enderpearl here!");
@@ -58,7 +58,7 @@ public class EnderDelay implements Listener {
 		if (event.getCause() == TeleportCause.ENDER_PEARL) {
 			final Player player = event.getPlayer();
 			
-			if (new PlayerManager().get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) event.setCancelled(true);
+			if (PlayerManager.get(player.getUniqueId()).getStatus() != PlayerStatus.DUEL) event.setCancelled(true);
 		}
 	}
 }

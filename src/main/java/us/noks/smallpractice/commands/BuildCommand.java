@@ -28,7 +28,7 @@ public class BuildCommand implements CommandExecutor {
 		}
 		Player player = (Player) sender;
 		if (args.length == 0) {
-			PlayerManager pm = new PlayerManager().get(player.getUniqueId());
+			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 				
 			pm.setStatus((pm.isAllowedToBuild() ? PlayerStatus.SPAWN : PlayerStatus.BUILD));
 			player.sendMessage(ChatColor.DARK_AQUA + "Build state updated: " + (pm.isAllowedToBuild() ? ChatColor.GREEN + "Activated" : ChatColor.RED + "Deactivated"));
@@ -44,7 +44,7 @@ public class BuildCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "Execute: /build");
 			return false;
 		}
-		PlayerManager tm = new PlayerManager().get(target.getUniqueId());
+		PlayerManager tm = PlayerManager.get(target.getUniqueId());
 		
 		tm.setStatus((tm.isAllowedToBuild() ? PlayerStatus.SPAWN : PlayerStatus.BUILD));
 		target.sendMessage(ChatColor.DARK_AQUA + "Build state updated by " + player.getName() + ": " + (tm.isAllowedToBuild() ? ChatColor.GREEN + "Activated" : ChatColor.RED + "Deactivated"));
