@@ -59,10 +59,10 @@ public class InventoryManager {
 	
 	public void updateQueueInventory(boolean ranked) {
 		if (ranked) {
-		    this.setUnrankedInventory();
+		    this.setRankedInventory();
 		    return;
 		}
-		this.setRankedInventory();
+		this.setUnrankedInventory();
 	}
 	
 	private void setUnrankedInventory() {

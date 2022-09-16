@@ -155,10 +155,8 @@ public class DuelManager {
 		}
 		List<UUID> shuffle = Lists.newArrayList(party.getAllMembersOnline());
         Collections.shuffle(shuffle);
-        
-        List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
-        List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
-        
+        final List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
+        final List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
 	}
 	

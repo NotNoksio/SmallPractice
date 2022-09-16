@@ -232,6 +232,7 @@ public class Duel {
 	}
 	
 	public void addDrops(Item item) {
+		Bukkit.broadcastMessage(item.toString() + " has been added to match Drops"); // DEBUG
 		this.drops.add(item);
 	}
 	
@@ -240,6 +241,7 @@ public class Duel {
 	}
 	
 	public void clearDrops() {
+		// TODO: TRY TO MAKE THIS WORK!!!
 		for (Item itemsOnTheGround : this.drops) {
 			itemsOnTheGround.remove();
 		}

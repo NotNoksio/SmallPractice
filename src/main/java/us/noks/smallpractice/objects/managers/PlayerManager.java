@@ -56,7 +56,7 @@ public class PlayerManager {
 	    this.playerUUID = playerUUID;
 	    this.player = Bukkit.getPlayer(this.playerUUID);
 	    this.status = PlayerStatus.SPAWN;
-	    this.prefix = (!Main.getInstance().isPermissionsPluginHere() ? (this.player.isOp() ? "&c" : "&a") : PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix());
+	    this.prefix = (!Main.getInstance().isPermissionsPluginHere() ? (this.player.isOp() ? "&d" : "&a") : PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix());
 	    this.suffix = (!Main.getInstance().isPermissionsPluginHere() ? "" : PermissionsEx.getPermissionManager().getUser(getPlayer()).getSuffix());
 	    this.spectate = null;
 	    this.eloManager = new EloManager();
@@ -365,6 +365,9 @@ public class PlayerManager {
 	}
 	
 	public void setMessagedUUID(UUID newUUID) {
+		if (this.msgedUUID == newUUID) { // dont do useless action
+			return;
+		}
 		this.msgedUUID = newUUID;
 	}
 	

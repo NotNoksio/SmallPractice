@@ -81,7 +81,7 @@ public class ChatListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void translateColorWhenSignPlaced(SignChangeEvent event) {
 		if (!event.getPlayer().isOp()) {
 			return;
