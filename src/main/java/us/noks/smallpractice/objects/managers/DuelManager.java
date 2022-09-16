@@ -426,6 +426,10 @@ public class DuelManager {
 		final Duel currentDuel = getDuelFromPlayerUUID(player.getUniqueId());
 		
 		if (currentDuel == null) return;
+		if (currentDuel.getLadder() == Ladders.BOXING) {
+			player.getInventory().clear();
+			player.updateInventory();
+		}
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		pm.saveInventory();
