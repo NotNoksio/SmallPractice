@@ -426,10 +426,6 @@ public class DuelManager {
 		final Duel currentDuel = getDuelFromPlayerUUID(player.getUniqueId());
 		
 		if (currentDuel == null) return;
-		if (currentDuel.getLadder() == Ladders.BOXING) {
-			player.getInventory().clear();
-			player.updateInventory();
-		}
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		pm.saveInventory();
@@ -483,10 +479,7 @@ public class DuelManager {
 	}
 	
 	private void finishDuel(Duel duel) {
-		List<UUID> duelPlayerUUID = Lists.newArrayList(duel.getFirstTeam());
-        duelPlayerUUID.addAll(duel.getSecondTeam());
-        
-		for (UUID dpUUID : duelPlayerUUID) {
+		for (UUID dpUUID : duel.getAllTeams()) {
 			Player duelPlayer = Bukkit.getPlayer(dpUUID);
 			if (duelPlayer == null) continue;
 			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
@@ -506,7 +499,6 @@ public class DuelManager {
 			dpm.getMatchStats().removeEnderPearlCooldown();
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
 		}
-		duelPlayerUUID.clear();
 	}
 	
 	private void doEndDuelAction(Player player) {
