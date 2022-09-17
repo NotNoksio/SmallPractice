@@ -1,6 +1,7 @@
 package io.noks.smallpractice.objects;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -17,6 +18,7 @@ import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.managers.PlayerManager;
+import net.minecraft.util.com.google.common.collect.Sets;
 
 public class Duel {
 	private Arenas arena;
@@ -33,7 +35,7 @@ public class Duel {
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
 	private int timeBeforeDuel = 5;
-	private List<UUID> drops;
+	private Set<UUID> drops;
 	
 	public Duel(Arenas arena, Ladders ladder, UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		this.arena = arena;
@@ -45,7 +47,7 @@ public class Duel {
 		this.firstTeamAlive = Lists.newArrayList(firstTeam);
 		this.secondTeamAlive = Lists.newArrayList(secondTeam);
 		this.ranked = ranked;
-		this.drops = Lists.newLinkedList();
+		this.drops = Sets.newHashSet();
 	}
 	
 	/*public Duel(Arenas arena, Ladders ladder, UUID ffaPartyLeaderUUID, List<UUID> ffaPlayers) {
