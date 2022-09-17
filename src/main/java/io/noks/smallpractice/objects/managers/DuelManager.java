@@ -429,7 +429,9 @@ public class DuelManager {
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
 		PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		pm.saveInventory();
-		pm.getPlayer().setMaximumNoDamageTicks(10);
+		if (player.getMaximumNoDamageTicks() != 10) {
+			player.setMaximumNoDamageTicks(10);
+		}
 		
 		currentDuel.killPlayer(player.getUniqueId());
 		final String message = (reason == RemoveReason.KILLED ? player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : "") : player.getName() + " has disconnected");
@@ -506,7 +508,9 @@ public class DuelManager {
 		pm.saveInventory();
         pm.heal(false);
         pm.setStatus(PlayerStatus.SPAWN);
-        player.setMaximumNoDamageTicks(10);
+        if (player.getMaximumNoDamageTicks() != 10) {
+        	player.setMaximumNoDamageTicks(10);
+        }
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         if (!player.getActivePotionEffects().isEmpty()) {
