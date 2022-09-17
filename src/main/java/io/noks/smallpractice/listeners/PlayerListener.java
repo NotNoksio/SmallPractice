@@ -166,7 +166,6 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onDeath(PlayerDeathEvent event) {
 		event.setDeathMessage(null);
-		event.getDrops().clear();
 		event.setDroppedExp(0);
 		
 		if (event.getEntity() instanceof Player) {
@@ -300,24 +299,6 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			if (!receiver.canSee(owner)) event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	public void onEntitySpawnInWorld(EntitySpawnEvent event) {
-		if (event.getEntity() instanceof Item) {
-			Item itemDropped = (Item) event.getEntity();
-			
-			if (itemDropped.getOwner() != null && itemDropped.getOwner() instanceof Player) {
-				UUID playerUUID = itemDropped.getOwner().getUniqueId();
-				Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
-				
-				if (duel == null) {
-					return;
-				}
-				
-				duel.addDrops(itemDropped);
-			}
 		}
 	}
 	

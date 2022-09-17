@@ -1,11 +1,14 @@
 package io.noks.smallpractice.listeners;
 
-import org.bukkit.Material;
+import java.util.UUID;
+
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -67,6 +70,21 @@ public class DuelListener implements Listener {
             }
         }
     }
+	
+	@EventHandler
+	public void onEntitySpawnInWorld(EntitySpawnEvent event) {
+		if (event.getEntity() instanceof Item) {
+			Item itemDropped = (Item) event.getEntity();
+			
+			if (itemDropped.getOwner() != null && itemDropped.getOwner() instanceof Player) {
+				UUID playerUUID = itemDropped.getOwner().getUniqueId();
+				Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
+				if (duel == null) return;
+				
+				duel.addDrops(itemDropped);
+			}
+		}
+	}
 	
 	// My PlayerMoveEvent is not like everyone event (be careful)
 	@EventHandler(priority=EventPriority.LOWEST)
