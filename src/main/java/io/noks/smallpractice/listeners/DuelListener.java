@@ -51,7 +51,7 @@ public class DuelListener implements Listener {
             final PlayerManager dm = PlayerManager.get(e.getEntity().getUniqueId());
             final PlayerManager am = PlayerManager.get(e.getDamager().getUniqueId());
             
-            if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) { // TODO: Allow different target
+            if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) { // TODO: Allow different target & fix double/triple add to hit
             	final MatchStats damagedStats = dm.getMatchStats();
             	final MatchStats attackerStats = am.getMatchStats();
             	attackerStats.setHit(attackerStats.getHit() + 1);
