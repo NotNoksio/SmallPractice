@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 
 import io.noks.smallpractice.enums.Ladders;
 
-// TODO: DO THE ROCKETLEAGUE ELO SYSTEME
 public class EloManager {
 	private Map<Ladders, Integer> laddersElo = Maps.newHashMap();
 	private int DEFAULT_ELO;

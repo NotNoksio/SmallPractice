@@ -81,17 +81,17 @@ public class DuelManager {
 			allTeam.clear();
 			return;
 		}
-		Scoreboard firstPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
-		Team red1 = firstPlayerScoreboard.registerNewTeam("red");
+		final Scoreboard firstPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
+		final Team red1 = firstPlayerScoreboard.registerNewTeam("red");
 		red1.setPrefix(ChatColor.RED.toString());
-		Team green1 = firstPlayerScoreboard.registerNewTeam("green");
+		final Team green1 = firstPlayerScoreboard.registerNewTeam("green");
 		green1.setPrefix(ChatColor.GREEN.toString());
 		green1.setAllowFriendlyFire(false);
         
-		Scoreboard secondPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
-		Team red2 = secondPlayerScoreboard.registerNewTeam("red");
+		final Scoreboard secondPlayerScoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
+		final Team red2 = secondPlayerScoreboard.registerNewTeam("red");
 		red2.setPrefix(ChatColor.RED.toString());
-		Team green2 = secondPlayerScoreboard.registerNewTeam("green");
+		final Team green2 = secondPlayerScoreboard.registerNewTeam("green");
 		green2.setPrefix(ChatColor.GREEN.toString());
 		green2.setAllowFriendlyFire(false);
 		
@@ -125,7 +125,7 @@ public class DuelManager {
 			}
 			if (team.isEmpty()) continue;
 			
-			PlayerManager pm = PlayerManager.get(teamUUID);
+			final PlayerManager pm = PlayerManager.get(teamUUID);
 			pm.clearRequest();
 			pm.setStatus(PlayerStatus.WAITING);
 			
@@ -146,7 +146,7 @@ public class DuelManager {
 			Player members = Bukkit.getPlayer(membersUUID);
 			
 			if (members == null) continue;
-			PlayerManager membersManager = PlayerManager.get(membersUUID);
+			final PlayerManager membersManager = PlayerManager.get(membersUUID);
 			
 			if (membersManager.getStatus() != PlayerStatus.SPAWN) {
 				Bukkit.getPlayer(party.getLeader()).sendMessage(ChatColor.RED + "A member in your party isn't in the spawn!");
@@ -175,7 +175,7 @@ public class DuelManager {
 		while (specIt.hasNext()) {
 			Player spec = Bukkit.getPlayer(specIt.next());
 			if (spec == null) continue;
-			PlayerManager sm = PlayerManager.get(spec.getUniqueId());
+			final PlayerManager sm = PlayerManager.get(spec.getUniqueId());
 			
 			spec.setFlySpeed(0.1f);
 			spec.setWalkSpeed(0.2f);
@@ -482,7 +482,7 @@ public class DuelManager {
 		for (UUID dpUUID : duel.getAllTeams()) {
 			Player duelPlayer = Bukkit.getPlayer(dpUUID);
 			if (duelPlayer == null) continue;
-			PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
+			final PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
 			duelPlayer.setMaximumNoDamageTicks(10);
@@ -490,7 +490,7 @@ public class DuelManager {
 			dpm.setStatus(PlayerStatus.SPAWN);
 			dpm.heal(false);
 			dpm.showAllPlayer();
-			if (duelPlayer.getInventory().getContents() == null) {
+			if ((duel.getLadder() == Ladders.BOXING || duel.getLadder() == Ladders.SUMO) || duelPlayer.getInventory().getContents() == null) {
 				duelPlayer.teleport(duelPlayer.getWorld().getSpawnLocation());
 				Main.getInstance().getItemManager().giveSpawnItem(duelPlayer);
 			}
@@ -502,12 +502,11 @@ public class DuelManager {
 	}
 	
 	private void doEndDuelAction(Player player) {
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
-        
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		pm.saveInventory();
         pm.heal(false);
         pm.setStatus(PlayerStatus.SPAWN);
-        player.setMaximumNoDamageTicks(20);
+        player.setMaximumNoDamageTicks(10);
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         if (!player.getActivePotionEffects().isEmpty()) {

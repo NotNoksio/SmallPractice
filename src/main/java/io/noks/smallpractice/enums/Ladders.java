@@ -2,8 +2,8 @@ package io.noks.smallpractice.enums;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public enum Ladders {
 	NODEBUFF("NoDebuff", ChatColor.AQUA, new ItemStack(Material.POTION, 1, (short) 16421), true, true, true),
@@ -13,7 +13,7 @@ public enum Ladders {
 	EARLY_HG("Early-HG", ChatColor.GREEN, new ItemStack(Material.STONE_SWORD, 1), false, true, true),
 	GAPPLE("Gapple", ChatColor.BLUE, new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1), false, true, true),
 	BOXING("Boxing", ChatColor.DARK_AQUA, new ItemStack(Material.NOTE_BLOCK, 1), false, false, false), // TODO: team fight bugs
-	COMBO("Combo", ChatColor.DARK_GREEN, new ItemStack(Material.FEATHER, 1), false, true, false),
+	COMBO("Combo", ChatColor.DARK_GREEN, new ItemStack(Material.FEATHER, 1), false, true, true),
 	SUMO("Sumo", ChatColor.YELLOW, new ItemStack(Material.CLAY_BRICK, 1), false, true, true);
 	
 	private String name;
@@ -22,7 +22,7 @@ public enum Ladders {
 	private boolean editable;
 	private boolean multiplayer; // This will be removed when I'll be able to find a proper way to end the fight correctly
 	private boolean enable; // This will be removed or be enabled/disabled by a command
-	private Inventory defaultInventory; // TODO
+	private PlayerInventory defaultInventory; // TODO
 	
 	Ladders(String name, ChatColor color, ItemStack icon, boolean editable, boolean multiplayer, boolean enable) {
 		this.name = name;

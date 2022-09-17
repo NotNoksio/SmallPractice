@@ -238,10 +238,7 @@ public class ItemManager {
 			im.spigot().setUnbreakable(true);
 			attackItem.setItemMeta(im);
 			
-			helmet = null;
-			chestplate = null;
-			leggings = null;
-			boots = null;
+			helmet = chestplate = leggings = boots = null;
 			player.getInventory().setItem(14, new ItemStack(Material.BOWL, 32));
 			player.getInventory().setItem(13, new ItemStack(Material.RED_MUSHROOM, 32));
 			player.getInventory().setItem(15, new ItemStack(Material.BROWN_MUSHROOM, 32));
@@ -278,10 +275,7 @@ public class ItemManager {
 			swordMeta.spigot().setUnbreakable(true);
 			attackItem.setItemMeta(swordMeta);
 			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
-			helmet = null;
-			chestplate = null;
-			leggings = null;
-			boots = null;
+			helmet = chestplate = leggings = boots = null;
 			break;
 		}
 		default:

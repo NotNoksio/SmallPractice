@@ -250,7 +250,7 @@ public class Duel {
 	public void clearDrops() {
 		final World world = Bukkit.getWorld("world");
 		for (Entity entities : world.getEntities()) {
-			if (!(entities instanceof Item) && !this.drops.contains(entities.getUniqueId())) continue;
+			if (entities == null || !(entities instanceof Item) && !this.drops.contains(entities.getUniqueId())) continue;
 			entities.remove();
 		}
 	}
