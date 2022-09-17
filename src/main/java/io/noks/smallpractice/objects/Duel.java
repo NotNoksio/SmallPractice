@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 
@@ -31,7 +33,7 @@ public class Duel {
 	private boolean ranked;
 	private List<UUID> spectators = Lists.newArrayList();
 	private int timeBeforeDuel = 5;
-	private List<Item> drops;
+	private List<UUID> drops;
 	
 	public Duel(Arenas arena, Ladders ladder, UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		this.arena = arena;
@@ -232,18 +234,22 @@ public class Duel {
 	}
 	
 	public void addDrops(Item item) {
-		Bukkit.broadcastMessage(item.toString() + " has been added to match Drops"); // DEBUG
-		this.drops.add(item);
+		this.drops.add(item.getUniqueId());
+	}
+	
+	public void removeDrops(Item item) {
+		this.drops.remove(item.getUniqueId());
 	}
 	
 	public boolean containDrops(Item item) {
-		return this.drops.contains(item);
+		return this.drops.contains(item.getUniqueId());
 	}
 	
 	public void clearDrops() {
-		// TODO: TRY TO MAKE THIS WORK!!!
-		for (Item itemsOnTheGround : this.drops) {
-			itemsOnTheGround.remove();
+		final World world = Bukkit.getWorld("world");
+		for (Entity entities : world.getEntities()) {
+			if (!(entities instanceof Item) && !this.drops.contains(entities.getUniqueId())) continue;
+			entities.remove();
 		}
 	}
 }

@@ -287,12 +287,16 @@ public class PlayerListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-			Item item = event.getItem();
+			final Item item = event.getItem();
 			final Player owner = (Player) item.getOwner();
 			if (this.main.getDuelManager().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
 				final Duel currentDuel = this.main.getDuelManager().getDuelFromPlayerUUID(receiver.getUniqueId());
 				
-				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item)) event.setCancelled(true); // TODO: Does containPlayer can affect the event? | Does the containDrop will affect all the same drops?
+				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item)) {
+					event.setCancelled(true); // TODO: Does containPlayer can affect the event? | Does the containDrop will affect all the same drops?
+					return;
+				}
+				currentDuel.removeDrops(item);
 				return;
 			}
 			if (!receiver.canSee(owner)) event.setCancelled(true);
