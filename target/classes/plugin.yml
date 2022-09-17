@@ -3,6 +3,7 @@ name: SmallPractice
 version: 2.0
 author: Noksio
 softdepend: [PermissionsEx]
+website: github.com/iamnoksio/SmallPractice
 commands:
   duel:
   accept:

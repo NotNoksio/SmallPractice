@@ -101,9 +101,7 @@ public class PartyManager {
         skullm.setOwner(player.getName());
         skullm.setDisplayName(ChatColor.DARK_AQUA + player.getName() + " (" + ChatColor.YELLOW + party.getSize() + ChatColor.DARK_AQUA + ")");
         skull.setItemMeta(skullm);
-        if (partiesInventory.contains(skull)) {
-        	partiesInventory.remove(skull);
-        }
+        deletePartyFromInventory(party);
         this.partiesInventory.addItem(skull);
     }
     

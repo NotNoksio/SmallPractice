@@ -197,7 +197,6 @@ public class DuelManager {
             }
             partyList.clear();
         }
-		duel.clearDrops();
         if (duel.getFirstTeam().size() == 1 && duel.getSecondTeam().size() == 1 && (duel.getFirstTeamPartyLeaderUUID() == null && duel.getSecondTeamPartyLeaderUUID() == null)) {
         	Main.getInstance().getInventoryManager().updateQueueInventory(duel.isRanked());
         }
@@ -481,6 +480,7 @@ public class DuelManager {
 	}
 	
 	private void finishDuel(Duel duel) {
+		duel.clearDrops();
 		for (UUID dpUUID : duel.getAllTeams()) {
 			Player duelPlayer = Bukkit.getPlayer(dpUUID);
 			if (duelPlayer == null) continue;
