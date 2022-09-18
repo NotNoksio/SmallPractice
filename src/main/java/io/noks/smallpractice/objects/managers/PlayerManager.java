@@ -51,6 +51,7 @@ public class PlayerManager {
 	private UUID msgedUUID;
 	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
 	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
+	private Long nextHitTick = 0L;
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
@@ -74,6 +75,14 @@ public class PlayerManager {
 			return null;
 		}
 		return players.get(playerUUID);
+	}
+	
+	public Long getNextHitTick() {
+		return this.nextHitTick;
+	}
+	
+	public void updateNextHitTick() {
+		this.nextHitTick = System.currentTimeMillis() + 500;
 	}
 
 	public void remove() {

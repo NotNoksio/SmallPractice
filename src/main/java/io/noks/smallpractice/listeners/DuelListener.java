@@ -2,6 +2,7 @@ package io.noks.smallpractice.listeners;
 
 import java.util.UUID;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,24 +44,35 @@ public class DuelListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.isCancelled()) {
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (event.isCancelled()) {
 			return;
 		}
-        if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
-            final PlayerManager dm = PlayerManager.get(e.getEntity().getUniqueId());
-            final PlayerManager am = PlayerManager.get(e.getDamager().getUniqueId());
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            final PlayerManager dm = PlayerManager.get(event.getEntity().getUniqueId());
+            final PlayerManager am = PlayerManager.get(event.getDamager().getUniqueId());
             
-            if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) { // TODO: Allow different target & NEED TO fix double/triple add to hit
+            if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) { // TODO: Allow different target for boxing
+            	final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(am.getPlayerUUID());
+            	if (duel.getLadder() != Ladders.COMBO) {
+		            if (dm.getNextHitTick() != 0 && dm.getNextHitTick() > System.currentTimeMillis()) {
+		            	return;
+		            }
+		            dm.updateNextHitTick();
+            	}
             	final MatchStats damagedStats = dm.getMatchStats();
             	final MatchStats attackerStats = am.getMatchStats();
+            	
             	attackerStats.setHit(attackerStats.getHit() + 1);
             	attackerStats.setCombo(attackerStats.getCombo() + 1);
             	if(damagedStats.getCombo() > damagedStats.getLongestCombo()) {
             		damagedStats.setLongestCombo(damagedStats.getCombo());
             	}
             	damagedStats.setCombo(0);
-            	Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(am.getPlayerUUID());
+            	if (duel.getLadder() == Ladders.SUMO) {
+            		event.setDamage(0.0D);
+            		return;
+            	}
             	if (duel.getLadder() == Ladders.BOXING) {
             		am.getPlayer().setLevel(attackerStats.getHit());
             		if (attackerStats.getHit() == 100) {
@@ -74,8 +86,9 @@ public class DuelListener implements Listener {
 	@EventHandler
 	public void onEntitySpawnInWorld(EntitySpawnEvent event) {
 		if (event.getEntity() instanceof Item) {
-			Item itemDropped = (Item) event.getEntity();
+			final Item itemDropped = (Item) event.getEntity();
 			
+			if (itemDropped.getItemStack().getType() == Material.GLASS_BOTTLE || itemDropped.getItemStack().getType() == Material.BOWL) return;
 			if (itemDropped.getOwner() != null && itemDropped.getOwner() instanceof Player) {
 				UUID playerUUID = itemDropped.getOwner().getUniqueId();
 				Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
