@@ -426,7 +426,7 @@ public class DuelManager {
 		
 		if (currentDuel == null) return;
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		pm.saveInventory();
 		if (player.getMaximumNoDamageTicks() != 10) {
 			player.setMaximumNoDamageTicks(10);
@@ -501,6 +501,7 @@ public class DuelManager {
 			dpm.getMatchStats().removeEnderPearlCooldown();
 			this.uuidIdentifierToDuel.remove(duelPlayer.getUniqueId());
 		}
+		Main.getInstance().getInventoryManager().updateQueueInventory(duel.isRanked());
 	}
 	
 	private void doEndDuelAction(Player player) {
