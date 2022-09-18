@@ -33,7 +33,6 @@ import io.noks.smallpractice.objects.CustomInventory;
 import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.MatchStats;
 import io.noks.smallpractice.objects.Request;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PlayerManager {
 	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
@@ -43,7 +42,6 @@ public class PlayerManager {
 	private Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
 	private PlayerStatus status;
 	private Player spectate;
-	private String prefix, suffix;
 	private EloManager eloManager;
 	private MatchStats matchStats;
 	private CommandCooldown cooldown;
@@ -57,8 +55,6 @@ public class PlayerManager {
 	    this.playerUUID = playerUUID;
 	    this.player = Bukkit.getPlayer(this.playerUUID);
 	    this.status = PlayerStatus.SPAWN;
-	    this.prefix = (!Main.getInstance().isPermissionsPluginHere() ? (this.player.isOp() ? "&d" : "&a") : PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix());
-	    this.suffix = (!Main.getInstance().isPermissionsPluginHere() ? "" : PermissionsEx.getPermissionManager().getUser(getPlayer()).getSuffix());
 	    this.spectate = null;
 	    this.eloManager = new EloManager();
 	    this.matchStats = new MatchStats();
@@ -184,88 +180,6 @@ public class PlayerManager {
 				getPlayer().hidePlayer(allPlayers);
 			}
 		}
-	}
-	
-	public String getPrefix() {
-		if (!Main.getInstance().isPermissionsPluginHere()) {
-			return this.prefix;
-		}
-		if (this.prefix != PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix()) {
-			this.prefix = PermissionsEx.getPermissionManager().getUser(getPlayer()).getPrefix();
-			getPlayer().setPlayerListName(getPrefixColors() + getPlayer().getName());
-		}
-		return this.prefix;
-	}
-	
-	public String getColoredPrefix() {
-		return ChatColor.translateAlternateColorCodes('&', getPrefix());
-	}
-	
-	public String getPrefixColors() {
-		if (getPrefix().isEmpty()) {
-			return "";
-		}
-
-		ChatColor color;
-		ChatColor magicColor;
-
-		char code = 'f';
-		char magic = 'f';
-		int count = 0;
-
-		for (String string : getPrefix().split("&")) {
-			if (!(string.isEmpty())) {
-				if (ChatColor.getByChar(string.toCharArray()[0]) != null) {
-					if (count == 0 && !isMagicColor(string.toCharArray()[0])) {
-						code = string.toCharArray()[0];
-						count++;
-					} else if (count == 1 && isMagicColor(string.toCharArray()[0])) {
-						magic = string.toCharArray()[0];
-						count++;
-					}
-				}
-			}
-		}
-
-		color = ChatColor.getByChar(code);
-		magicColor = ChatColor.getByChar(magic);
-		return count == 1 ? color.toString() : color.toString() + magicColor.toString();
-
-		//                 |Tab||   Chat Prefix    |
-		//                 |   ||                  |
-		// PREFIX FORMAT -> &3&l&f[&3Developer&f] &3
-	}
-	
-	public String getSuffix() {
-		return this.suffix;
-	}
-	
-	public String getColoredSuffix() {
-		return ChatColor.translateAlternateColorCodes('&', getSuffix());
-	}
-	
-	public boolean hasVoted() {
-		return false;
-	}
-	
-	private boolean isMagicColor(char letter) {
-		switch (letter) {
-		case 'k':
-			return true;
-		case 'l':
-			return true;
-		case 'm':
-			return true;
-		case 'n':
-			return true;
-		case 'o':
-			return true;
-		case 'r':
-			return true;
-		default:
-			break;
-		}
-		return false;
 	}
 	
 	public CommandCooldown getCooldown() {

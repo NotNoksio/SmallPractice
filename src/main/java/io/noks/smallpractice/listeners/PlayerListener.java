@@ -43,9 +43,7 @@ import io.noks.smallpractice.objects.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
-import io.noks.smallpractice.utils.WebUtil;
 import net.minecraft.util.org.apache.commons.lang3.BooleanUtils;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PlayerListener implements Listener {
 	private Main main;
@@ -59,7 +57,6 @@ public class PlayerListener implements Listener {
 		event.setJoinMessage(null);
 		final Player player = event.getPlayer();
 		
-		this.checkLike(player);
 		PlayerManager pm = new PlayerManager(player.getUniqueId());
 		
 		player.setExp(0.0F);
@@ -87,35 +84,6 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
-	private void checkLike(Player player) {
-		if (!this.main.isPermissionsPluginHere()) {
-			return;
-		}
-		final String rank = PermissionsEx.getPermissionManager().getUser(player).getParentIdentifiers().get(0);
-		final String domainName = this.main.getConfigManager().serverDomainName;
-		
-        if (rank.equals("default") || rank.equals("verified")) {
-            WebUtil.getResponse(this.main, "https://api.namemc.com/server/" + domainName + "/votes?profile=" + player.getUniqueId(), response -> {
-            	switch (response) {
-            	case "false":
-            		if (rank.equals("verified")) {
-            			PermissionsEx.getPermissionManager().getUser(player).removeGroup("verified");
-            			PermissionsEx.getPermissionManager().getUser(player).addGroup("default");
-            			player.sendMessage(ChatColor.RED + "Your rank has been removed due to your unlike!");
-            		}
-            		break;
-            	case "true":
-            		if (rank.equals("default")) {
-            			PermissionsEx.getPermissionManager().getUser(player).removeGroup("default");
-            			PermissionsEx.getPermissionManager().getUser(player).addGroup("verified");
-            			player.sendMessage(ChatColor.GREEN + "Thanks for liking the server on NameMC! You've now got the Verified rank.");
-            		}
-            		break;
-            	}
-            });
-        }
-	}
-	
 	private void sendJoinMessage(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		if (this.main.getConfigManager().clearChatOnJoin) {
@@ -128,7 +96,6 @@ public class PlayerListener implements Listener {
 		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/CXx2u3phWn");
 		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "https://namemc.com/server/" + this.main.getConfigManager().serverDomainName);
 		player.sendMessage("");
-		player.setPlayerListName(PlayerManager.get(player.getUniqueId()).getPrefixColors() + player.getName());
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
