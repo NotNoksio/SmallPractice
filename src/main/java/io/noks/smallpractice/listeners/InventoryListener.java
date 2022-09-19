@@ -85,7 +85,6 @@ public class InventoryListener implements Listener {
 				return;
 			}
 			String[] itemName = splitString(ChatColor.stripColor(item.getItemMeta().getDisplayName()));
-            //itemName[0] = ChatColor.stripColor(itemName[0]);
             if (player.getName().toLowerCase().equals(itemName[0].toLowerCase())) {
             	player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
             	return;

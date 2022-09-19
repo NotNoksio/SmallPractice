@@ -236,7 +236,7 @@ public class PlayerListener implements Listener {
 					if (handItem.getType() == Material.MUSHROOM_SOUP) {
 						return;
 					}
-					if (handItem.getType() == Material.STONE_SWORD) damage -= 2.0D; // Fix too many damage (from my kitpvp soup plugin)
+					if (handItem.getType() == Material.STONE_SWORD) damage -= 2.25D; // Fix too many damage (from my kitpvp soup plugin)
 				}
 				event.setDamage(damage);
 			}
@@ -259,7 +259,7 @@ public class PlayerListener implements Listener {
 				final Duel currentDuel = this.main.getDuelManager().getDuelFromPlayerUUID(receiver.getUniqueId());
 				
 				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item)) {
-					event.setCancelled(true); // TODO: Does containPlayer can affect the event? | Does the containDrop will affect all the same drops?
+					event.setCancelled(true);
 					return;
 				}
 				currentDuel.removeDrops(item);
@@ -329,103 +329,103 @@ public class PlayerListener implements Listener {
 						player.openInventory(this.main.getInventoryManager().getSelectionInventory());
 						break;
 					}
-				} else {
-					final Party currentParty = this.main.getPartyManager().getParty(player.getUniqueId());
-					final boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
+					break;
+				}
+				final Party currentParty = this.main.getPartyManager().getParty(player.getUniqueId());
+				final boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
 					
-					if (item.getType() == Material.IRON_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 unranked queue")) {
-		                event.setCancelled(true);
-		                if (!isPartyLeader) {
-							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
-							break;
-						}
-						if (currentParty.getPartyState() == PartyState.DUELING) {
-                            player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
-                            break;
-                        }
-                        if (currentParty.getMembers().isEmpty() || currentParty.getSize() > 2) {
-                            player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
-                            break;
-                        }
-                        player.openInventory(this.main.getInventoryManager().getUnrankedInventory());
-		                break;
-		            }
-					if (item.getType() == Material.DIAMOND_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 ranked queue")) {
-		                event.setCancelled(true);
-		                if (!isPartyLeader) {
-							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
-							break;
-						}
-						if (currentParty.getPartyState() == PartyState.DUELING) {
-                            player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
-                            break;
-                        }
-                        if (currentParty.getMembers().isEmpty() || currentParty.getSize() > 2) {
-                            player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
-                            break;
-                        }
-                        player.openInventory(this.main.getInventoryManager().getRankedInventory());
-		                break;
-		            }
-					if (item.getType() == Material.ARROW && itemName.equals(ChatColor.YELLOW + "party game")) {
-						if (!isPartyLeader) {
-							player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
-							break;
-						}
-						if (currentParty.getPartyState() == PartyState.DUELING) {
-                            player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
-                            break;
-                        }
-                        if (currentParty.getMembers().isEmpty()) {
-                            player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
-                            break;
-                        }
-                        Inventory laddersInventory = this.main.getInventoryManager().getNonMultiplayerLaddersInventory();
-                        if (currentParty.getSize() > 2) {
-                        	laddersInventory = this.main.getInventoryManager().getMultiplayerLaddersInventory();
-                        }
-                        player.openInventory(laddersInventory);
-                        break;
-		            }
-					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "fight other parties")) {
-						player.openInventory(this.main.getPartyManager().getPartiesInventory());
+				if (item.getType() == Material.IRON_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 unranked queue")) {
+					event.setCancelled(true);
+					if (!isPartyLeader) {
+						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
 						break;
 					}
-					if (item.getType() == Material.PAPER && itemName.equals(ChatColor.YELLOW + "party information")) {
-						Bukkit.dispatchCommand(player, "party info");
+					if (currentParty.getPartyState() == PartyState.DUELING) {
+						player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
 						break;
 					}
-					if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.YELLOW + "spectate actual match")) {
-						event.setUseItemInHand(Result.DENY);
-						if (currentParty.getPartyState() != PartyState.DUELING) {
-							player.getItemInHand().setType(null);
-							player.updateInventory();
-							break;
-						}
-						Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(currentParty.getLeader());
-						pm.hideAllPlayer();
-						duel.addSpectator(player.getUniqueId());
+					if (currentParty.getMembers().isEmpty() || currentParty.getSize() > 2) {
+						player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
+						break;
+					}
+					player.openInventory(this.main.getInventoryManager().getUnrankedInventory());
+					break;
+				}
+				if (item.getType() == Material.DIAMOND_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 ranked queue")) {
+					event.setCancelled(true);
+					if (!isPartyLeader) {
+						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
+						break;
+					}
+					if (currentParty.getPartyState() == PartyState.DUELING) {
+						player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
+						break;
+					}
+					if (currentParty.getMembers().isEmpty() || currentParty.getSize() > 2) {
+						player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
+						break;
+					}
+					player.openInventory(this.main.getInventoryManager().getRankedInventory());
+					break;
+				}
+				if (item.getType() == Material.ARROW && itemName.equals(ChatColor.YELLOW + "party game")) {
+					if (!isPartyLeader) {
+						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
+						break;
+					}
+					if (currentParty.getPartyState() == PartyState.DUELING) {
+						player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
+						break;
+					}
+					if (currentParty.getMembers().isEmpty()) {
+						player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
+						break;
+					}
+					Inventory laddersInventory = this.main.getInventoryManager().getNonMultiplayerLaddersInventory();
+					if (currentParty.getSize() > 2) {
+						laddersInventory = this.main.getInventoryManager().getMultiplayerLaddersInventory();
+					}
+					player.openInventory(laddersInventory);
+					break;
+				}
+				if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "fight other parties")) {
+					player.openInventory(this.main.getPartyManager().getPartiesInventory());
+					break;
+				}
+				if (item.getType() == Material.PAPER && itemName.equals(ChatColor.YELLOW + "party information")) {
+					Bukkit.dispatchCommand(player, "party info");
+					break;
+				}
+				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.YELLOW + "spectate actual match")) {
+					event.setUseItemInHand(Result.DENY);
+					if (currentParty.getPartyState() != PartyState.DUELING) {
+						player.getItemInHand().setType(null);
+						player.updateInventory();
+						break;
+					}
+					Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(currentParty.getLeader());
+					pm.hideAllPlayer();
+					duel.addSpectator(player.getUniqueId());
 						
-						player.setAllowFlight(true);
-						player.setFlying(true);
-						player.teleport(duel.getArena().getLocations()[0].add(0, 2, 0));
+					player.setAllowFlight(true);
+					player.setFlying(true);
+					player.teleport(duel.getArena().getLocations()[0].add(0, 2, 0));
 						
-						List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
-						duelPlayers.addAll(duel.getSecondTeamAlive());
+					List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
+					duelPlayers.addAll(duel.getSecondTeamAlive());
 							
-						for (UUID uuid : duelPlayers) {
-							Player dplayers = Bukkit.getPlayer(uuid);
-							player.showPlayer(dplayers);
-						}
-						Main.getInstance().getItemManager().giveSpectatorItems(player);
-						player.sendMessage(ChatColor.GREEN + "You are now spectating the current party duel");
-						duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
-						break;
+					for (UUID uuid : duelPlayers) {
+						Player dplayers = Bukkit.getPlayer(uuid);
+						player.showPlayer(dplayers);
 					}
-					if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave party")) {
-						event.setCancelled(true);
-						Bukkit.dispatchCommand(player, "party leave");
-					}
+					Main.getInstance().getItemManager().giveSpectatorItems(player);
+					player.sendMessage(ChatColor.GREEN + "You are now spectating the current party duel");
+					duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
+					break;
+				}
+				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave party")) {
+					event.setCancelled(true);
+					Bukkit.dispatchCommand(player, "party leave");
 				}
 				break;
 			case QUEUE:
