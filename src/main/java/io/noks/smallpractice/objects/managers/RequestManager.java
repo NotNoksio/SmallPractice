@@ -25,38 +25,38 @@ public class RequestManager {
 	}
     
     public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {
-    	PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+    	final PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		TextComponent line = new TextComponent(requester.getName());
+		final TextComponent line = new TextComponent(requester.getName());
 		line.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 	    
-		TextComponent lineA = new TextComponent(" has requested you to duel in ");
+		final TextComponent lineA = new TextComponent(" has requested you to duel in ");
 		lineA.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		
-		TextComponent lineLadder = new TextComponent(ladder.getName()); // TODO: if in a party show party size
+		final TextComponent lineLadder = new TextComponent(ladder.getName()); // TODO: if in a party show party size
 		lineLadder.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 		
-		TextComponent lineOn = new TextComponent(" on ");
+		final TextComponent lineOn = new TextComponent(" on ");
 		lineOn.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 		
-		TextComponent lineArena = new TextComponent(arena.getName() + " arena");
+		final TextComponent lineArena = new TextComponent(arena.getName() + " arena");
 		lineArena.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 		
-		TextComponent lineDot = new TextComponent(". ");
+		final TextComponent lineDot = new TextComponent(". ");
 		lineDot.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
-		TextComponent lineB = new TextComponent("Click here to accept.");
+		final TextComponent lineB = new TextComponent("Click here to accept.");
 		lineB.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 		lineB.setBold(true);
 		lineB.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
 		lineB.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + requester.getName()));
 		
-		TextComponent lineSpace = new TextComponent(" ");
+		final TextComponent lineSpace = new TextComponent(" ");
 		
-		TextComponent lineC = new TextComponent("Click here to deny.");
+		final TextComponent lineC = new TextComponent("Click here to deny.");
 		lineC.setColor(net.md_5.bungee.api.ChatColor.RED);
 		lineC.setBold(true);
 		lineC.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.RED + "Click this message to deny " + requester.getName()).create()));
@@ -78,7 +78,7 @@ public class RequestManager {
 	}
 	
 	public void acceptDuelRequest(Arenas arena, Ladders ladder, Player requested, Player requester) {
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		final PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
@@ -87,8 +87,8 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
 		}
-		Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
-        Party requestedParty = Main.getInstance().getPartyManager().getParty(requested.getUniqueId());
+		final Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
+        final Party requestedParty = Main.getInstance().getPartyManager().getParty(requested.getUniqueId());
         if (requesterParty != null ^ requestedParty != null) {
             requested.sendMessage(ChatColor.RED + "Either you or this player are in a party!");
             return;
@@ -117,26 +117,26 @@ public class RequestManager {
 	}
 	
 	public void sendPartyInvite(Player requester, Player requested) {
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		final PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		TextComponent line = new TextComponent(requester.getName());
+		final TextComponent line = new TextComponent(requester.getName());
 		line.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 	    
-		TextComponent lineA = new TextComponent(" has invited you into his party. ");
+		final TextComponent lineA = new TextComponent(" has invited you into his party. ");
 		lineA.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
 	    
-		TextComponent lineB = new TextComponent("Click here to accept.");
+		final TextComponent lineB = new TextComponent("Click here to accept.");
 		lineB.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 		lineB.setBold(true);
 		lineB.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "Click this message to accept " + requester.getName()).create()));
 		lineB.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept " + requester.getName()));
 		
-		TextComponent lineSpace = new TextComponent(" ");
+		final TextComponent lineSpace = new TextComponent(" ");
 		
-		TextComponent lineC = new TextComponent("Click here to deny.");
+		final TextComponent lineC = new TextComponent("Click here to deny.");
 		lineC.setColor(net.md_5.bungee.api.ChatColor.RED);
 		lineC.setBold(true);
 		lineC.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.RED + "Click this message to deny " + requester.getName()).create()));
@@ -153,7 +153,7 @@ public class RequestManager {
 	}
 	
 	public void acceptPartyInvite(Player requested, Player requester) {
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		final PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
@@ -162,7 +162,7 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "This player doesn't invite you to his party!");
 			return;
 		}
-		Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
+		final Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
 		requesterManager.getInvites().remove(requested.getUniqueId());
 		Main.getInstance().getPartyManager().joinParty(requesterParty.getLeader(), requested.getUniqueId());
 		requesterParty.notify(ChatColor.GREEN + requested.getName() + " has joined the party");
@@ -175,7 +175,7 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return;
 		}
-		PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+		final PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (!requesterManager.hasInvited(requested.getUniqueId())) {
 			requested.sendMessage(ChatColor.RED + "This player doesn't invite you to his party!");
 			return;
