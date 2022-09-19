@@ -23,7 +23,8 @@ public class InventoryManager {
 	private Inventory arenasInventory;
 	private Inventory unrankedInventory;
 	private Inventory rankedInventory;
-	private Inventory[] laddersInventory;
+	private Inventory nonMultiplayerLaddersInventory;
+	private Inventory multiplayerLaddersInventory;
 	private Inventory editingInventory;
 	private Inventory settingsInventory;
 	private Inventory selectionInventory;
@@ -36,7 +37,8 @@ public class InventoryManager {
 		this.arenasInventory = Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection");
 		this.unrankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
 		this.rankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
-		this.laddersInventory = new Inventory[2];
+		this.nonMultiplayerLaddersInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
+		this.multiplayerLaddersInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
 		this.editingInventory = Bukkit.createInventory(null, 9, "Editing Selection");
 		this.settingsInventory = Bukkit.createInventory(null, 27, "Settings Configuration");
 		this.selectionInventory = Bukkit.createInventory(null, 27, "Selector");
@@ -86,16 +88,14 @@ public class InventoryManager {
 	}
 	
 	private void setLaddersInventory() {
-		if (laddersInventory[0] == null && laddersInventory[1] == null) {
-			laddersInventory[0] = laddersInventory[1] = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
-		}
-		this.laddersInventory[0].clear();
-		this.laddersInventory[1].clear();
 		for (Ladders ladders : Ladders.values()) {
-			ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName());
-			this.laddersInventory[0].addItem(item);
+			final ItemStack ladder = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), Arrays.asList(" "));
+			this.nonMultiplayerLaddersInventory.addItem(ladder);
+		}
+		for (Ladders ladders : Ladders.values()) {
+			final ItemStack ladder = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), Arrays.asList(" "));
 			if (!ladders.isMultiplayer()) continue;
-			this.laddersInventory[1].addItem(item);
+			this.multiplayerLaddersInventory.addItem(ladder);
 		}
 	}
 	
@@ -136,8 +136,12 @@ public class InventoryManager {
 		return this.rankedInventory;
 	}
 	
-	public Inventory[] getLaddersInventory() {
-		return this.laddersInventory;
+	public Inventory getNonMultiplayerLaddersInventory() {
+		return this.nonMultiplayerLaddersInventory;
+	}
+	
+	public Inventory getMultiplayerLaddersInventory() {
+		return this.multiplayerLaddersInventory;
 	}
 	
 	public Inventory getEditingInventory() {

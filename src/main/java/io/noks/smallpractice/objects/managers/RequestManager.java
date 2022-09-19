@@ -1,8 +1,8 @@
 package io.noks.smallpractice.objects.managers;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena.Arenas;
@@ -21,7 +21,11 @@ public class RequestManager {
 			return;
 		}
 		Main.getInstance().getInventoryManager().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
-		requester.openInventory(Main.getInstance().getInventoryManager().getLaddersInventory()[BooleanUtils.toInteger(!partyFight)]);
+		Inventory laddersInventory = Main.getInstance().getInventoryManager().getNonMultiplayerLaddersInventory();
+		if (partyFight) {
+			laddersInventory = Main.getInstance().getInventoryManager().getMultiplayerLaddersInventory();
+		}
+		requester.openInventory(laddersInventory);
 	}
     
     public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {

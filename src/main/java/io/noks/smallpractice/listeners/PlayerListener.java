@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -379,7 +380,11 @@ public class PlayerListener implements Listener {
                             player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
                             break;
                         }
-                        player.openInventory(this.main.getInventoryManager().getLaddersInventory()[(currentParty.getSize() > 2 ? 1 : 0)]);
+                        Inventory laddersInventory = this.main.getInventoryManager().getNonMultiplayerLaddersInventory();
+                        if (currentParty.getSize() > 2) {
+                        	laddersInventory = this.main.getInventoryManager().getMultiplayerLaddersInventory();
+                        }
+                        player.openInventory(laddersInventory);
                         break;
 		            }
 					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "fight other parties")) {
