@@ -92,10 +92,10 @@ public class PlayerListener implements Listener {
 				player.sendMessage(""); 
 			}
 		}
-		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Goneko" + ChatColor.GRAY + " (Practice)");
+		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Kone" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/CXx2u3phWn");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "https://namemc.com/server/" + this.main.getConfigManager().serverDomainName);
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "N/A");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "N/A");
 		player.sendMessage("");
 	}
 	
@@ -502,6 +502,8 @@ public class PlayerListener implements Listener {
 	            }
 				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.GREEN + "see all spectators")) {
 					// TODO
+					player.sendMessage(ChatColor.RED + "Coming ASAP");
+					break;
 				}
 				if (item.getType() == Material.MAP && itemName.equals(ChatColor.GREEN + "change arena")) {
 					player.openInventory(this.main.getInventoryManager().getArenasInventory());
@@ -641,6 +643,7 @@ public class PlayerListener implements Listener {
 						event.setCancelled(true);
 					}
 				}
+				return;
 			}
 			event.setCancelled(true);
 		}

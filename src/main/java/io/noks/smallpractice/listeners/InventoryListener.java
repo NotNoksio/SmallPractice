@@ -36,7 +36,7 @@ public class InventoryListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
-		if (!event.getInventory().getType().equals(InventoryType.CHEST)) {
+		if (event.getInventory().getType() != InventoryType.CHEST) {
 			return;
 		}
 		final ItemStack item = event.getCurrentItem();
@@ -147,7 +147,7 @@ public class InventoryListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOW)
-	public void onDrag(InventoryClickEvent event) {
+	public void blockSpawnMoveItem(InventoryClickEvent event) {
 		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
 			final Player player = (Player) event.getWhoClicked();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());

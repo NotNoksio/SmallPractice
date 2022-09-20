@@ -94,7 +94,7 @@ public class ServerListeners implements Listener {
 	}
 	
 	private final String getMotd() {
-		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Goneko " + ChatColor.GRAY + "(Practice "  + main.getDescription().getVersion() + ")\n";
+		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Kone " + ChatColor.GRAY + "(Practice "  + main.getDescription().getVersion() + ")\n";
 		final String line2 = ChatColor.YELLOW + "US Pot pvp server" + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : "");
 		return (line1 + line2);
 	}

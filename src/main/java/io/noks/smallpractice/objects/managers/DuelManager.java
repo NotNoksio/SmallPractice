@@ -431,6 +431,9 @@ public class DuelManager {
 		if (player.getMaximumNoDamageTicks() != 10) {
 			player.setMaximumNoDamageTicks(10);
 		}
+		if (player.getLevel() != 0) {
+			player.setLevel(0);
+		}
 		
 		currentDuel.killPlayer(player.getUniqueId());
 		final String message = (reason == RemoveReason.KILLED ? player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : "") : player.getName() + " has disconnected");
@@ -487,7 +490,9 @@ public class DuelManager {
 			final PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
-			duelPlayer.setMaximumNoDamageTicks(10);
+			if (duelPlayer.getMaximumNoDamageTicks() != 10) {
+	        	duelPlayer.setMaximumNoDamageTicks(10);
+	        }
 			
 			dpm.setStatus(PlayerStatus.SPAWN);
 			dpm.heal(false);
@@ -519,7 +524,9 @@ public class DuelManager {
 				player.removePotionEffect(effect.getType());
 			}
 		}
-        player.setLevel(0);
+        if (player.getLevel() != 0) {
+        	player.setLevel(0);
+        }
         player.extinguish();
         player.setItemOnCursor(null);
 	}

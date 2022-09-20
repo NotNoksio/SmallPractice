@@ -28,7 +28,7 @@ import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
-import io.noks.smallpractice.objects.CommandCooldown;
+import io.noks.smallpractice.objects.Cooldown;
 import io.noks.smallpractice.objects.CustomInventory;
 import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.MatchStats;
@@ -44,7 +44,7 @@ public class PlayerManager {
 	private Player spectate;
 	private EloManager eloManager;
 	private MatchStats matchStats;
-	private CommandCooldown cooldown;
+	private Cooldown cooldown;
 	private Inventory savedInventory;
 	private UUID msgedUUID;
 	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
@@ -58,7 +58,7 @@ public class PlayerManager {
 	    this.spectate = null;
 	    this.eloManager = new EloManager();
 	    this.matchStats = new MatchStats();
-	    this.cooldown = new CommandCooldown();
+	    this.cooldown = new Cooldown();
 	    if (Main.getInstance().getOfflineInventories().containsKey(playerUUID)) {
 	    	this.savedInventory = Main.getInstance().getOfflineInventories().get(playerUUID);
 	    	Main.getInstance().getOfflineInventories().remove(playerUUID);
@@ -78,7 +78,7 @@ public class PlayerManager {
 	}
 	
 	public void updateNextHitTick() {
-		this.nextHitTick = System.currentTimeMillis() + 500;
+		this.nextHitTick = System.currentTimeMillis() + 450;
 	}
 
 	public void remove() {
@@ -182,7 +182,7 @@ public class PlayerManager {
 		}
 	}
 	
-	public CommandCooldown getCooldown() {
+	public Cooldown getCooldown() {
 		return this.cooldown;
 	}
 	
