@@ -41,15 +41,17 @@ public class InventoryListener implements Listener {
 		}
 		final ItemStack item = event.getCurrentItem();
 		
-		if (item == null || item.getType() == null || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null) {
+		if (item == null || item.getType() == null) {
 			return;
 		}
 		final String title = event.getInventory().getTitle().toLowerCase();
-
 		if (title.endsWith("inventory")) {
             event.setCancelled(true);
             return;
         }
+		if (item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null){
+			return;
+		}
 		final Player player = (Player) event.getWhoClicked();
 		if (title.equals("unranked selection") || title.equals("ranked selection") || title.equals("ladder selection")) {
 			event.setCancelled(true);

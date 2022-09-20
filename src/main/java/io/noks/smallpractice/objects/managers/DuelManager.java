@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -304,7 +305,7 @@ public class DuelManager {
 				spect.add(ChatColor.YELLOW + spec.getName());
 			}
 		}
-		final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString();
+		final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString() + ChatColor.DARK_AQUA + ".";
 		    
 		List<UUID> duelPlayers = Lists.newArrayList(duel.getAllTeams());
 		duelPlayers.addAll(duel.getAllSpectators());
@@ -364,6 +365,10 @@ public class DuelManager {
 			pmf.hideAllPlayer();
 			Main.getInstance().getItemManager().giveKitSelectionItems(first, duel.getLadder());
 			
+			if (duel.getLadder() == Ladders.BOXING) {
+				first.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+			}
+			
 			first.teleport(duel.getArena().getLocations()[0]);
 			first.setSneaking(false);
 		}
@@ -380,6 +385,10 @@ public class DuelManager {
 			
 			pms.hideAllPlayer();
 			Main.getInstance().getItemManager().giveKitSelectionItems(second, duel.getLadder());
+			
+			if (duel.getLadder() == Ladders.BOXING) {
+				second.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+			}
 			
 			second.teleport(duel.getArena().getLocations()[1]);
 			second.setSneaking(false);

@@ -19,7 +19,6 @@ import net.minecraft.util.com.google.common.collect.Lists;
 
 public class Arena {
 	private Map<Integer, Arenas> arenaList = Maps.newConcurrentMap();
-	
 	private static Arena instance = new Arena();
 	public static  Arena getInstance() {
 		return instance;

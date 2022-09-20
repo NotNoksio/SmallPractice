@@ -13,6 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.Ladders;
+import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
 import io.noks.smallpractice.utils.ItemBuilder;
@@ -33,6 +34,9 @@ public class ItemManager {
 			player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.GOLD_AXE, ChatColor.YELLOW + "Mini-Game", true));
 			player.getInventory().setItem(8, ItemBuilder.createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings"));
 		} else {
+			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING) {
+				return;
+			}
 			Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
 			final ItemStack glass = ItemBuilder.createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
 			
@@ -270,12 +274,59 @@ public class ItemManager {
 			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, 480, 1));
 			break;
 		}
+		case COMBO: {
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 5);
+			attackItem.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 2);
+			attackItem.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			helmet.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+			helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			chestplate.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+			chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			leggings.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+			leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
+			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			player.getInventory().setItem(1, new ItemStack(Material.GOLDEN_APPLE, 64, (short) 1));
+			player.getInventory().setItem(2, helmet);
+			player.getInventory().setItem(3, chestplate);
+			player.getInventory().setItem(4, leggings);
+			player.getInventory().setItem(5, boots);
+			player.getInventory().setItem(7, ItemBuilder.createCustomPotionItem(PotionEffectType.SPEED, 480, 1));
+			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, 480, 0));
+			break;
+		}
 		case BOXING: {
 			ItemMeta swordMeta = attackItem.getItemMeta();
 			swordMeta.spigot().setUnbreakable(true);
 			attackItem.setItemMeta(swordMeta);
 			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
 			helmet = chestplate = leggings = boots = null;
+			break;
+		}
+		case NOENCHANT: {
+			attackItem.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			boots.addUnsafeEnchantment(Enchantment.PROTECTION_FALL, 4);
+			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+			
+			ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
+			ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
+			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
+			
+			while (player.getInventory().firstEmpty() != -1) {
+				player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
+			}
+			
+			player.getInventory().setItem(1, pearl);
+			player.getInventory().setItem(2, speed);
+			player.getInventory().setItem(8, steak);
+			
+			player.getInventory().setItem(17, speed);
+			player.getInventory().setItem(26, speed);
 			break;
 		}
 		default:
