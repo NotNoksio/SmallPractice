@@ -397,13 +397,14 @@ public class PlayerListener implements Listener {
 					break;
 				}
 				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.YELLOW + "spectate actual match")) {
+					// TODO: DOESNT WORK MAKE IT WORK
 					event.setUseItemInHand(Result.DENY);
 					if (currentParty.getPartyState() != PartyState.DUELING) {
 						player.getItemInHand().setType(null);
 						player.updateInventory();
 						break;
 					}
-					Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(currentParty.getLeader());
+					final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(currentParty.getLeader());
 					pm.hideAllPlayer();
 					duel.addSpectator(player.getUniqueId());
 						
@@ -411,7 +412,7 @@ public class PlayerListener implements Listener {
 					player.setFlying(true);
 					player.teleport(duel.getArena().getLocations()[0].add(0, 2, 0));
 						
-					List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
+					final List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
 					duelPlayers.addAll(duel.getSecondTeamAlive());
 							
 					for (UUID uuid : duelPlayers) {
