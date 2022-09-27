@@ -60,11 +60,11 @@ public class DuelListener implements Listener {
 		            }
 		            dm.updateNextHitTick();
             	}
-            	final MatchStats damagedStats = dm.getMatchStats();
             	final MatchStats attackerStats = am.getMatchStats();
-            	
             	attackerStats.setHit(attackerStats.getHit() + 1);
             	attackerStats.setCombo(attackerStats.getCombo() + 1);
+            	
+            	final MatchStats damagedStats = dm.getMatchStats();
             	if(damagedStats.getCombo() > damagedStats.getLongestCombo()) {
             		damagedStats.setLongestCombo(damagedStats.getCombo());
             	}
@@ -74,9 +74,10 @@ public class DuelListener implements Listener {
             		return;
             	}
             	if (duel.getLadder() == Ladders.BOXING) {
-            		am.getPlayer().setLevel(attackerStats.getHit());
-            		am.getPlayer().setExp((attackerStats.getHit() / 100.0f));
-            		if (attackerStats.getHit() == 100) {
+            		final int hit = attackerStats.getHit();
+            		am.getPlayer().setLevel(hit);
+            		am.getPlayer().setExp((hit / 100.0f));
+            		if (hit == 100) {
             			this.main.getDuelManager().removePlayerFromDuel(dm.getPlayer(), RemoveReason.KILLED);
             		}
             	}

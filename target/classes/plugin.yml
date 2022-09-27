@@ -22,7 +22,9 @@ commands:
     aliases: [team, p]
   forceduel:
     aliases: [fd]
+  sunrise:
   day:
+  sunset:
   night:
   resettime:
     aliases: [timereset]

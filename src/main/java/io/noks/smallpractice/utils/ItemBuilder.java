@@ -41,9 +41,10 @@ public class ItemBuilder {
 		item.setAmount(Math.max(amount, 1));
 		return item;
 	}
-	public static ItemStack createCustomPotionItem(PotionEffectType type, int durationInSecond, int amplifier) {
+	public static ItemStack createCustomPotionItem(String name, PotionEffectType type, int durationInSecond, int amplifier) {
 		ItemStack potion = new ItemStack(Material.POTION, 1);
 		PotionMeta pMeta = (PotionMeta) potion.getItemMeta();
+		pMeta.setDisplayName(name);
 		pMeta.addCustomEffect(new PotionEffect(type, (durationInSecond * 20), amplifier), true);
 		potion.setItemMeta(pMeta);
 		return potion;

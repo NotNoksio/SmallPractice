@@ -27,20 +27,20 @@ public class ReportCommand implements CommandExecutor {
 			sender.sendMessage(org.bukkit.ChatColor.RED + "Usage: /report <player> <reason>");
 			return false;
 		}
-		Player target = Bukkit.getPlayer(args[0]);
+		final Player target = Bukkit.getPlayer(args[0]);
 			
 		if (target == null) {
 			sender.sendMessage(ChatColor.RED + "This player is not online.");
 			return false;
 		}
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		if (target == player) {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
-		if (cooldown.isActive("ReportCommand")) {
-			long secondsLeft = ((cooldown.getTime("ReportCommand") / 1000) + 30) - (System.currentTimeMillis() / 1000);
+		final Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
+		if (cooldown.isActive(this.getClass().getSimpleName())) {
+			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 30) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {
 				player.sendMessage(org.bukkit.ChatColor.RED + "You cant report for another " + secondsLeft + " seconds!");
 				return false;
@@ -51,47 +51,47 @@ public class ReportCommand implements CommandExecutor {
 			reason.add(args[i]);
 		}
 				
-		TextComponent l1 = new TextComponent();
+		final TextComponent l1 = new TextComponent();
 		l1.setText("(");
 		l1.setColor(ChatColor.GOLD);
 
-		TextComponent l1a = new TextComponent();
+		final TextComponent l1a = new TextComponent();
 		l1a.setText("REPORT");
 		l1a.setColor(ChatColor.DARK_AQUA);
 		l1a.setBold(true);
 
-		TextComponent l1b = new TextComponent();
+		final TextComponent l1b = new TextComponent();
 		l1b.setText(") ");
 		l1b.setColor(ChatColor.GOLD);
 
-		TextComponent l1c = new TextComponent();
+		final TextComponent l1c = new TextComponent();
 		l1c.setText(player.getName());
 		l1c.setColor(ChatColor.YELLOW);
 
-		TextComponent l1d = new TextComponent();
+		final TextComponent l1d = new TextComponent();
 		l1d.setText(" has reported ");
 		l1d.setColor(ChatColor.GRAY);
 
-		TextComponent l1e = new TextComponent();
+		final TextComponent l1e = new TextComponent();
 		l1e.setText(target.getName());
 		l1e.setColor(ChatColor.RED);
 
-		TextComponent l1f = new TextComponent();
+		final TextComponent l1f = new TextComponent();
 		l1f.setText(" for ");
 		l1f.setColor(ChatColor.GRAY);
 
-		TextComponent l1g = new TextComponent();
+		final TextComponent l1g = new TextComponent();
 		l1g.setText("\"" + reason.toString() + "\" ");
 		l1g.setColor(ChatColor.GREEN);
 
-		TextComponent l1h = new TextComponent();
+		final TextComponent l1h = new TextComponent();
 		l1h.setText("[Teleport]");
 		l1h.setColor(ChatColor.BLUE);
 		l1h.setBold(Boolean.valueOf(true));
 		l1h.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "Click to teleport you to " + target.getName()).create()));
 		l1h.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + target.getName()));
 
-		TextComponent l1i = new TextComponent();
+		final TextComponent l1i = new TextComponent();
 		l1i.setText("[Inspect]");
 		l1i.setColor(ChatColor.GOLD);
 		l1i.setBold(Boolean.valueOf(true));
@@ -114,7 +114,7 @@ public class ReportCommand implements CommandExecutor {
 			}
 		}
 		player.sendMessage(org.bukkit.ChatColor.GREEN + "You have reported " + target.getName() + " for " + reason.toString() + ".");
-		cooldown.add("ReportCommand");
+		cooldown.add(this.getClass().getSimpleName());
 		return true;
 	}
 }

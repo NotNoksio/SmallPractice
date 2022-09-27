@@ -30,14 +30,14 @@ public class DuelCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "This player is not online.");
 			return false;
 		}
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 			
 		if (target == player) {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
-		Party targetParty = Main.getInstance().getPartyManager().getParty(target.getUniqueId());
+		final Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
+		final Party targetParty = Main.getInstance().getPartyManager().getParty(target.getUniqueId());
 		if (party != null) {
 			if (!party.getLeader().equals(player.getUniqueId())) {
 				player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
@@ -55,7 +55,7 @@ public class DuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "This player is in a party!");
 			return false;
 		}
-		boolean partyFight = party != null && targetParty != null;
+		final boolean partyFight = party != null && targetParty != null;
 		if (partyFight) {
 			if (party == targetParty) {
 				player.sendMessage(ChatColor.RED + "This player is in your own party.");
@@ -65,16 +65,16 @@ public class DuelCommand implements CommandExecutor {
 				target = Bukkit.getPlayer(targetParty.getLeader());
 			}
 		}
-		Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
-		if (cooldown.isActive("DuelCommand")) {
-			long secondsLeft = ((cooldown.getTime("DuelCommand") / 1000) + 5) - (System.currentTimeMillis() / 1000);
+		final Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
+		if (cooldown.isActive(this.getClass().getSimpleName())) {
+			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 5) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {
 				player.sendMessage(ChatColor.RED + "You cant sent duel request for another " + secondsLeft + " seconds!");
 				return false;
 			}
 		}
 		Main.getInstance().getRequestManager().openLadderSelectionIventory(player, target, partyFight);
-		cooldown.add("DuelCommand");
+		cooldown.add(this.getClass().getSimpleName());
 		return true;
 	}
 }

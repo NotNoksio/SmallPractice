@@ -10,7 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import io.noks.smallpractice.commands.AcceptCommand;
 import io.noks.smallpractice.commands.BuildCommand;
-import io.noks.smallpractice.commands.DayCommand;
 import io.noks.smallpractice.commands.DenyCommand;
 import io.noks.smallpractice.commands.DuelCommand;
 import io.noks.smallpractice.commands.EloCommand;
@@ -19,15 +18,16 @@ import io.noks.smallpractice.commands.InventoryCommand;
 import io.noks.smallpractice.commands.MentionCommand;
 import io.noks.smallpractice.commands.ModerationCommand;
 import io.noks.smallpractice.commands.NameMCCommand;
-import io.noks.smallpractice.commands.NightCommand;
 import io.noks.smallpractice.commands.PartyCommand;
 import io.noks.smallpractice.commands.PingCommand;
+import io.noks.smallpractice.commands.PlayerTimeCommand;
 import io.noks.smallpractice.commands.ReportCommand;
 import io.noks.smallpractice.commands.ResetTimeCommand;
 import io.noks.smallpractice.commands.RollCommand;
 import io.noks.smallpractice.commands.SeeallCommand;
 import io.noks.smallpractice.commands.SpawnCommand;
 import io.noks.smallpractice.commands.SpectateCommand;
+import io.noks.smallpractice.enums.PlayerTimeEnum;
 import io.noks.smallpractice.listeners.ChatListener;
 import io.noks.smallpractice.listeners.DuelListener;
 import io.noks.smallpractice.listeners.EnderDelay;
@@ -92,8 +92,9 @@ public class Main extends JavaPlugin {
 		getCommand("mod").setExecutor(new ModerationCommand());
 		getCommand("party").setExecutor(new PartyCommand());
 		getCommand("forceduel").setExecutor(new ForceDuelCommand());
-		getCommand("day").setExecutor(new DayCommand());
-		getCommand("night").setExecutor(new NightCommand());
+		for (PlayerTimeEnum pte : PlayerTimeEnum.values()) {
+			getCommand(pte.getName().toLowerCase()).setExecutor(new PlayerTimeCommand());
+		}
 		getCommand("resettime").setExecutor(new ResetTimeCommand());
 		getCommand("roll").setExecutor(new RollCommand());
 		getCommand("mention").setExecutor(new MentionCommand());

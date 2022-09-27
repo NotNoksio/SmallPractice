@@ -270,8 +270,8 @@ public class ItemManager {
 			player.getInventory().setItem(3, chestplate);
 			player.getInventory().setItem(4, leggings);
 			player.getInventory().setItem(5, boots);
-			player.getInventory().setItem(7, ItemBuilder.createCustomPotionItem(PotionEffectType.SPEED, 480, 1));
-			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, 480, 1));
+			player.getInventory().setItem(7, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Speed II",PotionEffectType.SPEED, 480, 1));
+			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Force II", PotionEffectType.INCREASE_DAMAGE, 480, 1));
 			break;
 		}
 		case COMBO: {
@@ -293,8 +293,8 @@ public class ItemManager {
 			player.getInventory().setItem(3, chestplate);
 			player.getInventory().setItem(4, leggings);
 			player.getInventory().setItem(5, boots);
-			player.getInventory().setItem(7, ItemBuilder.createCustomPotionItem(PotionEffectType.SPEED, 480, 1));
-			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(PotionEffectType.INCREASE_DAMAGE, 480, 0));
+			player.getInventory().setItem(7, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Speed II", PotionEffectType.SPEED, 480, 1));
+			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Force I", PotionEffectType.INCREASE_DAMAGE, 480, 0));
 			break;
 		}
 		case BOXING: {

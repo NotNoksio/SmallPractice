@@ -28,9 +28,9 @@ public class InventoryCommand implements CommandExecutor {
 			return false;
 		}
 		final Player player = (Player) sender;
-		Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
-		if (cooldown.isActive("InventoryCommand")) {
-			long secondsLeft = ((cooldown.getTime("InventoryCommand") / 1000) + 3) - (System.currentTimeMillis() / 1000);
+		final Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
+		if (cooldown.isActive(this.getClass().getSimpleName())) {
+			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 3) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {
 				player.sendMessage(ChatColor.RED + "You'll be able to see another inventory in " + secondsLeft + " seconds!");
 				return false;
@@ -47,7 +47,7 @@ public class InventoryCommand implements CommandExecutor {
 			return false;
 		}
 		player.openInventory(tm.getSavedInventory());
-		cooldown.add("InventoryCommand");
+		cooldown.add(this.getClass().getSimpleName());
 		return true;
 	}
 }

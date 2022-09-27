@@ -13,7 +13,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Lists;
@@ -165,7 +167,7 @@ public class InventoryListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onCloseInventory(InventoryCloseEvent event) {
+	public void onInventoryClose(InventoryCloseEvent event) {
 		if (!event.getInventory().getType().equals(InventoryType.CHEST)) {
 			return;
 		}
@@ -174,6 +176,19 @@ public class InventoryListener implements Listener {
 		if (title.contains("selection")) {
 			this.main.getInventoryManager().updateQueueInventory(title.contains("ranked"));
 		} 
+	}
+	
+	@EventHandler
+	public void onInventoryOpen(InventoryOpenEvent event) {
+		final Player player = (Player) event.getPlayer();
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
+			final Inventory inventory = event.getInventory();
+			
+			if (inventory.getType() == InventoryType.WORKBENCH || inventory.getType() == InventoryType.FURNACE) {
+				event.setCancelled(true);
+			}
+		}
 	}
 	
 	private Pattern splitPattern = Pattern.compile("\\s");
