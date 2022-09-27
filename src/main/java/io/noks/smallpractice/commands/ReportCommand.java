@@ -114,7 +114,7 @@ public class ReportCommand implements CommandExecutor {
 			}
 		}
 		player.sendMessage(org.bukkit.ChatColor.GREEN + "You have reported " + target.getName() + " for " + reason.toString() + ".");
-		cooldown.add("ReportCommand", System.currentTimeMillis());
+		cooldown.add("ReportCommand");
 		return true;
 	}
 }
