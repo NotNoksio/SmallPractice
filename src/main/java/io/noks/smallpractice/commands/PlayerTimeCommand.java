@@ -1,5 +1,6 @@
 package io.noks.smallpractice.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,12 +20,13 @@ public class PlayerTimeCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "Usage: /sunrise:day:sunset:night");
 			return false;
 		}
-		PlayerTimeEnum pt = PlayerTimeEnum.getEnumByName(cmd.getName().toLowerCase());
+		Bukkit.broadcastMessage(cmd.getName());
+		final PlayerTimeEnum pt = PlayerTimeEnum.getEnumByName(cmd.getName().toLowerCase());
 		if (pt == null) {
 			sender.sendMessage(ChatColor.RED + "Usage: /sunrise:day:sunset:night");
 			return false;
 		}
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		player.setPlayerTime(pt.getTime(), false);
         player.sendMessage(ChatColor.GREEN + "You have set the " + pt.getName().toLowerCase() + ".");
 		return true;

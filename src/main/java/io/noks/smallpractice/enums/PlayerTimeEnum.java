@@ -23,8 +23,8 @@ public enum PlayerTimeEnum {
 	}
 	
 	public static PlayerTimeEnum getEnumByName(String name) {
-		for (PlayerTimeEnum pt : PlayerTimeEnum.values()) {
-			if (pt.getName() == name) {
+		for (PlayerTimeEnum pt : values()) {
+			if (pt.getName().toLowerCase().equals(name)) {
 				return pt;
 			}
 		}
