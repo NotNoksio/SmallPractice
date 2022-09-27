@@ -55,10 +55,11 @@ public class DuelListener implements Listener {
             if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) { // TODO: Allow different target for boxing
             	final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(am.getPlayerUUID());
             	if (duel.getLadder() != Ladders.COMBO) {
-		            if (dm.getNextHitTick() != 0 && dm.getNextHitTick() > System.currentTimeMillis()) {
+            		final MatchStats damagedStats = dm.getMatchStats();
+		            if (damagedStats.getNextHitTick() != 0 && damagedStats.getNextHitTick() > System.currentTimeMillis()) {
 		            	return;
 		            }
-		            dm.updateNextHitTick();
+		            damagedStats.updateNextHitTick();
             	}
             	final MatchStats attackerStats = am.getMatchStats();
             	attackerStats.setHit(attackerStats.getHit() + 1);

@@ -7,6 +7,7 @@ public class MatchStats {
 	private int combo = 0;
 	private int longestCombo = 0;
 	private Long enderpearlCooldown = 0L;
+	private Long nextHitTick = 0L;
 	
 	public int getFailedPotions() {
 		return failedPotions;
@@ -62,6 +63,14 @@ public class MatchStats {
 
 	public void removeEnderPearlCooldown() {
 		this.enderpearlCooldown = 0L;
+	}
+	
+	public Long getNextHitTick() {
+		return this.nextHitTick;
+	}
+	
+	public void updateNextHitTick() {
+		this.nextHitTick = System.currentTimeMillis() + 450;
 	}
 	
 	public void resetDuelStats() {

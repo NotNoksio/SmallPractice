@@ -46,10 +46,8 @@ public class PlayerManager {
 	private MatchStats matchStats;
 	private Cooldown cooldown;
 	private Inventory savedInventory;
-	private UUID msgedUUID;
 	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
 	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
-	private Long nextHitTick = 0L;
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
@@ -71,14 +69,6 @@ public class PlayerManager {
 			return null;
 		}
 		return players.get(playerUUID);
-	}
-	
-	public Long getNextHitTick() {
-		return this.nextHitTick;
-	}
-	
-	public void updateNextHitTick() {
-		this.nextHitTick = System.currentTimeMillis() + 450;
 	}
 
 	public void remove() {
@@ -285,17 +275,6 @@ public class PlayerManager {
 	
 	public void saveCustomLadderKit(Ladder ladder, String name, int slot, PlayerInventory inventory) {
 		this.customLadderKit.add(new EditedLadderKit(ladder, name, slot, inventory));
-	}
-	
-	public void setMessagedUUID(UUID newUUID) {
-		if (this.msgedUUID == newUUID) { // dont do useless action
-			return;
-		}
-		this.msgedUUID = newUUID;
-	}
-	
-	public UUID getMessagedUUID() {
-		return this.msgedUUID;
 	}
 	
 	public boolean hasCustomInventory() {
