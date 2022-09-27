@@ -60,6 +60,10 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		
+		this.getConfig().options().copyDefaults(true);
+		this.saveDefaultConfig();
+		
 		this.partyManager = new PartyManager();
 		this.duelManager = new DuelManager();
 		this.itemManager = new ItemManager();

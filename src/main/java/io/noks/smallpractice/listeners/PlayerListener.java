@@ -87,15 +87,10 @@ public class PlayerListener implements Listener {
 	
 	private void sendJoinMessage(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		if (this.main.getConfigManager().clearChatOnJoin) {
-			for (int i = 0; i < 100; i++) {
-				player.sendMessage(""); 
-			}
-		}
 		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Bawz US" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "discord.bawz.us");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "namemc.bawz.us");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "discord." + this.main.getConfigManager().serverDomainName);
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "namemc." + this.main.getConfigManager().serverDomainName);
 		player.sendMessage("");
 	}
 	

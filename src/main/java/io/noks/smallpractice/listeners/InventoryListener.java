@@ -55,8 +55,11 @@ public class InventoryListener implements Listener {
 			return;
 		}
 		final Player player = (Player) event.getWhoClicked();
-		if (title.equals("unranked selection") || title.equals("ranked selection") || title.equals("ladder selection")) {
+		if (title.equals("unranked selection") || title.equals("ranked selection") || title.equals("ladder selection") || title.equals("editing selection")) {
 			event.setCancelled(true);
+			if (title.startsWith("editing")) {
+				return;
+			}
 			String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
 			if (!Ladders.contains(itemName)) {
 				return;
@@ -134,6 +137,10 @@ public class InventoryListener implements Listener {
 				playersInArena.clear();
 			}
 			player.closeInventory();
+		}
+		if (title.endsWith("configuration")) {
+			event.setCancelled(true);
+			return;
 		}
 		if (title.equals("selector")) {
 			event.setCancelled(true);
