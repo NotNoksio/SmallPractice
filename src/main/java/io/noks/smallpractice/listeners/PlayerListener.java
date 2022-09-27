@@ -396,14 +396,26 @@ public class PlayerListener implements Listener {
 					break;
 				}
 				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.YELLOW + "spectate actual match")) {
-					// TODO: DOESNT WORK MAKE IT WORK
+					// TODO: SUPPOSED TO BE FIXED -> DOESNT WORK MAKE IT WORK
 					event.setUseItemInHand(Result.DENY);
 					if (currentParty.getPartyState() != PartyState.DUELING) {
 						player.getItemInHand().setType(null);
 						player.updateInventory();
 						break;
 					}
-					final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(currentParty.getLeader());
+					Duel duel = null;
+					for (UUID uuid : currentParty.getMembersIncludeLeader()) {
+						final PlayerManager um = PlayerManager.get(uuid);
+						if (um.getStatus() != PlayerStatus.WAITING && um.getStatus() != PlayerStatus.DUEL) continue;
+						duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);
+						break;
+					}
+					if (duel == null) {
+						player.sendMessage(ChatColor.RED + "No duel found!");
+						player.getItemInHand().setType(null);
+						player.updateInventory();
+						return;
+					}
 					pm.hideAllPlayer();
 					duel.addSpectator(player.getUniqueId());
 						

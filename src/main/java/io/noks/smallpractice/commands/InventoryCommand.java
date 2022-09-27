@@ -30,7 +30,7 @@ public class InventoryCommand implements CommandExecutor {
 		final Player player = (Player) sender;
 		Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 		if (cooldown.isActive("InventoryCommand")) {
-			long secondsLeft = ((cooldown.getTime("InventoryCommand") / 1000) + 5) - (System.currentTimeMillis() / 1000);
+			long secondsLeft = ((cooldown.getTime("InventoryCommand") / 1000) + 3) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {
 				player.sendMessage(ChatColor.RED + "You'll be able to see another inventory in " + secondsLeft + " seconds!");
 				return false;
