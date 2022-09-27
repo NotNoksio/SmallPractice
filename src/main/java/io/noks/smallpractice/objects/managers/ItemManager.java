@@ -49,7 +49,7 @@ public class ItemManager {
 				player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_AXE, ChatColor.YELLOW + "2v2 Ranked Queue", true));
 			}
 			if (party.getSize() > 1) {
-				player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.GOLD_HOE, ChatColor.YELLOW + "Party Game"));
+				player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.GOLD_HOE, ChatColor.YELLOW + "Party Game", true));
 			}
 			if (party.getPartyState() == PartyState.DUELING) {
 				player.getInventory().setItem(2, ItemBuilder.createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.YELLOW + "Spectate Actual Match"));
