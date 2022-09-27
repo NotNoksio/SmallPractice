@@ -13,6 +13,7 @@ import io.noks.smallpractice.commands.BuildCommand;
 import io.noks.smallpractice.commands.DayCommand;
 import io.noks.smallpractice.commands.DenyCommand;
 import io.noks.smallpractice.commands.DuelCommand;
+import io.noks.smallpractice.commands.EloCommand;
 import io.noks.smallpractice.commands.ForceDuelCommand;
 import io.noks.smallpractice.commands.InventoryCommand;
 import io.noks.smallpractice.commands.MentionCommand;
@@ -42,7 +43,6 @@ import io.noks.smallpractice.objects.managers.QueueManager;
 import io.noks.smallpractice.objects.managers.RequestManager;
 
 public class Main extends JavaPlugin {
-	private boolean permissionsPluginHere;
 	private Map<UUID, Inventory> offlineInventories = new WeakHashMap<UUID, Inventory>();
 	private DuelManager duelManager;
 	private ItemManager itemManager;
@@ -70,9 +70,6 @@ public class Main extends JavaPlugin {
 		
 		registerCommands();
 		registerListers();
-		getPermissionsPlugin();
-		
-		System.out.println("PermissionsEx is " + (permissionsPluginHere ? "" : "not ") + "present");
 	}
 	
 	@Override
@@ -101,6 +98,7 @@ public class Main extends JavaPlugin {
 		getCommand("roll").setExecutor(new RollCommand());
 		getCommand("mention").setExecutor(new MentionCommand());
 		getCommand("namemc").setExecutor(new NameMCCommand());
+		getCommand("elo").setExecutor(new EloCommand());
 	}
 	
 	private void registerListers() {
@@ -110,22 +108,6 @@ public class Main extends JavaPlugin {
 		new ChatListener(this);
 		new DuelListener(this);
 		new InventoryListener(this);
-	}
-	
-	private void getPermissionsPlugin() {
-		if (hasPermissionsPlugin()) {
-			this.permissionsPluginHere = true;
-			return;
-		}
-		this.permissionsPluginHere = false;
-	}
-	
-	private boolean hasPermissionsPlugin() {
-		return Bukkit.getPluginManager().getPlugin("PermissionsEx") != null;
-	}
-	
-	public boolean isPermissionsPluginHere() {
-		return this.permissionsPluginHere;
 	}
 	
 	public Map<UUID, Inventory> getOfflineInventories() {

@@ -26,9 +26,9 @@ public class InventoryCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "UUID not found!");
 			return false;
 		}
-		UUID targetUUID = UUID.fromString(args[0]);
-		PlayerManager tm = PlayerManager.get(targetUUID);
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
+		final UUID targetUUID = UUID.fromString(args[0]);
+		final PlayerManager tm = PlayerManager.get(targetUUID);
 		
 		if (tm.getSavedInventory() == null) {
 			if (Main.getInstance().getOfflineInventories().containsKey(targetUUID)) {

@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -36,6 +37,7 @@ public class Duel {
 	private List<UUID> spectators = Lists.newArrayList();
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
+	private Set<Location> brokenBlocks;
 	
 	public Duel(Arenas arena, Ladders ladder, UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
 		this.arena = arena;
@@ -48,6 +50,9 @@ public class Duel {
 		this.secondTeamAlive = Lists.newArrayList(secondTeam);
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
+		if (ladder == Ladders.SPLEEF) {
+			this.brokenBlocks = Sets.newHashSet();
+		}
 	}
 	
 	/*public Duel(Arenas arena, Ladders ladder, UUID ffaPartyLeaderUUID, List<UUID> ffaPlayers) {
@@ -101,6 +106,23 @@ public class Duel {
 		/*if (this.ffaAlivePlayers != null && !this.ffaAlivePlayers.isEmpty()) {
 			teams.addAll(ffaAlivePlayers);
 		}*/
+		return teams;
+	}
+	
+	public List<UUID> getAllAliveTeamsAndSpectators() {
+		List<UUID> teams = Lists.newArrayList();
+		if (!this.firstTeamAlive.isEmpty()){
+			teams.addAll(firstTeamAlive);
+		}
+		if (!this.secondTeamAlive.isEmpty()){
+			teams.addAll(secondTeamAlive);
+		}
+		/*if (this.ffaAlivePlayers != null && !this.ffaAlivePlayers.isEmpty()) {
+			teams.addAll(ffaAlivePlayers);
+		}*/
+		if (!this.spectators.isEmpty()) {
+			teams.addAll(this.spectators);
+		}
 		return teams;
 	}
 	
@@ -253,5 +275,16 @@ public class Duel {
 			if (entities == null || !(entities instanceof Item) && !this.drops.contains(entities.getUniqueId())) continue;
 			entities.remove();
 		}
+	}
+	
+	public void addBrokenBlocksLocation(Location loc) {
+		if (brokenBlocks == null) {
+			return;
+		}
+		this.brokenBlocks.add(loc);
+	}
+	
+	public Set<Location> getBrokenBlocksLocation(){
+		return this.brokenBlocks;
 	}
 }

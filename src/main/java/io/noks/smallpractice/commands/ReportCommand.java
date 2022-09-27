@@ -39,8 +39,8 @@ public class ReportCommand implements CommandExecutor {
 			return false;
 		}
 		Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
-		if (cooldown.hasCooldown("ReportCommand")) {
-			long secondsLeft = ((cooldown.getCooldownTime("ReportCommand") / 1000) + 30) - (System.currentTimeMillis() / 1000);
+		if (cooldown.isActive("ReportCommand")) {
+			long secondsLeft = ((cooldown.getTime("ReportCommand") / 1000) + 30) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {
 				player.sendMessage(org.bukkit.ChatColor.RED + "You cant report for another " + secondsLeft + " seconds!");
 				return false;
@@ -114,7 +114,7 @@ public class ReportCommand implements CommandExecutor {
 			}
 		}
 		player.sendMessage(org.bukkit.ChatColor.GREEN + "You have reported " + target.getName() + " for " + reason.toString() + ".");
-		cooldown.addCooldown("ReportCommand", System.currentTimeMillis());
+		cooldown.add("ReportCommand", System.currentTimeMillis());
 		return true;
 	}
 }

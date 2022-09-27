@@ -6,15 +6,15 @@ import java.util.WeakHashMap;
 public class Cooldown {
 	private Map<String, Long> cooldown = new WeakHashMap<String, Long>();
 	
-	public void addCooldown(String name, Long time) {
+	public void add(String name, Long time) {
 		this.cooldown.put(name, time);
 	}
 	
-	public long getCooldownTime(String name) {
+	public long getTime(String name) {
 		return this.cooldown.get(name);
 	}
 	
-	public boolean hasCooldown(String name) {
+	public boolean isActive(String name) {
 		return this.cooldown.containsKey(name);
 	}
 }

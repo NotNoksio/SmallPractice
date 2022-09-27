@@ -1,5 +1,7 @@
 package io.noks.smallpractice.listeners;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,7 +19,9 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import io.noks.smallpractice.Main;
+import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
+import io.noks.smallpractice.objects.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -33,17 +37,17 @@ public class ServerListeners implements Listener {
 		final Player player = event.getPlayer();
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
-		if (!pm.isAllowedToBuild()) {
-			event.setCancelled(true);
-			return;
-		}
-		Block blockPlaced = event.getBlockPlaced();
+		final Block blockPlaced = event.getBlockPlaced();
 		if (pm.getStatus() == PlayerStatus.BRIDGE && blockPlaced.getType() != Material.TNT) {
 			for (int i = 0; i < 8; i++) {
 				if (event.getBlock().getLocation().subtract(0.0D, i, 0.0D).getBlock().getType() == Material.OBSIDIAN || event.getBlock().getLocation().subtract(0.0D, i, 0.0D).getBlock().getType() == Material.GLOWSTONE) {
 					event.setCancelled(true);
 				}
 			}
+			return;
+		}
+		if (!pm.isAllowedToBuild()) {
+			event.setCancelled(true);
 		}
 	}
 	
@@ -51,15 +55,32 @@ public class ServerListeners implements Listener {
 	public void onBreak(BlockBreakEvent event) {
 		final Player player = event.getPlayer();
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final Block block = event.getBlock();
 		
-		if (!pm.isAllowedToBuild()) {
+		
+		if (pm.getStatus() == PlayerStatus.BRIDGE && block.getType() != Material.SANDSTONE) {
 			event.setCancelled(true);
 			return;
 		}
-		if (pm.getStatus() == PlayerStatus.BRIDGE) {
-			if (event.getBlock().getType() != Material.SANDSTONE) {
-				event.setCancelled(true);
+		// SPLEEF TEST
+		if(pm.getStatus() == PlayerStatus.DUEL && block.getType() == Material.SNOW_BLOCK) {
+			final Duel currentDuel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
+			if (currentDuel == null) {
+				return;
 			}
+			if (currentDuel.getLadder() == Ladders.SPLEEF) {
+				for (UUID uuid : currentDuel.getAllAliveTeamsAndSpectators()) {
+					final Player blockViewers = Bukkit.getPlayer(uuid);
+					blockViewers.sendBlockChange(block.getLocation(), Material.AIR, (byte)0);
+				}
+				event.setCancelled(true);
+				currentDuel.addBrokenBlocksLocation(block.getLocation());
+			}
+			return;
+		}
+		// SPLEEF TEST
+		if (!pm.isAllowedToBuild()) {
+			event.setCancelled(true);
 		}
 	}
 	
@@ -94,8 +115,8 @@ public class ServerListeners implements Listener {
 	}
 	
 	private final String getMotd() {
-		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Kone " + ChatColor.GRAY + "(Practice "  + main.getDescription().getVersion() + ")\n";
-		final String line2 = ChatColor.YELLOW + "US Pot pvp server" + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : "");
+		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Bawz " + ChatColor.GRAY + "(Practice "  + main.getDescription().getVersion() + ")\n";
+		final String line2 = ChatColor.YELLOW + "US Proxy pot pvp server" + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : "");
 		return (line1 + line2);
 	}
 	

@@ -58,14 +58,14 @@ public class PlayerListener implements Listener {
 		event.setJoinMessage(null);
 		final Player player = event.getPlayer();
 		
-		PlayerManager pm = new PlayerManager(player.getUniqueId());
+		new PlayerManager(player.getUniqueId()).heal(false);
 		
 		player.setExp(0.0F);
 		player.setLevel(0);
 		player.setFlySpeed(0.1f);
 		player.setWalkSpeed(0.2f);
 		
-		pm.heal(false);
+		//pm.heal(false);
 		player.setAllowFlight(false);
 		player.setFlying(false);
 		player.setGameMode(GameMode.SURVIVAL);
@@ -92,10 +92,10 @@ public class PlayerListener implements Listener {
 				player.sendMessage(""); 
 			}
 		}
-		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Kone" + ChatColor.GRAY + " (Practice)");
+		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Bawz US" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "N/A");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "N/A");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "discord.bawz.us");
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "namemc.bawz.us");
 		player.sendMessage("");
 	}
 	
@@ -185,7 +185,6 @@ public class PlayerListener implements Listener {
 						break;
 					}
 					player.setNoDamageTicks(50);
-					event.setCancelled(true);
 					this.main.getItemManager().giveBridgeItems(player);
 					player.teleport(Warps.BRIDGE.getLobbyLocation());
 					break;
@@ -475,6 +474,7 @@ public class PlayerListener implements Listener {
 	        		break;
 	            }
 				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.GREEN + "see current arena")) {
+					event.setUseItemInHand(Result.DENY);
 	                final Player spectatePlayer = pm.getSpectate();
 	                final Duel spectatedDuel = this.main.getDuelManager().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
 	                final Arenas currentArena = spectatedDuel.getArena();

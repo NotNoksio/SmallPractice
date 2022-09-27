@@ -15,7 +15,8 @@ public enum Ladders {
 	BOXING("Boxing", ChatColor.DARK_AQUA, new ItemStack(Material.NOTE_BLOCK, 1), false, false, true), // TODO: team fight bugs
 	COMBO("Combo", ChatColor.DARK_GREEN, new ItemStack(Material.FEATHER, 1), false, true, true),
 	SUMO("Sumo", ChatColor.YELLOW, new ItemStack(Material.CLAY_BRICK, 1), false, true, false),
-	NOENCHANT("NoEnchant", ChatColor.DARK_PURPLE, new ItemStack(Material.DIAMOND_SWORD), false, true, true);
+	NOENCHANT("NoEnchant", ChatColor.DARK_PURPLE, new ItemStack(Material.DIAMOND_SWORD), false, true, true),
+	SPLEEF("Spleef", ChatColor.GRAY, new ItemStack(Material.DIAMOND_SPADE), false, true, false); // IN PROGRESS
 	
 	private String name;
 	private ChatColor color;

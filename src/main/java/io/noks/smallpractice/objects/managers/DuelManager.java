@@ -443,9 +443,12 @@ public class DuelManager {
 		if (player.getLevel() != 0) {
 			player.setLevel(0);
 		}
+		if (player.getExp() != 0) {
+			player.setExp(0);
+		}
 		
 		currentDuel.killPlayer(player.getUniqueId());
-		final String message = (reason == RemoveReason.KILLED ? player.getName() + " has been killed" + (player.getKiller() != null ? " by " + player.getKiller().getName() : "") : player.getName() + " has disconnected");
+		final String message = (reason == RemoveReason.KILLED ? player.getName() + (player.getKiller() != null ? " has been killed by " + player.getKiller().getName() : " died") : player.getName() + " has disconnected");
 		currentDuel.sendMessage(message);
 		
 		pm.setStatus(PlayerStatus.SPAWN);
@@ -536,6 +539,9 @@ public class DuelManager {
         if (player.getLevel() != 0) {
         	player.setLevel(0);
         }
+        if (player.getExp() != 0) {
+			player.setExp(0);
+		}
         player.extinguish();
         player.setItemOnCursor(null);
 	}

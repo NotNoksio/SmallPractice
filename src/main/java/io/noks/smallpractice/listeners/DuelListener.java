@@ -37,7 +37,7 @@ public class DuelListener implements Listener {
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
 				final MatchStats stats = sm.getMatchStats();
-				int cacheFailedPotions = stats.getFailedPotions() + 1;
+				final int cacheFailedPotions = stats.getFailedPotions() + 1;
 				stats.setFailedPotions(cacheFailedPotions);
 			}
 		}
@@ -75,6 +75,7 @@ public class DuelListener implements Listener {
             	}
             	if (duel.getLadder() == Ladders.BOXING) {
             		am.getPlayer().setLevel(attackerStats.getHit());
+            		am.getPlayer().setExp((attackerStats.getHit() / 100.0f));
             		if (attackerStats.getHit() == 100) {
             			this.main.getDuelManager().removePlayerFromDuel(dm.getPlayer(), RemoveReason.KILLED);
             		}

@@ -29,4 +29,6 @@ commands:
   roll:
   mention:
   namemc:
+  elo:
+    aliases: [stats]
   
