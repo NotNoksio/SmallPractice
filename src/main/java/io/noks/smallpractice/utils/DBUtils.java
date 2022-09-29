@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -11,12 +12,7 @@ import io.noks.smallpractice.Main;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class DBUtils {
-	private static DBUtils instance = new DBUtils();
-	public static DBUtils getInstance() {
-		return instance;
-	}
-
-	private boolean connected = true;
+	private boolean connected = false;
 	private String address = Main.getInstance().getConfig().getString("database.address");
 	private String name = Main.getInstance().getConfig().getString("database.name");
 	private String username = Main.getInstance().getConfig().getString("database.username");
@@ -46,13 +42,15 @@ public class DBUtils {
 			this.hikari.setMaximumPoolSize(20);
 			this.hikari.setConnectionTimeout(30000L);
 			// KEEP THE CONNECTION OPEN WITH HIKARI - end
+			this.connected = true;
 			createTable();
 		} catch (Exception exception) {
 		}
 	}
 
-	public void loadPlayer(PlayerManager pm) {
+	public void loadPlayer(UUID uuid) {
 		if (!isConnected()) {
+			new PlayerManager(uuid).heal(false);
 			return;
 		}
 		Connection connection = null;
@@ -60,14 +58,14 @@ public class DBUtils {
 			connection = this.hikari.getConnection();
 			PreparedStatement statement = connection.prepareStatement(this.INSERT);
 
-			statement.setString(1, pm.getPlayerUUID().toString());
+			statement.setString(1, uuid.toString());
 			statement.setInt(2, 0);
-			statement.setString(3, pm.getPlayerUUID().toString());
+			statement.setString(3, uuid.toString());
 			statement.executeUpdate();
 			statement.close();
 
 			statement = connection.prepareStatement(this.SELECT);
-			statement.setString(1, pm.getPlayerUUID().toString());
+			statement.setString(1, uuid.toString());
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
 				//DO SOMETHING

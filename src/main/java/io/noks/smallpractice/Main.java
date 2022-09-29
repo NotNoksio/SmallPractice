@@ -41,6 +41,7 @@ import io.noks.smallpractice.objects.managers.ItemManager;
 import io.noks.smallpractice.objects.managers.PartyManager;
 import io.noks.smallpractice.objects.managers.QueueManager;
 import io.noks.smallpractice.objects.managers.RequestManager;
+import io.noks.smallpractice.utils.DBUtils;
 
 public class Main extends JavaPlugin {
 	private Map<UUID, Inventory> offlineInventories = new WeakHashMap<UUID, Inventory>();
@@ -51,6 +52,7 @@ public class Main extends JavaPlugin {
 	private QueueManager queueManager;
 	private RequestManager requestManager;
 	private PartyManager partyManager;
+	private DBUtils database;
 	
 	private static Main instance;
 	public static Main getInstance() {
@@ -60,6 +62,9 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		
+		this.database = new DBUtils();
+		//this.database.connectDatabase();
 		
 		this.getConfig().options().copyDefaults(true);
 		this.saveDefaultConfig();
@@ -145,5 +150,9 @@ public class Main extends JavaPlugin {
 	
 	public PartyManager getPartyManager() {
 		return this.partyManager;
+	}
+	
+	public DBUtils getDatabaseUtil() {
+		return this.database;
 	}
 }

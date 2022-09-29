@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
 		event.setJoinMessage(null);
 		final Player player = event.getPlayer();
 		
-		new PlayerManager(player.getUniqueId()).heal(false);
+		this.main.getDatabaseUtil().loadPlayer(player.getUniqueId());
 		
 		player.setExp(0.0F);
 		player.setLevel(0);
@@ -121,6 +121,9 @@ public class PlayerListener implements Listener {
 		}
 		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
 			this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected
+		}
+		if (this.main.getDatabaseUtil().isConnected()) {
+			this.main.getDatabaseUtil().savePlayer(pm);
 		}
 		pm.remove();
 	}
