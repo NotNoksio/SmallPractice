@@ -2,7 +2,6 @@ package io.noks.smallpractice.objects.managers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena.Arenas;
@@ -21,11 +20,7 @@ public class RequestManager {
 			return;
 		}
 		Main.getInstance().getInventoryManager().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
-		Inventory laddersInventory = Main.getInstance().getInventoryManager().getNonMultiplayerLaddersInventory();
-		if (partyFight) {
-			laddersInventory = Main.getInstance().getInventoryManager().getMultiplayerLaddersInventory();
-		}
-		requester.openInventory(laddersInventory);
+		requester.openInventory(Main.getInstance().getInventoryManager().getLaddersInventory());
 	}
     
     public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {

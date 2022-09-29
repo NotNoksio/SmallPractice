@@ -27,7 +27,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -122,10 +121,7 @@ public class PlayerListener implements Listener {
 		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
 			this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected
 		}
-		if (this.main.getDatabaseUtil().isConnected()) {
-			this.main.getDatabaseUtil().savePlayer(pm);
-		}
-		pm.remove();
+		this.main.getDatabaseUtil().savePlayer(pm);
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
@@ -378,11 +374,7 @@ public class PlayerListener implements Listener {
 						player.sendMessage(ChatColor.RED + "There must be at least 2 players in your party to do this.");
 						break;
 					}
-					Inventory laddersInventory = this.main.getInventoryManager().getNonMultiplayerLaddersInventory();
-					if (currentParty.getSize() > 2) {
-						laddersInventory = this.main.getInventoryManager().getMultiplayerLaddersInventory();
-					}
-					player.openInventory(laddersInventory);
+					player.openInventory(this.main.getInventoryManager().getLaddersInventory());
 					break;
 				}
 				if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "fight other parties")) {

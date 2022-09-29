@@ -52,7 +52,7 @@ public class DuelListener implements Listener {
             final PlayerManager dm = PlayerManager.get(event.getEntity().getUniqueId());
             final PlayerManager am = PlayerManager.get(event.getDamager().getUniqueId());
             
-            if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) { // TODO: Allow different target for boxing
+            if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) {
             	final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(am.getPlayerUUID());
             	if (duel.getLadder() != Ladders.COMBO) {
             		final MatchStats damagedStats = dm.getMatchStats();
@@ -79,7 +79,7 @@ public class DuelListener implements Listener {
             		am.getPlayer().setLevel(hit);
             		am.getPlayer().setExp((hit / 100.0f));
             		if (hit == 100) {
-            			this.main.getDuelManager().removePlayerFromDuel(dm.getPlayer(), RemoveReason.KILLED);
+            			this.main.getDuelManager().endDuel(duel, (duel.getFirstTeam().contains(am.getPlayerUUID()) ? 1 : 2));
             		}
             	}
             }

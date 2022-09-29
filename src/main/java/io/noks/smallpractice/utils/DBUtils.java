@@ -110,6 +110,7 @@ public class DBUtils {
 
 	public void savePlayer(PlayerManager pm) {
 		if (!isConnected()) {
+			pm.remove();
 			return;
 		}
 		Connection connection = null;
@@ -131,6 +132,7 @@ public class DBUtils {
 					ex.printStackTrace();
 				}
 			}
+			pm.remove();
 		}
 	}
 
