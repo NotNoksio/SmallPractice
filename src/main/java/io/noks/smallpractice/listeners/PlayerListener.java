@@ -63,6 +63,7 @@ public class PlayerListener implements Listener {
 		player.setLevel(0);
 		player.setFlySpeed(0.1f);
 		player.setWalkSpeed(0.2f);
+		player.setKnockbackReduction(0.0f);
 		
 		//pm.heal(false);
 		player.setAllowFlight(false);

@@ -187,6 +187,9 @@ public class PlayerManager {
 		}
 		getPlayer().setFoodLevel(20);
 		getPlayer().setSaturation(forFight ? 20F : 1000F);
+		if (!forFight) {
+			player.setKnockbackReduction(0.0f);
+		}
 	}
 	
 	public void saveInventory() {

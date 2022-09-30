@@ -135,6 +135,7 @@ public class DuelManager {
 			pm.heal(true);
 			if (ladder == Ladders.COMBO) {
 				player.setMaximumNoDamageTicks(2);
+				player.setKnockbackReduction(0.3f);
 			}
 			team1.addEntry(player.getName());
 			team2.addEntry(player.getName());
@@ -440,6 +441,9 @@ public class DuelManager {
 		if (player.getMaximumNoDamageTicks() != 10) {
 			player.setMaximumNoDamageTicks(10);
 		}
+		if (player.getKnockbackReduction() != 0.0f) {
+			player.setKnockbackReduction(0.0f);
+		}
 		if (player.getLevel() != 0) {
 			player.setLevel(0);
 		}
@@ -529,6 +533,9 @@ public class DuelManager {
         if (player.getMaximumNoDamageTicks() != 10) {
         	player.setMaximumNoDamageTicks(10);
         }
+        if (player.getKnockbackReduction() != 0.0f) {
+			player.setKnockbackReduction(0.0f);
+		}
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         if (!player.getActivePotionEffects().isEmpty()) {
