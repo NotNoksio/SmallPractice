@@ -39,6 +39,10 @@ public class ServerListeners implements Listener {
 		
 		final Block blockPlaced = event.getBlockPlaced();
 		if (pm.getStatus() == PlayerStatus.BRIDGE && blockPlaced.getType() != Material.TNT) {
+			if (blockPlaced.getLocation().getY() >= 250) {
+				event.setCancelled(true);
+				return;
+			}
 			for (int i = 0; i < 8; i++) {
 				if (event.getBlock().getLocation().subtract(0.0D, i, 0.0D).getBlock().getType() == Material.OBSIDIAN || event.getBlock().getLocation().subtract(0.0D, i, 0.0D).getBlock().getType() == Material.GLOWSTONE) {
 					event.setCancelled(true);
