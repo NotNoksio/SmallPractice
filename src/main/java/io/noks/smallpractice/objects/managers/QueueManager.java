@@ -38,8 +38,8 @@ public class QueueManager {
 		if (this.queue.size() >= 2) {
 			UUID secondUUID = uuid;
 			for (Map.Entry<UUID, Queue> map : this.queue.entrySet()) {
-			    UUID key = map.getKey();
-			    Queue value = map.getValue();
+			    final UUID key = map.getKey();
+			    final Queue value = map.getValue();
 			    
 			    if (uuid == key || ladder.getName() != value.getLadder().getName() || ranked != value.isRanked() || to2 != value.isTO2()) {
 			    	continue;
@@ -51,12 +51,12 @@ public class QueueManager {
 			}
 			this.queue.remove(uuid);
 			this.queue.remove(secondUUID);
-			if (!to2) {
-				Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
-			} else {
-				Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, party.getMembersIncludeLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludeLeader(), ranked);
-			}
 			Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
+			if (to2) {
+				Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, party.getMembersIncludeLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludeLeader(), ranked);
+				return;
+			}
+			Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
 		}
 	}
 	
@@ -75,7 +75,7 @@ public class QueueManager {
 	public int getQueuedFromLadder(Ladders ladder, boolean ranked) {
 		int count = 0;
 		for (Map.Entry<UUID, Queue> map : this.queue.entrySet()) {
-			Queue value = map.getValue();
+			final Queue value = map.getValue();
 			if (value.getLadder() == ladder && value.isRanked() == ranked) {
 				count++;
 			}

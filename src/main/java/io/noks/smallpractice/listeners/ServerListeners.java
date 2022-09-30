@@ -2,7 +2,10 @@ package io.noks.smallpractice.listeners;
 
 import java.util.UUID;
 
+import javax.swing.text.html.BlockView;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -61,7 +64,6 @@ public class ServerListeners implements Listener {
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		final Block block = event.getBlock();
 		
-		
 		if (pm.getStatus() == PlayerStatus.BRIDGE && block.getType() != Material.SANDSTONE) {
 			event.setCancelled(true);
 			return;
@@ -73,11 +75,11 @@ public class ServerListeners implements Listener {
 				return;
 			}
 			if (currentDuel.getLadder() == Ladders.SPLEEF) {
+				event.setCancelled(true);
 				for (UUID uuid : currentDuel.getAllAliveTeamsAndSpectators()) {
 					final Player blockViewers = Bukkit.getPlayer(uuid);
-					blockViewers.sendBlockChange(block.getLocation(), Material.AIR, (byte)0);
+					blockViewers.sendBlockChange(block.getLocation(), Material.AIR.getId(), (byte)0);
 				}
-				event.setCancelled(true);
 				currentDuel.addBrokenBlocksLocation(block.getLocation());
 			}
 			return;

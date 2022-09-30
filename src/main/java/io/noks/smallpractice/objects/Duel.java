@@ -156,10 +156,18 @@ public class Duel {
 	
 	public void addSpectator(UUID spec) {
 		this.spectators.add(spec);
+		if (this.brokenBlocks.isEmpty()) {
+			return;
+		}
+		// TODO: Show broken blocks
 	}
 	
 	public void removeSpectator(UUID spec) {
 		this.spectators.remove(spec);
+		if (this.brokenBlocks.isEmpty()) {
+			return;
+		}
+		// TODO: Put broken blocks in place
 	}
 	
 	public boolean hasSpectator() {

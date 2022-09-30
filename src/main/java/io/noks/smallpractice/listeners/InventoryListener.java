@@ -173,26 +173,29 @@ public class InventoryListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClose(InventoryCloseEvent event) {
 		if (!event.getInventory().getType().equals(InventoryType.CHEST)) {
 			return;
 		}
 		final String title = event.getInventory().getTitle().toLowerCase();
 		
-		if (title.contains("selection")) {
+		if (title.startsWith("unranked") || title.startsWith("ranked")) {
 			this.main.getInventoryManager().updateQueueInventory(title.contains("ranked"));
 		} 
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		final Player player = (Player) event.getPlayer();
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (pm.isAllowedToBuild()) {
+			return;
+		}
 		if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
 			final Inventory inventory = event.getInventory();
 			
-			if (inventory.getType() == InventoryType.WORKBENCH || inventory.getType() == InventoryType.FURNACE) {
+			if (inventory.getType() != InventoryType.CRAFTING && inventory.getType() != InventoryType.CHEST) {
 				event.setCancelled(true);
 			}
 		}
