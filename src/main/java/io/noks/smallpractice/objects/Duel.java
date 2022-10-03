@@ -28,13 +28,13 @@ public class Duel {
     private UUID secondTeamPartyLeaderUUID;
 	private List<UUID> firstTeam;
 	private List<UUID> secondTeam;
-	private Set<UUID> firstTeamAlive;
-	private Set<UUID> secondTeamAlive;
+	private List<UUID> firstTeamAlive;
+	private List<UUID> secondTeamAlive;
 	private UUID ffaPartyLeaderUUID;
     //private List<UUID> ffaPlayers;
     //private List<UUID> ffaAlivePlayers;
 	private boolean ranked;
-	private Set<UUID> spectators = Sets.newHashSet();
+	private Set<UUID> spectators;
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
 	private Set<Location> brokenBlocks;
@@ -44,10 +44,11 @@ public class Duel {
 		this.ladder = ladder;
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
-		this.firstTeam = Lists.newArrayList();
-		this.secondTeam = Lists.newArrayList();
-		this.firstTeamAlive = Sets.newHashSet(firstTeam);
-		this.secondTeamAlive = Sets.newHashSet(secondTeam);
+		this.firstTeam = Lists.newArrayList(firstTeam);
+		this.secondTeam = Lists.newArrayList(secondTeam);
+		this.firstTeamAlive = Lists.newArrayList(firstTeam);
+		this.secondTeamAlive = Lists.newArrayList(secondTeam);
+		this.spectators = Sets.newHashSet();
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
 		if (ladder == Ladders.SPLEEF) {
@@ -81,8 +82,8 @@ public class Duel {
 		return secondTeam;
 	}
 	
-	public Set<UUID> getAllTeams() {
-		Set<UUID> teams = Sets.newHashSet();
+	public List<UUID> getAllTeams() {
+		List<UUID> teams = Lists.newArrayList();
 		if (!this.firstTeam.isEmpty()){
 			teams.addAll(firstTeam);
 		}
@@ -95,8 +96,8 @@ public class Duel {
 		return teams;
 	}
 	
-	public Set<UUID> getAllAliveTeams() {
-		Set<UUID> teams = Sets.newHashSet();
+	public List<UUID> getAllAliveTeams() {
+		List<UUID> teams = Lists.newArrayList();
 		if (!this.firstTeamAlive.isEmpty()){
 			teams.addAll(firstTeamAlive);
 		}
@@ -109,8 +110,8 @@ public class Duel {
 		return teams;
 	}
 	
-	public Set<UUID> getAllAliveTeamsAndSpectators() {
-		Set<UUID> teams = Sets.newHashSet();
+	public List<UUID> getAllAliveTeamsAndSpectators() {
+		List<UUID> teams = Lists.newArrayList();
 		if (!this.firstTeamAlive.isEmpty()){
 			teams.addAll(firstTeamAlive);
 		}
@@ -126,11 +127,11 @@ public class Duel {
 		return teams;
 	}
 	
-	public Set<UUID> getFirstTeamAlive() {
+	public List<UUID> getFirstTeamAlive() {
 		return firstTeamAlive;
 	}
 	
-	public Set<UUID> getSecondTeamAlive() {
+	public List<UUID> getSecondTeamAlive() {
 		return secondTeamAlive;
 	}
 	
@@ -186,7 +187,7 @@ public class Duel {
 		sendSoundedMessage(message, sound, 1.0f, 1.0f);
 	}
 	public void sendSoundedMessage(String message, Sound sound, float volume, float pitch) {
-		Set<UUID> duelPlayers = getAllTeams();
+		List<UUID> duelPlayers = getAllTeams();
 		if (!getAllSpectators().isEmpty()) duelPlayers.addAll(getAllSpectators());
 		
 		for (UUID uuid : duelPlayers) {

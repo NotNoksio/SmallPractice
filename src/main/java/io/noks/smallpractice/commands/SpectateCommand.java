@@ -1,6 +1,6 @@
 package io.noks.smallpractice.commands;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -10,14 +10,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.collect.Sets;
-
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
+import net.minecraft.util.com.google.common.collect.Lists;
 
 public class SpectateCommand implements CommandExecutor {
 
@@ -85,7 +84,7 @@ public class SpectateCommand implements CommandExecutor {
 		player.setFlying(true);
 		player.teleport(target.getLocation().add(0, 2, 0));
 		
-		Set<UUID> duelPlayers = Sets.newHashSet(duel.getFirstTeamAlive());
+		List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
 		duelPlayers.addAll(duel.getSecondTeamAlive());
 			
 		for (UUID uuid : duelPlayers) {
