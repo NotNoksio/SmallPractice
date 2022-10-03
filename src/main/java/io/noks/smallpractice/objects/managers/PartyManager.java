@@ -101,7 +101,6 @@ public class PartyManager {
         skullm.setOwner(player.getName());
         skullm.setDisplayName(ChatColor.DARK_AQUA + player.getName() + " (" + ChatColor.YELLOW + party.getSize() + ChatColor.DARK_AQUA + ")");
         skull.setItemMeta(skullm);
-        deletePartyFromInventory(party);
         this.partiesInventory.addItem(skull);
     }
     
@@ -119,14 +118,18 @@ public class PartyManager {
     
     // TODO: need optimization & put the head of the leader on the first empty slot
     public void updatePartyInventory(Party party) {
-        Player leader = Bukkit.getPlayer(party.getLeader());
+    	this.partiesInventory.clear();
+        for (Party parties : this.leaderUUIDtoParty.values()) {
+        	addPartyToInventory(parties);
+        }
+    	final Player leader = Bukkit.getPlayer(party.getLeader());
         if (party.getSize() < 3) {
         	Main.getInstance().getItemManager().giveSpawnItem(leader);
         }
-        String leaderName = (leader == null ? party.getLeaderName() : leader.getName());
-        List<String> lores = Lists.newArrayList();
+        final String leaderName = (leader == null ? party.getLeaderName() : leader.getName());
+        final List<String> lores = Lists.newArrayList();
         for (UUID uuid : party.getMembers()) {
-            Player members = Bukkit.getPlayer(uuid);
+            final Player members = Bukkit.getPlayer(uuid);
             if (members == null) continue;
             lores.add(ChatColor.GRAY + "-> " + ChatColor.YELLOW + members.getName());
             if (PlayerManager.get(members.getUniqueId()).getStatus() == PlayerStatus.SPAWN && party.getSize() < 3) {

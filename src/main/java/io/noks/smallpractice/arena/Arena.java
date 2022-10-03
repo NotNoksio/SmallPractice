@@ -3,6 +3,7 @@ package io.noks.smallpractice.arena;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Maps;
 
-import net.minecraft.util.com.google.common.collect.Lists;
+import net.minecraft.util.com.google.common.collect.Sets;
 
 public class Arena {
 	private Map<Integer, Arenas> arenaList = Maps.newConcurrentMap();
@@ -80,14 +81,14 @@ public class Arena {
 		private Location[] locations;
 		private ItemStack icon;
 		private boolean sumo;
-		private List<UUID> spectators;
+		private Set<UUID> spectators;
 		
 		public Arenas(String name, Location[] locations, ItemStack icon, boolean sumo) {
 			this.name = name;
 			this.locations = locations;
 			this.icon = icon;
 			this.sumo = sumo;
-			this.spectators = Lists.newArrayList();
+			this.spectators = Sets.newHashSet();
 		}
 		
 		public World getWorld() { // In case we need someday
@@ -118,7 +119,7 @@ public class Arena {
 			this.spectators.remove(uuid);
 		}
 		
-		public List<UUID> getAllSpectators() {
+		public Set<UUID> getAllSpectators() {
 			return this.spectators;
 		}
 		

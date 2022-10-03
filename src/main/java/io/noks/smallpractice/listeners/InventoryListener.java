@@ -1,6 +1,6 @@
 package io.noks.smallpractice.listeners;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -18,8 +18,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.google.common.collect.Lists;
-
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.arena.Arena.Arenas;
@@ -28,6 +26,7 @@ import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.Duel;
 import io.noks.smallpractice.objects.Request;
 import io.noks.smallpractice.objects.managers.PlayerManager;
+import net.minecraft.util.com.google.common.collect.Sets;
 
 public class InventoryListener implements Listener {
 	private Main main;
@@ -121,7 +120,7 @@ public class InventoryListener implements Listener {
     				allArenas.removeSpectator(player.getUniqueId());
     			}
 				
-				final List <UUID> playersInArena = Lists.newArrayList();
+				final Set<UUID> playersInArena = Sets.newHashSet();
                 for (Duel duel : this.main.getDuelManager().getAllDuels()) {
                 	if (selectedArena != duel.getArena()) continue;
                 	playersInArena.addAll(duel.getAllAliveTeams());

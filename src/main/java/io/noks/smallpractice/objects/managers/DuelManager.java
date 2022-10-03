@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -37,6 +38,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.util.com.google.common.collect.Sets;
 
 public class DuelManager {
 	private Map<UUID, Duel> uuidIdentifierToDuel = Maps.newHashMap();
@@ -44,8 +46,8 @@ public class DuelManager {
         return this.uuidIdentifierToDuel.get(uuid);
     }
 	
-	public List<Duel> getAllDuels() {
-		List<Duel> list = Lists.newArrayList();
+	public Set<Duel> getAllDuels() {
+		Set<Duel> list = Sets.newHashSet();
 		for (Duel allDuels : uuidIdentifierToDuel.values()) {
 			list.add(allDuels);
 		}

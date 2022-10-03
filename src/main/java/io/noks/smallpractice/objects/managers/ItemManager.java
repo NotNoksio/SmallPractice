@@ -306,13 +306,6 @@ public class ItemManager {
 			break;
 		}
 		case NOENCHANT: {
-			attackItem.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			helmet.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			chestplate.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			leggings.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			boots.addUnsafeEnchantment(Enchantment.PROTECTION_FALL, 4);
-			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			
 			ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
 			ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
 			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);

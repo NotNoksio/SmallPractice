@@ -2,10 +2,7 @@ package io.noks.smallpractice.listeners;
 
 import java.util.UUID;
 
-import javax.swing.text.html.BlockView;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -20,6 +17,8 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+
+import com.google.common.base.Strings;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.Ladders;
@@ -121,8 +120,8 @@ public class ServerListeners implements Listener {
 	}
 	
 	private final String getMotd() {
-		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Bawz " + ChatColor.GRAY + "(Practice "  + main.getDescription().getVersion() + ")\n";
-		final String line2 = ChatColor.YELLOW + "US Proxy pot pvp server" + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : "");
+		final String line1 = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Noks.io" + ChatColor.GRAY + " (Practice "  + main.getDescription().getVersion() + ")\n";
+		final String line2 = ChatColor.YELLOW + "US pot pvp server" + (Bukkit.getServer().hasWhitelist() ? ChatColor.RED + " Whitelisted..." : "");
 		return (line1 + line2);
 	}
 	

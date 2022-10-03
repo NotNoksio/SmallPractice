@@ -81,8 +81,8 @@ public class Duel {
 		return secondTeam;
 	}
 	
-	public List<UUID> getAllTeams() {
-		List<UUID> teams = Lists.newArrayList();
+	public Set<UUID> getAllTeams() {
+		Set<UUID> teams = Sets.newHashSet();
 		if (!this.firstTeam.isEmpty()){
 			teams.addAll(firstTeam);
 		}
@@ -95,8 +95,8 @@ public class Duel {
 		return teams;
 	}
 	
-	public List<UUID> getAllAliveTeams() {
-		List<UUID> teams = Lists.newArrayList();
+	public Set<UUID> getAllAliveTeams() {
+		Set<UUID> teams = Sets.newHashSet();
 		if (!this.firstTeamAlive.isEmpty()){
 			teams.addAll(firstTeamAlive);
 		}
@@ -109,8 +109,8 @@ public class Duel {
 		return teams;
 	}
 	
-	public List<UUID> getAllAliveTeamsAndSpectators() {
-		List<UUID> teams = Lists.newArrayList();
+	public Set<UUID> getAllAliveTeamsAndSpectators() {
+		Set<UUID> teams = Sets.newHashSet();
 		if (!this.firstTeamAlive.isEmpty()){
 			teams.addAll(firstTeamAlive);
 		}
@@ -186,7 +186,7 @@ public class Duel {
 		sendSoundedMessage(message, sound, 1.0f, 1.0f);
 	}
 	public void sendSoundedMessage(String message, Sound sound, float volume, float pitch) {
-		List<UUID> duelPlayers = getAllTeams();
+		Set<UUID> duelPlayers = getAllTeams();
 		if (!getAllSpectators().isEmpty()) duelPlayers.addAll(getAllSpectators());
 		
 		for (UUID uuid : duelPlayers) {
@@ -203,7 +203,7 @@ public class Duel {
 		if (!isValid()) {
 			return;
 		}
-		if (!firstTeamAlive.isEmpty() && !secondTeamAlive.isEmpty()) {
+		if (!this.firstTeamAlive.isEmpty() && !this.secondTeamAlive.isEmpty()) {
 			for (UUID firstUUID : this.firstTeamAlive) {
 				for (UUID secondUUID : this.secondTeamAlive) {
 	                Player first = Bukkit.getPlayer(firstUUID);

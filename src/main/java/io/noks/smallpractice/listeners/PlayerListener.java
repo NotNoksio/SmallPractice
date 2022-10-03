@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -123,6 +124,12 @@ public class PlayerListener implements Listener {
 			this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected
 		}
 		this.main.getDatabaseUtil().savePlayer(pm);
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onGettingKicked(PlayerKickEvent event) {
+		onQuit(new PlayerQuitEvent(event.getPlayer(), event.getLeaveMessage()));
+		event.setLeaveMessage(null);
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
