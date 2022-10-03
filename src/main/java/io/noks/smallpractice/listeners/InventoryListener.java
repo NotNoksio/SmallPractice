@@ -37,7 +37,11 @@ public class InventoryListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
-		if (event.getInventory().getType() != InventoryType.CHEST) {
+		final Inventory inventory = event.getInventory();
+		if (inventory == null) {
+			return;
+		}
+		if (inventory.getType() != InventoryType.CHEST) {
 			return;
 		}
 		final ItemStack item = event.getCurrentItem();
@@ -45,7 +49,7 @@ public class InventoryListener implements Listener {
 		if (item == null || item.getType() == null) {
 			return;
 		}
-		final String title = event.getInventory().getTitle().toLowerCase();
+		final String title = inventory.getTitle().toLowerCase();
 		if (title.endsWith("inventory")) {
             event.setCancelled(true);
             return;
@@ -158,7 +162,11 @@ public class InventoryListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOW)
 	public void blockSpawnMoveItem(InventoryClickEvent event) {
-		if (event.getInventory().getType().equals(InventoryType.CREATIVE) || event.getInventory().getType().equals(InventoryType.CRAFTING) || event.getInventory().getType().equals(InventoryType.PLAYER)) {
+		final Inventory inventory = event.getClickedInventory();
+		if (inventory == null) {
+			return;
+		}
+		if (inventory.getType().equals(InventoryType.CREATIVE) || inventory.getType().equals(InventoryType.CRAFTING) || inventory.getType().equals(InventoryType.PLAYER)) {
 			final Player player = (Player) event.getWhoClicked();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
@@ -194,7 +202,7 @@ public class InventoryListener implements Listener {
 		if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
 			final Inventory inventory = event.getInventory();
 			
-			if (inventory.getType() != InventoryType.CRAFTING && inventory.getType() != InventoryType.CHEST) {
+			if (inventory.getType() != InventoryType.CRAFTING && inventory.getType() != InventoryType.CHEST && inventory.getType() != InventoryType.PLAYER) {
 				event.setCancelled(true);
 			}
 		}
