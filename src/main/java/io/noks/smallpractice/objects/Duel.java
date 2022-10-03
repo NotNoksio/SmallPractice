@@ -28,13 +28,13 @@ public class Duel {
     private UUID secondTeamPartyLeaderUUID;
 	private List<UUID> firstTeam;
 	private List<UUID> secondTeam;
-	private List<UUID> firstTeamAlive;
-	private List<UUID> secondTeamAlive;
+	private Set<UUID> firstTeamAlive;
+	private Set<UUID> secondTeamAlive;
 	private UUID ffaPartyLeaderUUID;
     //private List<UUID> ffaPlayers;
     //private List<UUID> ffaAlivePlayers;
 	private boolean ranked;
-	private List<UUID> spectators = Lists.newArrayList();
+	private Set<UUID> spectators = Sets.newHashSet();
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
 	private Set<Location> brokenBlocks;
@@ -44,10 +44,10 @@ public class Duel {
 		this.ladder = ladder;
 		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
 		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
-		this.firstTeam = Lists.newArrayList(firstTeam);
-		this.secondTeam = Lists.newArrayList(secondTeam);
-		this.firstTeamAlive = Lists.newArrayList(firstTeam);
-		this.secondTeamAlive = Lists.newArrayList(secondTeam);
+		this.firstTeam = Lists.newArrayList();
+		this.secondTeam = Lists.newArrayList();
+		this.firstTeamAlive = Sets.newHashSet(firstTeam);
+		this.secondTeamAlive = Sets.newHashSet(secondTeam);
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
 		if (ladder == Ladders.SPLEEF) {
@@ -126,11 +126,11 @@ public class Duel {
 		return teams;
 	}
 	
-	public List<UUID> getFirstTeamAlive() {
+	public Set<UUID> getFirstTeamAlive() {
 		return firstTeamAlive;
 	}
 	
-	public List<UUID> getSecondTeamAlive() {
+	public Set<UUID> getSecondTeamAlive() {
 		return secondTeamAlive;
 	}
 	
@@ -174,7 +174,7 @@ public class Duel {
 		return !this.spectators.isEmpty();
 	}
 	
-	public List<UUID> getAllSpectators() {
+	public Set<UUID> getAllSpectators() {
 		return this.spectators;
 	}
 	
