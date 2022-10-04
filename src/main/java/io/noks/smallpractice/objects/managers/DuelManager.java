@@ -165,10 +165,10 @@ public class DuelManager {
 	}
 	
 	// TODO: FFA END
-	public void endDuel(Duel duel, int winningTeamNumber) {
+	public void endDuel(Duel duel, int winningTeamNumber, boolean forceEnding) {
 		this.deathMessage(duel, winningTeamNumber);
 		
-		if (duel.isRanked()) {
+		if (duel.isRanked() && !forceEnding) {
 			List<UUID> winnersList = (winningTeamNumber == 1 ? duel.getFirstTeam() : duel.getSecondTeam());
 			List<UUID> losersList = (winnersList == duel.getFirstTeam() ? duel.getSecondTeam() : duel.getFirstTeam());
 			
@@ -239,6 +239,9 @@ public class DuelManager {
 	
 	// TODO: Sometimes there's an NULLPOINTEREXCEPTION appear
 	private void deathMessage(Duel duel, int winningTeamNumber) {
+		if (winningTeamNumber == 0) {
+			return;
+		}
 		List<UUID> winnerTeam = null;
 		List<UUID> loserTeam = null;
 		switch (winningTeamNumber) {
@@ -252,9 +255,6 @@ public class DuelManager {
 			break;
 		default:
 			break;
-		}
-		if (winningTeamNumber == 0) { // TODO: USELESS?
-			return;
 		}
 		final boolean partyFight = (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null);
 		final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + Bukkit.getPlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
@@ -330,7 +330,7 @@ public class DuelManager {
 			public void run() {
 				if (!duel.isValid()) {
 					duel.sendMessage(ChatColor.RED + "The current duel has been cancelled due to his invalidity.");
-					endDuel(duel, (duel.getFirstTeamAlive().isEmpty() ? 2 : 1));
+					endDuel(duel, (duel.getFirstTeamAlive().isEmpty() ? 2 : 1), true);
 					this.cancel();
 				}
 				if (num <= 0) {
@@ -350,7 +350,7 @@ public class DuelManager {
 	private void teleportRandomArena(Duel duel) {
 		if (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty()) {
         	duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
-        	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1));
+        	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1), true);
         	return;
         }
 		
@@ -487,7 +487,7 @@ public class DuelManager {
 				}
 			}.runTaskLater(Main.getInstance(), 50L);
 		}
-		endDuel(currentDuel, winningTeamNumber);
+		endDuel(currentDuel, winningTeamNumber, false);
 	}
 	
 	public int getFightFromLadder(Ladders ladder, boolean ranked) {

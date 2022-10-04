@@ -34,6 +34,7 @@ import io.noks.smallpractice.listeners.EnderDelay;
 import io.noks.smallpractice.listeners.InventoryListener;
 import io.noks.smallpractice.listeners.PlayerListener;
 import io.noks.smallpractice.listeners.ServerListeners;
+import io.noks.smallpractice.objects.Duel;
 import io.noks.smallpractice.objects.managers.ConfigManager;
 import io.noks.smallpractice.objects.managers.DuelManager;
 import io.noks.smallpractice.objects.managers.InventoryManager;
@@ -85,6 +86,9 @@ public class Main extends JavaPlugin {
 	public void onDisable() {
 		this.queueManager.getQueueMap().clear();
 		this.offlineInventories.clear();
+		for (Duel duels : this.duelManager.getAllDuels()) {
+			this.duelManager.endDuel(duels, 0, true);
+		}
 	}
 	
 	private void registerCommands() {
