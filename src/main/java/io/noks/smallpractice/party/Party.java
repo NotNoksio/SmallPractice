@@ -23,7 +23,7 @@ public class Party {
         this.partyLeader = partyLeader;
         this.leaderName = leaderName;
         this.partyState = PartyState.LOBBY;
-        this.partyEloManager = new EloManager();
+        this.partyEloManager = new EloManager(); // TODO: need to put the two players elo together
     }
     
     public void addMember(UUID uuid) {

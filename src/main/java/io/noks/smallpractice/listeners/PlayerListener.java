@@ -55,6 +55,14 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
+		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP) {
+			for (Player opPlayers : Bukkit.getOnlinePlayers()) {
+				if (!opPlayers.isOp()) {
+					continue;
+				}
+				opPlayers.sendMessage(event.getJoinMessage());
+			}
+		}
 		event.setJoinMessage(null);
 		final Player player = event.getPlayer();
 		
@@ -66,7 +74,6 @@ public class PlayerListener implements Listener {
 		player.setWalkSpeed(0.2f);
 		player.setKnockbackReduction(0.0f);
 		
-		//pm.heal(false);
 		player.setAllowFlight(false);
 		player.setFlying(false);
 		player.setGameMode(GameMode.SURVIVAL);
@@ -88,7 +95,7 @@ public class PlayerListener implements Listener {
 	
 	private void sendJoinMessage(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Bawz US" + ChatColor.GRAY + " (Practice)");
+		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Noks.io" + ChatColor.GRAY + " (Practice)");
 		player.sendMessage("");
 		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "discord." + this.main.getConfigManager().serverDomainName);
 		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "namemc." + this.main.getConfigManager().serverDomainName);
@@ -97,6 +104,14 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onQuit(PlayerQuitEvent event) {
+		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP) {
+			for (Player opPlayers : Bukkit.getOnlinePlayers()) {
+				if (!opPlayers.isOp()) {
+					continue;
+				}
+				opPlayers.sendMessage(event.getQuitMessage());
+			}
+		}
 		event.setQuitMessage(null);
 		final Player player = event.getPlayer();
 		if (this.main.getQueueManager().getQueueMap().containsKey(player.getUniqueId())) {
@@ -105,7 +120,7 @@ public class PlayerListener implements Listener {
 				Main.getInstance().getInventoryManager().updateQueueInventory(BooleanUtils.toBoolean(i));
 			}
 		}
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
         if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
         	final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
             if (party.getLeader().equals(player.getUniqueId())) {
@@ -121,7 +136,7 @@ public class PlayerListener implements Listener {
 			}
 		}
 		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
-			this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected
+			this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected -> is it fixed?
 		}
 		this.main.getDatabaseUtil().savePlayer(pm);
 	}
@@ -133,13 +148,14 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
-	public void onDeath(PlayerDeathEvent event) {
+	public void onPlayerDeath(PlayerDeathEvent event) {
 		event.setDeathMessage(null);
 		event.setDroppedExp(0);
 		
 		if (event.getEntity() instanceof Player) {
 			final Player killed = event.getEntity();
 			this.main.getDuelManager().removePlayerFromDuel(killed, RemoveReason.KILLED);
+			// TODO: Work on a better autorespawn
 			new BukkitRunnable() {
 				
 				@Override

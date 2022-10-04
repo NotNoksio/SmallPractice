@@ -28,10 +28,11 @@ import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
-import io.noks.smallpractice.objects.Cooldown;
+import io.noks.smallpractice.objects.CommandCooldown;
 import io.noks.smallpractice.objects.CustomInventory;
 import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.MatchStats;
+import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.Request;
 
 public class PlayerManager {
@@ -44,10 +45,11 @@ public class PlayerManager {
 	private Player spectate;
 	private EloManager eloManager;
 	private MatchStats matchStats;
-	private Cooldown cooldown;
+	private CommandCooldown cooldown;
 	private Inventory savedInventory;
 	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
 	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
+	private PlayerSettings settings;
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
@@ -56,11 +58,12 @@ public class PlayerManager {
 	    this.spectate = null;
 	    this.eloManager = new EloManager();
 	    this.matchStats = new MatchStats();
-	    this.cooldown = new Cooldown();
+	    this.cooldown = new CommandCooldown();
 	    if (Main.getInstance().getOfflineInventories().containsKey(playerUUID)) {
 	    	this.savedInventory = Main.getInstance().getOfflineInventories().get(playerUUID);
 	    	Main.getInstance().getOfflineInventories().remove(playerUUID);
 	    }
+	    this.settings = new PlayerSettings();
 	    players.putIfAbsent(playerUUID, this);
 	}
 
@@ -172,7 +175,7 @@ public class PlayerManager {
 		}
 	}
 	
-	public Cooldown getCooldown() {
+	public CommandCooldown getCooldown() {
 		return this.cooldown;
 	}
 	
@@ -286,6 +289,10 @@ public class PlayerManager {
 	
 	public void saveDuelInventory(Ladder ladder, String name, int slot) {
 		this.savedDuelInventory.add(new CustomInventory(ladder, name, slot, this.player.getInventory(), this.getPlayer().getInventory().getArmorContents()));
+	}
+	
+	public PlayerSettings getSettings() {
+		return this.settings;
 	}
 	
 	private String convertToPotionFormat(final long paramLong) {

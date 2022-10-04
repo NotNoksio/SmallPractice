@@ -5,3 +5,4 @@ database:
   username: ""
   password: ""
 server-domain-name: "noks.io"
+send-join-and-quit-message-to-op: false

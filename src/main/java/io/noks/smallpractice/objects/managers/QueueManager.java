@@ -1,8 +1,12 @@
 package io.noks.smallpractice.objects.managers;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -10,6 +14,7 @@ import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
+import io.noks.smallpractice.objects.Queue;
 import io.noks.smallpractice.party.Party;
 import net.minecraft.util.com.google.common.collect.Maps;
 
@@ -19,12 +24,12 @@ public class QueueManager {
 		return this.queue;
 	}
 	
-	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked, boolean to2) { // TODO: ping detector due to 20ms vs 220ms
-		Party party = (to2 ? party = Main.getInstance().getPartyManager().getParty(uuid) : null);
+	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked, boolean to2, int pingDiffParam) {
+		final Party party = (to2 ? Main.getInstance().getPartyManager().getParty(uuid) : null);
+		final PlayerManager pm = PlayerManager.get(uuid);
+		final Player player = pm.getPlayer();
 		if (!this.queue.containsKey(uuid)) {
-			final PlayerManager pm = PlayerManager.get(uuid);
-			final Player player = pm.getPlayer();
-			this.queue.put(uuid, new Queue(ladder, ranked, to2));
+			this.queue.put(uuid, new Queue(ladder, ranked, to2, pingDiffParam));
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
 			Main.getInstance().getItemManager().giveLeaveItem(player, "Queue", true);
@@ -35,29 +40,70 @@ public class QueueManager {
 			}
 			Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
 		}
-		if (this.queue.size() >= 2) {
-			UUID secondUUID = uuid;
-			for (Map.Entry<UUID, Queue> map : this.queue.entrySet()) {
-			    final UUID key = map.getKey();
-			    final Queue value = map.getValue();
-			    
-			    if (uuid == key || ladder.getName() != value.getLadder().getName() || ranked != value.isRanked() || to2 != value.isTO2()) {
-			    	continue;
-			    }
-			    secondUUID = key;
-			}
-			if (secondUUID == uuid) {
-				return;
-			}
-			this.queue.remove(uuid);
-			this.queue.remove(secondUUID);
-			Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
-			if (to2) {
-				Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, party.getMembersIncludeLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludeLeader(), ranked);
-				return;
-			}
-			Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
+		if (!this.is2PlayersOrMore(ladder, ranked, to2)) {
+			return;
 		}
+		UUID secondUUID = null;
+		for (UUID potentialUUID : this.queue.keySet()) {
+			if (uuid == potentialUUID || Math.abs(player.getPing() - Bukkit.getPlayer(potentialUUID).getPing()) > pingDiffParam) {
+				continue;
+			}
+			secondUUID = potentialUUID;
+			break;
+		}
+		if (secondUUID == null) {
+			return;
+		}
+		this.queue.remove(uuid);
+		this.queue.remove(secondUUID);
+		if (lastUpdated.contains(uuid)) {
+			lastUpdated.remove(uuid);
+		}
+		if (lastUpdated.contains(secondUUID)) {
+			lastUpdated.remove(secondUUID);
+		}
+		this.updatePingDiffFromQueue();
+		Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
+		if (to2) {
+			Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, party.getMembersIncludeLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludeLeader(), ranked);
+			return;
+		}
+		Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
+	}
+	
+	private Set<UUID> lastUpdated = Collections.newSetFromMap(new WeakHashMap<>()); // DONT SPAM QUEUE!!
+	private void updatePingDiffFromQueue() {
+		if (this.queue.isEmpty() || this.queue.size() == 1) {
+			return;
+		}
+		for (Map.Entry<UUID, Queue> queues : this.queue.entrySet()) {
+			final Queue queue = queues.getValue();
+			if (queue.getPingDiff() == 300) {
+				continue;
+			}
+			final UUID uuid = queues.getKey();
+			if (lastUpdated.contains(uuid)) {
+				lastUpdated.remove(uuid);
+				continue;
+			}
+			lastUpdated.add(uuid);
+			final int oldPingDiff = queue.getPingDiff();
+			queue.updatePingDiff();
+			Bukkit.getPlayer(uuid).sendMessage(ChatColor.DARK_AQUA + "Ping Difference: " + ChatColor.YELLOW + oldPingDiff + ChatColor.DARK_AQUA + " -> " + ChatColor.YELLOW + queue.getPingDiff());
+			addToQueue(queues.getKey(), queue.getLadder(), queue.isRanked(), queue.isTO2(), queue.getPingDiff());
+		}
+	}
+	
+	private boolean is2PlayersOrMore(Ladders ladder, boolean ranked, boolean to2) {
+		if (this.queue.isEmpty() || this.queue.size() == 1) {
+			return false;
+		}
+		for (Queue queue : this.queue.values()) {
+			if (ladder.getName() == queue.getLadder().getName() && ranked == queue.isRanked() && to2 == queue.isTO2()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void quitQueue(Player player) {
@@ -81,29 +127,5 @@ public class QueueManager {
 			}
 		}
 		return count;
-	}
-	
-	public class Queue {
-		private Ladders ladder;
-		private boolean ranked;
-		private boolean teamOf2;
-		
-		public Queue(Ladders ladder, boolean ranked, boolean to2) {
-			this.ladder = ladder;
-			this.ranked = ranked;
-			this.teamOf2 = to2;
-		}
-		
-		public Ladders getLadder() {
-			return this.ladder;
-		}
-		
-		public boolean isRanked() {
-			return this.ranked;
-		}
-		
-		public boolean isTO2() {
-			return this.teamOf2;
-		}
 	}
 }

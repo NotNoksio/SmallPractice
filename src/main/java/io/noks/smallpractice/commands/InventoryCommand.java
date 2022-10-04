@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
-import io.noks.smallpractice.objects.Cooldown;
+import io.noks.smallpractice.objects.CommandCooldown;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class InventoryCommand implements CommandExecutor {
@@ -28,9 +28,9 @@ public class InventoryCommand implements CommandExecutor {
 			return false;
 		}
 		final Player player = (Player) sender;
-		final Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
+		final CommandCooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 		if (cooldown.isActive(this.getClass().getSimpleName())) {
-			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 3) - (System.currentTimeMillis() / 1000);
+			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 1) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {
 				player.sendMessage(ChatColor.RED + "You'll be able to see another inventory in " + secondsLeft + " seconds!");
 				return false;
