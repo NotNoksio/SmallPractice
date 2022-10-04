@@ -330,7 +330,7 @@ public class DuelManager {
 			public void run() {
 				if (!duel.isValid()) {
 					duel.sendMessage(ChatColor.RED + "The current duel has been cancelled due to his invalidity.");
-					endDuel(duel, (duel.getFirstTeamAlive().isEmpty() ? 2 : 1), true);
+					endDuel(duel, 0, true);
 					this.cancel();
 				}
 				if (num <= 0) {
@@ -350,7 +350,7 @@ public class DuelManager {
 	private void teleportRandomArena(Duel duel) {
 		if (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty()) {
         	duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
-        	endDuel(duel, (duel.getFirstTeam().isEmpty() ? 2 : 1), true);
+        	endDuel(duel, 0, true);
         	return;
         }
 		
