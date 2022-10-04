@@ -34,7 +34,7 @@ public class Duel {
     //private List<UUID> ffaPlayers;
     //private List<UUID> ffaAlivePlayers;
 	private boolean ranked;
-	private Set<UUID> spectators;
+	private List<UUID> spectators;
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
 	private Set<Location> brokenBlocks;
@@ -48,7 +48,7 @@ public class Duel {
 		this.secondTeam = Lists.newArrayList(secondTeam);
 		this.firstTeamAlive = Lists.newArrayList(firstTeam);
 		this.secondTeamAlive = Lists.newArrayList(secondTeam);
-		this.spectators = Sets.newHashSet();
+		this.spectators = Lists.newArrayList();
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
 		if (ladder == Ladders.SPLEEF) {
@@ -175,7 +175,7 @@ public class Duel {
 		return !this.spectators.isEmpty();
 	}
 	
-	public Set<UUID> getAllSpectators() {
+	public List<UUID> getAllSpectators() {
 		return this.spectators;
 	}
 	
@@ -186,7 +186,7 @@ public class Duel {
 	public void sendSoundedMessage(String message, Sound sound) {
 		sendSoundedMessage(message, sound, 1.0f, 1.0f);
 	}
-	public void sendSoundedMessage(String message, Sound sound, float volume, float pitch) {
+	private void sendSoundedMessage(String message, Sound sound, float volume, float pitch) {
 		List<UUID> duelPlayers = getAllTeams();
 		if (!getAllSpectators().isEmpty()) duelPlayers.addAll(getAllSpectators());
 		

@@ -18,6 +18,7 @@ import com.google.common.collect.Maps;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.PlayerStatus;
+import io.noks.smallpractice.objects.Duel;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
 
@@ -63,6 +64,23 @@ public class PartyManager {
     		party = this.leaderUUIDtoParty.get(newLeader);
     		
     		party.notify(ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
+    		if (party.getPartyState() == PartyState.DUELING) {
+    			Duel duel = null;
+				for (UUID uuid : party.getMembersIncludeLeader()) {
+					final PlayerManager um = PlayerManager.get(uuid);
+					if (um.getStatus() != PlayerStatus.WAITING && um.getStatus() != PlayerStatus.DUEL) continue;
+					duel = Main.getInstance().getDuelManager().getDuelFromPlayerUUID(uuid);
+					break;
+				}
+				if (duel != null) {
+					if (duel.getFirstTeamPartyLeaderUUID() == actualLeader) {
+						duel.switchFirstTeamPartyLeader(newLeader);
+					}
+					if (duel.getSecondTeamPartyLeaderUUID() == actualLeader) {
+						duel.switchSecondTeamPartyLeader(newLeader);
+					}
+				}
+    		}
     		if (party.getPartyState() == PartyState.LOBBY) Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(newLeader));
     		addPartyToInventory(party);
     		return;
@@ -116,7 +134,7 @@ public class PartyManager {
         }
     }
     
-    // TODO: need optimization & put the head of the leader on the first empty slot
+    // TODO: need optimization 
     public void updatePartyInventory(Party party) {
     	this.partiesInventory.clear();
         for (Party parties : this.leaderUUIDtoParty.values()) {
