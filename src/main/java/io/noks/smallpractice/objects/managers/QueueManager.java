@@ -27,8 +27,8 @@ public class QueueManager {
 	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked, boolean to2, int pingDiffParam) {
 		final Party party = (to2 ? Main.getInstance().getPartyManager().getParty(uuid) : null);
 		final PlayerManager pm = PlayerManager.get(uuid);
-		final Player player = pm.getPlayer();
 		if (!this.queue.containsKey(uuid)) {
+			final Player player = pm.getPlayer();
 			this.queue.put(uuid, new Queue(ladder, ranked, to2, pingDiffParam));
 			pm.setStatus(PlayerStatus.QUEUE);
 			player.getInventory().clear();
@@ -45,7 +45,7 @@ public class QueueManager {
 		}
 		UUID secondUUID = null;
 		for (UUID potentialUUID : this.queue.keySet()) {
-			if (uuid == potentialUUID || Math.abs(player.getPing() - Bukkit.getPlayer(potentialUUID).getPing()) > pingDiffParam) {
+			if (uuid == potentialUUID || Math.abs(pm.getPlayer().getPing() - Bukkit.getPlayer(potentialUUID).getPing()) > pingDiffParam) {
 				continue;
 			}
 			secondUUID = potentialUUID;
