@@ -29,7 +29,6 @@ import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.CommandCooldown;
-import io.noks.smallpractice.objects.CustomInventory;
 import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.MatchStats;
 import io.noks.smallpractice.objects.PlayerSettings;
@@ -47,7 +46,6 @@ public class PlayerManager {
 	private MatchStats matchStats;
 	private CommandCooldown cooldown;
 	private Inventory savedInventory;
-	private List<CustomInventory> savedDuelInventory = Lists.newArrayList();
 	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
 	private PlayerSettings settings;
 	
@@ -281,14 +279,6 @@ public class PlayerManager {
 	
 	public void saveCustomLadderKit(Ladder ladder, String name, int slot, PlayerInventory inventory) {
 		this.customLadderKit.add(new EditedLadderKit(ladder, name, slot, inventory));
-	}
-	
-	public boolean hasCustomInventory() {
-		return this.savedDuelInventory.isEmpty();
-	}
-	
-	public void saveDuelInventory(Ladder ladder, String name, int slot) {
-		this.savedDuelInventory.add(new CustomInventory(ladder, name, slot, this.player.getInventory(), this.getPlayer().getInventory().getArmorContents()));
 	}
 	
 	public PlayerSettings getSettings() {

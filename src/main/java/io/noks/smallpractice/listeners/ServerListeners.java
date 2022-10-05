@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.server.ServerListPingEvent;
@@ -138,5 +139,10 @@ public class ServerListeners implements Listener {
 		if (event.getInventory().getResult().getType() != Material.MUSHROOM_SOUP) {
 			event.getInventory().setResult(null);
 		}
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onBedEnter(PlayerBedEnterEvent event) {
+		event.setCancelled(true);
 	}
 }
