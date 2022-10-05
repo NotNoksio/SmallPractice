@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -56,11 +55,13 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
 		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP) {
-			for (Player opPlayers : Bukkit.getOnlinePlayers()) {
-				if (!opPlayers.isOp()) {
-					continue;
+			if (this.main.getServer().getOnlinePlayers().size() > 1) {
+				for (Player opPlayers : this.main.getServer().getOnlinePlayers()) {
+					if (!opPlayers.isOp()) {
+						continue;
+					}
+					opPlayers.sendMessage(event.getJoinMessage());
 				}
-				opPlayers.sendMessage(event.getJoinMessage());
 			}
 		}
 		event.setJoinMessage(null);
@@ -85,7 +86,7 @@ public class PlayerListener implements Listener {
 		
 		this.sendJoinMessage(event);
 		
-		for (Player allPlayers : Bukkit.getOnlinePlayers()) {
+		for (Player allPlayers : this.main.getServer().getOnlinePlayers()) {
 			final PlayerManager pmAll = PlayerManager.get(allPlayers.getUniqueId());
 			if (pmAll.getStatus() == PlayerStatus.WAITING || pmAll.getStatus() == PlayerStatus.DUEL || pmAll.getStatus() == PlayerStatus.MODERATION) {
 				player.hidePlayer(allPlayers);
@@ -105,38 +106,43 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onQuit(PlayerQuitEvent event) {
 		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP) {
-			for (Player opPlayers : Bukkit.getOnlinePlayers()) {
-				if (!opPlayers.isOp()) {
-					continue;
+			if (this.main.getServer().getOnlinePlayers().size() > 1) {
+				for (Player opPlayers : this.main.getServer().getOnlinePlayers()) {
+					if (!opPlayers.isOp()) {
+						continue;
+					}
+					opPlayers.sendMessage(event.getQuitMessage());
 				}
-				opPlayers.sendMessage(event.getQuitMessage());
 			}
 		}
 		event.setQuitMessage(null);
-		final Player player = event.getPlayer();
-		if (this.main.getQueueManager().getQueueMap().containsKey(player.getUniqueId())) {
-			this.main.getQueueManager().getQueueMap().remove(player.getUniqueId());
+		final UUID playerUUID = event.getPlayer().getUniqueId();
+		if (this.main.getQueueManager().getQueueMap().containsKey(playerUUID)) {
+			this.main.getQueueManager().getQueueMap().remove(playerUUID);
+			if (this.main.getQueueManager().getLastUpdated().contains(playerUUID)) {
+				this.main.getQueueManager().getLastUpdated().remove(playerUUID);
+			}
 			for (int i = 0; i != 2; i++) {
 				Main.getInstance().getInventoryManager().updateQueueInventory(BooleanUtils.toBoolean(i));
 			}
 		}
-		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
-        if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
-        	final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
-            if (party.getLeader().equals(player.getUniqueId())) {
-            	this.main.getPartyManager().transferLeader(player.getUniqueId());
+		final PlayerManager pm = PlayerManager.get(playerUUID);
+        if (this.main.getPartyManager().hasParty(playerUUID)) {
+        	final Party party = this.main.getPartyManager().getParty(playerUUID);
+            if (party.getLeader().equals(playerUUID)) {
+            	this.main.getPartyManager().transferLeader(playerUUID);
             } else {
-            	this.main.getPartyManager().leaveParty(player.getUniqueId());
+            	this.main.getPartyManager().leaveParty(playerUUID);
             }
         }
 		if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
 			for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
-				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
-				allArenas.removeSpectator(player.getUniqueId());
+				if (!allArenas.getAllSpectators().contains(playerUUID)) continue;
+				allArenas.removeSpectator(playerUUID);
 			}
 		}
 		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
-			this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected -> is it fixed?
+			this.main.getDuelManager().removePlayerFromDuel(this.main.getServer().getPlayer(playerUUID), RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected -> is it fixed?
 		}
 		this.main.getDatabaseUtil().savePlayer(pm);
 	}
@@ -288,12 +294,12 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDrop(PlayerDropItemEvent event) {
-		PlayerManager pm = PlayerManager.get(event.getPlayer().getUniqueId());
+		final PlayerManager pm = PlayerManager.get(event.getPlayer().getUniqueId());
 		if (event.getPlayer().getGameMode() != GameMode.CREATIVE && pm.getStatus() != PlayerStatus.WAITING && pm.getStatus() != PlayerStatus.DUEL && !pm.isAllowedToBuild()) {
 			event.setCancelled(true);
 			return;
 		}
-		ItemStack item = event.getItemDrop().getItemStack();
+		final ItemStack item = event.getItemDrop().getItemStack();
 		if (item.getType() == Material.GLASS_BOTTLE || item.getType() == Material.BOWL) {
 			event.getItemDrop().remove();
 			return;
@@ -331,7 +337,7 @@ public class PlayerListener implements Listener {
 		            }
 					if (item.getType() == Material.NAME_TAG && itemName.equals(ChatColor.YELLOW + "create party")) {
 		                event.setCancelled(true);
-		                Bukkit.dispatchCommand(player, "party create");
+		                this.main.getServer().dispatchCommand(player, "party create");
 		                break;
 		            }
 					if (item.getType() == Material.GOLD_AXE && itemName.equals(ChatColor.YELLOW + "mini-game")) {
@@ -406,7 +412,7 @@ public class PlayerListener implements Listener {
 					break;
 				}
 				if (item.getType() == Material.PAPER && itemName.equals(ChatColor.YELLOW + "party information")) {
-					Bukkit.dispatchCommand(player, "party info");
+					this.main.getServer().dispatchCommand(player, "party info");
 					break;
 				}
 				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.YELLOW + "spectate actual match")) {
@@ -441,7 +447,7 @@ public class PlayerListener implements Listener {
 					duelPlayers.addAll(duel.getSecondTeamAlive());
 							
 					for (UUID uuid : duelPlayers) {
-						Player dplayers = Bukkit.getPlayer(uuid);
+						Player dplayers = this.main.getServer().getPlayer(uuid);
 						player.showPlayer(dplayers);
 					}
 					Main.getInstance().getItemManager().giveSpectatorItems(player);
@@ -451,7 +457,7 @@ public class PlayerListener implements Listener {
 				}
 				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave party")) {
 					event.setCancelled(true);
-					Bukkit.dispatchCommand(player, "party leave");
+					this.main.getServer().dispatchCommand(player, "party leave");
 				}
 				break;
 			case QUEUE:
@@ -519,7 +525,7 @@ public class PlayerListener implements Listener {
 	                currentArena.addSpectator(player.getUniqueId());
 	                if (!playersInArena.isEmpty()) {
 		                for (UUID playerInArenaUUID : playersInArena) {
-		                	Player playerInArena = Bukkit.getPlayer(playerInArenaUUID);
+		                	Player playerInArena = this.main.getServer().getPlayer(playerInArenaUUID);
 		                	player.showPlayer(playerInArena);
 		                }
 	                }
@@ -565,14 +571,14 @@ public class PlayerListener implements Listener {
 			case MODERATION:
 				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave moderation")) {
 	                event.setCancelled(true);
-	                Bukkit.dispatchCommand(player, "mod");
+	                this.main.getServer().dispatchCommand(player, "mod");
 	                break;
 	            }
 				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.RED + "see random player")) {
 	                event.setCancelled(true);
 	                List<Player> online = Lists.newArrayList();
 	                
-	                for (Player onlinePlayers : Bukkit.getOnlinePlayers()) {
+	                for (Player onlinePlayers : this.main.getServer().getOnlinePlayers()) {
 	                	if (onlinePlayers == player) continue;
 	                	
 	                	final PlayerManager om = PlayerManager.get(onlinePlayers.getUniqueId());
@@ -646,13 +652,13 @@ public class PlayerListener implements Listener {
 			if (pm.getStatus() != PlayerStatus.MODERATION || player.getItemInHand().getItemMeta() == null || player.getItemInHand().getItemMeta().getDisplayName() == null) {
 				return;
 			}
-			Player target = (Player)event.getRightClicked();
+			final Player target = (Player)event.getRightClicked();
 			if (player.getItemInHand().getType() == Material.BOOK && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "inspection tool")) {
-				Bukkit.dispatchCommand(player, "inspect " + target.getName());
+				this.main.getServer().dispatchCommand(player, "inspect " + target.getName());
 				return;
 			}
 			if (player.getItemInHand().getType() == Material.PACKED_ICE && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "freeze someone")) {
-				Bukkit.dispatchCommand(player, "freeze " + target.getName());
+				this.main.getServer().dispatchCommand(player, "freeze " + target.getName());
 			}
 		} 
 	}

@@ -19,8 +19,6 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
-import com.google.common.base.Strings;
-
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
@@ -77,7 +75,7 @@ public class ServerListeners implements Listener {
 			if (currentDuel.getLadder() == Ladders.SPLEEF) {
 				event.setCancelled(true);
 				for (UUID uuid : currentDuel.getAllAliveTeamsAndSpectators()) {
-					final Player blockViewers = Bukkit.getPlayer(uuid);
+					final Player blockViewers = this.main.getServer().getPlayer(uuid);
 					blockViewers.sendBlockChange(block.getLocation(), Material.AIR.getId(), (byte)0);
 				}
 				currentDuel.addBrokenBlocksLocation(block.getLocation());

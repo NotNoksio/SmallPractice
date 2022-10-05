@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
@@ -102,7 +101,7 @@ public class InventoryListener implements Listener {
             	return;
             }
             player.closeInventory();
-            Bukkit.dispatchCommand(player, "duel " + itemName[0]); 
+            this.main.getServer().dispatchCommand(player, "duel " + itemName[0]); 
 		}
 		if (title.equals("arena selection")) {
 			event.setCancelled(true);
@@ -112,7 +111,7 @@ public class InventoryListener implements Listener {
 			}
 			if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
 				final Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
-				final Player target = Bukkit.getPlayer(request.getRequestedUUID());
+				final Player target = this.main.getServer().getPlayer(request.getRequestedUUID());
 				if (target == null) {
 					player.sendMessage(ChatColor.RED + "Player not found!");
 					player.closeInventory();
@@ -133,7 +132,7 @@ public class InventoryListener implements Listener {
                 }
                 if (!playersInArena.isEmpty()) {
 	                for (UUID playerInArenaUUID : playersInArena) {
-	                	Player playerInArena = Bukkit.getPlayer(playerInArenaUUID);
+	                	Player playerInArena = this.main.getServer().getPlayer(playerInArenaUUID);
 	                	if (!player.canSee(playerInArena)) player.showPlayer(playerInArena);
 	                }
                 }

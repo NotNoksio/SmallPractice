@@ -93,8 +93,8 @@ public class DuelListener implements Listener {
 			
 			if (itemDropped.getItemStack().getType() == Material.GLASS_BOTTLE || itemDropped.getItemStack().getType() == Material.BOWL) return;
 			if (itemDropped.getOwner() != null && itemDropped.getOwner() instanceof Player) {
-				UUID playerUUID = itemDropped.getOwner().getUniqueId();
-				Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
+				final UUID playerUUID = itemDropped.getOwner().getUniqueId();
+				final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
 				if (duel == null) return;
 				
 				duel.addDrops(itemDropped);

@@ -72,6 +72,7 @@ public class QueueManager {
 	}
 	
 	private Set<UUID> lastUpdated = Collections.newSetFromMap(new WeakHashMap<>()); // DONT SPAM QUEUE!!
+	public Set<UUID> getLastUpdated() { return this.lastUpdated; }
 	private void updatePingDiffFromQueue() {
 		if (this.queue.isEmpty() || this.queue.size() == 1) {
 			return;
@@ -92,7 +93,7 @@ public class QueueManager {
 			Bukkit.getPlayer(uuid).sendMessage(ChatColor.DARK_AQUA + "Ping Difference: " + ChatColor.YELLOW + oldPingDiff + ChatColor.DARK_AQUA + " -> " + ChatColor.YELLOW + queue.getPingDiff());
 			addToQueue(queues.getKey(), queue.getLadder(), queue.isRanked(), queue.isTO2(), queue.getPingDiff());
 		}
-	}
+	} 
 	
 	private boolean is2PlayersOrMore(Ladders ladder, boolean ranked, boolean to2) {
 		if (this.queue.isEmpty() || this.queue.size() == 1) {
