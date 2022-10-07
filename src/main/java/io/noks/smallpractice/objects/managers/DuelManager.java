@@ -335,7 +335,7 @@ public class DuelManager {
 			public void run() {
 				if (!duel.isValid()) {
 					duel.sendMessage(ChatColor.RED + "The current duel has been cancelled due to his invalidity.");
-					endDuel(duel, 0, true);
+					finishDuel(duel, true);
 					this.cancel();
 				}
 				if (num <= 0) {
