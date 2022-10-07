@@ -87,7 +87,8 @@ public class Main extends JavaPlugin {
 		this.queueManager.getQueueMap().clear();
 		this.offlineInventories.clear();
 		for (Duel duels : this.duelManager.getAllDuels()) {
-			this.duelManager.endDuel(duels, 0, true);
+			if (duels == null) continue;
+			this.duelManager.finishDuel(duels, true);
 		}
 	}
 	

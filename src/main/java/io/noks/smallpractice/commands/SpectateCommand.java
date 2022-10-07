@@ -76,6 +76,7 @@ public class SpectateCommand implements CommandExecutor {
 		}
 		pm.hideAllPlayer();
 		pm.setSpectate(target);
+		player.setScoreboard(target.getScoreboard());
 		
 		Duel duel = Main.getInstance().getDuelManager().getDuelFromPlayerUUID(target.getUniqueId());
 		duel.addSpectator(player.getUniqueId());

@@ -165,6 +165,9 @@ public class DuelManager {
 	
 	// TODO: FFA END
 	public void endDuel(Duel duel, int winningTeamNumber, boolean forceEnding) {
+		if (winningTeamNumber == 0) {
+			return;
+		}
 		this.deathMessage(duel, winningTeamNumber);
 		
 		if (duel.isRanked() && !forceEnding) {
@@ -174,22 +177,25 @@ public class DuelManager {
 			this.tranferElo(winnersList, losersList, duel.getLadder());
 		}
 		
-		Iterator<UUID> specIt = duel.getAllSpectators().iterator();
-		while (specIt.hasNext()) {
-			Player spec = Bukkit.getPlayer(specIt.next());
-			if (spec == null) continue;
-			final PlayerManager sm = PlayerManager.get(spec.getUniqueId());
-			
-			spec.setFlySpeed(0.1f);
-			spec.setWalkSpeed(0.2f);
-			spec.setAllowFlight(false);
-			spec.setFlying(false);
-			sm.setStatus(PlayerStatus.SPAWN);
-			sm.showAllPlayer();
-			sm.setSpectate(null);
-			spec.teleport(spec.getWorld().getSpawnLocation());
-			Main.getInstance().getItemManager().giveSpawnItem(spec);
-			specIt.remove();
+		if (!duel.getAllSpectators().isEmpty()) {
+			Iterator<UUID> specIt = duel.getAllSpectators().iterator();
+			while (specIt.hasNext()) {
+				Player spec = Bukkit.getPlayer(specIt.next());
+				if (spec == null) continue;
+				final PlayerManager sm = PlayerManager.get(spec.getUniqueId());
+				
+				spec.setFlySpeed(0.1f);
+				spec.setWalkSpeed(0.2f);
+				spec.setAllowFlight(false);
+				spec.setFlying(false);
+				sm.setStatus(PlayerStatus.SPAWN);
+				sm.showAllPlayer();
+				sm.setSpectate(null);
+				spec.teleport(spec.getWorld().getSpawnLocation());
+				Main.getInstance().getItemManager().giveSpawnItem(spec);
+				spec.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
+				specIt.remove();
+			}
 		}
 		if (duel.getFirstTeamPartyLeaderUUID() != null && duel.getSecondTeamPartyLeaderUUID() != null) {
 			List<Party> partyList = Lists.newArrayList(Main.getInstance().getPartyManager().getParty(duel.getFirstTeamPartyLeaderUUID()), Main.getInstance().getPartyManager().getParty(duel.getSecondTeamPartyLeaderUUID()));
@@ -349,7 +355,7 @@ public class DuelManager {
 	private void teleportRandomArena(Duel duel) {
 		if (duel.getFirstTeam().isEmpty() || duel.getSecondTeam().isEmpty()) {
         	duel.sendMessage(ChatColor.RED + "The duel has been cancelled due to an empty team.");
-        	endDuel(duel, 0, true);
+        	finishDuel(duel, true);
         	return;
         }
 		
@@ -483,7 +489,7 @@ public class DuelManager {
 						lastPlayers.teleport(lastPlayers.getWorld().getSpawnLocation());
 						Main.getInstance().getItemManager().giveSpawnItem(lastPlayers);
 					}
-					finishDuel(currentDuel);
+					finishDuel(currentDuel, false);
 				}
 			}.runTaskLater(Main.getInstance(), 50L);
 		}
@@ -500,7 +506,7 @@ public class DuelManager {
 		return count;
 	}
 	
-	private void finishDuel(Duel duel) {
+	public void finishDuel(Duel duel, boolean cancelled) {
 		duel.clearDrops();
 		for (UUID dpUUID : duel.getAllTeams()) {
 			Player duelPlayer = Bukkit.getPlayer(dpUUID);
@@ -515,7 +521,7 @@ public class DuelManager {
 			dpm.setStatus(PlayerStatus.SPAWN);
 			dpm.heal(false);
 			dpm.showAllPlayer();
-			if ((duel.getLadder() == Ladders.BOXING || duel.getLadder() == Ladders.SUMO) || duelPlayer.getInventory().getContents() == null) {
+			if (cancelled || (duel.getLadder() == Ladders.BOXING || duel.getLadder() == Ladders.SUMO) || duelPlayer.getInventory().getContents() == null) {
 				duelPlayer.teleport(duelPlayer.getWorld().getSpawnLocation());
 				Main.getInstance().getItemManager().giveSpawnItem(duelPlayer);
 			}

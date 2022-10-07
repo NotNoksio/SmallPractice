@@ -428,6 +428,7 @@ public class PlayerListener implements Listener {
 						final PlayerManager um = PlayerManager.get(uuid);
 						if (um.getStatus() != PlayerStatus.WAITING && um.getStatus() != PlayerStatus.DUEL) continue;
 						duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);
+						player.setScoreboard(this.main.getServer().getPlayer(uuid).getScoreboard());
 						break;
 					}
 					if (duel == null) {
@@ -502,6 +503,7 @@ public class PlayerListener implements Listener {
 	        		pm.setStatus(PlayerStatus.SPAWN);
 	        		pm.showAllPlayer();
 	        		player.teleport(player.getWorld().getSpawnLocation());
+	        		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
 	        		this.main.getItemManager().giveSpawnItem(player);
 	        		break;
 	            }
