@@ -667,8 +667,9 @@ public class PlayerListener implements Listener {
 	public void onFeed(FoodLevelChangeEvent event) {
 		if (event.getEntity() instanceof Player) {
 			final Player player = (Player) event.getEntity();
+			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
-			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL) {
+			if (pm.getStatus() == PlayerStatus.WAITING || pm.getStatus() == PlayerStatus.DUEL) {
 				if (this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId()) != null) {
 					Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
 					

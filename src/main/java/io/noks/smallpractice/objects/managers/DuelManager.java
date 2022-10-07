@@ -134,7 +134,6 @@ public class DuelManager {
 			
 			player.setGameMode(GameMode.SURVIVAL);
 			player.sendMessage(duelMessage);
-			pm.heal(true);
 			if (ladder == Ladders.COMBO) {
 				player.setMaximumNoDamageTicks(2);
 				player.setKnockbackReduction(0.3f);
@@ -354,6 +353,7 @@ public class DuelManager {
         	return;
         }
 		
+		final boolean healForFight = (duel.getLadder() != Ladders.SOUP && duel.getLadder() != Ladders.SUMO && duel.getLadder() != Ladders.BOXING && duel.getLadder() != Ladders.SPLEEF);
 		for (UUID firstUUID : duel.getFirstTeam()) {
 			Player first = Bukkit.getPlayer(firstUUID);
 			
@@ -362,7 +362,7 @@ public class DuelManager {
 			PlayerManager pmf = PlayerManager.get(firstUUID);
 			this.uuidIdentifierToDuel.put(firstUUID, duel);
 			
-			pmf.heal(true);
+			pmf.heal(healForFight);
 			first.setNoDamageTicks(50);
 			
 			pmf.hideAllPlayer();
@@ -383,7 +383,7 @@ public class DuelManager {
 			PlayerManager pms = PlayerManager.get(secondUUID);
 			this.uuidIdentifierToDuel.put(secondUUID, duel);
 			
-			pms.heal(true);
+			pms.heal(healForFight);
 			second.setNoDamageTicks(50);
 			
 			pms.hideAllPlayer();

@@ -258,6 +258,7 @@ public class Duel {
 	
 	public void setDuelPlayersStatusTo(PlayerStatus status) {
 		for (UUID playersUUID : getAllTeams()) {
+			if (Bukkit.getPlayer(playersUUID) == null) continue;
 			PlayerManager.get(playersUUID).setStatus(status);
 		}
 	}

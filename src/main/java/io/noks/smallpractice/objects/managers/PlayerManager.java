@@ -179,17 +179,17 @@ public class PlayerManager {
 	
 	public void heal(boolean forFight) {
 		//if (!isAlive()) getPlayer().spigot().respawn();
-		getPlayer().setHealth(20.0D);
-		getPlayer().extinguish();
-		if (!getPlayer().getActivePotionEffects().isEmpty()) {
-			for (PotionEffect effect : getPlayer().getActivePotionEffects()) {
-				getPlayer().removePotionEffect(effect.getType());
+		this.player.setHealth(20.0D);
+		this.player.extinguish();
+		if (!this.player.getActivePotionEffects().isEmpty()) {
+			for (PotionEffect effect : this.player.getActivePotionEffects()) {
+				this.player.removePotionEffect(effect.getType());
 			}
 		}
-		getPlayer().setFoodLevel(20);
-		getPlayer().setSaturation(forFight ? 20F : 1000F);
-		if (!forFight) {
-			player.setKnockbackReduction(0.0f);
+		this.player.setFoodLevel(20);
+		this.player.setSaturation(forFight ? 20F : 1000F);
+		if (!forFight && this.player.getKnockbackReduction() > 0.0D) {
+			this.player.setKnockbackReduction(0.0f);
 		}
 	}
 	
