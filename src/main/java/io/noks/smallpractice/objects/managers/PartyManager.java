@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.PlayerStatus;
-import io.noks.smallpractice.objects.Duel;
+import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
 
@@ -73,11 +73,11 @@ public class PartyManager {
 					break;
 				}
 				if (duel != null) {
-					if (duel.getFirstTeamPartyLeaderUUID() == actualLeader) {
-						duel.switchFirstTeamPartyLeader(newLeader);
+					if (duel.getSimpleDuel().firstTeamPartyLeaderUUID == actualLeader) {
+						duel.getSimpleDuel().firstTeamPartyLeaderUUID = newLeader;
 					}
-					if (duel.getSecondTeamPartyLeaderUUID() == actualLeader) {
-						duel.switchSecondTeamPartyLeader(newLeader);
+					if (duel.getSimpleDuel().secondTeamPartyLeaderUUID == actualLeader) {
+						duel.getSimpleDuel().secondTeamPartyLeaderUUID = newLeader;
 					}
 				}
     		}

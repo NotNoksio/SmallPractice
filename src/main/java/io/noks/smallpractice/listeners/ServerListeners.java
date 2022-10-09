@@ -22,7 +22,7 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
-import io.noks.smallpractice.objects.Duel;
+import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import net.md_5.bungee.api.ChatColor;
 

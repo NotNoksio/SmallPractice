@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,15 +17,17 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
-import io.noks.smallpractice.objects.Duel;
 import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.Request;
+import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import net.minecraft.util.com.google.common.collect.Sets;
 
@@ -67,7 +70,7 @@ public class InventoryListener implements Listener {
 			if (!Ladders.contains(itemName)) {
 				return;
 			}
-			Ladders ladder = Ladders.getLadderFromName(itemName);
+			final Ladders ladder = Ladders.getLadderFromName(itemName);
 			if (!ladder.isEnable()) {
 				player.sendMessage(ChatColor.RED + "No arena created!");
 				player.closeInventory();
@@ -81,11 +84,30 @@ public class InventoryListener implements Listener {
 					player.openInventory(this.main.getInventoryManager().getArenasInventory());
 					return;
 				}
-				this.main.getDuelManager().createSplitTeamsDuel(this.main.getPartyManager().getParty(player.getUniqueId()), ladder);
+				player.openInventory(this.main.getInventoryManager().getPartyGameInventory());
+				player.setMetadata("ladder", new FixedMetadataValue(this.main, ladder.getName()));
 				return;
 			}
 			final PlayerSettings settings = PlayerManager.get(player.getUniqueId()).getSettings();
 			this.main.getQueueManager().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"), this.main.getPartyManager().hasParty(player.getUniqueId()), settings.getQueuePingDiff());
+		}
+		if (title.equals("select gamemode")) {
+			event.setCancelled(true);
+			if (!player.hasMetadata("ladder")) {
+				player.closeInventory();
+				return;
+			}
+			if (item.getType() == Material.SHEARS) {
+				player.closeInventory();
+				this.main.getDuelManager().createSplitTeamsDuel(this.main.getPartyManager().getParty(player.getUniqueId()), Ladders.getLadderFromName(player.getMetadata("ladder").get(0).asString()));
+				player.removeMetadata("ladder", this.main);
+				return;
+			}
+			if (item.getType() == Material.DIAMOND_SWORD || item.getType() == Material.WOOL) {
+				player.sendMessage(ChatColor.RED + "Coming SOON..");
+				player.closeInventory();
+				player.removeMetadata("ladder", this.main);
+			}
 		}
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);

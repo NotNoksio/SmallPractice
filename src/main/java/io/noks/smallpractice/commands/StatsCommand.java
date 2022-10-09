@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
-public class EloCommand implements CommandExecutor {
+public class StatsCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -18,7 +18,7 @@ public class EloCommand implements CommandExecutor {
 			return false;
 		}
 		if (args.length > 1) {
-			sender.sendMessage(ChatColor.RED + "Usage: /elo <player>");
+			sender.sendMessage(ChatColor.RED + "Usage: /stats <player>");
 			return false;
 		}
 		final Player player = (Player) sender;

@@ -31,6 +31,6 @@ commands:
   roll:
   mention:
   namemc:
-  elo:
-    aliases: [stats]
+  stats:
+    aliases: [elo]
   

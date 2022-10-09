@@ -14,7 +14,7 @@ import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.PlayerStatus;
-import io.noks.smallpractice.objects.Duel;
+import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import net.minecraft.util.com.google.common.collect.Lists;
 
@@ -84,9 +84,7 @@ public class SpectateCommand implements CommandExecutor {
 		player.setAllowFlight(true);
 		player.setFlying(true);
 		player.teleport(target.getLocation().add(0, 2, 0));
-		
-		List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
-		duelPlayers.addAll(duel.getSecondTeamAlive());
+		List<UUID> duelPlayers = Lists.newArrayList(duel.getAllAliveTeams());
 			
 		for (UUID uuid : duelPlayers) {
 			Player dplayers = Bukkit.getPlayer(uuid);

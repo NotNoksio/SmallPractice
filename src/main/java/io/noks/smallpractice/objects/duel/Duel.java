@@ -1,4 +1,4 @@
-package io.noks.smallpractice.objects;
+package io.noks.smallpractice.objects.duel;
 
 import java.util.List;
 import java.util.Set;
@@ -24,30 +24,18 @@ import net.minecraft.util.com.google.common.collect.Sets;
 public class Duel {
 	private Arenas arena;
 	private Ladders ladder;
-	private UUID firstTeamPartyLeaderUUID;
-    private UUID secondTeamPartyLeaderUUID;
-	private List<UUID> firstTeam;
-	private List<UUID> secondTeam;
-	private List<UUID> firstTeamAlive;
-	private List<UUID> secondTeamAlive;
-	private UUID ffaPartyLeaderUUID;
-    //private List<UUID> ffaPlayers;
-    //private List<UUID> ffaAlivePlayers;
+	private SimpleDuel simpleDuel;
+	private FFADuel ffaDuel;
 	private boolean ranked;
 	private List<UUID> spectators;
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
 	private Set<Location> brokenBlocks;
 	
-	public Duel(Arenas arena, Ladders ladder, UUID firstTeamPartyLeaderUUID, UUID secondTeamPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) {
+	public Duel(Arenas arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
 		this.arena = arena;
 		this.ladder = ladder;
-		this.firstTeamPartyLeaderUUID = firstTeamPartyLeaderUUID;
-		this.secondTeamPartyLeaderUUID = secondTeamPartyLeaderUUID;
-		this.firstTeam = Lists.newArrayList(firstTeam);
-		this.secondTeam = Lists.newArrayList(secondTeam);
-		this.firstTeamAlive = Lists.newArrayList(firstTeam);
-		this.secondTeamAlive = Lists.newArrayList(secondTeam);
+		this.simpleDuel = simpleDuel;
 		this.spectators = Lists.newArrayList();
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
@@ -56,15 +44,13 @@ public class Duel {
 		}
 	}
 	
-	/*public Duel(Arenas arena, Ladders ladder, UUID ffaPartyLeaderUUID, List<UUID> ffaPlayers) {
+	public Duel(Arenas arena, Ladders ladder, FFADuel ffaDuel) {
 		this.arena = arena;
 		this.ladder = ladder;
-		this.ffaPartyLeaderUUID = ffaPartyLeaderUUID;
-		this.ffaPlayers = Lists.newArrayList(ffaPlayers);
-		this.ffaAlivePlayers = Lists.newArrayList(ffaPlayers);
-		this.drops = Lists.newLinkedList();
+		this.ffaDuel = ffaDuel;
+		this.drops = Sets.newHashSet();
 		this.ranked = false;
-    }*/
+    }
 	
 	public Arenas getArena() {
 		return this.arena;
@@ -74,77 +60,84 @@ public class Duel {
 		return this.ladder;
 	}
 	
-	public List<UUID> getFirstTeam() {
-		return firstTeam;
+	public SimpleDuel getSimpleDuel() {
+		return this.simpleDuel;
 	}
 	
-	public List<UUID> getSecondTeam() {
-		return secondTeam;
+	public FFADuel getFFADuel() {
+		return this.ffaDuel;
 	}
 	
 	public List<UUID> getAllTeams() {
 		List<UUID> teams = Lists.newArrayList();
-		if (!this.firstTeam.isEmpty()){
-			teams.addAll(firstTeam);
+		if (this.simpleDuel != null) {
+			if (!this.simpleDuel.firstTeam.isEmpty()) {
+				teams.addAll(this.simpleDuel.firstTeam);
+			}
+			if (!this.simpleDuel.secondTeam.isEmpty()) {
+				teams.addAll(this.simpleDuel.secondTeam);
+			}
 		}
-		if (!this.secondTeam.isEmpty()){
-			teams.addAll(secondTeam);
+		if (this.ffaDuel != null) {
+			if (!this.ffaDuel.getFfaPlayers().isEmpty()) {
+				teams.addAll(this.ffaDuel.getFfaPlayers());
+			}
 		}
-		/*if (this.ffaPlayers != null && !this.ffaPlayers.isEmpty()) {
-			teams.addAll(ffaPlayers);
-		}*/
 		return teams;
 	}
 	
 	public List<UUID> getAllAliveTeams() {
 		List<UUID> teams = Lists.newArrayList();
-		if (!this.firstTeamAlive.isEmpty()){
-			teams.addAll(firstTeamAlive);
+		if (this.simpleDuel != null) {
+			if (!this.simpleDuel.firstTeamAlive.isEmpty()) {
+				teams.addAll(this.simpleDuel.firstTeamAlive);
+			}
+			if (!this.simpleDuel.secondTeamAlive.isEmpty()) {
+				teams.addAll(this.simpleDuel.secondTeamAlive);
+			}
 		}
-		if (!this.secondTeamAlive.isEmpty()){
-			teams.addAll(secondTeamAlive);
+		if (this.ffaDuel != null) {
+			if (!this.ffaDuel.getFfaAlivePlayers().isEmpty()) {
+				teams.addAll(this.ffaDuel.getFfaAlivePlayers());
+			}
 		}
-		/*if (this.ffaAlivePlayers != null && !this.ffaAlivePlayers.isEmpty()) {
-			teams.addAll(ffaAlivePlayers);
-		}*/
 		return teams;
 	}
 	
 	public List<UUID> getAllAliveTeamsAndSpectators() {
 		List<UUID> teams = Lists.newArrayList();
-		if (!this.firstTeamAlive.isEmpty()){
-			teams.addAll(firstTeamAlive);
+		if (this.simpleDuel != null) {
+			if (!this.simpleDuel.firstTeamAlive.isEmpty()) {
+				teams.addAll(this.simpleDuel.firstTeamAlive);
+			}
+			if (!this.simpleDuel.secondTeamAlive.isEmpty()) {
+				teams.addAll(this.simpleDuel.secondTeamAlive);
+			}
 		}
-		if (!this.secondTeamAlive.isEmpty()){
-			teams.addAll(secondTeamAlive);
+		if (this.ffaDuel != null) {
+			if (!this.ffaDuel.getFfaAlivePlayers().isEmpty()) {
+				teams.addAll(this.ffaDuel.getFfaAlivePlayers());
+			}
 		}
-		/*if (this.ffaAlivePlayers != null && !this.ffaAlivePlayers.isEmpty()) {
-			teams.addAll(ffaAlivePlayers);
-		}*/
 		if (!this.spectators.isEmpty()) {
 			teams.addAll(this.spectators);
 		}
 		return teams;
 	}
 	
-	public List<UUID> getFirstTeamAlive() {
-		return firstTeamAlive;
-	}
-	
-	public List<UUID> getSecondTeamAlive() {
-		return secondTeamAlive;
-	}
-	
 	public void killPlayer(UUID killedUUID) {
-		if (this.firstTeamAlive.contains(killedUUID)) {
-			this.firstTeamAlive.remove(killedUUID);
+		if (this.simpleDuel != null) {
+			if (this.simpleDuel.firstTeamAlive.contains(killedUUID)) {
+				this.simpleDuel.firstTeamAlive.remove(killedUUID);
+			}
+			if (this.simpleDuel.secondTeamAlive.contains(killedUUID)) {
+				this.simpleDuel.secondTeamAlive.remove(killedUUID);
+			}
 			return;
 		}
-		if (this.secondTeamAlive.contains(killedUUID)) {
-			this.secondTeamAlive.remove(killedUUID);
-			//return;
+		if (this.ffaDuel != null) {
+			this.ffaDuel.getFfaAlivePlayers().remove(killedUUID);
 		}
-		//this.ffaAlivePlayers.remove(killedUUID);
 	}
 
 	public boolean isRanked() {
@@ -204,56 +197,38 @@ public class Duel {
 		if (!isValid()) {
 			return;
 		}
-		if (!this.firstTeamAlive.isEmpty() && !this.secondTeamAlive.isEmpty()) {
-			for (UUID firstUUID : this.firstTeamAlive) {
-				for (UUID secondUUID : this.secondTeamAlive) {
-	                Player first = Bukkit.getPlayer(firstUUID);
-	                Player second = Bukkit.getPlayer(secondUUID);
-					first.showPlayer(second);
-					second.showPlayer(first);
+		if (this.simpleDuel != null) {
+			if (!this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty()) {
+				for (UUID firstUUID : this.simpleDuel.firstTeamAlive) {
+					for (UUID secondUUID : this.simpleDuel.secondTeamAlive) {
+		                Player first = Bukkit.getPlayer(firstUUID);
+		                Player second = Bukkit.getPlayer(secondUUID);
+						first.showPlayer(second);
+						second.showPlayer(first);
+					}
 				}
 			}
 		}
-		/*if (this.ffaAlivePlayers != null && !ffaAlivePlayers.isEmpty()) {
-			// TODO: see all players in a ffa fight
-		}*/
+		if (this.ffaDuel != null) {
+			if (!this.ffaDuel.getFfaAlivePlayers().isEmpty()) {
+				
+			}
+		}
 	}
-	
-	public void switchFirstTeamPartyLeader(UUID newPartyLeaderUUID) {
-		this.firstTeamPartyLeaderUUID = newPartyLeaderUUID;
-	}
-	
-	public void switchSecondTeamPartyLeader(UUID newPartyLeaderUUID) {
-		this.secondTeamPartyLeaderUUID = newPartyLeaderUUID;
-	}
-
-	public UUID getFirstTeamPartyLeaderUUID() {
-		return firstTeamPartyLeaderUUID;
-	}
-
-	public UUID getSecondTeamPartyLeaderUUID() {
-		return secondTeamPartyLeaderUUID;
-	}
-	
-	public UUID getFfaPartyLeaderUUID() {
-        return this.ffaPartyLeaderUUID;
-    }
-    
-    /*public List<UUID> getFfaPlayers() {
-        return this.ffaPlayers;
-    }
-    
-    public List<UUID> getFfaAlivePlayers() {
-        return this.ffaAlivePlayers;
-    }*/
 	
 	public boolean containPlayer(Player player) {
 		Preconditions.checkNotNull(player, "Player cannot be null");
-		return (this.firstTeam.contains(player.getUniqueId()) || this.secondTeam.contains(player.getUniqueId()));
+		if (this.simpleDuel != null) {
+			return (this.simpleDuel.firstTeam.contains(player.getUniqueId()) || this.simpleDuel.secondTeam.contains(player.getUniqueId()));
+		}
+		return false;
 	}
 	
 	public boolean isValid() {
-		return (!this.firstTeam.isEmpty() && !this.secondTeam.isEmpty() && !this.firstTeamAlive.isEmpty() && !this.secondTeamAlive.isEmpty());
+		if (this.simpleDuel != null) {
+			return (!this.simpleDuel.firstTeam.isEmpty() && !this.simpleDuel.secondTeam.isEmpty() && !this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty());
+		}
+		return false;
 	}
 	
 	public void setDuelPlayersStatusTo(PlayerStatus status) {

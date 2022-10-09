@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,7 +11,6 @@ import io.noks.smallpractice.commands.AcceptCommand;
 import io.noks.smallpractice.commands.BuildCommand;
 import io.noks.smallpractice.commands.DenyCommand;
 import io.noks.smallpractice.commands.DuelCommand;
-import io.noks.smallpractice.commands.EloCommand;
 import io.noks.smallpractice.commands.ForceDuelCommand;
 import io.noks.smallpractice.commands.InventoryCommand;
 import io.noks.smallpractice.commands.MentionCommand;
@@ -27,6 +25,7 @@ import io.noks.smallpractice.commands.RollCommand;
 import io.noks.smallpractice.commands.SeeallCommand;
 import io.noks.smallpractice.commands.SpawnCommand;
 import io.noks.smallpractice.commands.SpectateCommand;
+import io.noks.smallpractice.commands.StatsCommand;
 import io.noks.smallpractice.enums.PlayerTimeEnum;
 import io.noks.smallpractice.listeners.ChatListener;
 import io.noks.smallpractice.listeners.DuelListener;
@@ -34,7 +33,7 @@ import io.noks.smallpractice.listeners.EnderDelay;
 import io.noks.smallpractice.listeners.InventoryListener;
 import io.noks.smallpractice.listeners.PlayerListener;
 import io.noks.smallpractice.listeners.ServerListeners;
-import io.noks.smallpractice.objects.Duel;
+import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.ConfigManager;
 import io.noks.smallpractice.objects.managers.DuelManager;
 import io.noks.smallpractice.objects.managers.InventoryManager;
@@ -113,13 +112,13 @@ public class Main extends JavaPlugin {
 		getCommand("roll").setExecutor(new RollCommand());
 		getCommand("mention").setExecutor(new MentionCommand());
 		getCommand("namemc").setExecutor(new NameMCCommand());
-		getCommand("elo").setExecutor(new EloCommand());
+		getCommand("stats").setExecutor(new StatsCommand());
 	}
 	
 	private void registerListers() {
 		new PlayerListener(this);
 		new ServerListeners(this);
-		Bukkit.getServer().getPluginManager().registerEvents(new EnderDelay(), this);
+		this.getServer().getPluginManager().registerEvents(new EnderDelay(), this);
 		new ChatListener(this);
 		new DuelListener(this);
 		new InventoryListener(this);

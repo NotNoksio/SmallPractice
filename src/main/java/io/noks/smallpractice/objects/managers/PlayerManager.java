@@ -188,7 +188,7 @@ public class PlayerManager {
 		}
 		this.player.setFoodLevel(20);
 		this.player.setSaturation(forFight ? 20F : 1000F);
-		if (!forFight && this.player.getKnockbackReduction() > 0.0D) {
+		if (!forFight && this.status != PlayerStatus.WAITING && this.status != PlayerStatus.DUEL && this.player.getKnockbackReduction() > 0.0D) {
 			this.player.setKnockbackReduction(0.0f);
 		}
 	}
@@ -227,10 +227,11 @@ public class PlayerManager {
 		lm.setDisplayName((isAlive() ? ChatColor.DARK_AQUA + "Hearts: " + ChatColor.RESET + Math.ceil(player.getHealth() / 2.0D) + ChatColor.RED + " hp" : ChatColor.DARK_AQUA + "Player Died"));
 		life.setItemMeta(lm);
 		this.savedInventory.setItem(48, life);
-			
+					
 		final ItemStack food = new ItemStack(Material.COOKED_BEEF, player.getFoodLevel());
 		final ItemMeta fm = food.getItemMeta();
 		fm.setDisplayName(ChatColor.DARK_AQUA + "Food points: " + ChatColor.RESET + player.getFoodLevel());
+		
 		food.setItemMeta(fm);
 		this.savedInventory.setItem(49, food);
       

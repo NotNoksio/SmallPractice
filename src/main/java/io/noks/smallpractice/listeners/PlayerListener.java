@@ -39,7 +39,7 @@ import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.enums.RemoveReason;
 import io.noks.smallpractice.enums.Warps;
-import io.noks.smallpractice.objects.Duel;
+import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
@@ -313,6 +313,9 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onClickItem(PlayerInteractEvent event) {
+		if (!event.hasItem()) {
+			return;
+		}
 		final Player player = event.getPlayer();
         if (player.getInventory().getItemInHand() == null || !player.getInventory().getItemInHand().hasItemMeta() || !player.getInventory().getItemInHand().getItemMeta().hasDisplayName()) {
             return;
@@ -357,7 +360,7 @@ public class PlayerListener implements Listener {
 				final Party currentParty = this.main.getPartyManager().getParty(player.getUniqueId());
 				final boolean isPartyLeader = currentParty.getLeader() == player.getUniqueId();
 					
-				if (item.getType() == Material.IRON_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 unranked queue")) {
+				if (item.getType() == Material.IRON_AXE && itemName.equals(ChatColor.YELLOW + "2v2 unranked queue")) {
 					event.setCancelled(true);
 					if (!isPartyLeader) {
 						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
@@ -374,7 +377,7 @@ public class PlayerListener implements Listener {
 					player.openInventory(this.main.getInventoryManager().getUnrankedInventory());
 					break;
 				}
-				if (item.getType() == Material.DIAMOND_SWORD && itemName.equals(ChatColor.YELLOW + "2v2 ranked queue")) {
+				if (item.getType() == Material.DIAMOND_AXE && itemName.equals(ChatColor.YELLOW + "2v2 ranked queue")) {
 					event.setCancelled(true);
 					if (!isPartyLeader) {
 						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
@@ -391,7 +394,7 @@ public class PlayerListener implements Listener {
 					player.openInventory(this.main.getInventoryManager().getRankedInventory());
 					break;
 				}
-				if (item.getType() == Material.ARROW && itemName.equals(ChatColor.YELLOW + "party game")) {
+				if (item.getType() == Material.GOLD_HOE && itemName.equals(ChatColor.YELLOW + "party game")) {
 					if (!isPartyLeader) {
 						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
 						break;
@@ -444,8 +447,8 @@ public class PlayerListener implements Listener {
 					player.setFlying(true);
 					player.teleport(duel.getArena().getLocations()[0].add(0, 2, 0));
 						
-					final List<UUID> duelPlayers = Lists.newArrayList(duel.getFirstTeamAlive());
-					duelPlayers.addAll(duel.getSecondTeamAlive());
+					final List<UUID> duelPlayers = Lists.newArrayList(duel.getSimpleDuel().firstTeamAlive);
+					duelPlayers.addAll(duel.getSimpleDuel().secondTeamAlive);
 							
 					for (UUID uuid : duelPlayers) {
 						Player dplayers = this.main.getServer().getPlayer(uuid);
@@ -607,25 +610,25 @@ public class PlayerListener implements Listener {
 	}
 	
 	private void giveFightItems(Player player, String name) {
-		String itemName = ChatColor.stripColor(name);
-		String[] ladderName = itemName.split(" ");
+		final String[] ladderName = ChatColor.stripColor(name).split(" ");
 		this.main.getItemManager().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
         player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInteractWithBlock(PlayerInteractEvent event) {
+		if (!event.hasBlock()) { // TODO: check if good
+			return;
+		}
 		if (event.getClickedBlock() != null && (event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.SIGN || (event.getClickedBlock().getType() == Material.WALL_SIGN && event.getAction() == Action.RIGHT_CLICK_BLOCK))) {
-			Sign sign = (Sign)event.getClickedBlock().getState();
+			final Sign sign = (Sign)event.getClickedBlock().getState();
 			if (sign.getLine(0).equalsIgnoreCase("-*-") && sign.getLine(1).equalsIgnoreCase("Back to spawn") && sign.getLine(2).equalsIgnoreCase("-*-")) {
 				event.setCancelled(true);
-				Player player = event.getPlayer();
+				final Player player = event.getPlayer();
 				if (player.isSneaking()) {
 					return;
 				}
-				PlayerManager pm = PlayerManager.get(player.getUniqueId());
-				
-				pm.setStatus(PlayerStatus.SPAWN);
+				PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
 				player.teleport(player.getWorld().getSpawnLocation());
 				this.main.getItemManager().giveSpawnItem(player);
 			}
@@ -634,10 +637,13 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerInteractSoup(PlayerInteractEvent event) {
+		if (!event.hasItem()) {
+			return;
+		}
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			Player player = event.getPlayer();
+			final Player player = event.getPlayer();
 			if (!player.isDead() && player.getItemInHand().getType() == Material.MUSHROOM_SOUP && player.getHealth() < player.getMaxHealth()) {
-				double newHealth = Math.min(player.getHealth() + 7.0D, player.getMaxHealth());
+				final double newHealth = Math.min(player.getHealth() + 7.0D, player.getMaxHealth());
 				player.setHealth(newHealth);
 				player.getItemInHand().setType(Material.BOWL);
 				player.updateInventory();
@@ -648,8 +654,8 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.LOW)
 	public void onClickPlayer(PlayerInteractEntityEvent event) {
 		if (event.getRightClicked() instanceof Player) {
-			Player player = event.getPlayer();
-			PlayerManager pm = PlayerManager.get(player.getUniqueId());
+			final Player player = event.getPlayer();
+			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 	      
 			if (pm.getStatus() != PlayerStatus.MODERATION || player.getItemInHand().getItemMeta() == null || player.getItemInHand().getItemMeta().getDisplayName() == null) {
 				return;
@@ -675,7 +681,7 @@ public class PlayerListener implements Listener {
 				if (this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId()) != null) {
 					Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
 					
-					if (duel.getArena().isSumo() || duel.getLadder() == Ladders.SOUP || duel.getLadder() == Ladders.EARLY_HG || duel.getLadder() == Ladders.BOXING) {
+					if (!duel.getLadder().needFood()) {
 						event.setCancelled(true);
 					}
 				}

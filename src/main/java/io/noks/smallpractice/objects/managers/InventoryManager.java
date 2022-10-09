@@ -27,6 +27,7 @@ public class InventoryManager {
 	private Inventory editingInventory;
 	private Inventory settingsInventory;
 	private Inventory selectionInventory;
+	private Inventory partyGameInventory;
 	private Map<UUID, Request> selectingDuel;
 	private Map<UUID, Inventory> editKitSelection;
 	private Map<UUID, PlayerInventory> editKitEditor;
@@ -40,6 +41,7 @@ public class InventoryManager {
 		this.editingInventory = Bukkit.createInventory(null, 9, "Editing Selection");
 		this.settingsInventory = Bukkit.createInventory(null, 27, "Settings Configuration");
 		this.selectionInventory = Bukkit.createInventory(null, 27, "Selector");
+		this.partyGameInventory = Bukkit.createInventory(null, 27, "Select Gamemode");
 		this.setArenasInventory();
 		this.setUnrankedInventory();
 		this.setRankedInventory();
@@ -47,6 +49,7 @@ public class InventoryManager {
 		this.setEditingInventory();
 		this.setSettingsInventory();
 		this.setSelectionInventory();
+		this.setPartyGameInventory();
 	}
 	
 	private void setArenasInventory() {
@@ -117,6 +120,16 @@ public class InventoryManager {
 		this.selectionInventory.setItem(15, ItemBuilder.createNewItemStackByMaterial(Material.ANVIL, ChatColor.RED + "Configurate Settings"));
 	}
 	
+	private void setPartyGameInventory() {
+		this.partyGameInventory.clear();
+		for (int i = 0; i < this.selectionInventory.getSize(); i++) {
+			this.partyGameInventory.setItem(i, ItemBuilder.createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15), " "));
+		}
+		this.partyGameInventory.setItem(11, ItemBuilder.createNewItemStackByMaterial(Material.SHEARS, ChatColor.GREEN + "Split Team"));
+		this.partyGameInventory.setItem(13, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.RED + "FFA"));
+		this.partyGameInventory.setItem(15, ItemBuilder.createNewItemStack(new ItemStack(Material.WOOL, 1, (short) 14), ChatColor.RED + "RedRover"));
+	}
+	
 	public Inventory getArenasInventory() {
 		return this.arenasInventory;
 	}
@@ -143,6 +156,10 @@ public class InventoryManager {
 	
 	public Inventory getSelectionInventory() {
 		return this.selectionInventory;
+	}
+	
+	public Inventory getPartyGameInventory() {
+		return this.partyGameInventory;
 	}
 	
 	public void setSelectingDuel(UUID requester, UUID requested) { 

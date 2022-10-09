@@ -18,8 +18,8 @@ import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.enums.RemoveReason;
-import io.noks.smallpractice.objects.Duel;
 import io.noks.smallpractice.objects.MatchStats;
+import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class DuelListener implements Listener {
@@ -31,6 +31,9 @@ public class DuelListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onFailedPotion(PotionSplashEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getEntity().getShooter() instanceof Player) {
 			final Player shooter = (Player) event.getEntity().getShooter();
 			final PlayerManager sm = PlayerManager.get(shooter.getUniqueId());
@@ -45,6 +48,9 @@ public class DuelListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             final PlayerManager dm = PlayerManager.get(event.getEntity().getUniqueId());
             final PlayerManager am = PlayerManager.get(event.getDamager().getUniqueId());
@@ -76,15 +82,18 @@ public class DuelListener implements Listener {
             		am.getPlayer().setLevel(hit);
             		am.getPlayer().setExp((hit / 100.0f));
             		if (hit == 100) {
-            			this.main.getDuelManager().endDuel(duel, (duel.getFirstTeam().contains(am.getPlayerUUID()) ? 1 : 2), false);
+            			this.main.getDuelManager().endDuel(duel, (duel.getSimpleDuel().firstTeam.contains(am.getPlayerUUID()) ? 1 : 2), false);
             		}
             	}
             }
         }
     }
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onEntitySpawnInWorld(EntitySpawnEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getEntity() instanceof Item) {
 			final Item itemDropped = (Item) event.getEntity();
 			
@@ -102,6 +111,9 @@ public class DuelListener implements Listener {
 	// My PlayerMoveEvent is not like everyone event (be careful)
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onMove(PlayerMoveEvent event) {
+		if (this.main.getQueueManager().getQueuedFromLadder(Ladders.SUMO, false) == 0 && this.main.getQueueManager().getQueuedFromLadder(Ladders.SUMO, true) == 0) { // Dont run event if we dont need it
+			return;
+		}
 		final Player player = event.getPlayer();
 		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
 		if (duel != null && duel.getLadder() == Ladders.SUMO) {
