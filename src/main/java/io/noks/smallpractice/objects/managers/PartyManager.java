@@ -66,7 +66,7 @@ public class PartyManager {
     		party.notify(ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
     		if (party.getPartyState() == PartyState.DUELING) {
     			Duel duel = null;
-				for (UUID uuid : party.getMembersIncludeLeader()) {
+				for (UUID uuid : party.getMembersIncludingLeader()) {
 					final PlayerManager um = PlayerManager.get(uuid);
 					if (um.getStatus() != PlayerStatus.WAITING && um.getStatus() != PlayerStatus.DUEL) continue;
 					duel = Main.getInstance().getDuelManager().getDuelFromPlayerUUID(uuid);

@@ -111,7 +111,7 @@ public class DuelListener implements Listener {
 	// My PlayerMoveEvent is not like everyone event (be careful)
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onMove(PlayerMoveEvent event) {
-		if (this.main.getQueueManager().getQueuedFromLadder(Ladders.SUMO, false) == 0 && this.main.getQueueManager().getQueuedFromLadder(Ladders.SUMO, true) == 0) { // Dont run event if we dont need it
+		if (this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0) { // Dont run event if we dont need it
 			return;
 		}
 		final Player player = event.getPlayer();

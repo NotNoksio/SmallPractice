@@ -26,7 +26,8 @@ public class PlayerTimeCommand implements CommandExecutor {
 		}
 		final Player player = (Player) sender;
 		player.setPlayerTime(pt.getTime(), false);
-        player.sendMessage(ChatColor.GREEN + "You have set the " + pt.getName().toLowerCase() + ".");
+        player.sendMessage(ChatColor.GREEN + "You've set the " + pt.getName().toLowerCase() + ".");
+        player.sendMessage(ChatColor.GRAY + "type \"/resettime\" to reset the sky time.");
 		return true;
 	}
 }

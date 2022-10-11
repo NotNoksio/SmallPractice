@@ -427,7 +427,7 @@ public class PlayerListener implements Listener {
 						break;
 					}
 					Duel duel = null;
-					for (UUID uuid : currentParty.getMembersIncludeLeader()) {
+					for (UUID uuid : currentParty.getMembersIncludingLeader()) {
 						final PlayerManager um = PlayerManager.get(uuid);
 						if (um.getStatus() != PlayerStatus.WAITING && um.getStatus() != PlayerStatus.DUEL) continue;
 						duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);
@@ -610,6 +610,7 @@ public class PlayerListener implements Listener {
 	}
 	
 	private void giveFightItems(Player player, String name) {
+		player.getInventory().clear();
 		final String[] ladderName = ChatColor.stripColor(name).split(" ");
 		this.main.getItemManager().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
         player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");

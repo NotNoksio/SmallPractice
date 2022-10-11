@@ -18,7 +18,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
@@ -29,6 +28,7 @@ import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.Request;
 import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
+import io.noks.smallpractice.party.Party;
 import net.minecraft.util.com.google.common.collect.Sets;
 
 public class InventoryListener implements Listener {
@@ -97,27 +97,33 @@ public class InventoryListener implements Listener {
 				player.closeInventory();
 				return;
 			}
+			final Ladders ladder = Ladders.getLadderFromName(player.getMetadata("ladder").get(0).asString());
+			final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
 			if (item.getType() == Material.SHEARS) {
+				this.main.getDuelManager().createSplitTeamsDuel(party, ladder);
 				player.closeInventory();
-				this.main.getDuelManager().createSplitTeamsDuel(this.main.getPartyManager().getParty(player.getUniqueId()), Ladders.getLadderFromName(player.getMetadata("ladder").get(0).asString()));
 				player.removeMetadata("ladder", this.main);
 				return;
 			}
-			if (item.getType() == Material.DIAMOND_SWORD || item.getType() == Material.WOOL) {
-				player.sendMessage(ChatColor.RED + "Coming SOON..");
+			if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().contains("ffa")) {
+				this.main.getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, player.getUniqueId(), party.getMembersIncludingLeader());
 				player.closeInventory();
 				player.removeMetadata("ladder", this.main);
+				return;
+			}
+			if (item.getType() == Material.WOOL) {
+				player.sendMessage(ChatColor.RED + "Coming SOON..");
 			}
 		}
 		if (title.equals("fight other parties")) {
 			event.setCancelled(true);
 			
 			if (item.getData().getData() == SkullType.WITHER.ordinal()) {
-				player.sendMessage(ChatColor.RED + "This party is not in spawn!");
+				player.sendMessage(ChatColor.RED + "This party is currently in a match!");
 				player.closeInventory();
 				return;
 			}
-			String[] itemName = splitString(ChatColor.stripColor(item.getItemMeta().getDisplayName()));
+			final String[] itemName = splitString(ChatColor.stripColor(item.getItemMeta().getDisplayName()));
             if (player.getName().toLowerCase().equals(itemName[0].toLowerCase())) {
             	player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
             	return;
@@ -212,7 +218,12 @@ public class InventoryListener implements Listener {
 		
 		if (title.startsWith("unranked") || title.startsWith("ranked")) {
 			this.main.getInventoryManager().updateQueueInventory(title.contains("ranked"));
+			return;
 		} 
+		final Player player = (Player) event.getPlayer();
+		if (title.equals("select gamemode") && player.hasMetadata("ladder")) {
+			player.removeMetadata("ladder", this.main);
+		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)

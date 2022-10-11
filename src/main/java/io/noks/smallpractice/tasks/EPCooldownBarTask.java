@@ -1,6 +1,10 @@
 package io.noks.smallpractice.tasks;
 
+import java.util.UUID;
+
 import org.bukkit.scheduler.BukkitRunnable;
+
+import io.noks.smallpractice.Main;
 
 public class EPCooldownBarTask extends BukkitRunnable {
 
@@ -12,5 +16,11 @@ public class EPCooldownBarTask extends BukkitRunnable {
 	public void run() {
 		// TODO
 		// FOR THE DUELMANAGER uuidIdentifierToDuel FOR FASTER RESULT
+		if (Main.getInstance().getDuelManager().getUniqueIDIdentifierToDuelMap().isEmpty()) {
+			return;
+		}
+		for (UUID uuids : Main.getInstance().getDuelManager().getUniqueIDIdentifierToDuelMap().keySet()) {
+			
+		}
 	}
 }

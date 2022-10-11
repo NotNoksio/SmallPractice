@@ -12,7 +12,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import io.noks.smallpractice.arena.Arena.Arenas;
@@ -48,6 +47,7 @@ public class Duel {
 		this.arena = arena;
 		this.ladder = ladder;
 		this.ffaDuel = ffaDuel;
+		this.spectators = Lists.newArrayList();
 		this.drops = Sets.newHashSet();
 		this.ranked = false;
     }
@@ -105,20 +105,7 @@ public class Duel {
 	}
 	
 	public List<UUID> getAllAliveTeamsAndSpectators() {
-		List<UUID> teams = Lists.newArrayList();
-		if (this.simpleDuel != null) {
-			if (!this.simpleDuel.firstTeamAlive.isEmpty()) {
-				teams.addAll(this.simpleDuel.firstTeamAlive);
-			}
-			if (!this.simpleDuel.secondTeamAlive.isEmpty()) {
-				teams.addAll(this.simpleDuel.secondTeamAlive);
-			}
-		}
-		if (this.ffaDuel != null) {
-			if (!this.ffaDuel.getFfaAlivePlayers().isEmpty()) {
-				teams.addAll(this.ffaDuel.getFfaAlivePlayers());
-			}
-		}
+		List<UUID> teams = Lists.newArrayList(getAllAliveTeams());
 		if (!this.spectators.isEmpty()) {
 			teams.addAll(this.spectators);
 		}
@@ -164,7 +151,7 @@ public class Duel {
 		// TODO: Put broken blocks in place
 	}
 	
-	public boolean hasSpectator() {
+	public boolean hasSpectators() {
 		return !this.spectators.isEmpty();
 	}
 	
@@ -200,8 +187,8 @@ public class Duel {
 		if (this.simpleDuel != null) {
 			if (!this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty()) {
 				for (UUID firstUUID : this.simpleDuel.firstTeamAlive) {
+					Player first = Bukkit.getPlayer(firstUUID);
 					for (UUID secondUUID : this.simpleDuel.secondTeamAlive) {
-		                Player first = Bukkit.getPlayer(firstUUID);
 		                Player second = Bukkit.getPlayer(secondUUID);
 						first.showPlayer(second);
 						second.showPlayer(first);
@@ -211,15 +198,28 @@ public class Duel {
 		}
 		if (this.ffaDuel != null) {
 			if (!this.ffaDuel.getFfaAlivePlayers().isEmpty()) {
-				
+				for (UUID firstUUID : ffaDuel.getFfaAlivePlayers()) {
+					final Player first = Bukkit.getPlayer(firstUUID);
+					for (UUID secondUUID : ffaDuel.getFfaAlivePlayers()) {
+						if (secondUUID == firstUUID) continue;
+						final Player second = Bukkit.getPlayer(secondUUID);
+						first.showPlayer(second);
+						second.showPlayer(first);
+					}
+				}
 			}
 		}
 	}
 	
 	public boolean containPlayer(Player player) {
-		Preconditions.checkNotNull(player, "Player cannot be null");
+		if (player == null) {
+			return false;
+		}
 		if (this.simpleDuel != null) {
 			return (this.simpleDuel.firstTeam.contains(player.getUniqueId()) || this.simpleDuel.secondTeam.contains(player.getUniqueId()));
+		}
+		if (this.ffaDuel != null) {
+			return this.ffaDuel.getFfaPlayers().contains(player.getUniqueId());
 		}
 		return false;
 	}
@@ -227,6 +227,9 @@ public class Duel {
 	public boolean isValid() {
 		if (this.simpleDuel != null) {
 			return (!this.simpleDuel.firstTeam.isEmpty() && !this.simpleDuel.secondTeam.isEmpty() && !this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty());
+		}
+		if (this.ffaDuel != null) {
+			return (!this.ffaDuel.getFfaPlayers().isEmpty() && !this.ffaDuel.getFfaAlivePlayers().isEmpty());
 		}
 		return false;
 	}

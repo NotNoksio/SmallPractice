@@ -19,7 +19,7 @@ public class ResetTimeCommand implements CommandExecutor {
 		}
 		Player player = (Player) sender;
 		player.resetPlayerTime();
-        player.sendMessage(ChatColor.GREEN + "You have reset your times!");
+        player.sendMessage(ChatColor.GREEN + "You have reset your sky time!");
 		return true;
 	}
 }

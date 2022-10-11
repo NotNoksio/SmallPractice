@@ -65,10 +65,10 @@ public class QueueManager {
 		this.updatePingDiffFromQueue();
 		Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
 		if (to2) {
-			Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, party.getMembersIncludeLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludeLeader(), ranked);
+			Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, uuid, secondUUID, party.getMembersIncludingLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludingLeader(), ranked);
 			return;
 		}
-		Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder == Ladders.SUMO), ladder, uuid, secondUUID, ranked);
+		Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, uuid, secondUUID, ranked);
 	}
 	
 	private Set<UUID> lastUpdated = Collections.newSetFromMap(new WeakHashMap<>()); // DONT SPAM QUEUE!!

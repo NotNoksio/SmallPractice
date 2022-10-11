@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
@@ -36,6 +37,7 @@ public class Party {
     
     public void setOpen(boolean open) {
         this.open = open;
+        Bukkit.broadcastMessage(ChatColor.YELLOW + this.leaderName + ChatColor.GREEN + "'s party is now open!");
     }
 
     public void setPartyState(PartyState state) {
@@ -46,7 +48,7 @@ public class Party {
         return this.memberUUIDs;
     }
     
-    public List<UUID> getMembersIncludeLeader() {
+    public List<UUID> getMembersIncludingLeader() {
     	List<UUID> list = Lists.newArrayList(this.memberUUIDs);
     	list.add(partyLeader);
         return list;

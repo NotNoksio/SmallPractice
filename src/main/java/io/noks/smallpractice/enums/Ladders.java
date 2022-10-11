@@ -5,6 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import io.noks.smallpractice.Main;
+
 public enum Ladders {
 	NODEBUFF("NoDebuff", ChatColor.AQUA, new ItemStack(Material.POTION, 1, (short) 16421), true, true, true),
 	ARCHER("Archer", ChatColor.RED, new ItemStack(Material.BOW, 1), false, true, true),
@@ -22,7 +24,7 @@ public enum Ladders {
 	private ChatColor color;
 	private ItemStack icon;
 	private boolean editable, needFood, enable /* This will be removed or be enabled/disabled by a command */;
-	private PlayerInventory defaultInventory; // TODO
+	//private PlayerInventory defaultInventory;
 	
 	Ladders(String name, ChatColor color, ItemStack icon, boolean editable, boolean needFood, boolean enable) {
 		this.name = name;
@@ -31,6 +33,7 @@ public enum Ladders {
 		this.editable = editable;
 		this.needFood = needFood;
 		this.enable = enable;
+		//this.defaultInventory = Main.getInstance().getItemManager().giveFightItems(this.);
 	}
 	
 	public String getName() {
@@ -56,6 +59,10 @@ public enum Ladders {
 	public boolean isEnable() {
 		return this.enable;
 	}
+	
+	/*public PlayerInventory getDefaultInventory() {
+		return this.defaultInventory;
+	}*/
 	
 	public static Ladders getLadderFromName(String name) {
 		for (Ladders ladders : values()) {

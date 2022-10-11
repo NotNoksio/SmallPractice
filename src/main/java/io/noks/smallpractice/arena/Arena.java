@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Maps;
 
+import io.noks.smallpractice.enums.Ladders;
 import net.minecraft.util.com.google.common.collect.Sets;
 
 public class Arena {
@@ -33,34 +34,34 @@ public class Arena {
 		if (!arenaList.isEmpty()) {
 			return;
 		}
-		final Location[] arena1 = new Location[] {new Location(Bukkit.getWorld("world"), -2121.5D, 120.0D, 1667.5D, -163.0F, 0.0F), new Location(Bukkit.getWorld("world"), -2092.5D, 120.0D, 1590.5D, 22.0F, -1.0F)};
-		final Location[] arena2 = new Location[] {new Location(Bukkit.getWorld("world"), -878.5D, 46.0D, 1984.5D, -35.0F, 0.0F), new Location(Bukkit.getWorld("world"), -832.5D, 46.0D, 2056.5D, -202.0F, 0.0F)};
-		final Location[] arena3 = new Location[] {new Location(Bukkit.getWorld("world"), 7032.5D, 100.0D, 6992.5D, -178.0F, 0.0F), new Location(Bukkit.getWorld("world"), 7032.5D, 100.0D, 6925.5D, -358.0F, 0.0F)};
-		final Location[] arena4 = new Location[] {new Location(Bukkit.getWorld("world"), -1079.5D, 89.0D, 2491.5D, -28.0F, 0.0F), new Location(Bukkit.getWorld("world"), -1042.5D, 89.0D, 2558.5D, -209.0F, 0.0F)};
-		final Location[] arena5 = new Location[] {new Location(Bukkit.getWorld("world"), 45.5D, 36.0D, 1283.5D, -155.0F, 0.0F), new Location(Bukkit.getWorld("world"), 79.5D, 38.0D, 1205.5D, 1.0F, 0.0F)};
-		final Location[] arena6 = new Location[] {new Location(Bukkit.getWorld("world"), -483.5D, 68.0D, 1748.5D, 179.0F, 0.0F), new Location(Bukkit.getWorld("world"), -483.5D, 68.0D, 1670.5D, 0.0F, 0.0F)};
-		final Location[] arena7 = new Location[] {new Location(Bukkit.getWorld("world"), -835.5D, 4.0D, 888.5D, 177.0F, 0.0F), new Location(Bukkit.getWorld("world"), -835.5D, 4.0D, 816.5D, 0.0F, 0.0F)};
-		final Location[] arena8 = new Location[] {new Location(Bukkit.getWorld("world"), -2670.5D, 16.0D, 1874.5D, 177.0F, 0.0F), new Location(Bukkit.getWorld("world"), -2715.5D, 16.0D, 1801.5D, -3.0F, 0.0F)};
-		final Location[] arena9 = new Location[] {new Location(Bukkit.getWorld("world"), -3287.5D, 150.0D, 2523.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), -3287.5D, 150.0D, 2603.5D, 178.0F, 0.0F)};
-		final Location[] arena10 = new Location[] {new Location(Bukkit.getWorld("world"), -3657.5D, 153.0D, 1488.5D, 63.0F, 0.0F), new Location(Bukkit.getWorld("world"), -3724.5D, 153.0D, 1527.5D, -125.0F, 0.0F)};
-		final Location[] arena11 = new Location[] {new Location(Bukkit.getWorld("world"), 751.5D, 4.0D, 971.5D, -43.0F, 0.0F), new Location(Bukkit.getWorld("world"), 804.5D, 4.0D, 1025.5D, 134.0F, 0.0F)};
+		final Location[] arena1 = {new Location(Bukkit.getWorld("world"), -2121.5D, 120.0D, 1667.5D, -163.0F, 0.0F), new Location(Bukkit.getWorld("world"), -2092.5D, 120.0D, 1590.5D, 22.0F, -1.0F)};
+		final Location[] arena2 = {new Location(Bukkit.getWorld("world"), -878.5D, 46.0D, 1984.5D, -35.0F, 0.0F), new Location(Bukkit.getWorld("world"), -832.5D, 46.0D, 2056.5D, -202.0F, 0.0F)};
+		final Location[] arena3 = {new Location(Bukkit.getWorld("world"), 7032.5D, 100.0D, 6992.5D, -178.0F, 0.0F), new Location(Bukkit.getWorld("world"), 7032.5D, 100.0D, 6925.5D, -358.0F, 0.0F)};
+		final Location[] arena4 = {new Location(Bukkit.getWorld("world"), -1079.5D, 89.0D, 2491.5D, -28.0F, 0.0F), new Location(Bukkit.getWorld("world"), -1042.5D, 89.0D, 2558.5D, -209.0F, 0.0F)};
+		final Location[] arena5 = {new Location(Bukkit.getWorld("world"), 45.5D, 36.0D, 1283.5D, -155.0F, 0.0F), new Location(Bukkit.getWorld("world"), 79.5D, 38.0D, 1205.5D, 1.0F, 0.0F)};
+		final Location[] arena6 = {new Location(Bukkit.getWorld("world"), -483.5D, 68.0D, 1748.5D, 179.0F, 0.0F), new Location(Bukkit.getWorld("world"), -483.5D, 68.0D, 1670.5D, 0.0F, 0.0F)};
+		final Location[] arena7 = {new Location(Bukkit.getWorld("world"), -835.5D, 4.0D, 888.5D, 177.0F, 0.0F), new Location(Bukkit.getWorld("world"), -835.5D, 4.0D, 816.5D, 0.0F, 0.0F)};
+		final Location[] arena8 = {new Location(Bukkit.getWorld("world"), -2670.5D, 16.0D, 1874.5D, 177.0F, 0.0F), new Location(Bukkit.getWorld("world"), -2715.5D, 16.0D, 1801.5D, -3.0F, 0.0F)};
+		final Location[] arena9 = {new Location(Bukkit.getWorld("world"), -3287.5D, 150.0D, 2523.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), -3287.5D, 150.0D, 2603.5D, 178.0F, 0.0F)};
+		final Location[] arena10 = {new Location(Bukkit.getWorld("world"), -3657.5D, 153.0D, 1488.5D, 63.0F, 0.0F), new Location(Bukkit.getWorld("world"), -3724.5D, 153.0D, 1527.5D, -125.0F, 0.0F)};
+		final Location[] arena11 = {new Location(Bukkit.getWorld("world"), 751.5D, 4.0D, 971.5D, -43.0F, 0.0F), new Location(Bukkit.getWorld("world"), 804.5D, 4.0D, 1025.5D, 134.0F, 0.0F)};
 		    
-		arenaList.put(1, new Arenas("River", arena1, new ItemStack(Material.WATER_BUCKET, 1), false));
-		arenaList.put(2, new Arenas("Rock", arena2, new ItemStack(Material.STONE, 1), false));
-		arenaList.put(3, new Arenas("Logo", arena3, new ItemStack(Material.GOLDEN_APPLE, 1), false));
-		arenaList.put(4, new Arenas("Stalagmites", arena4, new ItemStack(Material.BEDROCK, 1), false));
-		arenaList.put(5, new Arenas("Rocks", arena5, new ItemStack(Material.COBBLESTONE, 1), false));
-		arenaList.put(6, new Arenas("Sphinx", arena6, new ItemStack(Material.SAND, 1), false));
-		arenaList.put(7, new Arenas("American-Foot", arena7, new ItemStack(Material.GRASS, 1), false));
-		arenaList.put(8, new Arenas("Lava", arena8, new ItemStack(Material.LAVA_BUCKET, 1), false));
-		arenaList.put(9, new Arenas("Book", arena9, new ItemStack(Material.BOOK, 1), false));
-		arenaList.put(10, new Arenas("End", arena10, new ItemStack(Material.ENDER_STONE, 1), false));
-		arenaList.put(11, new Arenas("WoolWorld", arena11, new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), false));
+		arenaList.put(1, new Arenas("River", arena1, new ItemStack(Material.WATER_BUCKET, 1), false, false));
+		arenaList.put(2, new Arenas("Rock", arena2, new ItemStack(Material.STONE, 1), false, false));
+		arenaList.put(3, new Arenas("Logo", arena3, new ItemStack(Material.GOLDEN_APPLE, 1), false, false));
+		arenaList.put(4, new Arenas("Stalagmites", arena4, new ItemStack(Material.BEDROCK, 1), false, false));
+		arenaList.put(5, new Arenas("Rocks", arena5, new ItemStack(Material.COBBLESTONE, 1), false, false));
+		arenaList.put(6, new Arenas("Sphinx", arena6, new ItemStack(Material.SAND, 1), false, false));
+		arenaList.put(7, new Arenas("American-Foot", arena7, new ItemStack(Material.GRASS, 1), false, false));
+		arenaList.put(8, new Arenas("Lava", arena8, new ItemStack(Material.LAVA_BUCKET, 1), false, false));
+		arenaList.put(9, new Arenas("Book", arena9, new ItemStack(Material.BOOK, 1), false, false));
+		arenaList.put(10, new Arenas("End", arena10, new ItemStack(Material.ENDER_STONE, 1), false, false));
+		arenaList.put(11, new Arenas("WoolWorld", arena11, new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), false, false));
 	}
 	
-	public Arenas getRandomArena(boolean sumo) {
-		List<Arenas> arenas = this.arenaList.values().stream().filter((sumo ? Arenas::isSumo : not(Arenas::isSumo))).collect(Collectors.toList());
-		int random = new Random().nextInt(arenas.size());
+	public Arenas getRandomArena(Ladders ladder) {
+		final List<Arenas> arenas = this.arenaList.values().stream().filter((ladder == Ladders.SUMO ? Arenas::isSumo : (ladder == Ladders.SPLEEF ? Arenas::isSpleef : not(Arenas::isSumo).and(not(Arenas::isSpleef))))).collect(Collectors.toList());
+		final int random = new Random().nextInt(arenas.size());
 		return arenas.get(random);
 	}
 	private <T> Predicate<T> not(Predicate<T> p) { return t -> !p.test(t); }
@@ -80,14 +81,15 @@ public class Arena {
 		private String name;
 		private Location[] locations;
 		private ItemStack icon;
-		private boolean sumo;
+		private boolean sumo, spleef;
 		private Set<UUID> spectators;
 		
-		public Arenas(String name, Location[] locations, ItemStack icon, boolean sumo) {
+		public Arenas(String name, Location[] locations, ItemStack icon, boolean sumo, boolean spleef) {
 			this.name = name;
 			this.locations = locations;
 			this.icon = icon;
 			this.sumo = sumo;
+			this.spleef = spleef;
 			this.spectators = Sets.newHashSet();
 		}
 		
@@ -109,6 +111,10 @@ public class Arena {
 		
 		public boolean isSumo() {
 			return this.sumo;
+		}
+		
+		public boolean isSpleef() {
+			return this.spleef;
 		}
 		
 		public void addSpectator(UUID uuid) {

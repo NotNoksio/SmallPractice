@@ -124,7 +124,7 @@ public class ItemManager {
 		}
 		player.updateInventory();
 	}
-	public void giveFightItems(Player player, Ladders ladder) {
+	public void giveFightItems(Player player, Ladders ladder) { // TODO: Replace by -> public PlayerInventory giveFightItems(Ladders ladder)
 		ItemStack attackItem = new ItemStack(Material.DIAMOND_SWORD, 1);
 		ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET, 1);
 		ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
