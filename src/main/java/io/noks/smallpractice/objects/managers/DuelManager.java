@@ -86,7 +86,7 @@ public class DuelManager {
 		
 		final Party party = Main.getInstance().getPartyManager().getParty(partyLeaderUUID);
 		
-		this.setupTeam(ffaPlayers, null, null, ladder, scoreboard, green, red, false, false);
+		this.setupTeam(ffaPlayers, null, null, ladder, scoreboard, green, red, false, false, true);
 		
         party.setPartyState(PartyState.DUELING);
         Main.getInstance().getPartyManager().updatePartyInventory(party);
@@ -139,8 +139,8 @@ public class DuelManager {
 		green2.setAllowFriendlyFire(false);
 		
 		final boolean teamFight = (firstPartyLeaderUUID != null && secondPartyLeaderUUID != null);
-		this.setupTeam(firstTeam, secondPartyLeaderUUID, secondTeam, ladder, firstPlayerScoreboard, green1, red2, teamFight, ranked);
-		this.setupTeam(secondTeam, firstPartyLeaderUUID, firstTeam, ladder, secondPlayerScoreboard, green2, red1, teamFight, ranked);
+		this.setupTeam(firstTeam, secondPartyLeaderUUID, secondTeam, ladder, firstPlayerScoreboard, green1, red2, teamFight, ranked, false);
+		this.setupTeam(secondTeam, firstPartyLeaderUUID, firstTeam, ladder, secondPlayerScoreboard, green2, red1, teamFight, ranked, false);
 		
 		if (teamFight) {
 			List<Party> partyList = Lists.newArrayList(Main.getInstance().getPartyManager().getParty(firstPartyLeaderUUID), Main.getInstance().getPartyManager().getParty(secondPartyLeaderUUID));
@@ -157,8 +157,8 @@ public class DuelManager {
 		this.teleportToArena(new Duel(arena, ladder, new SimpleDuel(firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam), ranked));
 	}
 	
-	private void setupTeam(List<UUID> team, UUID enemyPartyLeaderUUID, List<UUID> enemyTeam, Ladders ladder, Scoreboard scoreboard, Team team1, Team team2, boolean teamFight, boolean ranked) {
-		final String duelMessage = ChatColor.DARK_AQUA + "Starting" + (enemyPartyLeaderUUID == null ? " FFA party game" : " duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : "")));
+	private void setupTeam(List<UUID> team, UUID enemyPartyLeaderUUID, List<UUID> enemyTeam, Ladders ladder, Scoreboard scoreboard, Team team1, Team team2, boolean teamFight, boolean ranked, boolean ffa) {
+		final String duelMessage = ChatColor.DARK_AQUA + "Starting" + (ffa ? " FFA party game" : " duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : "")));
 		for (UUID teamUUID : team) {
 			final Player player = Bukkit.getPlayer(teamUUID);
 			

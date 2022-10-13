@@ -80,7 +80,7 @@ public class DuelListener implements Listener {
             	if (duel.getLadder() == Ladders.BOXING) {
             		final int hit = attackerStats.getHit();
             		am.getPlayer().setLevel(hit);
-            		am.getPlayer().setExp((hit / 100.0f));
+            		am.getPlayer().setExp(Math.min((hit / 100.0f), 99.9f));
             		if (hit == 100) {
             			this.main.getDuelManager().endDuel(duel, (duel.getSimpleDuel().firstTeam.contains(am.getPlayerUUID()) ? 1 : 2), false);
             		}

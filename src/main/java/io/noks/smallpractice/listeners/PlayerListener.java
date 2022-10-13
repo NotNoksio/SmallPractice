@@ -43,6 +43,7 @@ import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.util.org.apache.commons.lang3.BooleanUtils;
 
 public class PlayerListener implements Listener {
@@ -80,6 +81,7 @@ public class PlayerListener implements Listener {
 		player.setGameMode(GameMode.SURVIVAL);
 		
 		player.setScoreboard(this.main.getServer().getScoreboardManager().getNewScoreboard());
+		player.setPlayerListHeaderFooter(TextComponent.fromLegacyText("NOKS.IO"), TextComponent.fromLegacyText(this.main.getDescription().getWebsite()));
 		
 		player.teleport(player.getWorld().getSpawnLocation());
 		this.main.getItemManager().giveSpawnItem(player);
@@ -199,9 +201,6 @@ public class PlayerListener implements Listener {
 			}
 			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE || pm.getStatus() == PlayerStatus.BRIDGE) {
 				switch (event.getCause()) {
-				case FALL:
-					event.setCancelled(true);
-					break;
 				case VOID:
 					event.setCancelled(true);
 					if (pm.getStatus() != PlayerStatus.BRIDGE) {
@@ -212,10 +211,22 @@ public class PlayerListener implements Listener {
 					this.main.getItemManager().giveBridgeItems(player);
 					player.teleport(Warps.BRIDGE.getLobbyLocation());
 					break;
+				case FALL:
+					event.setCancelled(true);
+					break;
 				case BLOCK_EXPLOSION:
 					event.setDamage(0.0D);
 					break;
 				case FIRE:
+					event.setCancelled(true);
+					break;
+				case DROWNING:
+					event.setCancelled(true);
+					break;
+				case CONTACT:
+					event.setCancelled(true);
+					break;
+				case LAVA:
 					event.setCancelled(true);
 					break;
 				default:
