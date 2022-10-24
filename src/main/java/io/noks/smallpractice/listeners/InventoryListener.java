@@ -76,7 +76,6 @@ public class InventoryListener implements Listener {
 				player.closeInventory();
 				return;
 			}
-			player.closeInventory();
 			if (title.contains("ladder")) {
 				if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
 					Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
@@ -90,6 +89,8 @@ public class InventoryListener implements Listener {
 			}
 			final PlayerSettings settings = PlayerManager.get(player.getUniqueId()).getSettings();
 			this.main.getQueueManager().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"), this.main.getPartyManager().hasParty(player.getUniqueId()), settings.getQueuePingDiff());
+			player.closeInventory();
+			return;
 		}
 		if (title.equals("select gamemode")) {
 			event.setCancelled(true);

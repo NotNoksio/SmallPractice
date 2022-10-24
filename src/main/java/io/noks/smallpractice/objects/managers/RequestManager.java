@@ -8,6 +8,7 @@ import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.party.Party;
+import io.noks.smallpractice.party.PartyState;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -158,10 +159,14 @@ public class RequestManager {
 			return;
 		}
 		if (!requesterManager.hasInvited(requested.getUniqueId())) {
-			requested.sendMessage(ChatColor.RED + "This player doesn't invite you to his party!");
+			requested.sendMessage(ChatColor.RED + "This player have not invited you into his party!");
 			return;
 		}
 		final Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
+		if (requesterParty.getPartyState() == PartyState.QUEUING) {
+			requested.sendMessage(ChatColor.RED + "This party isn't currently accessible!");
+			return;
+		}
 		requesterManager.getInvites().remove(requested.getUniqueId());
 		Main.getInstance().getPartyManager().joinParty(requesterParty.getLeader(), requested.getUniqueId());
 		requesterParty.notify(ChatColor.GREEN + requested.getName() + " has joined the party");

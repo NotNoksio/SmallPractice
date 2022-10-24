@@ -1,10 +1,5 @@
 package io.noks.smallpractice;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
-
-import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.noks.smallpractice.commands.AcceptCommand;
@@ -44,7 +39,6 @@ import io.noks.smallpractice.objects.managers.RequestManager;
 import io.noks.smallpractice.utils.DBUtils;
 
 public class Main extends JavaPlugin {
-	private Map<UUID, Inventory> offlineInventories = new WeakHashMap<UUID, Inventory>();
 	private DuelManager duelManager;
 	private ItemManager itemManager;
 	private InventoryManager inventoryManager;
@@ -62,9 +56,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		
-		this.database = new DBUtils();
-		//this.database.connectDatabase();
+		this.database = new DBUtils(getConfig().getString("database.address"), getConfig().getString("database.name"), getConfig().getString("database.username"), getConfig().getString("database.password"));
 		
 		this.getConfig().options().copyDefaults(true);
 		this.saveDefaultConfig();
@@ -84,7 +76,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		this.queueManager.getQueueMap().clear();
-		this.offlineInventories.clear();
+		this.inventoryManager.getOfflineInventories().clear();
 		for (Duel duels : this.duelManager.getAllDuels()) {
 			if (duels == null) continue;
 			this.duelManager.finishDuel(duels, true);
@@ -122,10 +114,6 @@ public class Main extends JavaPlugin {
 		new ChatListener(this);
 		new DuelListener(this);
 		new InventoryListener(this);
-	}
-	
-	public Map<UUID, Inventory> getOfflineInventories() {
-		return this.offlineInventories;
 	}
 	
 	public DuelManager getDuelManager() {

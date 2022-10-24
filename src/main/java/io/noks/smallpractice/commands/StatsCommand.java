@@ -26,7 +26,7 @@ public class StatsCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.DARK_AQUA + "'s stats:");
 			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			for (Ladders ladders : Ladders.values()) {
-				player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + ladders.getName() + ": " + ChatColor.YELLOW + pm.getEloManager().getElo(ladders));
+				player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + ladders.getName() + ": " + ChatColor.YELLOW + pm.getEloManager().getFrom(ladders));
 			}
 			return true;
 		}
@@ -38,7 +38,7 @@ public class StatsCommand implements CommandExecutor {
 		player.sendMessage(ChatColor.YELLOW + target.getName() + ChatColor.DARK_AQUA + "'s stats:");
 		PlayerManager tm = PlayerManager.get(target.getUniqueId());
 		for (Ladders ladders : Ladders.values()) {
-			player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + ladders.getName() + ": " + ChatColor.YELLOW + tm.getEloManager().getElo(ladders));
+			player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + ladders.getName() + ": " + ChatColor.YELLOW + tm.getEloManager().getFrom(ladders));
 		}
 		return true;
 	}

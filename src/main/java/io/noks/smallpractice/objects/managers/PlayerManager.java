@@ -28,7 +28,7 @@ import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
-import io.noks.smallpractice.objects.CommandCooldown;
+import io.noks.smallpractice.objects.Cooldown;
 import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.MatchStats;
 import io.noks.smallpractice.objects.PlayerSettings;
@@ -44,7 +44,7 @@ public class PlayerManager {
 	private Player spectate;
 	private EloManager eloManager;
 	private MatchStats matchStats;
-	private CommandCooldown cooldown;
+	private Cooldown cooldown;
 	private Inventory savedInventory;
 	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
 	private PlayerSettings settings;
@@ -56,10 +56,10 @@ public class PlayerManager {
 	    this.spectate = null;
 	    this.eloManager = new EloManager();
 	    this.matchStats = new MatchStats();
-	    this.cooldown = new CommandCooldown();
-	    if (Main.getInstance().getOfflineInventories().containsKey(playerUUID)) {
-	    	this.savedInventory = Main.getInstance().getOfflineInventories().get(playerUUID);
-	    	Main.getInstance().getOfflineInventories().remove(playerUUID);
+	    this.cooldown = new Cooldown();
+	    if (Main.getInstance().getInventoryManager().getOfflineInventories().containsKey(playerUUID)) {
+	    	this.savedInventory = Main.getInstance().getInventoryManager().getOfflineInventories().get(playerUUID);
+	    	Main.getInstance().getInventoryManager().getOfflineInventories().remove(playerUUID);
 	    }
 	    this.settings = new PlayerSettings();
 	    players.putIfAbsent(playerUUID, this);
@@ -74,7 +74,7 @@ public class PlayerManager {
 
 	public void remove() {
 		if (this.savedInventory != null) {
-			Main.getInstance().getOfflineInventories().put(this.playerUUID, this.savedInventory);
+			Main.getInstance().getInventoryManager().getOfflineInventories().put(this.playerUUID, this.savedInventory);
 		}
 		players.remove(this.playerUUID);
 	}
@@ -173,7 +173,7 @@ public class PlayerManager {
 		}
 	}
 	
-	public CommandCooldown getCooldown() {
+	public Cooldown getCooldown() {
 		return this.cooldown;
 	}
 	

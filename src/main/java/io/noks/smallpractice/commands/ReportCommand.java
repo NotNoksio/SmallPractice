@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import io.noks.smallpractice.objects.CommandCooldown;
+import io.noks.smallpractice.objects.Cooldown;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -38,7 +38,7 @@ public class ReportCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		final CommandCooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
+		final Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 		if (cooldown.isActive(this.getClass().getSimpleName())) {
 			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 30) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {

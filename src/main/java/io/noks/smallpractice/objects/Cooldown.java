@@ -3,7 +3,7 @@ package io.noks.smallpractice.objects;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class CommandCooldown {
+public class Cooldown {
 	private Map<String, Long> cooldowns = new WeakHashMap<String, Long>();
 	
 	public void add(String name) {

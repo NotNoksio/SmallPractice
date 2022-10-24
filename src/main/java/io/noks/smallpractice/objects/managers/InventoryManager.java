@@ -31,6 +31,7 @@ public class InventoryManager {
 	private Map<UUID, Request> selectingDuel;
 	private Map<UUID, Inventory> editKitSelection;
 	private Map<UUID, PlayerInventory> editKitEditor;
+	private Map<UUID, Inventory> offlineInventories;
 	
 	public InventoryManager() {
 		this.selectingDuel = new WeakHashMap<UUID, Request>();
@@ -42,6 +43,7 @@ public class InventoryManager {
 		this.settingsInventory = Bukkit.createInventory(null, 27, "Settings Configuration");
 		this.selectionInventory = Bukkit.createInventory(null, 27, "Selector");
 		this.partyGameInventory = Bukkit.createInventory(null, 27, "Select Gamemode");
+		this.offlineInventories = new WeakHashMap<UUID, Inventory>();
 		this.setArenasInventory();
 		this.setUnrankedInventory();
 		this.setRankedInventory();
@@ -172,6 +174,10 @@ public class InventoryManager {
 	  
 	public void removeSelectingDuel(UUID requester) { 
 		this.selectingDuel.remove(requester); 
+	}
+	
+	public Map<UUID, Inventory> getOfflineInventories() {
+		return this.offlineInventories;
 	}
 	
 	private int calculateSize(int size) {

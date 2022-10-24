@@ -10,36 +10,36 @@ public class EloManager {
 	private Map<Ladders, Integer> laddersElo = Maps.newHashMap();
 	private int DEFAULT_ELO;
 	
-	public EloManager(int dEFAULT_eLO) {
-		this.DEFAULT_ELO = dEFAULT_eLO;
-	}
 	public EloManager() {
-		this.DEFAULT_ELO = 1000;
+		this.DEFAULT_ELO = 1200;
+	}
+	public EloManager(int... elo) {
+		int i = 0;
+		for (Ladders ladders : Ladders.values()) {
+			laddersElo.put(ladders, elo[i]);
+			i++;
+		}
 	}
 	
-	public void setDefaultElo(int newAmount) {
-		this.DEFAULT_ELO = newAmount;
-	}
-	
-	public int getElo(Ladders ladder) {
+	public int getFrom(Ladders ladder) {
 		if (!laddersElo.containsKey(ladder)) laddersElo.put(ladder, DEFAULT_ELO);
 		return laddersElo.get(ladder);
 	}
 	
-	public void addElo(Ladders ladder, int amount) {
-		final int currentElo = getElo(ladder);
+	public void addTo(Ladders ladder, int amount) {
+		final int currentElo = getFrom(ladder);
 		this.laddersElo.put(ladder, currentElo + amount);
 	}
 	
-	public void removeElo(Ladders ladder, int amount) {
-		final int currentElo = getElo(ladder);
+	public void removeFrom(Ladders ladder, int amount) {
+		final int currentElo = getFrom(ladder);
 		this.laddersElo.put(ladder, currentElo - amount);
 	}
 	
-	public int getGlobalElo() {
+	public int getGlobal() {
 		int global = 0;
 		for (Ladders ladders : Ladders.values()) {
-			global += getElo(ladders);
+			global += getFrom(ladders);
 		}
 		return (global / Ladders.values().length);
 	}

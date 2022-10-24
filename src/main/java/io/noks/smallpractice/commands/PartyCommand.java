@@ -44,14 +44,14 @@ public class PartyCommand implements CommandExecutor {
         	sender.sendMessage(this.HELP_COMMAND);
         	return true;
         }
-        Player player = (Player) sender;
-        PlayerManager pm = PlayerManager.get(player.getUniqueId());
+        final Player player = (Player) sender;
+        final PlayerManager pm = PlayerManager.get(player.getUniqueId());
         
         if (pm.getStatus() != PlayerStatus.SPAWN) {
         	player.sendMessage(ChatColor.RED + "You cant do this command in your current state!");
         	return false;
         }
-        Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
+        final Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
         
         if (args[0].equalsIgnoreCase("help")) {
         	player.sendMessage(this.HELP_COMMAND);
@@ -73,8 +73,8 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
 	        		return false;
 	        	}
-	        	Player leader = Bukkit.getPlayer(party.getLeader());
-	            StringJoiner members = new StringJoiner(", ");
+	        	final Player leader = Bukkit.getPlayer(party.getLeader());
+	        	final StringJoiner members = new StringJoiner(", ");
 	
 	            members.add(leader.getName());
 	            for (UUID memberUUID : party.getMembers()) {
@@ -82,11 +82,11 @@ public class PartyCommand implements CommandExecutor {
 	                members.add(member.getName());
 	            }
 	
-	            String[] information = new String[] {
+	            final String[] information = new String[] {
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 	                    ChatColor.RED + "Your party informations:",
 	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
-	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + party.getPartyEloManager().getGlobalElo() + ")" : ""),
+	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + party.getPartyEloManager().getGlobal() + ")" : ""),
 	                    ChatColor.DARK_AQUA + "Privacy: " + (party.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
 	            };
@@ -150,7 +150,7 @@ public class PartyCommand implements CommandExecutor {
 	        return false;
         }
         if (args.length == 2) {
-        	Player target = Bukkit.getPlayer(args[1]);
+        	final Player target = Bukkit.getPlayer(args[1]);
             
             if (target == null) {
             	player.sendMessage(ChatColor.RED + "This player isnt online!");
@@ -160,8 +160,8 @@ public class PartyCommand implements CommandExecutor {
             	player.sendMessage(ChatColor.RED + "You cant do that on yourself.");
             	return false;
             }
-            PlayerManager tm = PlayerManager.get(target.getUniqueId());
-            Party targetParty = Main.getInstance().getPartyManager().getParty(target.getUniqueId());
+            final PlayerManager tm = PlayerManager.get(target.getUniqueId());
+            final Party targetParty = Main.getInstance().getPartyManager().getParty(target.getUniqueId());
             
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
             	if (targetParty == null) {
@@ -233,8 +233,8 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "This player is not in a party!");
 	        		return false;
 	        	}
-	        	Player leader = Bukkit.getPlayer(targetParty.getLeader());
-	            StringJoiner members = new StringJoiner(", ");
+	        	final Player leader = Bukkit.getPlayer(targetParty.getLeader());
+	        	final StringJoiner members = new StringJoiner(", ");
 	
 	            members.add(leader.getName());
 	            for (UUID memberUUID : targetParty.getMembers()) {
@@ -242,11 +242,11 @@ public class PartyCommand implements CommandExecutor {
 	                members.add(member.getName());
 	            }
 	
-	            String[] information = new String[] {
+	            final String[] information = new String[] {
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 	                    ChatColor.RED + leader.getName() + "'s party informations:",
 	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
-	                    ChatColor.DARK_AQUA + "Members (" + (targetParty.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + targetParty.getPartyEloManager().getGlobalElo() + ")" : ""),
+	                    ChatColor.DARK_AQUA + "Members (" + (targetParty.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + targetParty.getPartyEloManager().getGlobal() + ")" : ""),
 	                    ChatColor.DARK_AQUA + "Privacy: " + (targetParty.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
 	            };

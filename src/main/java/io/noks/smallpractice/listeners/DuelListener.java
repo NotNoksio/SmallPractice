@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -104,6 +105,22 @@ public class DuelListener implements Listener {
 				if (duel == null) return;
 				
 				duel.addDrops(itemDropped);
+			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onEntityDespawnFromWorld(EntityDeathEvent event) {
+		if (event.getEntity() instanceof Item) {
+			if (this.main.getDuelManager().getAllDuels().isEmpty()) {
+				return;
+			}
+			final Item item = (Item) event.getEntity();
+			if (item.getOwner() == null || !(item.getOwner() instanceof Player)) return;
+			for (Duel duels : this.main.getDuelManager().getAllDuels()) {
+				if (duels == null || !duels.containDrops(item)) continue;
+				duels.removeDrops(item);
+				return;
 			}
 		}
 	}

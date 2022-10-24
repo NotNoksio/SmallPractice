@@ -158,7 +158,7 @@ public class DuelManager {
 	}
 	
 	private void setupTeam(List<UUID> team, UUID enemyPartyLeaderUUID, List<UUID> enemyTeam, Ladders ladder, Scoreboard scoreboard, Team team1, Team team2, boolean teamFight, boolean ranked, boolean ffa) {
-		final String duelMessage = ChatColor.DARK_AQUA + "Starting" + (ffa ? " FFA party game" : " duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getElo(ladder) : Main.getInstance().getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getElo(ladder)) + ")" : "")));
+		final String duelMessage = ChatColor.DARK_AQUA + "Starting" + (ffa ? " FFA party game" : " duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getFrom(ladder) : Main.getInstance().getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getFrom(ladder)) + ")" : "")));
 		for (UUID teamUUID : team) {
 			final Player player = Bukkit.getPlayer(teamUUID);
 			
@@ -254,24 +254,26 @@ public class DuelManager {
 	private void tranferElo(List<UUID> winners, List<UUID> losers, Ladders ladder) {
 		final UUID winnerUUID = winners.get(0);
 		final UUID loserUUID = losers.get(0);
-		int winnersElo = PlayerManager.get(winnerUUID).getEloManager().getElo(ladder);
-		int losersElo = PlayerManager.get(loserUUID).getEloManager().getElo(ladder);
+		int winnersElo = PlayerManager.get(winnerUUID).getEloManager().getFrom(ladder);
+		int losersElo = PlayerManager.get(loserUUID).getEloManager().getFrom(ladder);
 		boolean to2 = false;
 		if (winners.size() == 2 && losers.size() == 2) {
-			winnersElo = Main.getInstance().getPartyManager().getParty(winnerUUID).getPartyEloManager().getElo(ladder);
-			losersElo = Main.getInstance().getPartyManager().getParty(loserUUID).getPartyEloManager().getElo(ladder);
+			winnersElo = Main.getInstance().getPartyManager().getParty(winnerUUID).getPartyEloManager().getFrom(ladder);
+			losersElo = Main.getInstance().getPartyManager().getParty(loserUUID).getPartyEloManager().getFrom(ladder);
 			to2 = true;
 		}
+		// Rinny - K-Factor = 32, Scale Factor = 400 & Exponent Base = 10 = FULL RATING SYSTEM IN 2 LINES
 		final double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (winnersElo - losersElo) / 400.0D));
 		final int scoreChange = MathUtils.limit((expectedp * 32.0D), 4, 40);
-		final String eloMessage = ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + Bukkit.getPlayer(winnerUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(winners.get(1)).getName() : "") +  " (+" + scoreChange + ") " + ChatColor.RED + Bukkit.getPlayer(loserUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(losers.get(1)).getName() : "") + " (-" + scoreChange + ")";
+		// Rinny
 		if (!to2) {
-			PlayerManager.get(winnerUUID).getEloManager().addElo(ladder, scoreChange);
-			PlayerManager.get(loserUUID).getEloManager().removeElo(ladder, scoreChange);
+			PlayerManager.get(winnerUUID).getEloManager().addTo(ladder, scoreChange);
+			PlayerManager.get(loserUUID).getEloManager().removeFrom(ladder, scoreChange);
 		} else {
-			Main.getInstance().getPartyManager().getParty(winnerUUID).getPartyEloManager().addElo(ladder, scoreChange);
-			Main.getInstance().getPartyManager().getParty(loserUUID).getPartyEloManager().removeElo(ladder, scoreChange);
+			Main.getInstance().getPartyManager().getParty(winnerUUID).getPartyEloManager().addTo(ladder, scoreChange);
+			Main.getInstance().getPartyManager().getParty(loserUUID).getPartyEloManager().removeFrom(ladder, scoreChange);
 		}
+		final String eloMessage = ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + Bukkit.getPlayer(winnerUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(winners.get(1)).getName() : "") +  " (+" + scoreChange + ") " + ChatColor.RED + Bukkit.getPlayer(loserUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(losers.get(1)).getName() : "") + " (-" + scoreChange + ")";
 		for (UUID winnersUUID : winners) {
 			Player winner = Bukkit.getPlayer(winnersUUID);
 			winner.sendMessage(eloMessage);

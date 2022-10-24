@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
-import io.noks.smallpractice.objects.CommandCooldown;
+import io.noks.smallpractice.objects.Cooldown;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
@@ -65,7 +65,7 @@ public class DuelCommand implements CommandExecutor {
 				target = Bukkit.getPlayer(targetParty.getLeader());
 			}
 		}
-		final CommandCooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
+		final Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 		if (cooldown.isActive(this.getClass().getSimpleName())) {
 			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 5) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {

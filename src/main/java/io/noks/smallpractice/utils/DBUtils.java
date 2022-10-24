@@ -8,20 +8,27 @@ import java.util.UUID;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import io.noks.smallpractice.Main;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class DBUtils {
 	private boolean connected = false;
-	private String address = Main.getInstance().getConfig().getString("database.address");
-	private String name = Main.getInstance().getConfig().getString("database.name");
-	private String username = Main.getInstance().getConfig().getString("database.username");
-	private String password = Main.getInstance().getConfig().getString("database.password");
+	private final String address;
+	private final String name;
+	private final String username;
+	private final String password;
 
 	private HikariDataSource hikari;
 	private final String SAVE = "UPDATE players SET =? WHERE uuid=?";
 	private final String INSERT = "INSERT INTO players VALUES(?, ?) ON DUPLICATE KEY UPDATE uuid=?";
 	private final String SELECT = "SELECT kills FROM players WHERE uuid=?";
+	
+	public DBUtils(String address, String name, String user, String password) {
+		this.address = address;
+		this.name = name;
+		this.username = user;
+		this.password = password;
+		//this.connectDatabase();
+	}
 
 	public void connectDatabase() {
 		try {
