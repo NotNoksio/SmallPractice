@@ -39,7 +39,6 @@ import io.noks.smallpractice.objects.managers.RequestManager;
 import io.noks.smallpractice.utils.DBUtils;
 
 public class Main extends JavaPlugin {
-	//test gpg
 	private DuelManager duelManager;
 	private ItemManager itemManager;
 	private InventoryManager inventoryManager;
