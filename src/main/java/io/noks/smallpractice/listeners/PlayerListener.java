@@ -592,23 +592,25 @@ public class PlayerListener implements Listener {
 	            }
 				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.RED + "see random player")) {
 	                event.setCancelled(true);
-	                List<Player> online = Lists.newArrayList();
-	                
-	                for (Player onlinePlayers : this.main.getServer().getOnlinePlayers()) {
+	                List<Player> online = Lists.newArrayList(this.main.getServer().getOnlinePlayers());
+	                if (online.size() <= 1) {
+	                	return;
+	                }
+	                Collections.shuffle(online);
+	                Player tooked = null;
+	                for (Player onlinePlayers : online) {
 	                	if (onlinePlayers == player) continue;
 	                	
 	                	final PlayerManager om = PlayerManager.get(onlinePlayers.getUniqueId());
 	                	if (om.getStatus() == PlayerStatus.MODERATION || om.getStatus() == PlayerStatus.SPAWN || om.getStatus() == PlayerStatus.QUEUE) continue;
 	                	
-	                	online.add(onlinePlayers);
+	                	tooked = onlinePlayers;
+	                	break;
 	                }
-	                if (online.isEmpty()) {
+	                if (tooked == null) {
 	                	player.sendMessage(ChatColor.RED + "No player to agree.");
 	                	return;
 	                }
-	                Collections.shuffle(online);
-	                final Player tooked = online.get(0);
-	                
 	                player.teleport(tooked.getLocation().clone().add(0, 2, 0));
 	                player.sendMessage(ChatColor.GREEN + "You've been teleported to " + tooked.getName());
 	                online.clear();
