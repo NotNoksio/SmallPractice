@@ -48,8 +48,14 @@ import net.minecraft.util.org.apache.commons.lang3.BooleanUtils;
 
 public class PlayerListener implements Listener {
 	private Main main;
+	private String[] WELCOME_MESSAGE;
 	public PlayerListener(Main plugin) {
 		this.main = plugin;
+		this.WELCOME_MESSAGE = new String[]{ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Noks.io" + ChatColor.GRAY + " (Practice)",
+				"",
+				ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "discord." + this.main.getConfigManager().serverDomainName,
+				ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "namemc." + this.main.getConfigManager().serverDomainName,
+				""};
 	    this.main.getServer().getPluginManager().registerEvents(this, this.main);
 	}
 	
@@ -85,8 +91,7 @@ public class PlayerListener implements Listener {
 		
 		player.teleport(player.getWorld().getSpawnLocation());
 		this.main.getItemManager().giveSpawnItem(player);
-		
-		this.sendJoinMessage(event);
+		player.sendMessage(this.WELCOME_MESSAGE);
 		
 		for (Player allPlayers : this.main.getServer().getOnlinePlayers()) {
 			final PlayerManager pmAll = PlayerManager.get(allPlayers.getUniqueId());
@@ -94,15 +99,6 @@ public class PlayerListener implements Listener {
 				player.hidePlayer(allPlayers);
 			}
 		}
-	}
-	
-	private void sendJoinMessage(PlayerJoinEvent event) {
-		final Player player = event.getPlayer();
-		player.sendMessage(ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Noks.io" + ChatColor.GRAY + " (Practice)");
-		player.sendMessage("");
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "discord." + this.main.getConfigManager().serverDomainName);
-		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "namemc." + this.main.getConfigManager().serverDomainName);
-		player.sendMessage("");
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
@@ -121,8 +117,8 @@ public class PlayerListener implements Listener {
 		final UUID playerUUID = event.getPlayer().getUniqueId();
 		if (this.main.getQueueManager().getQueueMap().containsKey(playerUUID)) {
 			this.main.getQueueManager().getQueueMap().remove(playerUUID);
-			if (this.main.getQueueManager().getLastUpdated().contains(playerUUID)) {
-				this.main.getQueueManager().getLastUpdated().remove(playerUUID);
+			if (this.main.getQueueManager().getLastUpdatedSet().contains(playerUUID)) {
+				this.main.getQueueManager().getLastUpdatedSet().remove(playerUUID);
 			}
 			for (int i = 0; i != 2; i++) {
 				Main.getInstance().getInventoryManager().updateQueueInventory(BooleanUtils.toBoolean(i));

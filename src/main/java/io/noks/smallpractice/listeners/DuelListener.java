@@ -83,7 +83,8 @@ public class DuelListener implements Listener {
             		am.getPlayer().setLevel(hit);
             		am.getPlayer().setExp(Math.min((hit / 100.0f), 99.9f));
             		if (hit == 100) {
-            			this.main.getDuelManager().endDuel(duel, (duel.getSimpleDuel().firstTeam.contains(am.getPlayerUUID()) ? 1 : 2), false);
+            			this.main.getDuelManager().removePlayerFromDuel(dm.getPlayer(), RemoveReason.KILLED);
+            			//this.main.getDuelManager().endDuel(duel, (duel.getSimpleDuel().firstTeam.contains(am.getPlayerUUID()) ? 1 : 2), false);
             		}
             	}
             }

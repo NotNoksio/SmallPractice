@@ -63,6 +63,9 @@ public class QueueManager {
 			lastUpdated.remove(secondUUID);
 		}
 		this.updatePingDiffFromQueue();
+		if (ranked) {
+			// TODO: update elo range
+		}
 		Main.getInstance().getInventoryManager().updateQueueInventory(ranked);
 		if (to2) {
 			Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, uuid, secondUUID, party.getMembersIncludingLeader(), Main.getInstance().getPartyManager().getParty(secondUUID).getMembersIncludingLeader(), ranked);
@@ -72,7 +75,7 @@ public class QueueManager {
 	}
 	
 	private Set<UUID> lastUpdated = Collections.newSetFromMap(new WeakHashMap<>()); // DONT SPAM QUEUE!!
-	public Set<UUID> getLastUpdated() { return this.lastUpdated; }
+	public Set<UUID> getLastUpdatedSet(){ return this.lastUpdated; }
 	private void updatePingDiffFromQueue() {
 		if (this.queue.isEmpty() || this.queue.size() == 1) {
 			return;

@@ -9,10 +9,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import lombok.experimental.UtilityClass;
-
 // For the pleasure of some
-@UtilityClass
 public class ItemBuilder {
 	public static ItemStack createNewItemStackByMaterial(Material material, String displayName) {
 		return createNewItemStackByMaterial(material, displayName, false);

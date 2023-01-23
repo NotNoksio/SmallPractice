@@ -36,18 +36,18 @@ import io.noks.smallpractice.objects.Request;
 
 public class PlayerManager {
 	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
-	private Player player;
-	private UUID playerUUID;
-	private Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
-	private Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
+	private final Player player;
+	private final UUID playerUUID;
+	private final Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
+	private final Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
 	private PlayerStatus status;
 	private Player spectate;
-	private EloManager eloManager;
-	private MatchStats matchStats;
-	private Cooldown cooldown;
+	private final EloManager eloManager;
+	private final MatchStats matchStats;
+	private final Cooldown cooldown;
 	private Inventory savedInventory;
-	private List<EditedLadderKit> customLadderKit = Lists.newArrayList();
-	private PlayerSettings settings;
+	private final List<EditedLadderKit> customLadderKit = Lists.newArrayList();
+	private final PlayerSettings settings;
 	
 	public PlayerManager(UUID playerUUID) {
 	    this.playerUUID = playerUUID;
