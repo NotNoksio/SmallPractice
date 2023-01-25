@@ -1,10 +1,7 @@
 package io.noks.smallpractice.objects.managers;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +13,7 @@ import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.Queue;
 import io.noks.smallpractice.party.Party;
+import io.noks.smallpractice.utils.WeakHashSet;
 import net.minecraft.util.com.google.common.collect.Maps;
 
 public class QueueManager {
@@ -74,8 +72,8 @@ public class QueueManager {
 		Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, uuid, secondUUID, ranked);
 	}
 	
-	private Set<UUID> lastUpdated = Collections.newSetFromMap(new WeakHashMap<>()); // DONT SPAM QUEUE!!
-	public Set<UUID> getLastUpdatedSet(){ return this.lastUpdated; }
+	private WeakHashSet<UUID> lastUpdated = new WeakHashSet<UUID>(); // DONT SPAM QUEUE!!
+	public WeakHashSet<UUID> getLastUpdatedSet(){ return this.lastUpdated; }
 	private void updatePingDiffFromQueue() {
 		if (this.queue.isEmpty() || this.queue.size() == 1) {
 			return;
