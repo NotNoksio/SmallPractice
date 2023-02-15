@@ -15,7 +15,6 @@ import io.noks.smallpractice.commands.PartyCommand;
 import io.noks.smallpractice.commands.PingCommand;
 import io.noks.smallpractice.commands.PlayerTimeCommand;
 import io.noks.smallpractice.commands.ReportCommand;
-import io.noks.smallpractice.commands.ResetTimeCommand;
 import io.noks.smallpractice.commands.RollCommand;
 import io.noks.smallpractice.commands.SeeallCommand;
 import io.noks.smallpractice.commands.SpawnCommand;
@@ -100,7 +99,7 @@ public class Main extends JavaPlugin {
 		for (PlayerTimeEnum pte : PlayerTimeEnum.values()) {
 			getCommand(pte.getName().toLowerCase()).setExecutor(new PlayerTimeCommand());
 		}
-		getCommand("resettime").setExecutor(new ResetTimeCommand());
+		getCommand("resettime").setExecutor(new PlayerTimeCommand());
 		getCommand("roll").setExecutor(new RollCommand());
 		getCommand("mention").setExecutor(new MentionCommand());
 		getCommand("namemc").setExecutor(new NameMCCommand());

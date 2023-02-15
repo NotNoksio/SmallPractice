@@ -16,15 +16,20 @@ public class PlayerTimeCommand implements CommandExecutor {
 			return false;
 		}
 		if (args.length != 0) {
-			sender.sendMessage(ChatColor.RED + "Usage: /sunrise:day:sunset:night");
+			sender.sendMessage(ChatColor.RED + "Usage: /sunrise:day:sunset:night:resettime");
 			return false;
+		}
+		final Player player = (Player) sender;
+		if (cmd.getName().equalsIgnoreCase("resettime")) {
+			player.resetPlayerTime();
+	        player.sendMessage(ChatColor.GREEN + "You have reset your sky time!");
+			return true;
 		}
 		final PlayerTimeEnum pt = PlayerTimeEnum.getEnumByName(cmd.getName().toLowerCase());
 		if (pt == null) {
 			sender.sendMessage(ChatColor.RED + "Usage: /sunrise:day:sunset:night");
 			return false;
 		}
-		final Player player = (Player) sender;
 		player.setPlayerTime(pt.getTime(), false);
         player.sendMessage(ChatColor.GREEN + "You've set the " + pt.getName().toLowerCase() + ".");
         player.sendMessage(ChatColor.GRAY + "type \"/resettime\" to reset the sky time.");
