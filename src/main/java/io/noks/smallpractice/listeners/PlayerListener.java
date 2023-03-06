@@ -51,7 +51,7 @@ public class PlayerListener implements Listener {
 	private String[] WELCOME_MESSAGE;
 	public PlayerListener(Main plugin) {
 		this.main = plugin;
-		this.WELCOME_MESSAGE = new String[]{ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + "Noks.io" + ChatColor.GRAY + " (Practice)",
+		this.WELCOME_MESSAGE = new String[]{ChatColor.DARK_AQUA + "Welcome back on " + ChatColor.YELLOW + this.main.getConfigManager().serverDomainName + ChatColor.GRAY + " (Practice)",
 				"",
 				ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Discord: " + ChatColor.GRAY + "discord." + this.main.getConfigManager().serverDomainName,
 				ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "NameMC: " + ChatColor.GRAY + "namemc." + this.main.getConfigManager().serverDomainName,
@@ -87,7 +87,7 @@ public class PlayerListener implements Listener {
 		player.setGameMode(GameMode.SURVIVAL);
 		
 		player.setScoreboard(this.main.getServer().getScoreboardManager().getNewScoreboard());
-		player.setPlayerListHeaderFooter(TextComponent.fromLegacyText("NOKS.IO"), TextComponent.fromLegacyText(this.main.getDescription().getWebsite()));
+		player.setPlayerListHeaderFooter(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', this.main.getConfigManager().tabHeader)), TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', this.main.getConfigManager().tabFooter)));
 		
 		player.teleport(player.getWorld().getSpawnLocation());
 		this.main.getItemManager().giveSpawnItem(player);

@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -29,7 +28,6 @@ public class Duel {
 	private List<UUID> spectators;
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
-	private Set<Location> brokenBlocks;
 	
 	public Duel(Arenas arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
 		this.arena = arena;
@@ -38,9 +36,6 @@ public class Duel {
 		this.spectators = Lists.newArrayList();
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
-		if (ladder == Ladders.SPLEEF) {
-			this.brokenBlocks = Sets.newHashSet();
-		}
 	}
 	
 	public Duel(Arenas arena, Ladders ladder, FFADuel ffaDuel) {
@@ -137,18 +132,10 @@ public class Duel {
 	
 	public void addSpectator(UUID spec) {
 		this.spectators.add(spec);
-		if (this.brokenBlocks.isEmpty()) {
-			return;
-		}
-		// TODO: Show broken blocks
 	}
 	
 	public void removeSpectator(UUID spec) {
 		this.spectators.remove(spec);
-		if (this.brokenBlocks.isEmpty()) {
-			return;
-		}
-		// TODO: Put broken blocks in place
 	}
 	
 	public boolean hasSpectators() {
@@ -266,16 +253,5 @@ public class Duel {
 			if (entities == null || !(entities instanceof Item) && !this.drops.contains(entities.getUniqueId())) continue;
 			entities.remove();
 		}
-	}
-	
-	public void addBrokenBlocksLocation(Location loc) {
-		if (brokenBlocks == null) {
-			return;
-		}
-		this.brokenBlocks.add(loc);
-	}
-	
-	public Set<Location> getBrokenBlocksLocation(){
-		return this.brokenBlocks;
 	}
 }

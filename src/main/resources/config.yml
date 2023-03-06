@@ -6,3 +6,7 @@ database:
   password: ""
 server-domain-name: "noks.io"
 send-join-and-quit-message-to-op: false
+# \n for newLine
+tab:
+  header: "Noks.io"
+  footer: "SmallPractice"

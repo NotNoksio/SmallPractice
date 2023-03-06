@@ -64,6 +64,21 @@ public class PlayerManager {
 	    this.settings = new PlayerSettings();
 	    players.putIfAbsent(playerUUID, this);
 	}
+	public PlayerManager(UUID playerUUID, EloManager elo) {
+	    this.playerUUID = playerUUID;
+	    this.player = Bukkit.getPlayer(this.playerUUID);
+	    this.status = PlayerStatus.SPAWN;
+	    this.spectate = null;
+	    this.eloManager = elo;
+	    this.matchStats = new MatchStats();
+	    this.cooldown = new Cooldown();
+	    if (Main.getInstance().getInventoryManager().getOfflineInventories().containsKey(playerUUID)) {
+	    	this.savedInventory = Main.getInstance().getInventoryManager().getOfflineInventories().get(playerUUID);
+	    	Main.getInstance().getInventoryManager().getOfflineInventories().remove(playerUUID);
+	    }
+	    this.settings = new PlayerSettings();
+	    players.putIfAbsent(playerUUID, this);
+	}
 
 	public static PlayerManager get(UUID playerUUID) {
 		if (!players.containsKey(playerUUID)) {

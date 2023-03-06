@@ -523,8 +523,8 @@ public class DuelManager {
 		this.uuidIdentifierToDuel.remove(player.getUniqueId());
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		pm.saveInventory();
-		if (player.getMaximumNoDamageTicks() != 10) {
-			player.setMaximumNoDamageTicks(10);
+		if (player.getMaximumNoDamageTicks() != 20) {
+			player.setMaximumNoDamageTicks(20);
 		}
 		if (player.getKnockbackReduction() != 0.0f) {
 			player.setKnockbackReduction(0.0f);
@@ -598,8 +598,8 @@ public class DuelManager {
 			final PlayerManager dpm = PlayerManager.get(duelPlayer.getUniqueId());
 			
 			duelPlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
-			if (duelPlayer.getMaximumNoDamageTicks() != 10) {
-	        	duelPlayer.setMaximumNoDamageTicks(10);
+			if (duelPlayer.getMaximumNoDamageTicks() != 20) {
+	        	duelPlayer.setMaximumNoDamageTicks(20);
 	        }
 			
 			dpm.setStatus(PlayerStatus.SPAWN);
@@ -621,8 +621,8 @@ public class DuelManager {
 		pm.saveInventory();
         pm.heal(false);
         pm.setStatus(PlayerStatus.SPAWN);
-        if (player.getMaximumNoDamageTicks() != 10) {
-        	player.setMaximumNoDamageTicks(10);
+        if (player.getMaximumNoDamageTicks() != 20) {
+        	player.setMaximumNoDamageTicks(20);
         }
         if (player.getKnockbackReduction() != 0.0f) {
 			player.setKnockbackReduction(0.0f);

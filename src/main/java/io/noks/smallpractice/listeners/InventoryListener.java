@@ -146,6 +146,9 @@ public class InventoryListener implements Listener {
 					player.closeInventory();
 					return;
 				} 
+				if (request.getLadder() != Ladders.SUMO && Arena.getInstance().getArenaByInteger(slotTranslation).isSumo()) {
+					return;
+				}
 				this.main.getRequestManager().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
 			} else {
 				final Arenas selectedArena = Arena.getInstance().getArenaByInteger(slotTranslation);

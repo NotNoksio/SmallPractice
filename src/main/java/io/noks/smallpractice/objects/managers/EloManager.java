@@ -1,5 +1,6 @@
 package io.noks.smallpractice.objects.managers;
 
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -13,10 +14,10 @@ public class EloManager {
 	public EloManager() {
 		this.DEFAULT_ELO = 1200;
 	}
-	public EloManager(int... elo) {
+	public EloManager(List<Integer> elo) {
 		int i = 0;
 		for (Ladders ladders : Ladders.values()) {
-			laddersElo.put(ladders, elo[i]);
+			laddersElo.put(ladders, elo.get(i));
 			i++;
 		}
 	}
