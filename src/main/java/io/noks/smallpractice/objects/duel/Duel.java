@@ -1,5 +1,6 @@
 package io.noks.smallpractice.objects.duel;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -249,7 +250,9 @@ public class Duel {
 			return;
 		}
 		final World world = Bukkit.getWorld("world");
-		for (Entity entities : world.getEntities()) {
+		final Iterator<Entity> it = world.getEntities().iterator();
+		while (it.hasNext()) {
+			Entity entities = it.next();
 			if (entities == null || !(entities instanceof Item) && !this.drops.contains(entities.getUniqueId())) continue;
 			entities.remove();
 		}

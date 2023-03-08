@@ -91,11 +91,8 @@ public class DuelListener implements Listener {
         }
     }
 	
-	@EventHandler(priority=EventPriority.LOWEST)
+	@EventHandler(priority=EventPriority.HIGH)
 	public void onEntitySpawnInWorld(EntitySpawnEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
 		if (event.getEntity() instanceof Item) {
 			final Item itemDropped = (Item) event.getEntity();
 			
@@ -104,13 +101,13 @@ public class DuelListener implements Listener {
 				final UUID playerUUID = itemDropped.getOwner().getUniqueId();
 				final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
 				if (duel == null) return;
-				
+				if (duel.containDrops(itemDropped)) return;
 				duel.addDrops(itemDropped);
 			}
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.LOWEST)
+	@EventHandler(priority=EventPriority.HIGH)
 	public void onEntityDespawnFromWorld(EntityDeathEvent event) {
 		if (event.getEntity() instanceof Item) {
 			if (this.main.getDuelManager().getAllDuels().isEmpty()) {
@@ -121,7 +118,6 @@ public class DuelListener implements Listener {
 			for (Duel duels : this.main.getDuelManager().getAllDuels()) {
 				if (duels == null || !duels.containDrops(item)) continue;
 				duels.removeDrops(item);
-				return;
 			}
 		}
 	}
@@ -136,6 +132,10 @@ public class DuelListener implements Listener {
 		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
 		if (duel != null && duel.getLadder() == Ladders.SUMO) {
 			if (!duel.getAllAliveTeams().contains(player.getUniqueId())) {
+				return;
+			}
+			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING) {
+				event.setCancelled(true);
 				return;
 			}
 			final Arenas arena = duel.getArena();

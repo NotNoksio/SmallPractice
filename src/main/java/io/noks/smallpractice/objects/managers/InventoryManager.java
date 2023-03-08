@@ -20,7 +20,7 @@ import io.noks.smallpractice.objects.Request;
 import io.noks.smallpractice.utils.ItemBuilder;
 
 public class InventoryManager {
-	private Inventory arenasInventory;
+	private Inventory[] arenasInventory;
 	private Inventory unrankedInventory;
 	private Inventory rankedInventory;
 	private Inventory laddersInventory;
@@ -35,7 +35,7 @@ public class InventoryManager {
 	
 	public InventoryManager() {
 		this.selectingDuel = new WeakHashMap<UUID, Request>();
-		this.arenasInventory = Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection");
+		this.arenasInventory = new Inventory[] {Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection"), Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection"), Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()))};
 		this.unrankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
 		this.rankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
 		this.laddersInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
@@ -55,10 +55,17 @@ public class InventoryManager {
 	}
 	
 	private void setArenasInventory() {
-		this.arenasInventory.clear();
+		this.arenasInventory[0].clear();
+		this.arenasInventory[1].clear();
+		this.arenasInventory[2].clear();
 		for (Arenas arena : Arena.getInstance().getArenaList().values()) {
-			ItemStack item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName());
-			this.arenasInventory.addItem(item);
+			final ItemStack item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName());
+			this.arenasInventory[2].addItem(item);
+			if (!arena.isSumo()) {
+				this.arenasInventory[0].addItem(item);
+				continue;
+			}
+			this.arenasInventory[1].addItem(item);
 		}
 	}
 	
@@ -132,8 +139,11 @@ public class InventoryManager {
 		this.partyGameInventory.setItem(15, ItemBuilder.createNewItemStack(new ItemStack(Material.WOOL, 1, (short) 14), ChatColor.RED + "RedRover"));
 	}
 	
-	public Inventory getArenasInventory() {
-		return this.arenasInventory;
+	public Inventory getAllArenasInInventory() {
+		return this.arenasInventory[2];
+	}
+	public Inventory getArenasInventory(boolean sumo) {
+		return sumo ? this.arenasInventory[1] : this.arenasInventory[0];
 	}
 	
 	public Inventory getUnrankedInventory() {

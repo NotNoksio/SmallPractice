@@ -1,5 +1,11 @@
 package io.noks.smallpractice;
 
+import java.util.Iterator;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.noks.smallpractice.commands.AcceptCommand;
@@ -33,6 +39,7 @@ import io.noks.smallpractice.objects.managers.DuelManager;
 import io.noks.smallpractice.objects.managers.InventoryManager;
 import io.noks.smallpractice.objects.managers.ItemManager;
 import io.noks.smallpractice.objects.managers.PartyManager;
+import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.objects.managers.QueueManager;
 import io.noks.smallpractice.objects.managers.RequestManager;
 import io.noks.smallpractice.utils.DBUtils;
@@ -80,6 +87,14 @@ public class Main extends JavaPlugin {
 			if (duels == null) continue;
 			this.duelManager.finishDuel(duels, true);
 		}
+		final World world = Bukkit.getWorld("world");
+		final Iterator<Entity> it = world.getEntities().iterator();
+		while (it.hasNext()) {
+			Entity entities = it.next();
+			if (entities == null || !(entities instanceof Item)) continue;
+			entities.remove();
+		}
+		PlayerManager.players.clear();
 	}
 	
 	private void registerCommands() {

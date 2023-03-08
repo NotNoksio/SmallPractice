@@ -6,7 +6,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
@@ -29,10 +28,6 @@ public class SpawnCommand implements CommandExecutor {
 		}
 		player.teleport(player.getWorld().getSpawnLocation());
 		player.sendMessage(ChatColor.GREEN + "Teleportation..");
-		if (pm.getStatus() == PlayerStatus.BRIDGE) {
-			pm.setStatus(PlayerStatus.SPAWN);	
-			Main.getInstance().getItemManager().giveSpawnItem(player);
-		}
 		return true;
 	}
 }

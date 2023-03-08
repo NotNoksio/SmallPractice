@@ -31,7 +31,7 @@ public class ItemManager {
 			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
 			player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
 			player.getInventory().setItem(4, ItemBuilder.createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
-			player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.GOLD_AXE, ChatColor.YELLOW + "Mini-Game", true));
+			player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.EMERALD, ChatColor.YELLOW + "Leaderboard"));
 			player.getInventory().setItem(8, ItemBuilder.createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings"));
 		} else {
 			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING) {

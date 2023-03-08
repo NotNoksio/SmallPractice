@@ -423,7 +423,7 @@ public class DuelManager {
 				Main.getInstance().getItemManager().giveKitSelectionItems(first, duel.getLadder());
 				
 				if (duel.getLadder() == Ladders.COMBO) {
-					first.setMaximumNoDamageTicks(2);
+					first.setMaximumNoDamageTicks(4);
 					first.setKnockbackReduction(0.05f);
 				}
 				if (duel.getLadder() == Ladders.BOXING) {
@@ -448,7 +448,7 @@ public class DuelManager {
 				Main.getInstance().getItemManager().giveKitSelectionItems(second, duel.getLadder());
 				
 				if (duel.getLadder() == Ladders.COMBO) {
-					second.setMaximumNoDamageTicks(2);
+					second.setMaximumNoDamageTicks(4);
 					second.setKnockbackReduction(0.05f);
 				}
 				if (duel.getLadder() == Ladders.BOXING) {

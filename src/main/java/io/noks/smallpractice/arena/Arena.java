@@ -34,14 +34,14 @@ public class Arena {
 		if (!arenaList.isEmpty()) {
 			return;
 		}
-		final Location[] arena1 = {new Location(Bukkit.getWorld("world"), 1037.5D, 64.0D, 0.5D, 90.0F, 0.0F), new Location(Bukkit.getWorld("world"), 962.5D, 64.0D, 0.5D, -90.0F, -1.0F)};
-		final Location[] arena2 = {new Location(Bukkit.getWorld("world"), 4000.5D, 64.0D, 41.5D, 179.0F, 0.0F), new Location(Bukkit.getWorld("world"), 4000.5D, 64.0D, -41.5D, 0.0F, 0.0F)};
-		final Location[] arena3 = {new Location(Bukkit.getWorld("world"), 9000.5D, 64.0D, 40.5D, -179.0F, 0.0F), new Location(Bukkit.getWorld("world"), 9000.5D, 64.0D, -45.5D, 0.0F, 0.0F)};
-		final Location[] arena4 = {new Location(Bukkit.getWorld("world"), 15000.5D, 64.0D, -38.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), 15000.5D, 64.0D, 40.5D, -179.0F, 0.0F)};
-		final Location[] arena5 = {new Location(Bukkit.getWorld("world"), 12954.5D, 54.0D, -1.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), 13042.5D, 54.0D, -1.5D, 90.0F, 0.0F)};
-		final Location[] arena6 = {new Location(Bukkit.getWorld("world"), 0.5D, 64.0D, 36995.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), 0.5D, 64.0D, 37005.5D, 179.0F, 0.0F)};
-		final Location[] arena7 = {new Location(Bukkit.getWorld("world"), 1.5D, 64.0D, 35994.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), 1.5D, 64.0D, 36006.5D, 179.0F, 0.0F)};
-		final Location[] arena8 = {new Location(Bukkit.getWorld("world"), 14041.5D, 64.0D, -0.5D, 89.0F, 0.0F), new Location(Bukkit.getWorld("world"), 13965.5D, 64.0D, -0.5D, -89.0F, 0.0F)};
+		final Location[] arena1 = {new Location(Bukkit.getWorld("world"), 1037.5D, 64.5D, 0.5D, 90.0F, 0.0F), new Location(Bukkit.getWorld("world"), 962.5D, 64.5D, 0.5D, -90.0F, -1.0F)};
+		final Location[] arena2 = {new Location(Bukkit.getWorld("world"), 4000.5D, 64.5D, 41.5D, 179.0F, 0.0F), new Location(Bukkit.getWorld("world"), 4000.5D, 64.5D, -41.5D, 0.0F, 0.0F)};
+		final Location[] arena3 = {new Location(Bukkit.getWorld("world"), 9000.5D, 64.5D, 40.5D, -179.0F, 0.0F), new Location(Bukkit.getWorld("world"), 9000.5D, 64.5D, -45.5D, 0.0F, 0.0F)};
+		final Location[] arena4 = {new Location(Bukkit.getWorld("world"), 15000.5D, 64.5D, -38.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), 15000.5D, 64.5D, 40.5D, -179.0F, 0.0F)};
+		final Location[] arena5 = {new Location(Bukkit.getWorld("world"), 12954.5D, 54.5D, -1.5D, -90.0F, 0.0F), new Location(Bukkit.getWorld("world"), 13042.5D, 54.5D, -1.5D, 90.0F, 0.0F)};
+		final Location[] arena6 = {new Location(Bukkit.getWorld("world"), 0.5D, 64.5D, 36995.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), 0.5D, 64.5D, 37005.5D, 179.0F, 0.0F)};
+		final Location[] arena7 = {new Location(Bukkit.getWorld("world"), 1.5D, 64.5D, 35994.5D, 0.0F, 0.0F), new Location(Bukkit.getWorld("world"), 1.5D, 64.5D, 36006.5D, 179.0F, 0.0F)};
+		final Location[] arena8 = {new Location(Bukkit.getWorld("world"), 14041.5D, 64.5D, -0.5D, 89.0F, 0.0F), new Location(Bukkit.getWorld("world"), 13965.5D, 64.5D, -0.5D, -89.0F, 0.0F)};
 		    
 		arenaList.put(1, new Arenas("Cave", arena1, new ItemStack(Material.STONE, 1), false));
 		arenaList.put(2, new Arenas("Rock", arena2, new ItemStack(Material.BRICK, 1), false));

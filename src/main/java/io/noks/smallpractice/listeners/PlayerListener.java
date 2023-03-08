@@ -1,5 +1,6 @@
 package io.noks.smallpractice.listeners;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -7,7 +8,6 @@ import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -38,7 +38,6 @@ import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.enums.RemoveReason;
-import io.noks.smallpractice.enums.Warps;
 import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
@@ -61,14 +60,12 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
-		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP) {
-			if (this.main.getServer().getOnlinePlayers().size() > 1) {
-				for (Player opPlayers : this.main.getServer().getOnlinePlayers()) {
-					if (!opPlayers.isOp()) {
-						continue;
-					}
-					opPlayers.sendMessage(event.getJoinMessage());
+		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP && this.main.getServer().getOnlinePlayers().size() > 1) {
+			for (Player opPlayers : this.main.getServer().getOnlinePlayers()) {
+				if (!opPlayers.isOp()) {
+					continue;
 				}
+				opPlayers.sendMessage(event.getJoinMessage());
 			}
 		}
 		event.setJoinMessage(null);
@@ -103,14 +100,12 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onQuit(PlayerQuitEvent event) {
-		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP) {
-			if (this.main.getServer().getOnlinePlayers().size() > 1) {
-				for (Player opPlayers : this.main.getServer().getOnlinePlayers()) {
-					if (!opPlayers.isOp()) {
-						continue;
-					}
-					opPlayers.sendMessage(event.getQuitMessage());
+		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP && this.main.getServer().getOnlinePlayers().size() > 1) {
+			for (Player opPlayers : this.main.getServer().getOnlinePlayers()) {
+				if (!opPlayers.isOp()) {
+					continue;
 				}
+				opPlayers.sendMessage(event.getQuitMessage());
 			}
 		}
 		event.setQuitMessage(null);
@@ -158,6 +153,17 @@ public class PlayerListener implements Listener {
 		
 		if (event.getEntity() instanceof Player) {
 			final Player killed = event.getEntity();
+			
+			if (this.main.getDuelManager().getDuelFromPlayerUUID(killed.getUniqueId()) == null) {
+				return;
+			}
+			// WE NEED TO DO THIS TO FIRE DuelListener::onEntitySpawnInWorld
+			final List<ItemStack> drops = new ArrayList<ItemStack>(event.getDrops());
+			event.getDrops().clear();
+			for (ItemStack items : drops) {
+				killed.getWorld().dropItemNaturally(killed.getLocation(), items, killed);
+			}
+			// end
 			this.main.getDuelManager().removePlayerFromDuel(killed, RemoveReason.KILLED);
 			// TODO: Work on a better autorespawn
 			new BukkitRunnable() {
@@ -195,17 +201,11 @@ public class PlayerListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE || pm.getStatus() == PlayerStatus.BRIDGE) {
+			if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
 				switch (event.getCause()) {
 				case VOID:
 					event.setCancelled(true);
-					if (pm.getStatus() != PlayerStatus.BRIDGE) {
-						player.teleport(player.getWorld().getSpawnLocation());
-						break;
-					}
-					player.setNoDamageTicks(50);
-					this.main.getItemManager().giveBridgeItems(player);
-					player.teleport(Warps.BRIDGE.getLobbyLocation());
+					player.teleport(player.getWorld().getSpawnLocation());
 					break;
 				case FALL:
 					event.setCancelled(true);
@@ -238,7 +238,7 @@ public class PlayerListener implements Listener {
 			final Player attacker = (Player) event.getDamager();
 			final PlayerManager attackerManager = PlayerManager.get(attacker.getUniqueId());	
 			
-			if (attackerManager.getStatus() == PlayerStatus.MODERATION || attackerManager.getStatus() == PlayerStatus.BRIDGE) {
+			if (attackerManager.getStatus() == PlayerStatus.MODERATION) {
 				if (attacker.getNoDamageTicks() > 0) {
 					event.setCancelled(true);
 					return;
@@ -350,12 +350,8 @@ public class PlayerListener implements Listener {
 		                this.main.getServer().dispatchCommand(player, "party create");
 		                break;
 		            }
-					if (item.getType() == Material.GOLD_AXE && itemName.equals(ChatColor.YELLOW + "mini-game")) {
-						player.sendMessage(ChatColor.GOLD + "Successfully teleported to the Bridge game (because it's the only one ^^')");
-						player.teleport(Warps.BRIDGE.getLobbyLocation());
-						pm.setStatus(PlayerStatus.BRIDGE);
-						this.main.getItemManager().giveBridgeItems(player);
-						player.setNoDamageTicks(50);
+					if (item.getType() == Material.EMERALD && itemName.equals(ChatColor.YELLOW + "leaderboard")) {
+						player.sendMessage(ChatColor.GREEN + "Coming soon :)");
 						break;
 					}
 					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "kit creator/settings")) {
@@ -551,7 +547,7 @@ public class PlayerListener implements Listener {
 					break;
 				}
 				if (item.getType() == Material.MAP && itemName.equals(ChatColor.GREEN + "change arena")) {
-					player.openInventory(this.main.getInventoryManager().getArenasInventory());
+					player.openInventory(this.main.getInventoryManager().getAllArenasInInventory());
 					break;
 				}
 				if (item.getType() == Material.WOOL && itemName.equals(ChatColor.GREEN + "change fly/walk speed")) {
@@ -623,26 +619,6 @@ public class PlayerListener implements Listener {
 		final String[] ladderName = ChatColor.stripColor(name).split(" ");
 		this.main.getItemManager().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
         player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
-	}
-	
-	@EventHandler(priority=EventPriority.LOWEST)
-	public void onInteractWithBlock(PlayerInteractEvent event) {
-		if (!event.hasBlock()) { // TODO: check if good
-			return;
-		}
-		if (event.getClickedBlock() != null && (event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.SIGN || (event.getClickedBlock().getType() == Material.WALL_SIGN && event.getAction() == Action.RIGHT_CLICK_BLOCK))) {
-			final Sign sign = (Sign)event.getClickedBlock().getState();
-			if (sign.getLine(0).equalsIgnoreCase("-*-") && sign.getLine(1).equalsIgnoreCase("Back to spawn") && sign.getLine(2).equalsIgnoreCase("-*-")) {
-				event.setCancelled(true);
-				final Player player = event.getPlayer();
-				if (player.isSneaking()) {
-					return;
-				}
-				PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
-				player.teleport(player.getWorld().getSpawnLocation());
-				this.main.getItemManager().giveSpawnItem(player);
-			}
-		}
 	}
 	
 	@EventHandler

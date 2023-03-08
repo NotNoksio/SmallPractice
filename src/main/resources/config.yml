@@ -9,4 +9,4 @@ send-join-and-quit-message-to-op: false
 # \n for newLine
 tab:
   header: "Noks.io"
-  footer: "SmallPractice"
+  footer: "github.com/iamnoksio/SmallPractice"

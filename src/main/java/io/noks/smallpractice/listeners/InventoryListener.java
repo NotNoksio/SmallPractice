@@ -80,7 +80,7 @@ public class InventoryListener implements Listener {
 				if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
 					Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
 					request.setLadder(ladder);
-					player.openInventory(this.main.getInventoryManager().getArenasInventory());
+					player.openInventory(this.main.getInventoryManager().getArenasInventory(ladder == Ladders.SUMO));
 					return;
 				}
 				player.openInventory(this.main.getInventoryManager().getPartyGameInventory());
@@ -146,9 +146,6 @@ public class InventoryListener implements Listener {
 					player.closeInventory();
 					return;
 				} 
-				if (request.getLadder() != Ladders.SUMO && Arena.getInstance().getArenaByInteger(slotTranslation).isSumo()) {
-					return;
-				}
 				this.main.getRequestManager().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
 			} else {
 				final Arenas selectedArena = Arena.getInstance().getArenaByInteger(slotTranslation);

@@ -35,7 +35,7 @@ import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.Request;
 
 public class PlayerManager {
-	private static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
+	public static final Map<UUID, PlayerManager> players = Maps.newConcurrentMap();
 	private final Player player;
 	private final UUID playerUUID;
 	private final Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
@@ -107,7 +107,7 @@ public class PlayerManager {
 	}
 
 	public boolean isAllowedToBuild() {
-		return getStatus() == PlayerStatus.BUILD || getStatus() == PlayerStatus.BRIDGE;
+		return this.status == PlayerStatus.BUILD;
 	}
 	
 	public Player getSpectate() {
