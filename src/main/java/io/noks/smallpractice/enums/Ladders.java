@@ -9,7 +9,7 @@ public enum Ladders {
 	ARCHER("Archer", ChatColor.RED, new ItemStack(Material.BOW, 1), false, true, true),
 	AXE("Axe", ChatColor.LIGHT_PURPLE, new ItemStack(Material.IRON_AXE, 1), false, true, true),
 	SOUP("Soup", ChatColor.GOLD, new ItemStack(Material.MUSHROOM_SOUP, 1), false, false, true),
-	EARLY_HG("Early-HG", ChatColor.GREEN, new ItemStack(Material.STONE_SWORD, 1), false, false, true),
+	EARLY_HG("EarlyHG", ChatColor.GREEN, new ItemStack(Material.STONE_SWORD, 1), false, false, true),
 	GAPPLE("Gapple", ChatColor.BLUE, new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1), false, true, true),
 	BOXING("Boxing", ChatColor.DARK_AQUA, new ItemStack(Material.NOTE_BLOCK, 1), false, false, true),
 	COMBO("Combo", ChatColor.DARK_GREEN, new ItemStack(Material.FEATHER, 1), false, true, true),

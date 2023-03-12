@@ -134,7 +134,7 @@ public class InventoryListener implements Listener {
 		}
 		if (title.equals("arena selection")) {
 			event.setCancelled(true);
-			int slotTranslation = event.getSlot() + 1;
+			final int slotTranslation = event.getSlot() + 1;
 			if (Arena.getInstance().getArenaByInteger(slotTranslation) == null) {
 				return;
 			}
@@ -173,11 +173,18 @@ public class InventoryListener implements Listener {
 		}
 		if (title.endsWith("configuration")) {
 			event.setCancelled(true);
+			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
+			final PlayerSettings settings = PlayerManager.get(player.getUniqueId()).getSettings();
+			if (itemName.startsWith("ping")) {
+				settings.updatePingDiff();
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory(settings));
+				return;
+			}
 			return;
 		}
 		if (title.equals("selector")) {
 			event.setCancelled(true);
-			String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
+			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
 			if (itemName.equals("kit creator")) {
 				player.closeInventory();
 				player.openInventory(this.main.getInventoryManager().getEditingInventory());
@@ -185,8 +192,14 @@ public class InventoryListener implements Listener {
 			}
 			if (itemName.equals("configurate settings")) {
 				player.closeInventory();
-				player.openInventory(this.main.getInventoryManager().getSettingsInventory());
+				final PlayerSettings settings = PlayerManager.get(player.getUniqueId()).getSettings();
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory(settings));
+				return;
 			}
+			return;
+		}
+		if (title.equals("leaderboard")) {
+			event.setCancelled(true);
 		}
 	}
 	

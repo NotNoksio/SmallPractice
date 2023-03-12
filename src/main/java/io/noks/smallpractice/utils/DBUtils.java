@@ -4,13 +4,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 
 import com.zaxxer.hikari.HikariDataSource;
 
 import io.noks.smallpractice.enums.Ladders;
+import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.managers.EloManager;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import net.minecraft.util.com.google.common.collect.Lists;
@@ -23,22 +27,23 @@ public class DBUtils {
 	private final String password;
 
 	private HikariDataSource hikari;
-	private final String SAVE = "UPDATE players SET =? WHERE uuid=?";
-	private String INSERT;
-	private final String SELECT = "SELECT nodebuff,archer,axe,soup,early-hg,gapple,boxing,combo,sumo,noenchant FROM players WHERE uuid=?";
+	private final String SELECT = "SELECT * FROM players WHERE uuid=?";
 	
 	public DBUtils(String address, String name, String user, String password) {
 		this.address = address;
 		this.name = name;
 		this.username = user;
 		this.password = password;
-		//this.connectDatabase();
+		this.connectDatabase();
 	}
 
 	public void connectDatabase() {
+		if (this.address.length() == 0 || this.name.length() == 0 || this.username.length() == 0 || this.password.length() == 0) {
+			return;
+		}
 		try {
 			this.hikari = new HikariDataSource();
-			this.hikari.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+			this.hikari.setDataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource"); //com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 			this.hikari.addDataSourceProperty("serverName", this.address);
 			this.hikari.addDataSourceProperty("port", "3306");
 			this.hikari.addDataSourceProperty("databaseName", this.name);
@@ -55,8 +60,35 @@ public class DBUtils {
 			this.hikari.setConnectionTimeout(30000L);
 			// KEEP THE CONNECTION OPEN WITH HIKARI - end
 			this.connected = true;
-			createTable();
 		} catch (Exception exception) {
+		}
+		this.createTable();
+	}
+	
+	private void createTable() {
+		if (!isConnected()) {
+			return;
+		}
+		Connection connection = null;
+		final StringJoiner ladder = new StringJoiner(", ");
+		for (Ladders ladders : Ladders.values()) {
+			ladder.add(ladders.getName().toLowerCase() + " int(11)");
+		}
+		try {
+			connection = this.hikari.getConnection();
+			Statement statement = connection.createStatement();
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid varchar(36), " + ladder.toString() + ", pingdiff int(11), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -69,18 +101,20 @@ public class DBUtils {
 		for (int i = 0; i < Ladders.values().length; i++) {
 			questionMarks.add("?");
 		}
-		this.INSERT = "INSERT INTO players VALUES(?, " + questionMarks.toString() + "?) ON DUPLICATE KEY UPDATE uuid=?";
+		final String INSERT = "INSERT INTO players VALUES(?, " + questionMarks.toString() + ", ?) ON DUPLICATE KEY UPDATE uuid=?";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(this.INSERT);
+			PreparedStatement statement = connection.prepareStatement(INSERT);
 
-			statement.setString(1, uuid.toString());
-			int i;
-			for (i = 1; i < Ladders.values().length + 1; i++) {
-				statement.setInt(i, 0);
+			int i = 1;
+			statement.setString(i, uuid.toString());
+			while (i != Ladders.values().length + 1) {
+				i++;
+				statement.setInt(i, 1200);
 			}
-			statement.setString(i + 1, uuid.toString());
+			statement.setInt(i + 1, 300);
+			statement.setString(i + 2, uuid.toString());
 			statement.executeUpdate();
 			statement.close();
 
@@ -92,39 +126,12 @@ public class DBUtils {
 				for (Ladders ladders : Ladders.values()) {
 					elos.add(result.getInt(ladders.getName().toLowerCase()));
 				}
-				new PlayerManager(uuid, new EloManager(elos));
+				new PlayerManager(uuid, new EloManager(elos), new PlayerSettings(result.getInt("pingdiff")));
 			}
-			statement.close();
 			result.close();
+			statement.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-	}
-
-	private void createTable() {
-		if (!isConnected()) {
-			return;
-		}
-		Connection connection = null;
-		try {
-			connection = this.hikari.getConnection();
-			PreparedStatement statement = (PreparedStatement) connection.createStatement();
-			final StringJoiner ladder = new StringJoiner(", ");
-			for (Ladders ladders : Ladders.values()) {
-				ladder.add(ladders.getName().toLowerCase() + " int(11)");
-			}
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS players(uuid varchar(36), " + ladder.toString() + "PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
-			statement.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
 		} finally {
 			if (connection != null) {
 				try {
@@ -141,16 +148,22 @@ public class DBUtils {
 			pm.remove();
 			return;
 		}
+		final StringJoiner ladder = new StringJoiner(", ");
+		for (Ladders ladders : Ladders.values()) {
+			ladder.add(ladders.getName().toLowerCase() + "=?");
+		}
+		final String SAVE = "UPDATE players SET " + ladder.toString() + ", pingdiff=? WHERE uuid=?";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(this.SAVE);
+			PreparedStatement statement = connection.prepareStatement(SAVE);
 			
 			int i = 1;
 			for (Ladders ladders : Ladders.values()) {
 				statement.setInt(i, pm.getEloManager().getFrom(ladders));
 				i++;
 			}
+			statement.setInt(i, pm.getSettings().getQueuePingDiff());
 			statement.setString(i + 1, pm.getPlayerUUID().toString());
 			statement.execute();
 			statement.close();
@@ -167,7 +180,39 @@ public class DBUtils {
 			pm.remove();
 		}
 	}
-
+	
+	public Map<UUID, Integer> getTopEloLadder(Ladders ladder) {
+		if (!isConnected()) {
+			return null;
+		}
+		final Map<UUID, Integer> map = new LinkedHashMap<UUID, Integer>();
+		final String selectLine = "SELECT uuid," + ladder.getName().toLowerCase() + " FROM players ORDER BY " + ladder.getName().toLowerCase() + " DESC LIMIT 10";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			PreparedStatement statement = connection.prepareStatement(selectLine);
+			ResultSet result = statement.executeQuery();
+			while (result.next()) {
+				final UUID uuid = UUID.fromString(result.getString("uuid"));
+				final int elo = result.getInt(ladder.getName().toLowerCase());
+				map.put(uuid, elo);
+			}
+			result.close();
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return map;
+	}
+	
 	public HikariDataSource getHikari() {
 		return this.hikari;
 	}

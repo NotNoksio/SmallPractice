@@ -3,6 +3,9 @@ package io.noks.smallpractice.objects;
 public class PlayerSettings {
 	private int queuePingDiff;
 	
+	public PlayerSettings(int pingDiff) {
+		this.queuePingDiff = pingDiff;
+	}
 	public PlayerSettings() {
 		this.queuePingDiff = 300;
 	}

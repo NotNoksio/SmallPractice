@@ -64,7 +64,7 @@ public class PlayerManager {
 	    this.settings = new PlayerSettings();
 	    players.putIfAbsent(playerUUID, this);
 	}
-	public PlayerManager(UUID playerUUID, EloManager elo) {
+	public PlayerManager(UUID playerUUID, EloManager elo, PlayerSettings settings) {
 	    this.playerUUID = playerUUID;
 	    this.player = Bukkit.getPlayer(this.playerUUID);
 	    this.status = PlayerStatus.SPAWN;
@@ -76,7 +76,7 @@ public class PlayerManager {
 	    	this.savedInventory = Main.getInstance().getInventoryManager().getOfflineInventories().get(playerUUID);
 	    	Main.getInstance().getInventoryManager().getOfflineInventories().remove(playerUUID);
 	    }
-	    this.settings = new PlayerSettings();
+	    this.settings = settings;
 	    players.putIfAbsent(playerUUID, this);
 	}
 

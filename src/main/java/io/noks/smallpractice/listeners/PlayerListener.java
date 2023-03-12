@@ -138,6 +138,7 @@ public class PlayerListener implements Listener {
 			this.main.getDuelManager().removePlayerFromDuel(this.main.getServer().getPlayer(playerUUID), RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected -> is it fixed?
 		}
 		this.main.getDatabaseUtil().savePlayer(pm);
+		this.main.getInventoryManager().setLeaderboardInventory();
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
@@ -351,7 +352,7 @@ public class PlayerListener implements Listener {
 		                break;
 		            }
 					if (item.getType() == Material.EMERALD && itemName.equals(ChatColor.YELLOW + "leaderboard")) {
-						player.sendMessage(ChatColor.GREEN + "Coming soon :)");
+						player.openInventory(this.main.getInventoryManager().getLeaderboardInventory());
 						break;
 					}
 					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "kit creator/settings")) {
