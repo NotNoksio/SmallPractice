@@ -109,7 +109,16 @@ public class PlayerListener implements Listener {
 			}
 		}
 		event.setQuitMessage(null);
-		final UUID playerUUID = event.getPlayer().getUniqueId();
+		this.doDisconectionAction(event.getPlayer().getUniqueId());
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onGettingKicked(PlayerKickEvent event) {
+		event.setLeaveMessage(null);
+		this.doDisconectionAction(event.getPlayer().getUniqueId());
+	}
+	
+	private void doDisconectionAction(UUID playerUUID) {
 		if (this.main.getQueueManager().getQueueMap().containsKey(playerUUID)) {
 			this.main.getQueueManager().getQueueMap().remove(playerUUID);
 			if (this.main.getQueueManager().getLastUpdatedSet().contains(playerUUID)) {
@@ -128,23 +137,20 @@ public class PlayerListener implements Listener {
             	this.main.getPartyManager().leaveParty(playerUUID);
             }
         }
-		if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
-			for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
-				if (!allArenas.getAllSpectators().contains(playerUUID)) continue;
-				allArenas.removeSpectator(playerUUID);
+        if (pm != null) {
+			if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
+				for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
+					if (!allArenas.getAllSpectators().contains(playerUUID)) continue;
+					allArenas.removeSpectator(playerUUID);
+					break;
+				}
 			}
-		}
-		if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
-			this.main.getDuelManager().removePlayerFromDuel(this.main.getServer().getPlayer(playerUUID), RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected -> is it fixed?
-		}
-		this.main.getDatabaseUtil().savePlayer(pm);
+			if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
+				this.main.getDuelManager().removePlayerFromDuel(this.main.getServer().getPlayer(playerUUID), RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected -> is it fixed?
+			}
+			this.main.getDatabaseUtil().savePlayer(pm);
+        }
 		this.main.getInventoryManager().setLeaderboardInventory();
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onGettingKicked(PlayerKickEvent event) {
-		onQuit(new PlayerQuitEvent(event.getPlayer(), event.getLeaveMessage()));
-		event.setLeaveMessage(null);
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
