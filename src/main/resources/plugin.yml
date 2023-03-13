@@ -33,4 +33,5 @@ commands:
   namemc:
   stats:
     aliases: [elo]
+  arenas:
   

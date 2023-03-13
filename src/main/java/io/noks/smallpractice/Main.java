@@ -9,6 +9,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.noks.smallpractice.commands.AcceptCommand;
+import io.noks.smallpractice.commands.ArenasCommand;
 import io.noks.smallpractice.commands.BuildCommand;
 import io.noks.smallpractice.commands.DenyCommand;
 import io.noks.smallpractice.commands.DuelCommand;
@@ -119,6 +120,7 @@ public class Main extends JavaPlugin {
 		getCommand("mention").setExecutor(new MentionCommand());
 		getCommand("namemc").setExecutor(new NameMCCommand());
 		getCommand("stats").setExecutor(new StatsCommand());
+		getCommand("arenas").setExecutor(new ArenasCommand());
 	}
 	
 	private void registerListers() {

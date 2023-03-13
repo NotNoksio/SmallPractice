@@ -134,8 +134,8 @@ public class InventoryListener implements Listener {
 		}
 		if (title.equals("arena selection")) {
 			event.setCancelled(true);
-			final int slotTranslation = event.getSlot() + 1;
-			if (Arena.getInstance().getArenaByInteger(slotTranslation) == null) {
+			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
+			if (Arena.getInstance().getArenaByName(itemName) == null) {
 				return;
 			}
 			if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
@@ -146,9 +146,9 @@ public class InventoryListener implements Listener {
 					player.closeInventory();
 					return;
 				} 
-				this.main.getRequestManager().sendDuelRequest(Arena.getInstance().getArenaByInteger(slotTranslation), request.getLadder(), player, target);
-			} else {
-				final Arenas selectedArena = Arena.getInstance().getArenaByInteger(slotTranslation);
+				this.main.getRequestManager().sendDuelRequest(Arena.getInstance().getArenaByName(itemName), request.getLadder(), player, target);
+			} else if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.SPECTATE) {
+				final Arenas selectedArena = Arena.getInstance().getArenaByName(itemName);
 				for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
     				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
     				allArenas.removeSpectator(player.getUniqueId());
@@ -168,6 +168,10 @@ public class InventoryListener implements Listener {
                 selectedArena.addSpectator(player.getUniqueId());
 				player.teleport(selectedArena.getLocations()[0]);
 				playersInArena.clear();
+			} else {
+				final Arenas selectedArena = Arena.getInstance().getArenaByName(itemName);
+				player.teleport(selectedArena.getMiddle());
+				player.sendMessage(ChatColor.GREEN + "Teleported to " + selectedArena.getName() + " arena.");
 			}
 			player.closeInventory();
 		}

@@ -175,13 +175,37 @@ public class Duel {
 		if (this.simpleDuel != null) {
 			if (!this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty()) {
 				for (UUID firstUUID : this.simpleDuel.firstTeamAlive) {
-					Player first = Bukkit.getPlayer(firstUUID);
+					final Player first = Bukkit.getPlayer(firstUUID);
 					for (UUID secondUUID : this.simpleDuel.secondTeamAlive) {
-		                Player second = Bukkit.getPlayer(secondUUID);
+		                final Player second = Bukkit.getPlayer(secondUUID);
 						first.showPlayer(second);
 						second.showPlayer(first);
 					}
 				}
+				// SEE TEAMMATES
+				if (this.simpleDuel.firstTeamAlive.size() > 1) {
+					for (UUID firstUUID : this.simpleDuel.firstTeamAlive) {
+						final Player first = Bukkit.getPlayer(firstUUID);
+						for (UUID firstSecondUUID : this.simpleDuel.firstTeamAlive) {
+							if (firstUUID == firstSecondUUID) continue;
+			                final Player second = Bukkit.getPlayer(firstUUID);
+							first.showPlayer(second);
+							second.showPlayer(first);
+						}
+					}
+				}
+				if (this.simpleDuel.secondTeamAlive.size() > 1) {
+					for (UUID firstUUID : this.simpleDuel.secondTeamAlive) {
+						final Player first = Bukkit.getPlayer(firstUUID);
+						for (UUID firstSecondUUID : this.simpleDuel.secondTeamAlive) {
+							if (firstUUID == firstSecondUUID) continue;
+			                final Player second = Bukkit.getPlayer(firstUUID);
+							first.showPlayer(second);
+							second.showPlayer(first);
+						}
+					}
+				}
+				// SEE TEAMMATES
 			}
 		}
 		if (this.ffaDuel != null) {
