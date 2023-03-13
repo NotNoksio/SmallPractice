@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
+import io.noks.smallpractice.enums.PlayerStatus;
+import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ArenasCommand implements CommandExecutor {
 
@@ -21,6 +23,10 @@ public class ArenasCommand implements CommandExecutor {
 			return false;
 		}
 		final Player player = (Player) sender;
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (pm.getStatus() != PlayerStatus.SPAWN && pm.getStatus() != PlayerStatus.MODERATION && !pm.isAllowedToBuild()) {
+			return false;
+		}
 		player.openInventory(Main.getInstance().getInventoryManager().getAllArenasInInventory());
 		return true;
 	}
