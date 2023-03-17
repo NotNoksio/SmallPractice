@@ -40,13 +40,19 @@ public class InventoryListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onInventoryClick(InventoryClickEvent event) {
-		final Inventory inventory = event.getInventory();
+		final Inventory inventory = event.getClickedInventory();
 		if (inventory == null) {
 			return;
 		}
 		if (inventory.getType() != InventoryType.CHEST) {
 			return;
 		}
+		final Player player = (Player) event.getWhoClicked();
+		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+		if (pm.isAllowedToBuild()) {
+			return;
+		}
+		event.setCancelled(true);
 		final ItemStack item = event.getCurrentItem();
 		
 		if (item == null || item.getType() == null) {
@@ -54,19 +60,16 @@ public class InventoryListener implements Listener {
 		}
 		final String title = inventory.getTitle().toLowerCase();
 		if (title.endsWith("inventory")) {
-            event.setCancelled(true);
             return;
         }
 		if (item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null){
 			return;
 		}
-		final Player player = (Player) event.getWhoClicked();
 		if (title.equals("unranked selection") || title.equals("ranked selection") || title.equals("ladder selection") || title.equals("editing selection")) {
-			event.setCancelled(true);
 			if (title.startsWith("editing")) {
 				return;
 			}
-			String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
 			if (!Ladders.contains(itemName)) {
 				return;
 			}
@@ -87,13 +90,12 @@ public class InventoryListener implements Listener {
 				player.setMetadata("ladder", new FixedMetadataValue(this.main, ladder.getName()));
 				return;
 			}
-			final PlayerSettings settings = PlayerManager.get(player.getUniqueId()).getSettings();
+			final PlayerSettings settings = pm.getSettings();
 			this.main.getQueueManager().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"), this.main.getPartyManager().hasParty(player.getUniqueId()), settings.getQueuePingDiff());
 			player.closeInventory();
 			return;
 		}
 		if (title.equals("select gamemode")) {
-			event.setCancelled(true);
 			if (!player.hasMetadata("ladder")) {
 				player.closeInventory();
 				return;
@@ -117,8 +119,6 @@ public class InventoryListener implements Listener {
 			}
 		}
 		if (title.equals("fight other parties")) {
-			event.setCancelled(true);
-			
 			if (item.getData().getData() == SkullType.WITHER.ordinal()) {
 				player.sendMessage(ChatColor.RED + "This party is currently in a match!");
 				player.closeInventory();
@@ -133,7 +133,6 @@ public class InventoryListener implements Listener {
             this.main.getServer().dispatchCommand(player, "duel " + itemName[0]); 
 		}
 		if (title.equals("arena selection")) {
-			event.setCancelled(true);
 			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
 			if (Arena.getInstance().getArenaByName(itemName) == null) {
 				return;
@@ -147,9 +146,9 @@ public class InventoryListener implements Listener {
 					return;
 				} 
 				this.main.getRequestManager().sendDuelRequest(Arena.getInstance().getArenaByName(itemName), request.getLadder(), player, target);
-			} else if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.SPECTATE) {
+			} else if (pm.getStatus() == PlayerStatus.SPECTATE) {
 				final Arenas selectedArena = Arena.getInstance().getArenaByName(itemName);
-				for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
+				for (Arenas allArenas : Arena.getInstance().getArenaList()) {
     				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
     				allArenas.removeSpectator(player.getUniqueId());
     			}
@@ -176,18 +175,29 @@ public class InventoryListener implements Listener {
 			player.closeInventory();
 		}
 		if (title.endsWith("configuration")) {
-			event.setCancelled(true);
 			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
-			final PlayerSettings settings = PlayerManager.get(player.getUniqueId()).getSettings();
+			final PlayerSettings settings = pm.getSettings();
 			if (itemName.startsWith("ping")) {
 				settings.updatePingDiff();
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory(settings));
+				return;
+			}
+			if (itemName.startsWith("toggle")) {
+				if (itemName.endsWith("private message")) {
+					settings.updatePrivateMessage();
+				}
+				if (itemName.endsWith("party invite")) {
+					settings.updatePartyInvite();
+				}
+				if (itemName.endsWith("duel request")) {
+					settings.updateDuelRequest();
+				}
 				player.openInventory(this.main.getInventoryManager().getSettingsInventory(settings));
 				return;
 			}
 			return;
 		}
 		if (title.equals("selector")) {
-			event.setCancelled(true);
 			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
 			if (itemName.equals("kit creator")) {
 				player.closeInventory();
@@ -196,14 +206,17 @@ public class InventoryListener implements Listener {
 			}
 			if (itemName.equals("configurate settings")) {
 				player.closeInventory();
-				final PlayerSettings settings = PlayerManager.get(player.getUniqueId()).getSettings();
+				final PlayerSettings settings = pm.getSettings();
 				player.openInventory(this.main.getInventoryManager().getSettingsInventory(settings));
 				return;
 			}
 			return;
 		}
-		if (title.equals("leaderboard")) {
-			event.setCancelled(true);
+		if (title.contains("leaderboard")) {
+			if (item.getType() == Material.CARPET) {
+				final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
+				player.openInventory(this.main.getInventoryManager().getLeaderboardInventory(!itemName.startsWith("1v1")));
+			}
 		}
 	}
 	

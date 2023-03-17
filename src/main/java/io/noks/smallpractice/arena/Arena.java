@@ -1,7 +1,6 @@
 package io.noks.smallpractice.arena;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -14,13 +13,12 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
-import com.google.common.collect.Maps;
-
 import io.noks.smallpractice.enums.Ladders;
+import net.minecraft.util.com.google.common.collect.Lists;
 import net.minecraft.util.com.google.common.collect.Sets;
 
 public class Arena {
-	private Map<Integer, Arenas> arenaList = Maps.newConcurrentMap();
+	private List<Arenas> arenaList = Lists.newLinkedList();
 	private static Arena instance = new Arena();
 	public static  Arena getInstance() {
 		return instance;
@@ -46,28 +44,28 @@ public class Arena {
 		final Location[] arena10 = {new Location(Bukkit.getWorld("world"), -3657.5D, 153.0D, 1488.5D, 63.0F, 0.0F), new Location(Bukkit.getWorld("world"), -3724.5D, 153.0D, 1527.5D, -125.0F, 0.0F)};
 		final Location[] arena11 = {new Location(Bukkit.getWorld("world"), 751.5D, 4.0D, 971.5D, -43.0F, 0.0F), new Location(Bukkit.getWorld("world"), 804.5D, 4.0D, 1025.5D, 134.0F, 0.0F)};
 		    
-		arenaList.put(1, new Arenas("River", arena1, new ItemStack(Material.WATER_BUCKET, 1), false));
-		arenaList.put(2, new Arenas("Rock", arena2, new ItemStack(Material.STONE, 1), false));
-		arenaList.put(3, new Arenas("Logo", arena3, new ItemStack(Material.GOLDEN_APPLE, 1), false));
-		arenaList.put(4, new Arenas("Stalagmites", arena4, new ItemStack(Material.BEDROCK, 1), false));
-		arenaList.put(5, new Arenas("Rocks", arena5, new ItemStack(Material.COBBLESTONE, 1), false));
-		arenaList.put(6, new Arenas("Sphinx", arena6, new ItemStack(Material.SAND, 1), false));
-		arenaList.put(7, new Arenas("American-Foot", arena7, new ItemStack(Material.GRASS, 1), false));
-		arenaList.put(8, new Arenas("Lava", arena8, new ItemStack(Material.LAVA_BUCKET, 1), false));
-		arenaList.put(9, new Arenas("Book", arena9, new ItemStack(Material.BOOK, 1), false));
-		arenaList.put(10, new Arenas("End", arena10, new ItemStack(Material.ENDER_STONE, 1), false));
-		arenaList.put(11, new Arenas("WoolWorld", arena11, new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), false));
+		arenaList.add(new Arenas("River", arena1, new ItemStack(Material.WATER_BUCKET, 1), false));
+		arenaList.add(new Arenas("Rock", arena2, new ItemStack(Material.STONE, 1), false));
+		arenaList.add(new Arenas("Logo", arena3, new ItemStack(Material.GOLDEN_APPLE, 1), false));
+		arenaList.add(new Arenas("Stalagmites", arena4, new ItemStack(Material.BEDROCK, 1), false));
+		arenaList.add(new Arenas("Rocks", arena5, new ItemStack(Material.COBBLESTONE, 1), false));
+		arenaList.add(new Arenas("Sphinx", arena6, new ItemStack(Material.SAND, 1), false));
+		arenaList.add(new Arenas("American-Foot", arena7, new ItemStack(Material.GRASS, 1), false));
+		arenaList.add(new Arenas("Lava", arena8, new ItemStack(Material.LAVA_BUCKET, 1), false));
+		arenaList.add(new Arenas("Book", arena9, new ItemStack(Material.BOOK, 1), false));
+		arenaList.add(new Arenas("End", arena10, new ItemStack(Material.ENDER_STONE, 1), false));
+		arenaList.add(new Arenas("WoolWorld", arena11, new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), false));
 	}
 	
 	public Arenas getRandomArena(Ladders ladder) {
-		final List<Arenas> arenas = this.arenaList.values().stream().filter((ladder == Ladders.SUMO ? Arenas::isSumo : not(Arenas::isSumo))).collect(Collectors.toList());
+		final List<Arenas> arenas = this.arenaList.stream().filter((ladder == Ladders.SUMO ? Arenas::isSumo : not(Arenas::isSumo))).collect(Collectors.toList());
 		final int random = new Random().nextInt(arenas.size());
 		return arenas.get(random);
 	}
 	private <T> Predicate<T> not(Predicate<T> p) { return t -> !p.test(t); }
 	
 	public Arenas getArenaByName(String name) {
-		for (Arenas arenas : this.arenaList.values()) {
+		for (Arenas arenas : this.arenaList) {
 			if (arenas.getName().toLowerCase().equals(name)) {
 				return arenas;
 			}
@@ -75,7 +73,7 @@ public class Arena {
 		return null;
 	}
 	
-	public Map<Integer, Arenas> getArenaList() {
+	public List<Arenas> getArenaList() {
 		return this.arenaList;
 	}
 	

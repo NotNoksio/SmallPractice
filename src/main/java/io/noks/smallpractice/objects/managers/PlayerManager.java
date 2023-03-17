@@ -88,6 +88,7 @@ public class PlayerManager {
 	}
 
 	public void remove() {
+		this.matchStats.resetDuelStats();
 		if (this.savedInventory != null) {
 			Main.getInstance().getInventoryManager().getOfflineInventories().put(this.playerUUID, this.savedInventory);
 		}
@@ -210,9 +211,6 @@ public class PlayerManager {
 	
 	public void saveInventory() {
 		final MatchStats stats = getMatchStats();
-		
-		stats.setLastFailedPotions(stats.getFailedPotions());
-		stats.setFailedPotions(0);
 		if(stats.getCombo() > stats.getLongestCombo()) {
 			stats.setLongestCombo(stats.getCombo());
     	}
@@ -273,14 +271,14 @@ public class PlayerManager {
 		final ItemStack pots = new ItemStack(Material.POTION, Math.min(amount, 64), (short)16421);
 		final ItemMeta po = pots.getItemMeta();
 		po.setDisplayName(ChatColor.YELLOW.toString() + amount + ChatColor.DARK_AQUA + " health pot(s) left");
-		po.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + stats.getLastFailedPotions()));
+		po.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Missed potions: " + ChatColor.YELLOW + stats.getFailedPotions()));
 		pots.setItemMeta(po);
 		this.savedInventory.setItem(45, pots);
 		
 		final ItemStack statistics = new ItemStack(Material.DIAMOND_SWORD, 1);
 		final ItemMeta sm = statistics.getItemMeta();
 		sm.setDisplayName(ChatColor.GOLD + "Statistics");
-		sm.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + stats.getHit(), ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + stats.getLongestCombo()));
+		sm.setLore(Arrays.asList(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Total hit: " + ChatColor.YELLOW + stats.getTotalHit(), ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Longest combo: " + ChatColor.YELLOW + stats.getLongestCombo()));
 		statistics.setItemMeta(sm);
 		this.savedInventory.setItem(46, statistics);
 	}

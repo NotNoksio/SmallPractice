@@ -34,7 +34,7 @@ public class InventoryManager {
 	private Map<UUID, Inventory> editKitSelection;
 	private Map<UUID, PlayerInventory> editKitEditor;
 	private Map<UUID, Inventory> offlineInventories;
-	private Inventory leaderBoardInventory;
+	private Inventory[] leaderBoardInventory;
 	
 	public InventoryManager() {
 		this.selectingDuel = new WeakHashMap<UUID, Request>();
@@ -46,7 +46,7 @@ public class InventoryManager {
 		this.selectionInventory = Bukkit.createInventory(null, 27, "Selector");
 		this.partyGameInventory = Bukkit.createInventory(null, 27, "Select Gamemode");
 		this.offlineInventories = new WeakHashMap<UUID, Inventory>();
-		this.leaderBoardInventory = Bukkit.createInventory(null, 36, "Leaderboard");
+		this.leaderBoardInventory = new Inventory[] {Bukkit.createInventory(null, 36, "Leaderboard"), Bukkit.createInventory(null, 36, "2v2 Leaderboard")};
 		this.setArenasInventory();
 		this.setUnrankedInventory();
 		this.setRankedInventory();
@@ -61,7 +61,7 @@ public class InventoryManager {
 		this.arenasInventory[0].clear();
 		this.arenasInventory[1].clear();
 		this.arenasInventory[2].clear();
-		for (Arenas arena : Arena.getInstance().getArenaList().values()) {
+		for (Arenas arena : Arena.getInstance().getArenaList()) {
 			final ItemStack item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName());
 			this.arenasInventory[2].addItem(item);
 			if (!arena.isSumo()) {
@@ -123,6 +123,9 @@ public class InventoryManager {
 		}
 		this.fillWithGlass(settingsInventory);
 		settingsInventory.setItem(10, ItemBuilder.createNewItemStack(new ItemStack(Material.FEATHER, 1), ChatColor.GREEN + "Ping Difference", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Actual value: " + ChatColor.GREEN + ps.getQueuePingDiff() + "ms", ChatColor.GRAY + "(Click to change)"})));
+		settingsInventory.setItem(11, ItemBuilder.createNewItemStack(new ItemStack(Material.PAPER, 1), ChatColor.GREEN + "Toggle Private Message", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Private Message: " + (ps.isPrivateMessageToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
+		settingsInventory.setItem(12, ItemBuilder.createNewItemStack(new ItemStack(Material.ANVIL, 1), ChatColor.GREEN + "Toggle Party Invite", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Party Invite: " + (ps.isPartyInviteToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
+		settingsInventory.setItem(13, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND_SWORD, 1), ChatColor.GREEN + "Toggle Duel Request", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Duel Request: " + (ps.isDuelRequestToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
 		return settingsInventory;
 	}
 	
@@ -142,8 +145,10 @@ public class InventoryManager {
 	}
 	
 	public void setLeaderboardInventory() {
-		this.leaderBoardInventory.clear();
-		this.fillWithGlass(this.leaderBoardInventory);
+		this.leaderBoardInventory[0].clear();
+		this.leaderBoardInventory[1].clear();
+		this.fillWithGlass(this.leaderBoardInventory[0]);
+		this.fillWithGlass(this.leaderBoardInventory[1]);
 		int i = 18;
 		for (Ladders ladders : Ladders.values()) {
 			final Map<UUID, Integer> map = Main.getInstance().getDatabaseUtil().getTopEloLadder(ladders);
@@ -157,14 +162,18 @@ public class InventoryManager {
 					rank++;
 				}
 			}
-			this.leaderBoardInventory.setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), lore));
+			this.leaderBoardInventory[0].setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), lore));
+			this.leaderBoardInventory[1].setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), Arrays.asList(ChatColor.GREEN + "Coming soon :)")));
 			i++;
 		}
-		this.leaderBoardInventory.setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", Arrays.asList(ChatColor.GREEN + "Coming soon :)")));
+		this.leaderBoardInventory[0].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", Arrays.asList(ChatColor.GREEN + "Coming soon :)")));
+		this.leaderBoardInventory[1].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", Arrays.asList(ChatColor.GREEN + "Coming soon :)")));
+		this.leaderBoardInventory[0].setItem(8, ItemBuilder.createNewItemStack(new ItemStack(Material.CARPET, 1, (short) 5), ChatColor.GREEN + "2v2 Leaderboard"));
+		this.leaderBoardInventory[1].setItem(0, ItemBuilder.createNewItemStack(new ItemStack(Material.CARPET, 1, (short) 14), ChatColor.GREEN + "1v1 Leaderboard"));
 	}
 	
-	public Inventory getLeaderboardInventory() {
-		return this.leaderBoardInventory;
+	public Inventory getLeaderboardInventory(boolean team) {
+		return !team ? this.leaderBoardInventory[0] : this.leaderBoardInventory[1];
 	}
 	
 	public Inventory getAllArenasInInventory() {

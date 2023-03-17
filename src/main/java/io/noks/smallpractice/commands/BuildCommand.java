@@ -21,12 +21,11 @@ public class BuildCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "Usage: /build <player>");
 			return false;
 		}
-		// Add /build <player>
-		if (!sender.isOp()) {
+		Player player = (Player) sender;
+		if (!player.hasPermission("command.build")) {
 			sender.sendMessage(ChatColor.RED + "No permission.");
 			return false;
 		}
-		Player player = (Player) sender;
 		if (args.length == 0) {
 			PlayerManager pm = PlayerManager.get(player.getUniqueId());
 				
@@ -41,7 +40,7 @@ public class BuildCommand implements CommandExecutor {
 			return false;
 		}
 		if (target == player) {
-			player.sendMessage(ChatColor.RED + "Execute: /build");
+			player.sendMessage(ChatColor.RED + "Please Execute: /build");
 			return false;
 		}
 		PlayerManager tm = PlayerManager.get(target.getUniqueId());

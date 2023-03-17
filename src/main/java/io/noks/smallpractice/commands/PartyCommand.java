@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.PlayerStatus;
+import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
@@ -86,7 +87,7 @@ public class PartyCommand implements CommandExecutor {
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 	                    ChatColor.RED + "Your party informations:",
 	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
-	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + party.getPartyEloManager().getGlobal() + ")" : ""),
+	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getPartyEloManager() != null ? ChatColor.DARK_GRAY + " (" + party.getPartyEloManager().getGlobal() + ")" : ""),
 	                    ChatColor.DARK_AQUA + "Privacy: " + (party.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
 	            };
@@ -191,14 +192,15 @@ public class PartyCommand implements CommandExecutor {
             		player.sendMessage(ChatColor.RED + "You are not in a party!");
             		return false;
             	}
+            	final PlayerSettings ts = tm.getSettings();
+        		if (!ts.isPartyInviteToggled()) {
+        			sender.sendMessage(ChatColor.RED + "This player doesn't allow party invite!");
+        			return false;
+        		}
             	if (Main.getInstance().getPartyManager().hasParty(target.getUniqueId())) {
             		player.sendMessage(ChatColor.RED + "This player is already in a party!");
                 	return false;
                 }
-            	if (Main.getInstance().getPartyManager().hasParty(target.getUniqueId())) {
-            		player.sendMessage(ChatColor.RED + "This player is already in a party!");
-            		return false;
-            	}
             	Main.getInstance().getRequestManager().sendPartyInvite(player, target);
             	return true;
             }

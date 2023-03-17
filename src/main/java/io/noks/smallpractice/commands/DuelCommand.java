@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.objects.Cooldown;
+import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
@@ -28,6 +29,11 @@ public class DuelCommand implements CommandExecutor {
 			
 		if (target == null) {
 			sender.sendMessage(ChatColor.RED + "This player is not online.");
+			return false;
+		}
+		final PlayerSettings ts = PlayerManager.get(target.getUniqueId()).getSettings();
+		if (!ts.isDuelRequestToggled()) {
+			sender.sendMessage(ChatColor.RED + "This player doesn't allow duel request!");
 			return false;
 		}
 		final Player player = (Player) sender;

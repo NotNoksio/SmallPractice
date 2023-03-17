@@ -69,7 +69,7 @@ public class Main extends JavaPlugin {
 		this.saveDefaultConfig();
 		
 		this.partyManager = new PartyManager();
-		this.duelManager = new DuelManager();
+		this.duelManager = new DuelManager(this);
 		this.itemManager = new ItemManager();
 		this.configManager = new ConfigManager(this);
 		this.queueManager = new QueueManager();
@@ -108,7 +108,7 @@ public class Main extends JavaPlugin {
 		getCommand("spawn").setExecutor(new SpawnCommand());
 		getCommand("seeall").setExecutor(new SeeallCommand());
 		getCommand("report").setExecutor(new ReportCommand());
-		getCommand("spectate").setExecutor(new SpectateCommand());
+		new SpectateCommand(this);
 		getCommand("mod").setExecutor(new ModerationCommand());
 		getCommand("party").setExecutor(new PartyCommand());
 		getCommand("forceduel").setExecutor(new ForceDuelCommand());

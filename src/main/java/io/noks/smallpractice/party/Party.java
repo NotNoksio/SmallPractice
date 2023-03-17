@@ -24,15 +24,28 @@ public class Party {
         this.partyLeader = partyLeader;
         this.leaderName = leaderName;
         this.partyState = PartyState.LOBBY;
-        this.partyEloManager = new EloManager(); // TODO: need to put the two players elo together
     }
     
     public void addMember(UUID uuid) {
         this.memberUUIDs.add(uuid);
+        if (getMembersIncludingLeader().size() != 2) {
+        	if (this.partyEloManager != null) {
+        		this.partyEloManager = null;
+        	}
+        	return;
+        }
+        this.partyEloManager = new EloManager(); // TODO: if team exist load team elo from database
     }
     
     public void removeMember(UUID uuid) {
         this.memberUUIDs.remove(uuid);
+        if (getMembersIncludingLeader().size() != 2) {
+        	if (this.partyEloManager != null) {
+        		this.partyEloManager = null;
+        	}
+        	return;
+        }
+        this.partyEloManager = new EloManager(); // TODO: if team exist load team elo from database
     }
     
     public void setOpen(boolean open) {
@@ -57,7 +70,7 @@ public class Party {
     public void setNewLeader(UUID newLeader, String newLeaderName) {
     	this.partyLeader = newLeader;
     	this.leaderName = newLeaderName;
-    	if (this.memberUUIDs.contains(newLeader)) this.memberUUIDs.remove(newLeader);
+    	if (this.memberUUIDs.contains(newLeader)) removeMember(newLeader);
     }
     
     public UUID getLeader() {

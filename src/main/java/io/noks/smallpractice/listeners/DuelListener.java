@@ -41,8 +41,7 @@ public class DuelListener implements Listener {
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
 				final MatchStats stats = sm.getMatchStats();
-				final int cacheFailedPotions = stats.getFailedPotions() + 1;
-				stats.setFailedPotions(cacheFailedPotions);
+				stats.addFailedPotions();;
 			}
 		}
 	}
@@ -58,18 +57,17 @@ public class DuelListener implements Listener {
             
             if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) {
             	final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(am.getPlayerUUID());
+            	final MatchStats damagedStats = dm.getMatchStats();
             	if (duel.getLadder() != Ladders.COMBO) {
-            		final MatchStats damagedStats = dm.getMatchStats();
-		            if (damagedStats.getNextHitTick() != 0 && damagedStats.getNextHitTick() > System.currentTimeMillis()) {
+		            if (damagedStats.containsNextHitUUID(am.getPlayerUUID()) && damagedStats.getNextHitTick(am.getPlayerUUID()) > System.currentTimeMillis()) {
 		            	return;
 		            }
-		            damagedStats.updateNextHitTick();
+		            damagedStats.updateNextHitTick(am.getPlayerUUID());
             	}
             	final MatchStats attackerStats = am.getMatchStats();
-            	attackerStats.setHit(attackerStats.getHit() + 1);
+            	attackerStats.addHit(dm.getPlayerUUID());
             	attackerStats.setCombo(attackerStats.getCombo() + 1);
             	
-            	final MatchStats damagedStats = dm.getMatchStats();
             	if(damagedStats.getCombo() > damagedStats.getLongestCombo()) {
             		damagedStats.setLongestCombo(damagedStats.getCombo());
             	}
@@ -79,11 +77,13 @@ public class DuelListener implements Listener {
             		return;
             	}
             	if (duel.getLadder() == Ladders.BOXING) {
-            		final int hit = attackerStats.getHit();
+            		final int hit = attackerStats.getHit(dm.getPlayerUUID());
             		am.getPlayer().setLevel(hit);
             		am.getPlayer().setExp(Math.min((hit / 100.0f), 99.9f));
             		if (hit == 100) {
             			this.main.getDuelManager().removePlayerFromDuel(dm.getPlayer(), RemoveReason.KILLED);
+            			am.getPlayer().setLevel(0);
+            			am.getPlayer().setExp(0.0f);
             			//this.main.getDuelManager().endDuel(duel, (duel.getSimpleDuel().firstTeam.contains(am.getPlayerUUID()) ? 1 : 2), false);
             		}
             	}

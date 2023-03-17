@@ -29,6 +29,9 @@ public class DBUtils {
 	private HikariDataSource hikari;
 	private final String SELECT = "SELECT * FROM players WHERE uuid=?";
 	
+	// TODO: 2v2 = uuid1 uuid2 allLadders ez
+	// TODO: loadDuoElo and ensure to check the order 
+	
 	public DBUtils(String address, String name, String user, String password) {
 		this.address = address;
 		this.name = name;
@@ -72,12 +75,15 @@ public class DBUtils {
 		Connection connection = null;
 		final StringJoiner ladder = new StringJoiner(", ");
 		for (Ladders ladders : Ladders.values()) {
-			ladder.add(ladders.getName().toLowerCase() + " int(11)");
+			ladder.add(ladders.getName().toLowerCase() + " int(4)");
 		}
 		try {
 			connection = this.hikari.getConnection();
 			Statement statement = connection.createStatement();
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid varchar(36), " + ladder.toString() + ", pingdiff int(11), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid varchar(36), " + ladder.toString() + ", pingdiff int(3), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
+			//statement.executeUpdate("CREATE TABLE IF NOT EXISTS elo (uuid varchar(36), " + ladder.toString() + ", PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
+			//statement.executeUpdate("CREATE TABLE IF NOT EXISTS settings (uuid varchar(36), pingdiff int(3), tpm TINYINT(1), invite TINYINT(1), request TINYINT(1), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
+			//statement.executeUpdate("CREATE TABLE IF NOT EXISTS duoelo (uuid1 varchar(36), uuid2 varchar(36), " + ladder.toString() + ", PRIMARY KEY(uuid1, uuid2), UNIQUE KEY(uuid1, uuid2));");
 			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -181,6 +187,33 @@ public class DBUtils {
 		}
 	}
 	
+	public void savePlayerSingleElo(PlayerManager pm, Ladders ladder) {
+		if (!isConnected()) {
+			return;
+		}
+		final String SAVE = "UPDATE players SET " + ladder.getName().toLowerCase() + "=? WHERE uuid=?";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			PreparedStatement statement = connection.prepareStatement(SAVE);
+			
+			statement.setInt(1, pm.getEloManager().getFrom(ladder));
+			statement.setString(2, pm.getPlayerUUID().toString());
+			statement.execute();
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public Map<UUID, Integer> getTopEloLadder(Ladders ladder) {
 		if (!isConnected()) {
 			return null;
@@ -211,6 +244,10 @@ public class DBUtils {
 			}
 		}
 		return map;
+	}
+	
+	public Map<UUID, Integer> getGlobalTopElo() {
+		return null;
 	}
 	
 	public HikariDataSource getHikari() {

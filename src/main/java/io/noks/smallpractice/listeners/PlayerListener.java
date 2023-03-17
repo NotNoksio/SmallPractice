@@ -83,7 +83,7 @@ public class PlayerListener implements Listener {
 		player.setFlying(false);
 		player.setGameMode(GameMode.SURVIVAL);
 		
-		player.setScoreboard(this.main.getServer().getScoreboardManager().getNewScoreboard());
+		player.setScoreboard(this.main.getServer().getScoreboardManager().getMainScoreboard());
 		player.setPlayerListHeaderFooter(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', this.main.getConfigManager().tabHeader)), TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', this.main.getConfigManager().tabFooter)));
 		
 		player.teleport(player.getWorld().getSpawnLocation());
@@ -96,6 +96,7 @@ public class PlayerListener implements Listener {
 				player.hidePlayer(allPlayers);
 			}
 		}
+		this.main.getInventoryManager().setLeaderboardInventory();
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
@@ -128,7 +129,6 @@ public class PlayerListener implements Listener {
 				Main.getInstance().getInventoryManager().updateQueueInventory(BooleanUtils.toBoolean(i));
 			}
 		}
-		final PlayerManager pm = PlayerManager.get(playerUUID);
         if (this.main.getPartyManager().hasParty(playerUUID)) {
         	final Party party = this.main.getPartyManager().getParty(playerUUID);
             if (party.getLeader().equals(playerUUID)) {
@@ -137,20 +137,23 @@ public class PlayerListener implements Listener {
             	this.main.getPartyManager().leaveParty(playerUUID);
             }
         }
+        final PlayerManager pm = PlayerManager.get(playerUUID);
         if (pm != null) {
 			if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
-				for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
+				for (Arenas allArenas : Arena.getInstance().getArenaList()) {
 					if (!allArenas.getAllSpectators().contains(playerUUID)) continue;
 					allArenas.removeSpectator(playerUUID);
 					break;
 				}
 			}
 			if ((pm.getStatus() == PlayerStatus.DUEL || pm.getStatus() == PlayerStatus.WAITING)) {
-				this.main.getDuelManager().removePlayerFromDuel(this.main.getServer().getPlayer(playerUUID), RemoveReason.DISCONNECTED); // TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected -> is it fixed?
+				// TODO: FIX A BUG WHERE'S fist/secondTeamPartyLeaderUUID is not changed if the party leader has deconnected -> is it fixed?
+				// TODO: IS IT FIXED???
+				this.main.getDuelManager().removePlayerFromDuel(this.main.getServer().getPlayer(playerUUID), RemoveReason.DISCONNECTED); 
 			}
 			this.main.getDatabaseUtil().savePlayer(pm);
         }
-		this.main.getInventoryManager().setLeaderboardInventory();
+        this.main.getInventoryManager().setLeaderboardInventory();
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
@@ -172,7 +175,7 @@ public class PlayerListener implements Listener {
 			}
 			// end
 			this.main.getDuelManager().removePlayerFromDuel(killed, RemoveReason.KILLED);
-			// TODO: Work on a better autorespawn
+			// TODO: work on this is it cause any trouble
 			new BukkitRunnable() {
 				
 				@Override
@@ -259,7 +262,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			if (attackerManager.getStatus() == PlayerStatus.DUEL) {
-				Duel currentDuel = this.main.getDuelManager().getDuelFromPlayerUUID(attacker.getUniqueId());
+				final Duel currentDuel = this.main.getDuelManager().getDuelFromPlayerUUID(attacker.getUniqueId());
 				
 				if (currentDuel == null) {
 					return;
@@ -357,8 +360,8 @@ public class PlayerListener implements Listener {
 		                this.main.getServer().dispatchCommand(player, "party create");
 		                break;
 		            }
-					if (item.getType() == Material.EMERALD && itemName.equals(ChatColor.YELLOW + "leaderboard")) {
-						player.openInventory(this.main.getInventoryManager().getLeaderboardInventory());
+					if (item.getType() == Material.EMERALD && itemName.equals(ChatColor.YELLOW + "leaderboards")) {
+						player.openInventory(this.main.getInventoryManager().getLeaderboardInventory(false));
 						break;
 					}
 					if (item.getType() == Material.BOOK && itemName.equals(ChatColor.YELLOW + "kit creator/settings")) {
@@ -429,44 +432,19 @@ public class PlayerListener implements Listener {
 					break;
 				}
 				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.YELLOW + "spectate actual match")) {
-					// TODO: SUPPOSED TO BE FIXED -> DOESNT WORK MAKE IT WORK
+					// TODO: SUPPOSED TO BE WORKING (NEED CHECK)
 					event.setUseItemInHand(Result.DENY);
 					if (currentParty.getPartyState() != PartyState.DUELING) {
 						player.getItemInHand().setType(null);
 						player.updateInventory();
 						break;
 					}
-					Duel duel = null;
 					for (UUID uuid : currentParty.getMembersIncludingLeader()) {
 						final PlayerManager um = PlayerManager.get(uuid);
 						if (um.getStatus() != PlayerStatus.WAITING && um.getStatus() != PlayerStatus.DUEL) continue;
-						duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);
-						player.setScoreboard(this.main.getServer().getPlayer(uuid).getScoreboard());
+						player.performCommand("spectate " + um.getPlayer().getName());
 						break;
 					}
-					if (duel == null) {
-						player.sendMessage(ChatColor.RED + "No duel found!");
-						player.getItemInHand().setType(null);
-						player.updateInventory();
-						return;
-					}
-					pm.hideAllPlayer();
-					duel.addSpectator(player.getUniqueId());
-						
-					player.setAllowFlight(true);
-					player.setFlying(true);
-					player.teleport(duel.getArena().getLocations()[0].add(0, 2, 0));
-						
-					final List<UUID> duelPlayers = Lists.newArrayList(duel.getSimpleDuel().firstTeamAlive);
-					duelPlayers.addAll(duel.getSimpleDuel().secondTeamAlive);
-							
-					for (UUID uuid : duelPlayers) {
-						Player dplayers = this.main.getServer().getPlayer(uuid);
-						player.showPlayer(dplayers);
-					}
-					Main.getInstance().getItemManager().giveSpectatorItems(player);
-					player.sendMessage(ChatColor.GREEN + "You are now spectating the current party duel");
-					duel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is now spectating.");
 					break;
 				}
 				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave party")) {
@@ -504,7 +482,7 @@ public class PlayerListener implements Listener {
 		                }
 		                pm.setSpectate(null);
 	                } else {
-	                	for (Arenas allArenas : Arena.getInstance().getArenaList().values()) {
+	                	for (Arenas allArenas : Arena.getInstance().getArenaList()) {
 	        				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
 	        				allArenas.removeSpectator(player.getUniqueId());
 	        			}
@@ -516,12 +494,16 @@ public class PlayerListener implements Listener {
 	        		pm.setStatus(PlayerStatus.SPAWN);
 	        		pm.showAllPlayer();
 	        		player.teleport(player.getWorld().getSpawnLocation());
-	        		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getNewScoreboard());
+	        		player.setScoreboard(Main.getInstance().getServer().getScoreboardManager().getMainScoreboard());
 	        		this.main.getItemManager().giveSpawnItem(player);
 	        		break;
 	            }
 				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.GREEN + "see current arena")) {
 					event.setUseItemInHand(Result.DENY);
+					if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
+						player.sendMessage(ChatColor.RED + "You can't do that while in a party!");
+						break;
+					}
 	                final Player spectatePlayer = pm.getSpectate();
 	                final Duel spectatedDuel = this.main.getDuelManager().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
 	                final Arenas currentArena = spectatedDuel.getArena();

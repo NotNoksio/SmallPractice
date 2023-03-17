@@ -31,26 +31,17 @@ public class ItemManager {
 			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
 			player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
 			player.getInventory().setItem(4, ItemBuilder.createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
-			player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.EMERALD, ChatColor.YELLOW + "Leaderboard"));
+			player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.EMERALD, ChatColor.YELLOW + "Leaderboards"));
 			player.getInventory().setItem(8, ItemBuilder.createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings"));
 		} else {
 			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING) {
 				return;
 			}
-			Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
+			final Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
 			final ItemStack glass = ItemBuilder.createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
-			
-			player.getInventory().setItem(0, glass);
-			player.getInventory().setItem(1, glass);
-			player.getInventory().setItem(5, glass);
-			
-			if (party.getSize() == 2) {
-				player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.IRON_AXE, ChatColor.YELLOW + "2v2 Unranked Queue", true));
-				player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_AXE, ChatColor.YELLOW + "2v2 Ranked Queue", true));
-			}
-			if (party.getSize() > 1) {
-				player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.GOLD_HOE, ChatColor.YELLOW + "Party Game", true));
-			}
+			player.getInventory().setItem(0, party.getSize() == 2 ? ItemBuilder.createNewItemStackByMaterial(Material.IRON_AXE, ChatColor.YELLOW + "2v2 Unranked Queue", true) : glass);
+			player.getInventory().setItem(1, party.getSize() == 2 ? ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_AXE, ChatColor.YELLOW + "2v2 Ranked Queue", true) : glass);
+			player.getInventory().setItem(5, party.getSize() > 1 ? ItemBuilder.createNewItemStackByMaterial(Material.GOLD_HOE, ChatColor.YELLOW + "Party Game", true) : glass);
 			if (party.getPartyState() == PartyState.DUELING) {
 				player.getInventory().setItem(2, ItemBuilder.createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.YELLOW + "Spectate Actual Match"));
 			}
@@ -329,30 +320,5 @@ public class ItemManager {
 		player.getInventory().setItem(0, attackItem);
 		
 		player.updateInventory();
-	}
-	
-	public void giveBridgeItems(Player player) {
-		PlayerManager pm = PlayerManager.get(player.getUniqueId());
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
-		player.setItemOnCursor(null);
-	    
-	    ItemStack item = new ItemStack(Material.SANDSTONE, 64, (short)2);
-	    for (int i = 0; i < player.getInventory().getSize(); i++) {
-	    	player.getInventory().setItem(i, item);
-	    }
-	    
-	    ItemStack i = new ItemStack(Material.WOOD_PICKAXE);
-	    ItemMeta im = i.getItemMeta();
-	    im.spigot().setUnbreakable(true);
-	    i.setItemMeta(im);
-	    i.addUnsafeEnchantment(Enchantment.DIG_SPEED, 2);
-	    i.addUnsafeEnchantment(Enchantment.KNOCKBACK, 5);
-	    i.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
-	    
-	    player.getInventory().setItem(0, i);
-	    
-	    player.updateInventory();
-	    pm.showAllPlayer();
 	}
 }

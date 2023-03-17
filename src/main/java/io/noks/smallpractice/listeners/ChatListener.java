@@ -7,8 +7,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import io.noks.smallpractice.Main;
+import io.noks.smallpractice.objects.PlayerSettings;
+import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
 
 public class ChatListener implements Listener {
@@ -46,5 +49,22 @@ public class ChatListener implements Listener {
 			Party party = this.main.getPartyManager().getParty(player.getUniqueId());
 			party.notify(ChatColor.YELLOW + "(" + ChatColor.RED + "Party" + ChatColor.YELLOW + ") " + player.getDisplayName() + ChatColor.GOLD + " » " + message);
 		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+	    final String[] args = event.getMessage().split(" ");
+	    if(args.length > 1 && (args[0].equalsIgnoreCase("/msg") || args[0].equalsIgnoreCase("/tell") || args[0].equalsIgnoreCase("/w"))) {
+	        final Player target = Bukkit.getPlayer(args[1]);
+	        if(target == null) {
+	            return;
+	        }
+	        final PlayerSettings settings = PlayerManager.get(target.getUniqueId()).getSettings();
+	        if (settings.isPrivateMessageToggled()) {
+	        	return;
+	        }
+	        event.setCancelled(true);
+	        event.getPlayer().sendMessage(ChatColor.RED + "This player doesn't allow private message!");
+	    }
 	}
 }
