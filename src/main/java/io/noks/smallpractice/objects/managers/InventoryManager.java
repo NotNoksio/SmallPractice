@@ -70,6 +70,8 @@ public class InventoryManager {
 			}
 			this.arenasInventory[1].addItem(item);
 		}
+		this.arenasInventory[0].setItem(arenasInventory[0].getSize() - 1, ItemBuilder.createNewItemStackByMaterial(Material.RECORD_11, ChatColor.RED + "Random"));
+		this.arenasInventory[1].setItem(arenasInventory[1].getSize() - 1, ItemBuilder.createNewItemStackByMaterial(Material.RECORD_11, ChatColor.RED + "Random"));
 	}
 	
 	public void updateQueueInventory(boolean ranked) {
@@ -158,7 +160,8 @@ public class InventoryManager {
 			} else {
 				int rank = 1;
 				for (Map.Entry<UUID, Integer> entry : map.entrySet()) {
-					lore.add(ChatColor.GRAY + "#" + rank + " " + ChatColor.DARK_AQUA + Main.getInstance().getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
+					final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
+					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + Main.getInstance().getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
 					rank++;
 				}
 			}
@@ -166,7 +169,19 @@ public class InventoryManager {
 			this.leaderBoardInventory[1].setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), Arrays.asList(ChatColor.GREEN + "Coming soon :)")));
 			i++;
 		}
-		this.leaderBoardInventory[0].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", Arrays.asList(ChatColor.GREEN + "Coming soon :)")));
+		Map<UUID, Integer> globalMap = Main.getInstance().getDatabaseUtil().getGlobalTopElo();
+		final List<String> lore = new ArrayList<String>();
+		if (globalMap == null) {
+			lore.add(ChatColor.RED + "Database not connected!");
+		} else {
+			int rank = 1;
+			for (Map.Entry<UUID, Integer> entry : globalMap.entrySet()) {
+				final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
+				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + Main.getInstance().getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
+				rank++;
+			}
+		}
+		this.leaderBoardInventory[0].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", lore));
 		this.leaderBoardInventory[1].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", Arrays.asList(ChatColor.GREEN + "Coming soon :)")));
 		this.leaderBoardInventory[0].setItem(8, ItemBuilder.createNewItemStack(new ItemStack(Material.CARPET, 1, (short) 5), ChatColor.GREEN + "2v2 Leaderboard"));
 		this.leaderBoardInventory[1].setItem(0, ItemBuilder.createNewItemStack(new ItemStack(Material.CARPET, 1, (short) 14), ChatColor.GREEN + "1v1 Leaderboard"));

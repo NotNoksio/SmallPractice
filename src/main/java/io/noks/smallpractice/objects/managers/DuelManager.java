@@ -339,6 +339,10 @@ public class DuelManager {
 		if (winningTeamNumber != 3) {
 			for (UUID wUUID : winnerTeam) {
 				final OfflinePlayer winners = Bukkit.getOfflinePlayer(wUUID);
+				final PlayerManager pm = PlayerManager.get(wUUID);
+				if (pm != null && !duel.isRanked()) {
+					pm.getEloManager().addUnrankedWinned();
+				}
 				TextComponent wtxt = new TextComponent(winners.getName());
 			    	
 				wtxt.setColor(net.md_5.bungee.api.ChatColor.GREEN);

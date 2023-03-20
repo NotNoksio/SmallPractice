@@ -72,7 +72,7 @@ public class Main extends JavaPlugin {
 		this.duelManager = new DuelManager(this);
 		this.itemManager = new ItemManager();
 		this.configManager = new ConfigManager(this);
-		this.queueManager = new QueueManager();
+		this.queueManager = new QueueManager(this);
 		this.requestManager = new RequestManager();
 		this.inventoryManager = new InventoryManager();
 		

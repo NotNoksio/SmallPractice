@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.enums.Ladders;
+import io.noks.smallpractice.objects.managers.EloManager;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class StatsCommand implements CommandExecutor {
@@ -24,10 +25,11 @@ public class StatsCommand implements CommandExecutor {
 		final Player player = (Player) sender;
 		if (args.length == 0) {
 			player.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.DARK_AQUA + "'s stats:");
-			PlayerManager pm = PlayerManager.get(player.getUniqueId());
+			final EloManager pe = PlayerManager.get(player.getUniqueId()).getEloManager();
 			for (Ladders ladders : Ladders.values()) {
-				player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + ladders.getName() + ": " + ChatColor.YELLOW + pm.getEloManager().getFrom(ladders));
+				player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + ladders.getName() + ": " + ChatColor.YELLOW + pe.getFrom(ladders));
 			}
+			player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Global: " + ChatColor.YELLOW + pe.getGlobal());
 			return true;
 		}
 		final Player target = Bukkit.getPlayer(args[0]);
@@ -36,10 +38,11 @@ public class StatsCommand implements CommandExecutor {
 			return false;
 		}
 		player.sendMessage(ChatColor.YELLOW + target.getName() + ChatColor.DARK_AQUA + "'s stats:");
-		PlayerManager tm = PlayerManager.get(target.getUniqueId());
+		final EloManager pe = PlayerManager.get(target.getUniqueId()).getEloManager();
 		for (Ladders ladders : Ladders.values()) {
-			player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + ladders.getName() + ": " + ChatColor.YELLOW + tm.getEloManager().getFrom(ladders));
+			player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + ladders.getName() + ": " + ChatColor.YELLOW + pe.getFrom(ladders));
 		}
+		player.sendMessage(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + "Global: " + ChatColor.YELLOW + pe.getGlobal());
 		return true;
 	}
 }

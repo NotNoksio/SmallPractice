@@ -4,11 +4,11 @@ public class PlayerSettings {
 	private int queuePingDiff;
 	private boolean privateMessage, partyInvite, duelRequest;
 	
-	public PlayerSettings(int pingDiff) {
+	public PlayerSettings(int pingDiff, boolean privateMessage, boolean partyInvite, boolean duelRequest) {
 		this.queuePingDiff = pingDiff;
-		this.privateMessage = true;
-		this.partyInvite = true;
-		this.duelRequest = true;
+		this.privateMessage = privateMessage;
+		this.partyInvite = partyInvite;
+		this.duelRequest = duelRequest;
 	}
 	public PlayerSettings() {
 		this.queuePingDiff = 300;

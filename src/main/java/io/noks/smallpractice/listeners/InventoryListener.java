@@ -91,7 +91,7 @@ public class InventoryListener implements Listener {
 				return;
 			}
 			final PlayerSettings settings = pm.getSettings();
-			this.main.getQueueManager().addToQueue(player.getUniqueId(), ladder, title.equals("ranked selection"), this.main.getPartyManager().hasParty(player.getUniqueId()), settings.getQueuePingDiff());
+			this.main.getQueueManager().addToQueue(player.getUniqueId(), ladder, !title.startsWith("unranked"), this.main.getPartyManager().hasParty(player.getUniqueId()), settings.getQueuePingDiff());
 			player.closeInventory();
 			return;
 		}
@@ -145,7 +145,11 @@ public class InventoryListener implements Listener {
 					player.closeInventory();
 					return;
 				} 
-				this.main.getRequestManager().sendDuelRequest(Arena.getInstance().getArenaByName(itemName), request.getLadder(), player, target);
+				final Arenas arena = (itemName.equals("random") ? Arena.getInstance().getRandomArena(request.getLadder()) : Arena.getInstance().getArenaByName(itemName));
+				if (arena == null) {
+					return;
+				}
+				this.main.getRequestManager().sendDuelRequest(arena, request.getLadder(), player, target);
 			} else if (pm.getStatus() == PlayerStatus.SPECTATE) {
 				final Arenas selectedArena = Arena.getInstance().getArenaByName(itemName);
 				for (Arenas allArenas : Arena.getInstance().getArenaList()) {

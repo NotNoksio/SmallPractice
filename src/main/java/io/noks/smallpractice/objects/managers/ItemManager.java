@@ -313,6 +313,21 @@ public class ItemManager {
 			player.getInventory().setItem(26, speed);
 			break;
 		}
+		case CLASSIC: {
+			ItemStack gapple = new ItemStack(Material.GOLDEN_APPLE, 8);
+			ItemStack arrow = new ItemStack(Material.ARROW, 12);
+			ItemStack bow = new ItemStack(Material.BOW, 1);
+			ItemStack rod = new ItemStack(Material.FISHING_ROD, 1);
+			ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
+			
+			player.getInventory().setItem(1, bow);
+			player.getInventory().setItem(2, rod);
+			player.getInventory().setItem(3, gapple);
+			player.getInventory().setItem(8, steak);
+			
+			player.getInventory().setItem(17, arrow);
+			break;
+		}
 		default:
 			break;
 		}

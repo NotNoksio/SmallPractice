@@ -41,7 +41,7 @@ public class DuelListener implements Listener {
 			
 			if ((sm.getStatus() == PlayerStatus.DUEL || sm.getStatus() == PlayerStatus.WAITING) && !event.getAffectedEntities().contains(shooter)) {
 				final MatchStats stats = sm.getMatchStats();
-				stats.addFailedPotions();;
+				stats.addFailedPotions();
 			}
 		}
 	}
@@ -57,6 +57,9 @@ public class DuelListener implements Listener {
             
             if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) {
             	final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(am.getPlayerUUID());
+            	if (duel == null) {
+            		return;
+            	}
             	final MatchStats damagedStats = dm.getMatchStats();
             	if (duel.getLadder() != Ladders.COMBO) {
 		            if (damagedStats.containsNextHitUUID(am.getPlayerUUID()) && damagedStats.getNextHitTick(am.getPlayerUUID()) > System.currentTimeMillis()) {
@@ -81,10 +84,10 @@ public class DuelListener implements Listener {
             		am.getPlayer().setLevel(hit);
             		am.getPlayer().setExp(Math.min((hit / 100.0f), 99.9f));
             		if (hit == 100) {
+            			// TODO: in teamfight we cant just set him 0 hit while if this its a 5v5 the 4 others have at least between 30 to 60
             			this.main.getDuelManager().removePlayerFromDuel(dm.getPlayer(), RemoveReason.KILLED);
             			am.getPlayer().setLevel(0);
             			am.getPlayer().setExp(0.0f);
-            			//this.main.getDuelManager().endDuel(duel, (duel.getSimpleDuel().firstTeam.contains(am.getPlayerUUID()) ? 1 : 2), false);
             		}
             	}
             }

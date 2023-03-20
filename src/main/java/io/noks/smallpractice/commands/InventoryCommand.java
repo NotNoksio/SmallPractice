@@ -38,7 +38,7 @@ public class InventoryCommand implements CommandExecutor {
 		}
 		final UUID targetUUID = UUID.fromString(args[0]);
 		final PlayerManager tm = PlayerManager.get(targetUUID);
-		if (tm.getSavedInventory() == null) {
+		if (tm == null || tm.getSavedInventory() == null) {
 			if (Main.getInstance().getInventoryManager().getOfflineInventories().containsKey(targetUUID)) {
 				player.openInventory(Main.getInstance().getInventoryManager().getOfflineInventories().get(targetUUID));
 				return true;

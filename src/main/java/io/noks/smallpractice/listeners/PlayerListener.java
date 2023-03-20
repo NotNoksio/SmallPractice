@@ -175,7 +175,7 @@ public class PlayerListener implements Listener {
 			}
 			// end
 			this.main.getDuelManager().removePlayerFromDuel(killed, RemoveReason.KILLED);
-			// TODO: work on this is it cause any trouble
+			// TODO: work on this if it cause any trouble
 			new BukkitRunnable() {
 				
 				@Override
@@ -351,7 +351,11 @@ public class PlayerListener implements Listener {
 		                break;
 		            }
 					if (item.getType() == Material.DIAMOND_SWORD && itemName.equals(ChatColor.YELLOW + "ranked queue")) {
-		                event.setCancelled(true);
+						event.setCancelled(true);
+						if (!pm.getEloManager().canAccessRanked()) {
+							player.sendMessage(ChatColor.RED + "You need to win another " + (10 - pm.getEloManager().getWinnedUnranked()) + " unranked game to access ranked!");
+							break;
+						}
 		                player.openInventory(this.main.getInventoryManager().getRankedInventory());
 		                break;
 		            }

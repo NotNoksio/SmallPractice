@@ -10,16 +10,19 @@ import io.noks.smallpractice.enums.Ladders;
 public class EloManager {
 	private Map<Ladders, Integer> laddersElo = Maps.newHashMap();
 	private int DEFAULT_ELO;
+	private int winnedUnranked;
 	
 	public EloManager() {
 		this.DEFAULT_ELO = 1200;
+		this.winnedUnranked = 0;
 	}
-	public EloManager(List<Integer> elo) {
+	public EloManager(List<Integer> elo, int winnedUnranked) {
 		int i = 0;
 		for (Ladders ladders : Ladders.values()) {
 			laddersElo.put(ladders, elo.get(i));
 			i++;
 		}
+		this.winnedUnranked = winnedUnranked;
 	}
 	
 	public int getFrom(Ladders ladder) {
@@ -43,5 +46,20 @@ public class EloManager {
 			global += getFrom(ladders);
 		}
 		return (global / Ladders.values().length);
+	}
+	
+	public void addUnrankedWinned() {
+		if (this.winnedUnranked >= 10) {
+			return;
+		}
+		this.winnedUnranked++;
+	}
+	
+	public boolean canAccessRanked() {
+		return this.winnedUnranked >= 10;
+	}
+	
+	public int getWinnedUnranked() {
+		return this.winnedUnranked;
 	}
 }

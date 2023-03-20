@@ -44,7 +44,7 @@ public class EPCooldownBarTask extends BukkitRunnable {
 	
 	private void updateXpBar(PlayerManager pm) {
 		final Player player = pm.getPlayer();
-	    final float xpPercentage = Math.max(0.0f, Math.min(0.99f, 1.0f - (float) pm.getMatchStats().getEnderPearlCooldown() / (14 * 1000)));
+	    final float xpPercentage = Math.max(0.0f, Math.min(99.9f, 100.0f - (float) pm.getMatchStats().getEnderPearlCooldown() / (14 * 1000)));
 	    player.setExp(xpPercentage);
 	}
 }
