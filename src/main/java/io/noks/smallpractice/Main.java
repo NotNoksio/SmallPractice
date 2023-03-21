@@ -14,6 +14,7 @@ import io.noks.smallpractice.commands.BuildCommand;
 import io.noks.smallpractice.commands.DenyCommand;
 import io.noks.smallpractice.commands.DuelCommand;
 import io.noks.smallpractice.commands.ForceDuelCommand;
+import io.noks.smallpractice.commands.FreezeCommand;
 import io.noks.smallpractice.commands.InventoryCommand;
 import io.noks.smallpractice.commands.MentionCommand;
 import io.noks.smallpractice.commands.ModerationCommand;
@@ -95,7 +96,9 @@ public class Main extends JavaPlugin {
 			if (entities == null || !(entities instanceof Item)) continue;
 			entities.remove();
 		}
-		PlayerManager.players.clear();
+		for (PlayerManager pm : PlayerManager.players.values()) {
+			pm.remove();
+		}
 	}
 	
 	private void registerCommands() {
@@ -121,6 +124,7 @@ public class Main extends JavaPlugin {
 		getCommand("namemc").setExecutor(new NameMCCommand());
 		getCommand("stats").setExecutor(new StatsCommand());
 		getCommand("arenas").setExecutor(new ArenasCommand());
+		getCommand("freeze").setExecutor(new FreezeCommand());
 	}
 	
 	private void registerListers() {

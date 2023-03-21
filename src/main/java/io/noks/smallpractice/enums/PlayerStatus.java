@@ -5,7 +5,8 @@ public enum PlayerStatus {
 	QUEUE, 
 	SPECTATE, 
 	MODERATION, 
-	BUILD, 
+	BUILD,
+	FREEZE,
 	WAITING, 
 	DUEL;
 }

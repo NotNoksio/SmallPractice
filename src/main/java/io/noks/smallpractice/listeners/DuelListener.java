@@ -53,6 +53,9 @@ public class DuelListener implements Listener {
 		}
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             final PlayerManager dm = PlayerManager.get(event.getEntity().getUniqueId());
+            if (dm.isFrozen()) {
+            	return;
+            }
             final PlayerManager am = PlayerManager.get(event.getDamager().getUniqueId());
             
             if(am.getStatus() == PlayerStatus.DUEL && dm.getStatus() == PlayerStatus.DUEL) {
@@ -128,15 +131,20 @@ public class DuelListener implements Listener {
 	// My PlayerMoveEvent is not like everyone event (be careful)
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onMove(PlayerMoveEvent event) {
+		final UUID uuid = event.getPlayer().getUniqueId();
+		if (PlayerManager.get(uuid).isFrozen()) {
+			event.setCancelled(true);
+			return;
+		}
 		if (this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0) { // Dont run event if we dont need it
 			return;
 		}
-		final Player player = event.getPlayer();
-		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
+		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);
 		if (duel != null && duel.getLadder() == Ladders.SUMO) {
-			if (!duel.getAllAliveTeams().contains(player.getUniqueId())) {
+			if (!duel.getAllAliveTeams().contains(uuid)) {
 				return;
 			}
+			final Player player = event.getPlayer();
 			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING) {
 				event.setCancelled(true);
 				return;

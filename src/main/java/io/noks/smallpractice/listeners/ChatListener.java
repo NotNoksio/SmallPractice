@@ -31,9 +31,9 @@ public class ChatListener implements Listener {
 				return;
 			}
 			message = message.replaceFirst("@", "");
+			event.setCancelled(true);
 			for (Player staff : Bukkit.getOnlinePlayers()) {
 				if (staff.hasPermission("chat.staff")) {
-					event.setCancelled(true);
 					staff.sendMessage(ChatColor.GREEN + "(" + ChatColor.RED + "Staff" + ChatColor.GREEN + ") " + player.getDisplayName() + ChatColor.GOLD + " » " + message);
 				}
 			}
@@ -45,8 +45,9 @@ public class ChatListener implements Listener {
 			if (message.length() == 1) {
 				return;
 			}
+			event.setCancelled(true);
 			message = message.replaceFirst("!", "");
-			Party party = this.main.getPartyManager().getParty(player.getUniqueId());
+			final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
 			party.notify(ChatColor.YELLOW + "(" + ChatColor.RED + "Party" + ChatColor.YELLOW + ") " + player.getDisplayName() + ChatColor.GOLD + " » " + message);
 		}
 	}

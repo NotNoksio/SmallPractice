@@ -94,23 +94,39 @@ public class PartyCommand implements CommandExecutor {
 	            player.sendMessage(information);
 	            return true;
 	        }
-	        if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("disband")) {
+	        if (args[0].equalsIgnoreCase("leave")) {
 	        	if (party == null) {
 	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
 	        		return false;
 	        	}
+	        	final boolean isLeader = party.getLeader().equals(player.getUniqueId());
 	        	if (party.getPartyState() == PartyState.QUEUING) {
 	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()));
-	        		if (args[0].equalsIgnoreCase("leave")) {
-	        			party.notify(ChatColor.RED + "Your party has been removed from the queue! Your teammate has left your party.");
-	        		}
+	        		party.notify(ChatColor.RED + "Your party has been removed from the queue! Your " + (!isLeader ? "teammate has left your party" : "leader has left the party") + ".");
 	        	}
-	        	if (party.getLeader().equals(player.getUniqueId())) {
+	        	if (isLeader) {
 	        		Main.getInstance().getPartyManager().transferLeader(player.getUniqueId());
 	            } else {
 	            	party.notify(ChatColor.RED + player.getName() + " has left the party");
 	            	Main.getInstance().getPartyManager().leaveParty(player.getUniqueId());
 	            }
+	        	Main.getInstance().getItemManager().giveSpawnItem(player);
+	        	return true;
+	        }
+	        if (args[0].equalsIgnoreCase("disband")) {
+	        	if (party == null) {
+	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
+	        		return false;
+	        	}
+	        	if (!party.getLeader().equals(player.getUniqueId())) {
+	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
+	        		return false;
+	        	}
+	        	if (party.getPartyState() == PartyState.QUEUING) {
+	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()));
+	        		party.notify(ChatColor.RED + "Your party has been removed from the queue! Your leader has disband the party.");
+	        	}
+	        	Main.getInstance().getPartyManager().destroyParty(party.getLeader());
 	        	Main.getInstance().getItemManager().giveSpawnItem(player);
 	        	return true;
 	        }

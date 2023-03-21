@@ -28,7 +28,9 @@ public class PartyManager {
     private Inventory partiesInventory = Bukkit.createInventory(null, 54, "Fight other parties");
     
     public Party getParty(UUID player) {
-        if (this.leaderUUIDtoParty.containsKey(player)) return this.leaderUUIDtoParty.get(player);
+        if (this.leaderUUIDtoParty.containsKey(player)) {
+        	return this.leaderUUIDtoParty.get(player);
+        }
         if (this.playerUUIDtoLeaderUUID.containsKey(player)) {
             UUID leader = this.playerUUIDtoLeaderUUID.get(player);
             return this.leaderUUIDtoParty.get(leader);
@@ -53,7 +55,7 @@ public class PartyManager {
     
     public void transferLeader(UUID actualLeader) {
     	Party party = this.leaderUUIDtoParty.get(actualLeader);
-    	deletePartyFromInventory(party); // Just added
+    	deletePartyFromInventory(party);
     	if (party.getSize() > 1) {
     		UUID newLeader = party.getMembers().get(0);
     		
@@ -62,6 +64,15 @@ public class PartyManager {
     		
     		this.leaderUUIDtoParty.put(newLeader, party);
     		party = this.leaderUUIDtoParty.get(newLeader);
+    		
+    		for (Map.Entry<UUID, UUID> entry : this.playerUUIDtoLeaderUUID.entrySet()) {
+    			final UUID leaderEntry = entry.getValue();
+    			if (leaderEntry != actualLeader) {
+    				continue;
+    			}
+    			final UUID member = entry.getKey();
+    			this.playerUUIDtoLeaderUUID.put(member, newLeader);
+    		}
     		
     		party.notify(ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
     		if (party.getPartyState() == PartyState.DUELING) {
@@ -94,7 +105,17 @@ public class PartyManager {
     }
     
     public void destroyParty(UUID leader) {
-    	deletePartyFromInventory(this.leaderUUIDtoParty.get(leader));
+        for (Map.Entry<UUID, UUID> entry : this.playerUUIDtoLeaderUUID.entrySet()) {
+        	final UUID leaderEntry = entry.getValue();
+        	if (leaderEntry != leader) {
+        		continue;
+        	}
+        	this.playerUUIDtoLeaderUUID.remove(entry.getKey());
+        	if (getParty(leader).getPartyState() != PartyState.DUELING) {
+        		Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(entry.getKey()));
+        	}
+        }
+        deletePartyFromInventory(this.leaderUUIDtoParty.get(leader));
         this.leaderUUIDtoParty.remove(leader);
     }
     
@@ -116,6 +137,10 @@ public class PartyManager {
     public Inventory getPartiesInventory() {
     	return this.partiesInventory;
     }
+    
+    
+    // UNDER THIS LINE IS ALREADY RECODED
+    
     
     public void addPartyToInventory(Party party) {
         final Player player = Bukkit.getPlayer(party.getLeader());

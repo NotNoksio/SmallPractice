@@ -17,6 +17,7 @@ import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.managers.EloManager;
 import io.noks.smallpractice.objects.managers.PlayerManager;
+import io.noks.smallpractice.party.Party;
 import net.minecraft.util.com.google.common.collect.Lists;
 
 public class DBUtils {
@@ -28,8 +29,6 @@ public class DBUtils {
 
 	private HikariDataSource hikari;
 	
-	// TODO: loadDuoElo 
-	
 	public DBUtils(String address, String name, String user, String password) {
 		this.address = address;
 		this.name = name;
@@ -37,6 +36,8 @@ public class DBUtils {
 		this.password = password;
 		this.connectDatabase();
 	}
+	
+	// TODO: ensure that the TABLE is created before going in it
 
 	public void connectDatabase() {
 		if (this.address.length() == 0 || this.name.length() == 0 || this.username.length() == 0 || this.password.length() == 0) {
@@ -80,7 +81,7 @@ public class DBUtils {
 			Statement statement = connection.createStatement();
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS elo (uuid varchar(36), " + ladder.toString() + ", global int(4), unrankedwin int(2), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS settings (uuid varchar(36), pingdiff int(3), tpm TINYINT(1), invite TINYINT(1), request TINYINT(1), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
-			//statement.executeUpdate("CREATE TABLE IF NOT EXISTS duoelo (uuid1 varchar(36), uuid2 varchar(36), " + ladder.toString() + ", global int(4), PRIMARY KEY(uuid1, uuid2), CONSTRAINT unique_uuid_pair UNIQUE (MIN(uuid1, uuid2), MAX(uuid1, uuid2)));");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS duoelo (uuid1 varchar(36), uuid2 varchar(36), " + ladder.toString() + ", global int(4), PRIMARY KEY(uuid1, uuid2), CONSTRAINT unique_uuid_pair UNIQUE KEY(uuid1, uuid2), KEY(uuid1, uuid2));");
 			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -248,6 +249,35 @@ public class DBUtils {
 		}
 	}
 	
+	public void saveDuoElo(Party party, Ladders ladder) {
+		if (!isConnected()) {
+			return;
+		}
+		final String SAVE = "UPDATE duoelo SET " + ladder.getName().toLowerCase() + "=?, global=? WHERE uuid1=? AND uuid2=?";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			PreparedStatement statement = connection.prepareStatement(SAVE);
+			
+			statement.setInt(1, party.getPartyEloManager().getFrom(ladder));
+			statement.setInt(2, party.getPartyEloManager().getGlobal());
+			statement.setString(3, party.getLeader().toString());
+			statement.setString(4, party.getPartner().toString());
+			statement.execute();
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public Map<UUID, Integer> getTopEloLadder(Ladders ladder) {
 		if (!isConnected()) {
 			return null;
@@ -310,6 +340,125 @@ public class DBUtils {
 			}
 		}
 		return map;
+	}
+	
+	public Map<UUID, PartnerCache> getDuoTopEloLadder(Ladders ladder) {
+		if (!isConnected()) {
+			return null;
+		}
+		final Map<UUID, PartnerCache> map = new LinkedHashMap<UUID, PartnerCache>(10);
+		final String selectLine = "SELECT uuid1,uuid2," + ladder.getName().toLowerCase() + " FROM duoelo ORDER BY " + ladder.getName().toLowerCase() + " DESC LIMIT 10";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			PreparedStatement statement = connection.prepareStatement(selectLine);
+			ResultSet result = statement.executeQuery();
+			while (result.next()) {
+				final UUID uuid1 = UUID.fromString(result.getString("uuid1"));
+				final UUID uuid2 = UUID.fromString(result.getString("uuid2"));
+				final int elo = result.getInt(ladder.getName().toLowerCase());
+				map.put(uuid1, new PartnerCache(uuid2, elo));
+			}
+			result.close();
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return map;
+	}
+	public Map<UUID, PartnerCache> getDuoGlobalTopElo() {
+		if (!isConnected()) {
+			return null;
+		}
+		final Map<UUID, PartnerCache> map = new LinkedHashMap<UUID, PartnerCache>(10);
+		final String selectLine = "SELECT uuid1,uuid2,global FROM duoelo ORDER BY global DESC LIMIT 10";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			PreparedStatement statement = connection.prepareStatement(selectLine);
+			ResultSet result = statement.executeQuery();
+			while (result.next()) {
+				final UUID uuid1 = UUID.fromString(result.getString("uuid1"));
+				final UUID uuid2 = UUID.fromString(result.getString("uuid2"));
+				final int elo = result.getInt("global");
+				map.put(uuid1, new PartnerCache(uuid2, elo));
+			}
+			result.close();
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return map;
+	}
+	
+	public EloManager loadOrCreateDuo(UUID uuid1, UUID uuid2) {
+		EloManager elo = new EloManager();
+		if (!isConnected()) {
+			return elo;
+		}
+		final StringJoiner questionMarks = new StringJoiner(", ");
+		for (int i = 0; i < Ladders.values().length; i++) {
+			questionMarks.add("?");
+		}
+		final String insertLine = "INSERT INTO duoelo VALUES(?, ?, " + questionMarks.toString() + ", ?) ON DUPLICATE KEY UPDATE uuid1=?";
+		final String selectLine = "SELECT * FROM duoelo WHERE uuid1=? AND uuid2=?";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			PreparedStatement statement = connection.prepareStatement(insertLine);
+			statement.setString(1, uuid1.toString());
+			statement.setString(2, uuid2.toString());
+			int i = 2;
+			while (i != Ladders.values().length + 2) {
+				i++;
+				statement.setInt(i, 1200);
+			}
+			statement.setInt(i + 1, 1200);
+			statement.setString(i + 2, uuid1.toString());
+			statement.executeUpdate();
+			statement.close();
+			
+			statement = connection.prepareStatement(selectLine);
+			statement.setString(1, uuid1.toString());
+			statement.setString(2, uuid2.toString());
+			ResultSet result = statement.executeQuery();
+			while (result.next()) {
+				final List<Integer> elos = Lists.newArrayList();
+				for (Ladders ladders : Ladders.values()) {
+					elos.add(result.getInt(ladders.getName().toLowerCase()));
+				}
+				elo = new EloManager(elos);
+			}
+			result.close();
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return elo;
 	}
 	
 	public HikariDataSource getHikari() {

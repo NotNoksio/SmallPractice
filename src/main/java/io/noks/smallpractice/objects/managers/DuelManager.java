@@ -199,62 +199,11 @@ public class DuelManager {
 				return;
 			}
 		}
-		List<UUID> shuffle = Lists.newArrayList(party.getAllMembersOnline());
+		final List<UUID> shuffle = Lists.newArrayList(party.getAllMembersOnline());
         Collections.shuffle(shuffle);
         final List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         final List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
         startDuel(Arena.getInstance().getRandomArena(ladder), ladder, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
-	}
-	
-	public void endDuel(Duel duel, int winningTeamNumber, boolean forceEnding) {
-		if (winningTeamNumber == 0) {
-			return;
-		}
-		if (duel.isRanked() && !forceEnding) {
-			List<UUID> winnersList = (winningTeamNumber == 1 ? duel.getSimpleDuel().firstTeam : duel.getSimpleDuel().secondTeam);
-			List<UUID> losersList = (winnersList == duel.getSimpleDuel().firstTeam ? duel.getSimpleDuel().secondTeam : duel.getSimpleDuel().firstTeam);
-			
-			this.tranferElo(winnersList, losersList, duel.getLadder(), duel.getAllSpectators());
-		}
-		this.deathMessage(duel, winningTeamNumber);
-		
-		if (!duel.getAllSpectators().isEmpty()) {
-			Iterator<UUID> specIt = duel.getAllSpectators().iterator();
-			while (specIt.hasNext()) {
-				Player spec = Bukkit.getPlayer(specIt.next());
-				if (spec == null) continue;
-				final PlayerManager sm = PlayerManager.get(spec.getUniqueId());
-				
-				spec.setFlySpeed(0.1f);
-				spec.setWalkSpeed(0.2f);
-				spec.setAllowFlight(false);
-				spec.setFlying(false);
-				sm.setStatus(PlayerStatus.SPAWN);
-				sm.showAllPlayer();
-				sm.setSpectate(null);
-				spec.teleport(spec.getWorld().getSpawnLocation());
-				this.main.getItemManager().giveSpawnItem(spec);
-				spec.setScoreboard(this.main.getServer().getScoreboardManager().getMainScoreboard());
-				specIt.remove();
-			}
-		}
-		if (duel.getSimpleDuel() != null && duel.getSimpleDuel().firstTeamPartyLeaderUUID != null && duel.getSimpleDuel().secondTeamPartyLeaderUUID != null || duel.getFFADuel() != null && duel.getFFADuel().getFfaPartyLeaderUUID() != null) {
-			List<Party> partyList = null;
-			if (duel.getSimpleDuel() != null) {
-				partyList = Lists.newArrayList(this.main.getPartyManager().getParty(duel.getSimpleDuel().firstTeamPartyLeaderUUID), this.main.getPartyManager().getParty(duel.getSimpleDuel().secondTeamPartyLeaderUUID));
-			} else {
-				partyList = Lists.newArrayList(this.main.getPartyManager().getParty(duel.getFFADuel().getFfaPartyLeaderUUID()));
-			}
-			for (Party parties : partyList) {
-            	if (parties == null) continue;
-            	parties.setPartyState(PartyState.LOBBY);
-            	this.main.getPartyManager().updatePartyInventory(parties);
-            }
-            partyList.clear();
-        }
-        if (duel.getSimpleDuel() != null && duel.getSimpleDuel().firstTeam.size() == 1 && duel.getSimpleDuel().secondTeam.size() == 1 && (duel.getSimpleDuel().firstTeamPartyLeaderUUID == null && duel.getSimpleDuel().secondTeamPartyLeaderUUID == null)) {
-        	this.main.getInventoryManager().updateQueueInventory(duel.isRanked());
-        }
 	}
 	
 	private void tranferElo(List<UUID> winners, List<UUID> losers, Ladders ladder, List<UUID> spectators) {
@@ -265,9 +214,11 @@ public class DuelManager {
 		int winnersElo = wm.getEloManager().getFrom(ladder);
 		int losersElo = lm.getEloManager().getFrom(ladder);
 		boolean to2 = false;
+		final Party winnerParty = this.main.getPartyManager().getParty(winnerUUID);
+		final Party loserParty = this.main.getPartyManager().getParty(loserUUID);
 		if (winners.size() == 2 && losers.size() == 2) {
-			winnersElo = this.main.getPartyManager().getParty(winnerUUID).getPartyEloManager().getFrom(ladder);
-			losersElo = this.main.getPartyManager().getParty(loserUUID).getPartyEloManager().getFrom(ladder);
+			winnersElo = winnerParty.getPartyEloManager().getFrom(ladder);
+			losersElo = loserParty.getPartyEloManager().getFrom(ladder);
 			to2 = true;
 		}
 		// Rinny - K-Factor = 32, Scale Factor = 400 & Exponent Base = 10 = FULL RATING SYSTEM IN 2 LINES
@@ -280,10 +231,10 @@ public class DuelManager {
 			this.main.getDatabaseUtil().savePlayerSingleElo(wm, ladder);
 			this.main.getDatabaseUtil().savePlayerSingleElo(lm, ladder);
 		} else {
-			this.main.getPartyManager().getParty(winnerUUID).getPartyEloManager().addTo(ladder, scoreChange);
-			this.main.getPartyManager().getParty(loserUUID).getPartyEloManager().removeFrom(ladder, scoreChange);
-			// TODO: DatabaseUtils::saveDuoElo(winnerUUID1, winnerUUID2, ladder)
-			// TODO: DatabaseUtils::saveDuoElo(loserUUID1, loserUUID2, ladder)
+			winnerParty.getPartyEloManager().addTo(ladder, scoreChange);
+			loserParty.getPartyEloManager().removeFrom(ladder, scoreChange);
+			this.main.getDatabaseUtil().saveDuoElo(winnerParty, ladder);
+			this.main.getDatabaseUtil().saveDuoElo(loserParty, ladder);
 		}
 		final String eloMessage = ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + Bukkit.getPlayer(winnerUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(winners.get(1)).getName() : "") +  " (+" + scoreChange + ") " + ChatColor.RED + Bukkit.getPlayer(loserUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(losers.get(1)).getName() : "") + " (-" + scoreChange + ")";
 		for (UUID winnersUUID : winners) {
@@ -302,6 +253,7 @@ public class DuelManager {
 			final Player spec = Bukkit.getPlayer(specUUID);
 			spec.sendMessage(eloMessage);
 		}
+		this.main.getInventoryManager().setLeaderboardInventory();
 	}
 	
 	// TODO: Sometimes there's an NULLPOINTEREXCEPTION appear (IS IT UP TO DATE?)
@@ -387,7 +339,7 @@ public class DuelManager {
 		}
 		final String spectatorMessage = ChatColor.DARK_AQUA + "Spectator" + (duel.getAllSpectators().size() > 1 ? "s: " : ": ") + spect.toString() + ChatColor.DARK_AQUA + ".";
 		    
-		List<UUID> duelPlayers = Lists.newArrayList(duel.getAllTeams());
+		final List<UUID> duelPlayers = Lists.newArrayList(duel.getAllTeams());
 		duelPlayers.addAll(duel.getAllSpectators());
 		    
 		for (UUID dpUUID : duelPlayers) {
@@ -506,11 +458,7 @@ public class DuelManager {
 				}
 				
 				int i = new Random().nextInt(3);
-				if (i < 2) {
-					player.teleport(duel.getArena().getLocations()[i]);
-				} else {
-					player.teleport(duel.getArena().getMiddle());
-				}
+				player.teleport(i < 2 ? duel.getArena().getLocations()[i] : duel.getArena().getMiddle());
 				player.setSneaking(false);
 			}
 		}
@@ -622,6 +570,52 @@ public class DuelManager {
 		return count;
 	}
 	
+	public void endDuel(Duel duel, int winningTeamNumber, boolean forceEnding) {
+		if (winningTeamNumber == 0) {
+			return;
+		}
+		if (duel.isRanked() && !forceEnding) {
+			List<UUID> winnersList = (winningTeamNumber == 1 ? duel.getSimpleDuel().firstTeam : duel.getSimpleDuel().secondTeam);
+			List<UUID> losersList = (winnersList == duel.getSimpleDuel().firstTeam ? duel.getSimpleDuel().secondTeam : duel.getSimpleDuel().firstTeam);
+			
+			this.tranferElo(winnersList, losersList, duel.getLadder(), duel.getAllSpectators());
+		}
+		this.deathMessage(duel, winningTeamNumber);
+		
+		if (!duel.getAllSpectators().isEmpty()) {
+			Iterator<UUID> specIt = duel.getAllSpectators().iterator();
+			while (specIt.hasNext()) {
+				Player spec = Bukkit.getPlayer(specIt.next());
+				if (spec == null) continue;
+				final PlayerManager sm = PlayerManager.get(spec.getUniqueId());
+				
+				spec.setFlySpeed(0.1f);
+				spec.setWalkSpeed(0.2f);
+				spec.setAllowFlight(false);
+				spec.setFlying(false);
+				sm.setStatus(PlayerStatus.SPAWN);
+				sm.showAllPlayer();
+				sm.setSpectate(null);
+				spec.teleport(spec.getWorld().getSpawnLocation());
+				this.main.getItemManager().giveSpawnItem(spec);
+				spec.setScoreboard(this.main.getServer().getScoreboardManager().getMainScoreboard());
+				specIt.remove();
+			}
+		}
+		if (duel.getSimpleDuel() != null && duel.getSimpleDuel().firstTeamPartyLeaderUUID != null && duel.getSimpleDuel().secondTeamPartyLeaderUUID != null || duel.getFFADuel() != null && duel.getFFADuel().getFfaPartyLeaderUUID() != null) {
+			final List<Party> partyList = duel.getSimpleDuel() != null ? Lists.newArrayList(this.main.getPartyManager().getParty(duel.getSimpleDuel().firstTeamPartyLeaderUUID), this.main.getPartyManager().getParty(duel.getSimpleDuel().secondTeamPartyLeaderUUID)) : Lists.newArrayList(this.main.getPartyManager().getParty(duel.getFFADuel().getFfaPartyLeaderUUID()));
+			for (Party parties : partyList) {
+            	if (parties == null) continue;
+            	parties.setPartyState(PartyState.LOBBY);
+            	this.main.getPartyManager().updatePartyInventory(parties);
+            }
+            partyList.clear();
+        }
+        if (duel.getSimpleDuel() != null && duel.getSimpleDuel().firstTeam.size() == 1 && duel.getSimpleDuel().secondTeam.size() == 1 && (duel.getSimpleDuel().firstTeamPartyLeaderUUID == null && duel.getSimpleDuel().secondTeamPartyLeaderUUID == null)) {
+        	this.main.getInventoryManager().updateQueueInventory(duel.isRanked());
+        }
+	}
+	
 	public void finishDuel(Duel duel, boolean cancelled) {
 		duel.clearDrops();
 		for (UUID dpUUID : duel.getAllTeams()) {
@@ -673,6 +667,8 @@ public class DuelManager {
 			player.setExp(0);
 		}
         player.extinguish();
-        player.setItemOnCursor(null);
+        if (player.getItemOnCursor() != null) {
+        	player.setItemOnCursor(null);
+        }
 	}
 }

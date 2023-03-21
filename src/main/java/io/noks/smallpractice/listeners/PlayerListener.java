@@ -247,7 +247,11 @@ public class PlayerListener implements Listener {
 		if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
 			final Player attacker = (Player) event.getDamager();
 			final PlayerManager attackerManager = PlayerManager.get(attacker.getUniqueId());	
-			
+			if (attackerManager.isFrozen()) {
+				attacker.sendMessage(ChatColor.RED + "You are frozen, please wait :)");
+				event.setCancelled(true);
+				return;
+			}
 			if (attackerManager.getStatus() == PlayerStatus.MODERATION) {
 				if (attacker.getNoDamageTicks() > 0) {
 					event.setCancelled(true);
@@ -257,6 +261,11 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			final Player attacked = (Player) event.getEntity();
+			if (PlayerManager.get(attacked.getUniqueId()).isFrozen()) {
+				attacked.sendMessage(ChatColor.RED + "This player is frozen, please wait :)");
+				event.setCancelled(true);
+				return;
+			}
 			if (attackerManager.getStatus() == PlayerStatus.SPECTATE || attackerManager.getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 				return;
@@ -398,6 +407,10 @@ public class PlayerListener implements Listener {
 					event.setCancelled(true);
 					if (!isPartyLeader) {
 						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
+						break;
+					}
+					if (!currentParty.getPartyEloManager().canAccessRanked()) {
+						player.sendMessage(ChatColor.RED + "You need to win another " + (10 - currentParty.getPartyEloManager().getWinnedUnranked()) + " unranked game to access ranked!");
 						break;
 					}
 					if (currentParty.getPartyState() == PartyState.DUELING) {

@@ -40,7 +40,7 @@ public class PlayerManager {
 	private final UUID playerUUID;
 	private final Map<UUID, Request> request = new WeakHashMap<UUID, Request>();
 	private final Collection<UUID> invite = Collections.newSetFromMap(new WeakHashMap<>());
-	private PlayerStatus status;
+	private PlayerStatus status, previousStatus;
 	private Player spectate;
 	private final EloManager eloManager;
 	private final MatchStats matchStats;
@@ -110,6 +110,9 @@ public class PlayerManager {
 	public boolean isAllowedToBuild() {
 		return this.status == PlayerStatus.BUILD;
 	}
+	public boolean isFrozen() {
+		return this.status == PlayerStatus.FREEZE;
+	}
 	
 	public Player getSpectate() {
 		return this.spectate;
@@ -150,8 +153,12 @@ public class PlayerManager {
 	public PlayerStatus getStatus() {
 		return status;
 	}
+	public PlayerStatus getPreviousStatus() {
+		return this.previousStatus;
+	}
 
 	public void setStatus(PlayerStatus status) {
+		this.previousStatus = this.status;
 		this.status = status;
 	}
 	

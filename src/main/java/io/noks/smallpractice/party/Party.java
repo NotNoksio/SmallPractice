@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import io.noks.smallpractice.Main;
 import io.noks.smallpractice.objects.managers.EloManager;
 
 public class Party {
@@ -26,6 +27,10 @@ public class Party {
         this.partyState = PartyState.LOBBY;
     }
     
+    public UUID getPartner() {
+    	return this.memberUUIDs.get(0);
+    }
+    
     public void addMember(UUID uuid) {
         this.memberUUIDs.add(uuid);
         if (getMembersIncludingLeader().size() != 2) {
@@ -34,7 +39,7 @@ public class Party {
         	}
         	return;
         }
-        this.partyEloManager = new EloManager(); // TODO: if team exist load team elo from database
+        this.partyEloManager = Main.getInstance().getDatabaseUtil().loadOrCreateDuo(this.partyLeader, uuid);
     }
     
     public void removeMember(UUID uuid) {
@@ -45,7 +50,7 @@ public class Party {
         	}
         	return;
         }
-        this.partyEloManager = new EloManager(); // TODO: if team exist load team elo from database
+        this.partyEloManager = Main.getInstance().getDatabaseUtil().loadOrCreateDuo(this.partyLeader, getPartner());
     }
     
     public void setOpen(boolean open) {
@@ -62,7 +67,7 @@ public class Party {
     }
     
     public List<UUID> getMembersIncludingLeader() {
-    	List<UUID> list = Lists.newArrayList(this.memberUUIDs);
+    	final List<UUID> list = Lists.newArrayList(this.memberUUIDs);
     	list.add(partyLeader);
         return list;
     }

@@ -16,6 +16,14 @@ public class EloManager {
 		this.DEFAULT_ELO = 1200;
 		this.winnedUnranked = 0;
 	}
+	public EloManager(List<Integer> elo) {
+		int i = 0;
+		for (Ladders ladders : Ladders.values()) {
+			laddersElo.put(ladders, elo.get(i));
+			i++;
+		}
+		this.winnedUnranked = 10;
+	}
 	public EloManager(List<Integer> elo, int winnedUnranked) {
 		int i = 0;
 		for (Ladders ladders : Ladders.values()) {
