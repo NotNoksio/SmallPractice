@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -44,6 +45,7 @@ import io.noks.smallpractice.objects.managers.PartyManager;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.objects.managers.QueueManager;
 import io.noks.smallpractice.objects.managers.RequestManager;
+import io.noks.smallpractice.tasks.EPCooldownBarTask;
 import io.noks.smallpractice.utils.DBUtils;
 
 public class Main extends JavaPlugin {
@@ -55,6 +57,7 @@ public class Main extends JavaPlugin {
 	private RequestManager requestManager;
 	private PartyManager partyManager;
 	private DBUtils database;
+	private EPCooldownBarTask enderpearlCooldownTask;
 	
 	private static Main instance;
 	public static Main getInstance() {
@@ -69,6 +72,7 @@ public class Main extends JavaPlugin {
 		this.getConfig().options().copyDefaults(true);
 		this.saveDefaultConfig();
 		
+		this.enderpearlCooldownTask = new EPCooldownBarTask(this);
 		this.partyManager = new PartyManager();
 		this.duelManager = new DuelManager(this);
 		this.itemManager = new ItemManager();
@@ -92,8 +96,8 @@ public class Main extends JavaPlugin {
 		final World world = Bukkit.getWorld("world");
 		final Iterator<Entity> it = world.getEntities().iterator();
 		while (it.hasNext()) {
-			Entity entities = it.next();
-			if (entities == null || !(entities instanceof Item)) continue;
+			final Entity entities = it.next();
+			if (entities == null || !(entities instanceof Item) || !(entities instanceof Arrow)) continue;
 			entities.remove();
 		}
 		for (PlayerManager pm : PlayerManager.players.values()) {
@@ -166,5 +170,9 @@ public class Main extends JavaPlugin {
 	
 	public DBUtils getDatabaseUtil() {
 		return this.database;
+	}
+	
+	public EPCooldownBarTask getEnderpearlCooldownTask() {
+		return this.enderpearlCooldownTask;
 	}
 }

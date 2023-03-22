@@ -209,6 +209,9 @@ public class PlayerManager {
 				this.player.removePotionEffect(effect.getType());
 			}
 		}
+		if (this.player.getArrowsStuck() != 0) {
+			this.player.setArrowsStuck(0);
+		}
 		this.player.setFoodLevel(20);
 		this.player.setSaturation(forFight ? 20F : 1000F);
 		if (!forFight && this.status != PlayerStatus.WAITING && this.status != PlayerStatus.DUEL && this.player.getKnockbackReduction() > 0.0D) {

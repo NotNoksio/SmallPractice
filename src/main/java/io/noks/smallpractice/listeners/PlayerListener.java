@@ -307,11 +307,11 @@ public class PlayerListener implements Listener {
 			if (this.main.getDuelManager().getDuelFromPlayerUUID(receiver.getUniqueId()) != null) {
 				final Duel currentDuel = this.main.getDuelManager().getDuelFromPlayerUUID(receiver.getUniqueId());
 				
-				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item)) {
+				if (!currentDuel.containPlayer(owner) && !currentDuel.containDrops(item.getUniqueId())) {
 					event.setCancelled(true);
 					return;
 				}
-				currentDuel.removeDrops(item);
+				currentDuel.removeDrops(item.getUniqueId());
 				return;
 			}
 			if (!receiver.canSee(owner)) event.setCancelled(true);

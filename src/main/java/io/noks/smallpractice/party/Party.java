@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.objects.managers.EloManager;
+import io.noks.smallpractice.utils.DBUtils;
 
 public class Party {
 	private List<UUID> memberUUIDs;
@@ -39,7 +40,14 @@ public class Party {
         	}
         	return;
         }
-        this.partyEloManager = Main.getInstance().getDatabaseUtil().loadOrCreateDuo(this.partyLeader, uuid);
+        final DBUtils db = Main.getInstance().getDatabaseUtil();
+        if (db.isDuoExist(this.partyLeader, getPartner())) {
+        	this.partyEloManager = db.loadOrCreateDuo(this.partyLeader, getPartner());
+        	return;
+        }
+        if (db.isDuoExist(getPartner(), this.partyLeader)) {
+        	this.partyEloManager = db.loadOrCreateDuo(getPartner(), this.partyLeader);
+        }
     }
     
     public void removeMember(UUID uuid) {
@@ -50,12 +58,28 @@ public class Party {
         	}
         	return;
         }
-        this.partyEloManager = Main.getInstance().getDatabaseUtil().loadOrCreateDuo(this.partyLeader, getPartner());
+        final DBUtils db = Main.getInstance().getDatabaseUtil();
+        if (db.isDuoExist(this.partyLeader, getPartner())) {
+        	this.partyEloManager = db.loadOrCreateDuo(this.partyLeader, getPartner());
+        	return;
+        }
+        if (db.isDuoExist(getPartner(), this.partyLeader)) {
+        	this.partyEloManager = db.loadOrCreateDuo(getPartner(), this.partyLeader);
+        }
     }
     
     public void setOpen(boolean open) {
         this.open = open;
-        Bukkit.broadcastMessage(ChatColor.YELLOW + this.leaderName + ChatColor.GREEN + "'s party is now open!");
+        if (open) {
+        	Bukkit.broadcastMessage(ChatColor.YELLOW + this.leaderName + ChatColor.GREEN + "'s party is now open!");
+        }
+    }
+    
+    public void updateElo() {
+    	this.partyEloManager = Main.getInstance().getDatabaseUtil().loadOrCreateDuo(this.partyLeader, getPartner());
+    	Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(this.partyLeader));
+    	Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(getPartner()));
+    	Main.getInstance().getInventoryManager().setLeaderboardInventory();
     }
 
     public void setPartyState(PartyState state) {

@@ -14,14 +14,19 @@ import io.noks.smallpractice.objects.managers.PlayerManager;
 public class EPCooldownBarTask extends BukkitRunnable {
 
 	// SET TIMERTASK AND EXECUTE IT EVERY 1 tick
-	private Main main;
+	private boolean activated;
+	private final Main main;
 	public EPCooldownBarTask(Main main) {
 		this.main = main;
+		this.activated = false;
 	}
 	
 	@Override
 	public void run() {
 		if (this.main.getDuelManager().getUniqueIDIdentifierToDuelMap().isEmpty()) {
+			this.activated = false;
+		}
+		if (!this.activated) {
 			this.cancel();
 			return;
 		}
@@ -42,9 +47,16 @@ public class EPCooldownBarTask extends BukkitRunnable {
 		}
 	}
 	
-	private void updateXpBar(PlayerManager pm) {
+	public void activate() {
+		this.activated = true;
+	}
+	public boolean isActivated() {
+		return this.activated;
+	}
+	
+	private void updateXpBar(PlayerManager pm) { // TODO: IT DOESNT GO DOWN
 		final Player player = pm.getPlayer();
-	    final float xpPercentage = Math.max(0.0f, Math.min(99.9f, 100.0f - (float) pm.getMatchStats().getEnderPearlCooldown() / (14 * 1000)));
-	    player.setExp(xpPercentage);
+	    final float xpPercentage = Math.max(0.0f, Math.min(99.9f, 100.0f - ((float) pm.getMatchStats().getEnderPearlCooldown() / (14 * 1000)) * 100));
+	    player.setExp(xpPercentage / 100);
 	}
 }

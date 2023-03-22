@@ -84,7 +84,6 @@ public class DuelManager {
 			return;
 		}
 		// TODO: IN FFA PLAYERS SEE EVERYONE IN RED WHILE THE PLAYER NEED TO SEE HIMSELF GREEN
-		// TODO: START ENDERPEARL XP BAR TASK
 		final Scoreboard scoreboard = this.main.getServer().getScoreboardManager().getNewScoreboard();
 		final Team red = scoreboard.registerNewTeam("red");
 		red.setPrefix(ChatColor.RED.toString());

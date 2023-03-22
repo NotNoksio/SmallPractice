@@ -3,6 +3,7 @@ package io.noks.smallpractice.listeners;
 import java.util.UUID;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -107,23 +108,43 @@ public class DuelListener implements Listener {
 				final UUID playerUUID = itemDropped.getOwner().getUniqueId();
 				final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
 				if (duel == null) return;
-				if (duel.containDrops(itemDropped)) return;
-				duel.addDrops(itemDropped);
+				if (duel.containDrops(itemDropped.getUniqueId())) return;
+				duel.addDrops(itemDropped.getUniqueId());
+			}
+			return;
+		}
+		if (event.getEntity() instanceof Arrow) {
+			final Arrow arrow = (Arrow) event.getEntity();
+			
+			if (arrow.getShooter() != null && arrow.getShooter() instanceof Player) {
+				final Player playerUUID = (Player) arrow.getShooter();
+				final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID.getUniqueId());
+				if (duel == null) return;
+				if (duel.containDrops(arrow.getUniqueId())) return;
+				duel.addDrops(arrow.getUniqueId());
 			}
 		}
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onEntityDespawnFromWorld(EntityDeathEvent event) {
+		if (this.main.getDuelManager().getAllDuels().isEmpty()) {
+			return;
+		}
 		if (event.getEntity() instanceof Item) {
-			if (this.main.getDuelManager().getAllDuels().isEmpty()) {
-				return;
-			}
 			final Item item = (Item) event.getEntity();
 			if (item.getOwner() == null || !(item.getOwner() instanceof Player)) return;
 			for (Duel duels : this.main.getDuelManager().getAllDuels()) {
-				if (duels == null || !duels.containDrops(item)) continue;
-				duels.removeDrops(item);
+				if (duels == null || !duels.containDrops(item.getUniqueId())) continue;
+				duels.removeDrops(item.getUniqueId());
+			}
+		}
+		if (event.getEntity() instanceof Arrow) {
+			final Arrow arrow = (Arrow) event.getEntity();
+			if (arrow.getShooter() == null || !(arrow.getShooter() instanceof Player)) return;
+			for (Duel duels : this.main.getDuelManager().getAllDuels()) {
+				if (duels == null || !duels.containDrops(arrow.getUniqueId())) continue;
+				duels.removeDrops(arrow.getUniqueId());
 			}
 		}
 	}

@@ -37,15 +37,13 @@ public class DBUtils {
 		this.connectDatabase();
 	}
 	
-	// TODO: ensure that the TABLE is created before going in it
-
 	public void connectDatabase() {
 		if (this.address.length() == 0 || this.name.length() == 0 || this.username.length() == 0 || this.password.length() == 0) {
 			return;
 		}
 		try {
 			this.hikari = new HikariDataSource();
-			this.hikari.setDataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource"); //com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+			this.hikari.setDataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource");
 			this.hikari.addDataSourceProperty("serverName", this.address);
 			this.hikari.addDataSourceProperty("port", "3306");
 			this.hikari.addDataSourceProperty("databaseName", this.name);
@@ -255,14 +253,16 @@ public class DBUtils {
 		}
 		final String SAVE = "UPDATE duoelo SET " + ladder.getName().toLowerCase() + "=?, global=? WHERE uuid1=? AND uuid2=?";
 		Connection connection = null;
+		final UUID uuid1 = (isDuoExist(party.getLeader(), party.getPartner()) ? party.getLeader() : party.getPartner());
+		final UUID uuid2 = (isDuoExist(party.getLeader(), party.getPartner()) ? party.getPartner() : party.getLeader());
 		try {
 			connection = this.hikari.getConnection();
 			PreparedStatement statement = connection.prepareStatement(SAVE);
 			
 			statement.setInt(1, party.getPartyEloManager().getFrom(ladder));
 			statement.setInt(2, party.getPartyEloManager().getGlobal());
-			statement.setString(3, party.getLeader().toString());
-			statement.setString(4, party.getPartner().toString());
+			statement.setString(3, uuid1.toString());
+			statement.setString(4, uuid2.toString());
 			statement.execute();
 			statement.close();
 		} catch (SQLException e) {
@@ -416,7 +416,7 @@ public class DBUtils {
 		for (int i = 0; i < Ladders.values().length; i++) {
 			questionMarks.add("?");
 		}
-		final String insertLine = "INSERT INTO duoelo VALUES(?, ?, " + questionMarks.toString() + ", ?) ON DUPLICATE KEY UPDATE uuid1=?";
+		final String insertLine = "INSERT INTO duoelo VALUES(?, ?, " + questionMarks.toString() + ", ?) ON DUPLICATE KEY UPDATE uuid1=?"; // TODO: ensure that this dont just change the mate
 		final String selectLine = "SELECT * FROM duoelo WHERE uuid1=? AND uuid2=?";
 		Connection connection = null;
 		try {
@@ -459,6 +459,39 @@ public class DBUtils {
 			}
 		}
 		return elo;
+	}
+	
+	public boolean isDuoExist(UUID uuid1, UUID uuid2) {
+		if (!isConnected()) {
+			return false;
+		}
+		final String selectLine = "SELECT COUNT(*) FROM duoelo WHERE uuid1=? AND uuid2=?";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			PreparedStatement statement = connection.prepareStatement(selectLine);
+			statement.setString(1, uuid1.toString());
+			statement.setString(2, uuid2.toString());
+			ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+            	int count = resultSet.getInt(1);
+            	return count == 1;
+            }
+            resultSet.close();
+            statement.close();
+            return false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return false;
 	}
 	
 	public HikariDataSource getHikari() {

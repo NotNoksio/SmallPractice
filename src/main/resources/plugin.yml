@@ -3,6 +3,7 @@ name: SmallPractice
 version: 2.0
 author: Noksio
 website: github.com/iamnoksio/SmallPractice
+softdepend: [LunarClient-API]
 commands:
   duel:
   accept:

@@ -266,16 +266,16 @@ public class Duel {
 		return this.timeBeforeDuel;
 	}
 	
-	public void addDrops(Item item) {
-		this.drops.add(item.getUniqueId());
+	public void addDrops(UUID uuid) {
+		this.drops.add(uuid);
 	}
 	
-	public void removeDrops(Item item) {
-		this.drops.remove(item.getUniqueId());
+	public void removeDrops(UUID uuid) {
+		this.drops.remove(uuid);
 	}
 	
-	public boolean containDrops(Item item) {
-		return this.drops.contains(item.getUniqueId());
+	public boolean containDrops(UUID uuid) {
+		return this.drops.contains(uuid);
 	}
 	
 	public void clearDrops() {

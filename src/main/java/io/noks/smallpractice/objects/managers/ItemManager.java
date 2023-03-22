@@ -38,9 +38,18 @@ public class ItemManager {
 				return;
 			}
 			final Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
-			final ItemStack glass = ItemBuilder.createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
+			ItemStack glass = ItemBuilder.createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
 			player.getInventory().setItem(0, party.getSize() == 2 ? ItemBuilder.createNewItemStackByMaterial(Material.IRON_AXE, ChatColor.YELLOW + "2v2 Unranked Queue", true) : glass);
-			player.getInventory().setItem(1, party.getSize() == 2 ? ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_AXE, ChatColor.YELLOW + "2v2 Ranked Queue", true) : glass);
+			if (party.getSize() == 2) {
+				if (party.getPartyEloManager() != null) {
+					player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_AXE, ChatColor.YELLOW + "2v2 Ranked Queue", true));
+				} else {
+					glass = ItemBuilder.createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "type \"/party confirm\" to access");
+					player.getInventory().setItem(1, glass);
+				}
+			} else {
+				player.getInventory().setItem(1, glass);
+			}
 			player.getInventory().setItem(5, party.getSize() > 1 ? ItemBuilder.createNewItemStackByMaterial(Material.GOLD_HOE, ChatColor.YELLOW + "Party Game", true) : glass);
 			if (party.getPartyState() == PartyState.DUELING) {
 				player.getInventory().setItem(2, ItemBuilder.createNewItemStackByMaterial(Material.EYE_OF_ENDER, ChatColor.YELLOW + "Spectate Actual Match"));

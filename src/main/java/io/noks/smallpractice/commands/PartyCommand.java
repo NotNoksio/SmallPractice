@@ -34,6 +34,7 @@ public class PartyCommand implements CommandExecutor {
             ChatColor.GREEN + "-> /party lock/close " + ChatColor.GRAY + "- Lock your party for others to join",
             ChatColor.GREEN + "-> /party invite <player> " + ChatColor.GRAY + "- Invites a player to your party",
             ChatColor.GREEN + "-> /party kick <player> " + ChatColor.GRAY + "- Kicks a player from your party",
+            ChatColor.GREEN + "-> /party confirm " + ChatColor.GRAY + "- Register your party to access ranked matches",
             ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
     
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -164,6 +165,28 @@ public class PartyCommand implements CommandExecutor {
 	            player.sendMessage(ChatColor.GREEN + "You have locked your party!");
 	            return true;
 	        }
+	        if (args[0].equalsIgnoreCase("confirm")) {
+	        	if (party == null) {
+	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
+	        		return false;
+	        	}
+	        	if (!party.getLeader().equals(player.getUniqueId())) {
+	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
+	        		return false;
+	        	}
+	        	if (party.getSize() != 2) {
+	        		player.sendMessage(ChatColor.RED + "Your party must contain only 2 players!");
+	        		return false;
+	        	}
+	        	if (party.getPartyEloManager() != null) {
+	        		player.sendMessage(ChatColor.RED + "Your party has already been confirmed!");
+	        		return false;
+	        	}
+	        	party.updateElo();
+	        	party.notify(ChatColor.GREEN + "Your party has been confirmed by the leader!");
+	        	return true;
+	        }
+	        player.sendMessage(this.HELP_COMMAND);
 	        return false;
         }
         if (args.length == 2) {
