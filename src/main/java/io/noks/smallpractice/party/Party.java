@@ -75,7 +75,7 @@ public class Party {
         }
     }
     
-    public void updateElo() {
+    public void initElo() {
     	this.partyEloManager = Main.getInstance().getDatabaseUtil().loadOrCreateDuo(this.partyLeader, getPartner());
     	Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(this.partyLeader));
     	Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(getPartner()));

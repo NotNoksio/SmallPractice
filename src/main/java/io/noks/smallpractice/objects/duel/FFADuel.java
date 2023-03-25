@@ -27,8 +27,4 @@ public class FFADuel {
     public List<UUID> getFfaAlivePlayers() {
         return this.ffaAlivePlayers;
     }
-    
-    public void switchTeamPartyLeader(UUID newPartyLeaderUUID) {
-		this.ffaPartyLeaderUUID = newPartyLeaderUUID;
-	}
 }

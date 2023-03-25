@@ -222,7 +222,7 @@ public class DuelManager {
 		}
 		// Rinny - K-Factor = 32, Scale Factor = 400 & Exponent Base = 10 = FULL RATING SYSTEM IN 2 LINES
 		final double expectedp = 1.0D / (1.0D + Math.pow(10.0D, (winnersElo - losersElo) / 400.0D));
-		final int scoreChange = MathUtils.limit((expectedp * 32.0D), 4, 40);
+		final int scoreChange = MathUtils.limit((expectedp * 32.0D), 4, 25);
 		// Rinny
 		if (!to2) {
 			wm.getEloManager().addTo(ladder, scoreChange);
@@ -238,10 +238,12 @@ public class DuelManager {
 		final String eloMessage = ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + Bukkit.getPlayer(winnerUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(winners.get(1)).getName() : "") +  " (+" + scoreChange + ") " + ChatColor.RED + Bukkit.getPlayer(loserUUID).getName() + (to2 ? ", " + Bukkit.getPlayer(losers.get(1)).getName() : "") + " (-" + scoreChange + ")";
 		for (UUID winnersUUID : winners) {
 			final Player winner = Bukkit.getPlayer(winnersUUID);
+			if (winner == null) continue;
 			winner.sendMessage(eloMessage);
 		}
 		for (UUID losersUUID : losers) {
 			final Player loser = Bukkit.getPlayer(losersUUID);
+			if (loser == null) continue;
 			loser.sendMessage(eloMessage);
 		}
 		this.main.getInventoryManager().setLeaderboardInventory();
@@ -250,6 +252,7 @@ public class DuelManager {
 		}
 		for (UUID specUUID : spectators) {
 			final Player spec = Bukkit.getPlayer(specUUID);
+			if (spec == null) continue;
 			spec.sendMessage(eloMessage);
 		}
 		this.main.getInventoryManager().setLeaderboardInventory();
@@ -574,8 +577,8 @@ public class DuelManager {
 			return;
 		}
 		if (duel.isRanked() && !forceEnding) {
-			List<UUID> winnersList = (winningTeamNumber == 1 ? duel.getSimpleDuel().firstTeam : duel.getSimpleDuel().secondTeam);
-			List<UUID> losersList = (winnersList == duel.getSimpleDuel().firstTeam ? duel.getSimpleDuel().secondTeam : duel.getSimpleDuel().firstTeam);
+			final List<UUID> winnersList = (winningTeamNumber == 1 ? duel.getSimpleDuel().firstTeam : duel.getSimpleDuel().secondTeam);
+			final List<UUID> losersList = (winnersList == duel.getSimpleDuel().firstTeam ? duel.getSimpleDuel().secondTeam : duel.getSimpleDuel().firstTeam);
 			
 			this.tranferElo(winnersList, losersList, duel.getLadder(), duel.getAllSpectators());
 		}

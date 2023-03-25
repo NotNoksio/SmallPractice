@@ -116,10 +116,15 @@ public class RequestManager {
 		requested.sendMessage(ChatColor.RED + "You deny the request from " + ChatColor.YELLOW + requester.getName());
 	}
 	
-	public void sendPartyInvite(Player requester, Player requested) {
-		final PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
+	public void sendPartyInvite(Party party, Player requested) {
+		final PlayerManager requesterManager = PlayerManager.get(party.getLeader());
+		final Player requester = requesterManager.getPlayer();
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
+			return;
+		}
+		if (party.getPartyState() != PartyState.LOBBY) {
+			requester.sendMessage(ChatColor.RED + "You can't do that in your current state!");
 			return;
 		}
 		final TextComponent line = new TextComponent(requester.getName());
@@ -163,7 +168,7 @@ public class RequestManager {
 			return;
 		}
 		final Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
-		if (requesterParty.getPartyState() == PartyState.QUEUING) {
+		if (requesterParty.getPartyState() != PartyState.LOBBY) {
 			requested.sendMessage(ChatColor.RED + "This party isn't currently accessible!");
 			return;
 		}

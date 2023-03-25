@@ -32,8 +32,6 @@ public class InventoryManager {
 	private Inventory selectionInventory;
 	private Inventory partyGameInventory;
 	private Map<UUID, Request> selectingDuel;
-	private Map<UUID, Inventory> editKitSelection;
-	private Map<UUID, PlayerInventory> editKitEditor;
 	private Map<UUID, Inventory> offlineInventories;
 	private Inventory[] leaderBoardInventory;
 	
@@ -211,6 +209,7 @@ public class InventoryManager {
 			}
 		}
 		this.leaderBoardInventory[1].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", lore));
+		// Switch item
 		this.leaderBoardInventory[0].setItem(8, ItemBuilder.createNewItemStack(new ItemStack(Material.CARPET, 1, (short) 5), ChatColor.GREEN + "2v2 Leaderboard"));
 		this.leaderBoardInventory[1].setItem(0, ItemBuilder.createNewItemStack(new ItemStack(Material.CARPET, 1, (short) 14), ChatColor.GREEN + "1v1 Leaderboard"));
 	}
@@ -264,6 +263,11 @@ public class InventoryManager {
 	
 	public Map<UUID, Inventory> getOfflineInventories() {
 		return this.offlineInventories;
+	}
+	
+	public Inventory getCustomLadderKitSelectionInventory(PlayerManager pm, Ladders ladder) {
+		// TODO
+		return null;
 	}
 	
 	private void fillWithGlass(Inventory inv) {

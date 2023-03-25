@@ -182,7 +182,7 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "Your party has already been confirmed!");
 	        		return false;
 	        	}
-	        	party.updateElo();
+	        	party.initElo();
 	        	party.notify(ChatColor.GREEN + "Your party has been confirmed by the leader!");
 	        	return true;
 	        }
@@ -240,7 +240,7 @@ public class PartyCommand implements CommandExecutor {
             		player.sendMessage(ChatColor.RED + "This player is already in a party!");
                 	return false;
                 }
-            	Main.getInstance().getRequestManager().sendPartyInvite(player, target);
+            	Main.getInstance().getRequestManager().sendPartyInvite(party, target);
             	return true;
             }
             if (args[0].equalsIgnoreCase("deny")) {
@@ -260,6 +260,10 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
 	        		return false;
 	        	}
+            	if (party.getPartyState() == PartyState.QUEUING) {
+            		player.sendMessage(ChatColor.RED + "You can't do that while queuing!");
+            		return false;
+            	}
             	if (!party.getMembers().contains(target.getUniqueId())) {
             		player.sendMessage(ChatColor.RED + "This player is not in your party!");
             		return false;

@@ -61,8 +61,14 @@ public class PartyManager {
     		
     		party.setNewLeader(newLeader, Bukkit.getPlayer(newLeader).getName());
     		this.leaderUUIDtoParty.remove(actualLeader);
-    		
+    		if (party.getMembers().contains(newLeader)) {
+    			party.removeMember(newLeader);
+    		}
+    		if (this.playerUUIDtoLeaderUUID.containsKey(newLeader)) {
+    			this.playerUUIDtoLeaderUUID.remove(newLeader);
+    		}
     		this.leaderUUIDtoParty.put(newLeader, party);
+    		
     		party = this.leaderUUIDtoParty.get(newLeader);
     		
     		for (Map.Entry<UUID, UUID> entry : this.playerUUIDtoLeaderUUID.entrySet()) {
@@ -75,28 +81,6 @@ public class PartyManager {
     		}
     		
     		party.notify(ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
-    		if (party.getPartyState() == PartyState.DUELING) {
-    			Duel duel = null;
-				for (UUID uuid : party.getMembersIncludingLeader()) {
-					final PlayerManager um = PlayerManager.get(uuid);
-					if (um.getStatus() != PlayerStatus.WAITING && um.getStatus() != PlayerStatus.DUEL) continue;
-					duel = Main.getInstance().getDuelManager().getDuelFromPlayerUUID(uuid);
-					break;
-				}
-				if (duel != null) {
-					if (duel.getSimpleDuel() != null) {
-						if (duel.getSimpleDuel().firstTeamPartyLeaderUUID == actualLeader) {
-							duel.getSimpleDuel().firstTeamPartyLeaderUUID = newLeader;
-						}
-						if (duel.getSimpleDuel().secondTeamPartyLeaderUUID == actualLeader) {
-							duel.getSimpleDuel().secondTeamPartyLeaderUUID = newLeader;
-						}
-					}
-					if (duel.getFFADuel() != null) {
-						duel.getFFADuel().switchTeamPartyLeader(newLeader);
-					}
-				}
-    		}
     		if (party.getPartyState() == PartyState.LOBBY) Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(newLeader));
     		addPartyToInventory(party);
     		return;
