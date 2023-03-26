@@ -16,7 +16,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import io.noks.smallpractice.Main;
-import io.noks.smallpractice.arena.Arena.Arenas;
+import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.enums.RemoveReason;
@@ -170,7 +170,7 @@ public class DuelListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-			final Arenas arena = duel.getArena();
+			final Arena arena = duel.getArena();
 			if (player.getLocation().getBlockY() < arena.getMiddle().getBlockY() || player.getLocation().distance(arena.getMiddle()) > 10 || player.getLocation().getBlock().isLiquid()) { // Put multiple end check
 				this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.KILLED);
 			}

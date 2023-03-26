@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
@@ -102,6 +103,11 @@ public class ServerListeners implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBedEnter(PlayerBedEnterEvent event) {
+		event.setCancelled(true);
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onLeavesDecay(LeavesDecayEvent event) {
 		event.setCancelled(true);
 	}
 }

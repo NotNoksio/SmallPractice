@@ -14,14 +14,14 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
-import io.noks.smallpractice.arena.Arena.Arenas;
+import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import net.minecraft.util.com.google.common.collect.Sets;
 
 public class Duel {
-	private Arenas arena;
+	private Arena arena;
 	private Ladders ladder;
 	private SimpleDuel simpleDuel;
 	private FFADuel ffaDuel;
@@ -30,7 +30,7 @@ public class Duel {
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
 	
-	public Duel(Arenas arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
+	public Duel(Arena arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
 		this.arena = arena;
 		this.ladder = ladder;
 		this.simpleDuel = simpleDuel;
@@ -39,7 +39,7 @@ public class Duel {
 		this.drops = Sets.newHashSet();
 	}
 	
-	public Duel(Arenas arena, Ladders ladder, FFADuel ffaDuel) {
+	public Duel(Arena arena, Ladders ladder, FFADuel ffaDuel) {
 		this.arena = arena;
 		this.ladder = ladder;
 		this.ffaDuel = ffaDuel;
@@ -48,7 +48,7 @@ public class Duel {
 		this.ranked = false;
     }
 	
-	public Arenas getArena() {
+	public Arena getArena() {
 		return this.arena;
 	}
 	

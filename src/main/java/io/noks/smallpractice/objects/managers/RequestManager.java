@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
-import io.noks.smallpractice.arena.Arena.Arenas;
+import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.party.Party;
@@ -24,7 +24,7 @@ public class RequestManager {
 		requester.openInventory(Main.getInstance().getInventoryManager().getLaddersInventory());
 	}
     
-    public void sendDuelRequest(Arenas arena, Ladders ladder, Player requester, Player requested) {
+    public void sendDuelRequest(Arena arena, Ladders ladder, Player requester, Player requested) {
     	final PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
@@ -77,7 +77,7 @@ public class RequestManager {
 		Main.getInstance().getInventoryManager().removeSelectingDuel(requester.getUniqueId());
 	}
 	
-	public void acceptDuelRequest(Arenas arena, Ladders ladder, Player requested, Player requester) {
+	public void acceptDuelRequest(Arena arena, Ladders ladder, Player requested, Player requester) {
 		final PlayerManager requesterManager = PlayerManager.get(requester.getUniqueId());
 		if (requesterManager.getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requested.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");

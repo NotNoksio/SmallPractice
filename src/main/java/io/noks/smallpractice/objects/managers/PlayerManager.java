@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -18,14 +19,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Ladder;
 import org.bukkit.potion.PotionEffect;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import io.noks.smallpractice.Main;
-import io.noks.smallpractice.arena.Arena.Arenas;
+import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.Cooldown;
@@ -134,7 +134,7 @@ public class PlayerManager {
 		return this.invite;
 	}
 	
-	public void addRequest(UUID targetUUID, Arenas arena, Ladders ladder) {
+	public void addRequest(UUID targetUUID, Arena arena, Ladders ladder) {
 		this.request.put(targetUUID, new Request(ladder, arena));
 	}
 	
@@ -261,7 +261,7 @@ public class PlayerManager {
 		final ItemStack potEffect = new ItemStack(Material.BREWING_STAND_ITEM, player.getActivePotionEffects().size());
 		final ItemMeta pem = potEffect.getItemMeta();
 		pem.setDisplayName(ChatColor.DARK_AQUA + "Potion Effects:");
-		List<String> potionEffectLore = Lists.newArrayList();
+		final List<String> potionEffectLore = Lists.newArrayList();
 		if (player.getActivePotionEffects().size() == 0) {
 			potionEffectLore.add(ChatColor.RED + "No potion effects");
 		} else {
@@ -297,11 +297,16 @@ public class PlayerManager {
 		return this.savedInventory;
 	}
 	
-	public List<EditedLadderKit> getCustomLadderKit() {
+	public List<EditedLadderKit> getCustomLadderKitList() {
 		return this.customLadderKit;
 	}
 	
-	public void saveCustomLadderKit(Ladder ladder, String name, int slot, PlayerInventory inventory) {
+	public List<EditedLadderKit> getCustomLadderKitFromLadder(Ladders ladder) {
+		final List<EditedLadderKit> customKitsFromLadder = this.customLadderKit.stream().filter(kit -> kit.getLadder() == ladder).collect(Collectors.toList());
+		return customKitsFromLadder.isEmpty() ? Collections.emptyList() : customKitsFromLadder;
+	}
+	
+	public void saveCustomLadderKit(Ladders ladder, String name, int slot, PlayerInventory inventory) {
 		this.customLadderKit.add(new EditedLadderKit(ladder, name, slot, inventory));
 	}
 	

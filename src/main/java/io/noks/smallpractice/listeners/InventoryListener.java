@@ -21,7 +21,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
-import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.PlayerSettings;
@@ -109,7 +108,7 @@ public class InventoryListener implements Listener {
 				return;
 			}
 			if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().contains("ffa")) {
-				this.main.getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, player.getUniqueId(), party.getMembersIncludingLeader());
+				this.main.getDuelManager().startDuel(this.main.getArenaManager().getRandomArena(ladder), ladder, player.getUniqueId(), party.getMembersIncludingLeader());
 				player.closeInventory();
 				player.removeMetadata("ladder", this.main);
 				return;
@@ -134,7 +133,7 @@ public class InventoryListener implements Listener {
 		}
 		if (title.equals("arena selection")) {
 			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
-			if (Arena.getInstance().getArenaByName(itemName) == null) {
+			if (this.main.getArenaManager().getArenaByName(itemName) == null) {
 				return;
 			}
 			if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
@@ -145,14 +144,11 @@ public class InventoryListener implements Listener {
 					player.closeInventory();
 					return;
 				} 
-				final Arenas arena = (itemName.equals("random") ? Arena.getInstance().getRandomArena(request.getLadder()) : Arena.getInstance().getArenaByName(itemName));
-				if (arena == null) {
-					return;
-				}
+				final Arena arena = (itemName.equals("random") ? this.main.getArenaManager().getRandomArena(request.getLadder()) : this.main.getArenaManager().getArenaByName(itemName));
 				this.main.getRequestManager().sendDuelRequest(arena, request.getLadder(), player, target);
 			} else if (pm.getStatus() == PlayerStatus.SPECTATE) {
-				final Arenas selectedArena = Arena.getInstance().getArenaByName(itemName);
-				for (Arenas allArenas : Arena.getInstance().getArenaList()) {
+				final Arena selectedArena = this.main.getArenaManager().getArenaByName(itemName);
+				for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
     				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
     				allArenas.removeSpectator(player.getUniqueId());
     			}
@@ -172,7 +168,7 @@ public class InventoryListener implements Listener {
 				player.teleport(selectedArena.getLocations()[0]);
 				playersInArena.clear();
 			} else {
-				final Arenas selectedArena = Arena.getInstance().getArenaByName(itemName);
+				final Arena selectedArena = this.main.getArenaManager().getArenaByName(itemName);
 				player.teleport(selectedArena.getMiddle());
 				player.sendMessage(ChatColor.GREEN + "Teleported to " + selectedArena.getName() + " arena.");
 			}
@@ -210,8 +206,7 @@ public class InventoryListener implements Listener {
 			}
 			if (itemName.equals("configurate settings")) {
 				player.closeInventory();
-				final PlayerSettings settings = pm.getSettings();
-				player.openInventory(this.main.getInventoryManager().getSettingsInventory(settings));
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory(pm.getSettings()));
 				return;
 			}
 			return;

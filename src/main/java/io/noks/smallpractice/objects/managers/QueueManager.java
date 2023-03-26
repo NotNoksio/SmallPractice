@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
-import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.Queue;
@@ -49,9 +48,13 @@ public class QueueManager {
 		UUID secondUUID = null;
 		for (Map.Entry<UUID, Queue> potent : this.queue.entrySet()) {
 			final UUID potentialUUID = potent.getKey();
+			// Dont init variable if not needed!
+			if (uuid == potentialUUID || Math.abs(pm.getPlayer().getPing() - this.main.getServer().getPlayer(potentialUUID).getPing()) > pingDiffParam) { 
+				continue;
+			}
 			final Queue queue = potent.getValue();
 			
-			if (uuid == potentialUUID || queue.isRanked() != ranked || queue.getLadder() != ladder || queue.isTO2() != to2 || Math.abs(pm.getPlayer().getPing() - this.main.getServer().getPlayer(potentialUUID).getPing()) > pingDiffParam) {
+			if (queue.isRanked() != ranked || queue.getLadder() != ladder || queue.isTO2() != to2) {
 				continue;
 			}
 			secondUUID = potentialUUID;
@@ -73,10 +76,10 @@ public class QueueManager {
 			// TODO: update elo range
 		}
 		if (to2) {
-			this.main.getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, uuid, secondUUID, party.getMembersIncludingLeader(), this.main.getPartyManager().getParty(secondUUID).getMembersIncludingLeader(), ranked);
+			this.main.getDuelManager().startDuel(this.main.getArenaManager().getRandomArena(ladder), ladder, uuid, secondUUID, party.getMembersIncludingLeader(), this.main.getPartyManager().getParty(secondUUID).getMembersIncludingLeader(), ranked);
 			return;
 		}
-		this.main.getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, uuid, secondUUID, ranked);
+		this.main.getDuelManager().startDuel(this.main.getArenaManager().getRandomArena(ladder), ladder, uuid, secondUUID, ranked);
 	}
 	
 	private WeakHashSet<UUID> lastUpdated = new WeakHashSet<UUID>(); // DONT SPAM QUEUE!!
@@ -129,9 +132,8 @@ public class QueueManager {
 	
 	public int getQueuedFromLadder(Ladders ladder, boolean ranked) {
 		int count = 0;
-		for (Map.Entry<UUID, Queue> map : this.queue.entrySet()) {
-			final Queue value = map.getValue();
-			if (value.getLadder() == ladder && value.isRanked() == ranked) {
+		for (Queue queues : this.queue.values()) {
+			if (queues.getLadder() == ladder && queues.isRanked() == ranked) {
 				count++;
 			}
 		}

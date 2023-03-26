@@ -26,7 +26,6 @@ import com.google.common.collect.Maps;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
-import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.enums.RemoveReason;
@@ -66,7 +65,7 @@ public class DuelManager {
 		return list;
 	}
 	
-	public void startDuel(Arenas arena, Ladders ladder, UUID partyLeaderUUID, List<UUID> ffaPlayers) { // FFA
+	public void startDuel(Arena arena, Ladders ladder, UUID partyLeaderUUID, List<UUID> ffaPlayers) { // FFA
 		if (arena == null || ladder == null) {
 			final List<UUID> allTeam = Lists.newArrayList(ffaPlayers);
 			for (UUID uuids : allTeam) {
@@ -99,7 +98,7 @@ public class DuelManager {
 		this.teleportToArena(new Duel(arena, ladder, new FFADuel(partyLeaderUUID, ffaPlayers)));
 	}
 	
-	public void startDuel(Arenas arena, Ladders ladder, UUID player1, UUID player2, boolean ranked) { // DUEL -> SimpleDuel
+	public void startDuel(Arena arena, Ladders ladder, UUID player1, UUID player2, boolean ranked) { // DUEL -> SimpleDuel
 		if (arena == null || ladder == null) {
 			Bukkit.getPlayer(player1).sendMessage(ChatColor.RED + "MATCH ERROR!!!");
 			Bukkit.getPlayer(player2).sendMessage(ChatColor.RED + "MATCH ERROR!!!");
@@ -112,7 +111,7 @@ public class DuelManager {
 		startDuel(arena, ladder, null, null, firstTeam, secondTeam, ranked);
 	}
 	
-	public void startDuel(Arenas arena, Ladders ladder, UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) { // SIMPLEDUEL
+	public void startDuel(Arena arena, Ladders ladder, UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) { // SIMPLEDUEL
 		if (arena == null || ladder == null) {
 			final List<UUID> allTeam = Lists.newArrayList(firstTeam);
 			allTeam.addAll(secondTeam);
@@ -202,7 +201,7 @@ public class DuelManager {
         Collections.shuffle(shuffle);
         final List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         final List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
-        startDuel(Arena.getInstance().getRandomArena(ladder), ladder, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
+        startDuel(this.main.getArenaManager().getRandomArena(ladder), ladder, party.getLeader(), party.getLeader(), firstTeam, secondTeam, false);
 	}
 	
 	private void tranferElo(List<UUID> winners, List<UUID> losers, Ladders ladder, List<UUID> spectators) {
@@ -464,7 +463,7 @@ public class DuelManager {
 				player.setSneaking(false);
 			}
 		}
-		final Arenas arena = duel.getArena();
+		final Arena arena = duel.getArena();
 		if (duel.getSimpleDuel() != null) {
 			if (arena.hasSpectators()) {
 				for (UUID firstUUID : duel.getSimpleDuel().firstTeamAlive) {

@@ -63,8 +63,10 @@ public class ForceDuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "This player must be in queue!");
 			return false;
 		}
-		final Ladders ladder = Main.getInstance().getQueueManager().getQueueMap().get(target.getUniqueId()).getLadder();
-		Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, player.getUniqueId(), target.getUniqueId(), false);
+		player.sendMessage(ChatColor.RED + "Code under review due to a bug :)");
+		//final Ladders ladder = Main.getInstance().getQueueManager().getQueueMap().get(target.getUniqueId()).getLadder();
+		//Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, player.getUniqueId(), target.getUniqueId(), false);
+		// TODO: remove target from queue
 		return true;
 	}
 }

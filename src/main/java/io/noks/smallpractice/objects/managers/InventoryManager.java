@@ -12,11 +12,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
-import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.Request;
@@ -37,7 +35,7 @@ public class InventoryManager {
 	
 	public InventoryManager() {
 		this.selectingDuel = new WeakHashMap<UUID, Request>();
-		this.arenasInventory = new Inventory[] {Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection"), Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection"), Bukkit.createInventory(null, this.calculateSize(Arena.getInstance().getArenaList().size()), "Arena Selection")};
+		this.arenasInventory = new Inventory[] {Bukkit.createInventory(null, this.calculateSize(Main.getInstance().getArenaManager().getArenaList().size()), "Arena Selection"), Bukkit.createInventory(null, this.calculateSize(Main.getInstance().getArenaManager().getArenaList().size()), "Arena Selection"), Bukkit.createInventory(null, this.calculateSize(Main.getInstance().getArenaManager().getArenaList().size()), "Arena Selection")};
 		this.unrankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
 		this.rankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
 		this.laddersInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
@@ -60,7 +58,7 @@ public class InventoryManager {
 		this.arenasInventory[0].clear();
 		this.arenasInventory[1].clear();
 		this.arenasInventory[2].clear();
-		for (Arenas arena : Arena.getInstance().getArenaList()) {
+		for (Arena arena : Main.getInstance().getArenaManager().getArenaList()) {
 			final ItemStack item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName());
 			this.arenasInventory[2].addItem(item);
 			if (!arena.isSumo()) {
@@ -84,9 +82,9 @@ public class InventoryManager {
 	private void setUnrankedInventory() {
 		this.unrankedInventory.clear();
 		for (Ladders ladders : Ladders.values()) {
-			int fighting = Main.getInstance().getDuelManager().getFightFromLadder(ladders, false);
-			int waiting = Main.getInstance().getQueueManager().getQueuedFromLadder(ladders, false);
-			ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), (ladders.isEnable() ? Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.YELLOW + fighting, ChatColor.DARK_AQUA + "Waiting: " + ChatColor.YELLOW + waiting}) : Arrays.asList(new String[] {ChatColor.RED + "Disabled!"})), Math.min(fighting, 64));
+			final int fighting = Main.getInstance().getDuelManager().getFightFromLadder(ladders, false);
+			final int waiting = Main.getInstance().getQueueManager().getQueuedFromLadder(ladders, false);
+			final ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), (ladders.isEnable() ? Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.YELLOW + fighting, ChatColor.DARK_AQUA + "Waiting: " + ChatColor.YELLOW + waiting}) : Arrays.asList(new String[] {ChatColor.RED + "Disabled!"})), Math.min(fighting, 64));
 			this.unrankedInventory.addItem(item);
 		}
 	}
@@ -94,9 +92,9 @@ public class InventoryManager {
 	private void setRankedInventory() {
 		this.rankedInventory.clear();
 		for (Ladders ladders : Ladders.values()) {
-			int fighting = Main.getInstance().getDuelManager().getFightFromLadder(ladders, true);
-			int waiting = Main.getInstance().getQueueManager().getQueuedFromLadder(ladders, true);
-			ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), (ladders.isEnable() ? Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.YELLOW + fighting, ChatColor.DARK_AQUA + "Waiting: " + ChatColor.YELLOW + waiting}) : Arrays.asList(new String[] {ChatColor.RED + "Disabled!"})), Math.min(fighting, 64));
+			final int fighting = Main.getInstance().getDuelManager().getFightFromLadder(ladders, true);
+			final int waiting = Main.getInstance().getQueueManager().getQueuedFromLadder(ladders, true);
+			final ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), (ladders.isEnable() ? Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.YELLOW + fighting, ChatColor.DARK_AQUA + "Waiting: " + ChatColor.YELLOW + waiting}) : Arrays.asList(new String[] {ChatColor.RED + "Disabled!"})), Math.min(fighting, 64));
 			this.rankedInventory.addItem(item);
 		}
 	}
@@ -112,7 +110,7 @@ public class InventoryManager {
 		this.editingInventory.clear();
 		for (Ladders ladders : Ladders.values()) {
 			if (!ladders.isEditable()) continue;
-			ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), Arrays.asList(new String[] {ChatColor.GREEN + "Click to configurate"}));
+			final ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), Arrays.asList(new String[] {ChatColor.GREEN + "Click to configurate"}));
 			this.editingInventory.addItem(item);
 		}
 	}

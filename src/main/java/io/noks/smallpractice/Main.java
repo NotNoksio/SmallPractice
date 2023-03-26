@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.noks.smallpractice.arena.ArenaManager;
 import io.noks.smallpractice.commands.AcceptCommand;
 import io.noks.smallpractice.commands.ArenasCommand;
 import io.noks.smallpractice.commands.BuildCommand;
@@ -41,14 +42,15 @@ import io.noks.smallpractice.objects.managers.ConfigManager;
 import io.noks.smallpractice.objects.managers.DuelManager;
 import io.noks.smallpractice.objects.managers.InventoryManager;
 import io.noks.smallpractice.objects.managers.ItemManager;
-import io.noks.smallpractice.objects.managers.PartyManager;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.objects.managers.QueueManager;
 import io.noks.smallpractice.objects.managers.RequestManager;
+import io.noks.smallpractice.party.PartyManager;
 import io.noks.smallpractice.tasks.EPCooldownBarTask;
 import io.noks.smallpractice.utils.DBUtils;
 
 public class Main extends JavaPlugin {
+	private ArenaManager arenaManager;
 	private DuelManager duelManager;
 	private ItemManager itemManager;
 	private InventoryManager inventoryManager;
@@ -73,6 +75,7 @@ public class Main extends JavaPlugin {
 		this.saveDefaultConfig();
 		
 		this.enderpearlCooldownTask = new EPCooldownBarTask(this);
+		this.arenaManager = new ArenaManager();
 		this.partyManager = new PartyManager();
 		this.duelManager = new DuelManager(this);
 		this.itemManager = new ItemManager();
@@ -174,5 +177,9 @@ public class Main extends JavaPlugin {
 	
 	public EPCooldownBarTask getEnderpearlCooldownTask() {
 		return this.enderpearlCooldownTask;
+	}
+	
+	public ArenaManager getArenaManager() {
+		return this.arenaManager;
 	}
 }

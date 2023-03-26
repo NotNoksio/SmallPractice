@@ -34,7 +34,6 @@ import com.google.common.collect.Lists;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
-import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.enums.RemoveReason;
@@ -140,7 +139,7 @@ public class PlayerListener implements Listener {
         final PlayerManager pm = PlayerManager.get(playerUUID);
         if (pm != null) {
 			if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
-				for (Arenas allArenas : Arena.getInstance().getArenaList()) {
+				for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
 					if (!allArenas.getAllSpectators().contains(playerUUID)) continue;
 					allArenas.removeSpectator(playerUUID);
 					break;
@@ -499,7 +498,7 @@ public class PlayerListener implements Listener {
 		                }
 		                pm.setSpectate(null);
 	                } else {
-	                	for (Arenas allArenas : Arena.getInstance().getArenaList()) {
+	                	for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
 	        				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
 	        				allArenas.removeSpectator(player.getUniqueId());
 	        			}
@@ -523,7 +522,7 @@ public class PlayerListener implements Listener {
 					}
 	                final Player spectatePlayer = pm.getSpectate();
 	                final Duel spectatedDuel = this.main.getDuelManager().getDuelFromPlayerUUID(spectatePlayer.getUniqueId());
-	                final Arenas currentArena = spectatedDuel.getArena();
+	                final Arena currentArena = spectatedDuel.getArena();
 	                
 	                if (spectatedDuel != null) {
 	                	spectatedDuel.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.DARK_AQUA + " is no longer spectating.");

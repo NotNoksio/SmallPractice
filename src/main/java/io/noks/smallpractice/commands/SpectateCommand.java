@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
-import io.noks.smallpractice.arena.Arena.Arenas;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
@@ -82,7 +81,7 @@ public class SpectateCommand implements CommandExecutor {
 			final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(pm.getSpectate().getUniqueId());
 			duel.removeSpectator(player.getUniqueId());
 		} else {
-			for (Arenas allArenas : Arena.getInstance().getArenaList()) {
+			for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
 				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
 				allArenas.removeSpectator(player.getUniqueId());
 			}

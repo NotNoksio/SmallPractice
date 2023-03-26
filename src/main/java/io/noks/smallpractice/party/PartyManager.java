@@ -1,4 +1,4 @@
-package io.noks.smallpractice.objects.managers;
+package io.noks.smallpractice.party;
 
 import java.util.List;
 import java.util.Map;
@@ -18,9 +18,7 @@ import com.google.common.collect.Maps;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.PlayerStatus;
-import io.noks.smallpractice.objects.duel.Duel;
-import io.noks.smallpractice.party.Party;
-import io.noks.smallpractice.party.PartyState;
+import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class PartyManager {
 	private Map<UUID, Party> leaderUUIDtoParty = Maps.newHashMap();
@@ -70,7 +68,6 @@ public class PartyManager {
     		this.leaderUUIDtoParty.put(newLeader, party);
     		
     		party = this.leaderUUIDtoParty.get(newLeader);
-    		
     		for (Map.Entry<UUID, UUID> entry : this.playerUUIDtoLeaderUUID.entrySet()) {
     			final UUID leaderEntry = entry.getValue();
     			if (leaderEntry != actualLeader) {

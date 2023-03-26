@@ -23,9 +23,12 @@ public class ItemManager {
 	public void giveSpawnItem(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
-		player.setItemOnCursor(null);
-		
-		player.setGameMode(GameMode.SURVIVAL);
+		if (player.getItemOnCursor() != null) {
+			player.setItemOnCursor(null);
+		}
+		if (player.getGameMode() != GameMode.SURVIVAL) {
+			player.setGameMode(GameMode.SURVIVAL);
+		}
 		
 		if (!Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
 			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
@@ -70,7 +73,9 @@ public class ItemManager {
 		if (clearInventory) {
 			player.getInventory().clear();
 			player.getInventory().setArmorContents(null);
-			player.setItemOnCursor(null);
+			if (player.getItemOnCursor() != null) {
+				player.setItemOnCursor(null);
+			}
 		}
 		player.getInventory().setItem(8, ItemBuilder.createNewItemStackByMaterial(Material.REDSTONE, ChatColor.RED + "Leave " + string));
 		if (updateInventory) {
@@ -81,11 +86,13 @@ public class ItemManager {
 	public void giveModerationItem(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
-		player.setItemOnCursor(null);
+		if (player.getItemOnCursor() != null) {
+			player.setItemOnCursor(null);
+		}
 		
 		player.setGameMode(GameMode.CREATIVE);
 		
-		ItemStack s = ItemBuilder.createNewItemStackByMaterial(Material.WOOD_SWORD, ChatColor.RED + "Knockback V", true);
+		final ItemStack s = ItemBuilder.createNewItemStackByMaterial(Material.WOOD_SWORD, ChatColor.RED + "Knockback V", true);
 		s.addUnsafeEnchantment(Enchantment.KNOCKBACK, 5);
 		
 		giveLeaveItem(player, "Moderation", false);
@@ -102,7 +109,9 @@ public class ItemManager {
 		final boolean hasParty = Main.getInstance().getPartyManager().hasParty(player.getUniqueId());
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
-		player.setItemOnCursor(null);
+		if (player.getItemOnCursor() != null) {
+			player.setItemOnCursor(null);
+		}
 		
 		giveLeaveItem(player, "Spectate", false);
 		
@@ -117,7 +126,9 @@ public class ItemManager {
 	public void giveKitSelectionItems(Player player, Ladders ladder) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
-		player.setItemOnCursor(null);
+		if (player.getItemOnCursor() != null) {
+			player.setItemOnCursor(null);
+		}
 		
 		if (ladder != Ladders.SUMO) {
 			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.ENCHANTED_BOOK, ChatColor.YELLOW + ladder.getName() + " default kit"));
@@ -150,10 +161,10 @@ public class ItemManager {
 			boots.addUnsafeEnchantment(Enchantment.PROTECTION_FALL, 4);
 			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 			
-			ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
-			ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
-			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
-			ItemStack fire = new ItemStack(Material.POTION, 1, (short) 8259);
+			final ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
+			final ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
+			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
+			final ItemStack fire = new ItemStack(Material.POTION, 1, (short) 8259);
 			
 			while (player.getInventory().firstEmpty() != -1) {
 				player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
@@ -185,8 +196,8 @@ public class ItemManager {
 			boots = new ItemStack(Material.LEATHER_BOOTS, 1);
 			boots.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, 1);
 			
-			ItemStack carrots = new ItemStack(Material.GOLDEN_CARROT, 16);
-			ItemStack arrow = new ItemStack(Material.ARROW, 1);
+			final ItemStack carrots = new ItemStack(Material.GOLDEN_CARROT, 16);
+			final ItemStack arrow = new ItemStack(Material.ARROW, 1);
 			
 			player.getInventory().setItem(1, carrots);
 			player.getInventory().setItem(2, arrow);
@@ -200,9 +211,9 @@ public class ItemManager {
 			chestplate = new ItemStack(Material.IRON_CHESTPLATE, 1);
 			leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
 			boots = new ItemStack(Material.IRON_BOOTS, 1);
-			ItemStack apples = new ItemStack(Material.GOLDEN_APPLE, 16);
-			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
-			ItemStack heal = new ItemStack(Material.POTION, 1, (short) 16421);
+			final ItemStack apples = new ItemStack(Material.GOLDEN_APPLE, 16);
+			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
+			final ItemStack heal = new ItemStack(Material.POTION, 1, (short) 16421);
 			
 			player.getInventory().setItem(1, apples);
 			player.getInventory().setItem(2, speed);
@@ -223,7 +234,7 @@ public class ItemManager {
 			leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
 			boots = new ItemStack(Material.IRON_BOOTS, 1);
 			
-			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
+			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 			
 			while (player.getInventory().firstEmpty() != -1) {
 				player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
@@ -238,7 +249,7 @@ public class ItemManager {
 		}
 		case EARLY_HG: {
 			attackItem = new ItemStack(Material.STONE_SWORD, 1);
-			ItemMeta im = attackItem.getItemMeta();
+			final ItemMeta im = attackItem.getItemMeta();
 			im.spigot().setUnbreakable(true);
 			attackItem.setItemMeta(im);
 			
@@ -298,7 +309,7 @@ public class ItemManager {
 			break;
 		}
 		case BOXING: {
-			ItemMeta swordMeta = attackItem.getItemMeta();
+			final ItemMeta swordMeta = attackItem.getItemMeta();
 			swordMeta.spigot().setUnbreakable(true);
 			attackItem.setItemMeta(swordMeta);
 			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
@@ -306,9 +317,9 @@ public class ItemManager {
 			break;
 		}
 		case NOENCHANT: {
-			ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
-			ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
-			ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
+			final ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
+			final ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
+			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 			
 			while (player.getInventory().firstEmpty() != -1) {
 				player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
@@ -323,11 +334,11 @@ public class ItemManager {
 			break;
 		}
 		case CLASSIC: {
-			ItemStack gapple = new ItemStack(Material.GOLDEN_APPLE, 8);
-			ItemStack arrow = new ItemStack(Material.ARROW, 12);
-			ItemStack bow = new ItemStack(Material.BOW, 1);
-			ItemStack rod = new ItemStack(Material.FISHING_ROD, 1);
-			ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
+			final ItemStack gapple = new ItemStack(Material.GOLDEN_APPLE, 8);
+			final ItemStack arrow = new ItemStack(Material.ARROW, 12);
+			final ItemStack bow = new ItemStack(Material.BOW, 1);
+			final ItemStack rod = new ItemStack(Material.FISHING_ROD, 1);
+			final ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
 			
 			player.getInventory().setItem(1, bow);
 			player.getInventory().setItem(2, rod);
