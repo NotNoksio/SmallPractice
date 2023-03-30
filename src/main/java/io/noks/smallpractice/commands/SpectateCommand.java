@@ -38,10 +38,10 @@ public class SpectateCommand implements CommandExecutor {
 		final Player player = (Player) sender;
 		final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 		
-		if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
+		/*if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "You are in party!");
 			return false;
-		}
+		}*/
 		if (pm.getStatus() != PlayerStatus.SPAWN && pm.getStatus() != PlayerStatus.SPECTATE) {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn!");
 			return false;

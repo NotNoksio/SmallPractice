@@ -1,6 +1,8 @@
 package io.noks.smallpractice.objects;
 
-import org.bukkit.inventory.PlayerInventory;
+import javax.annotation.Nullable;
+
+import org.bukkit.inventory.Inventory;
 
 import io.noks.smallpractice.enums.Ladders;
 
@@ -8,24 +10,20 @@ public class EditedLadderKit {
 	private Ladders ladder;
 	private String name;
 	private int slot;
-	private PlayerInventory customInventory;
+	private Inventory inventory;
 	
-	public EditedLadderKit(Ladders ladder, int slot, PlayerInventory inventory) {
+	public EditedLadderKit(Ladders ladder, int slot, Inventory inventory) {
 		this.ladder = ladder;
-		this.name = ladder.toString() + " #" + slot;
+		this.name = ladder.getName() + " #" + slot;
 		this.slot = slot;
-		this.customInventory = inventory;
+		this.inventory = inventory;
 	}
 	
-	public EditedLadderKit(Ladders ladder, String name, int slot, PlayerInventory inventory) {
-		if (name == null) {
-			new EditedLadderKit(ladder, slot, inventory);
-			return;
-		}
+	public EditedLadderKit(Ladders ladder, @Nullable String name, int slot, Inventory inventory) {
 		this.ladder = ladder;
-		this.name = name;
+		this.name = (name == null ? ladder.getName() + " #" + slot : name);
 		this.slot = slot;
-		this.customInventory = inventory;
+		this.inventory = inventory;
 	}
 	
 	public Ladders getLadder() {
@@ -36,11 +34,15 @@ public class EditedLadderKit {
 		return this.name;
 	}
 	
+	public void rename(String newName) {
+		this.name = newName;
+	}
+	
 	public int getSlot() {
 		return this.slot;
 	}
 	
-	public PlayerInventory getCustomInventory() {
-		return this.customInventory;
+	public Inventory getInventory() {
+		return this.inventory;
 	}
 }

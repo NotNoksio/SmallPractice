@@ -10,12 +10,14 @@ import java.util.WeakHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
+import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.Request;
 import io.noks.smallpractice.utils.ItemBuilder;
@@ -115,16 +117,21 @@ public class InventoryManager {
 		}
 	}
 	
-	public Inventory getSettingsInventory(PlayerSettings ps) {
-		final Inventory settingsInventory = Bukkit.createInventory(null, 27, "Settings Configuration");
+	public Inventory getSettingsInventory(PlayerManager pm) {
+		final Inventory settingsInventory = Bukkit.createInventory(null, InventoryType.DISPENSER, "Settings Configuration");
 		if (settingsInventory.firstEmpty() == -1) {
 			settingsInventory.clear();
 		}
+		final PlayerSettings ps = pm.getSettings();
 		this.fillWithGlass(settingsInventory);
-		settingsInventory.setItem(10, ItemBuilder.createNewItemStack(new ItemStack(Material.FEATHER, 1), ChatColor.GREEN + "Ping Difference", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Actual value: " + ChatColor.GREEN + ps.getQueuePingDiff() + "ms", ChatColor.GRAY + "(Click to change)"})));
-		settingsInventory.setItem(11, ItemBuilder.createNewItemStack(new ItemStack(Material.PAPER, 1), ChatColor.GREEN + "Toggle Private Message", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Private Message: " + (ps.isPrivateMessageToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
-		settingsInventory.setItem(12, ItemBuilder.createNewItemStack(new ItemStack(Material.ANVIL, 1), ChatColor.GREEN + "Toggle Party Invite", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Party Invite: " + (ps.isPartyInviteToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
-		settingsInventory.setItem(13, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND_SWORD, 1), ChatColor.GREEN + "Toggle Duel Request", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Duel Request: " + (ps.isDuelRequestToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
+		settingsInventory.setItem(0, ItemBuilder.createNewItemStack(new ItemStack(Material.FEATHER, 1), ChatColor.GREEN + "Ping Difference", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Actual value: " + ChatColor.GREEN + ps.getQueuePingDiff() + "ms", ChatColor.GRAY + "(Click to change)"})));
+		settingsInventory.setItem(1, ItemBuilder.createNewItemStack(new ItemStack(Material.PAPER, 1), ChatColor.GREEN + "Toggle Private Message", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Private Message: " + (ps.isPrivateMessageToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
+		settingsInventory.setItem(2, ItemBuilder.createNewItemStack(new ItemStack(Material.ANVIL, 1), ChatColor.GREEN + "Toggle Party Invite", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Party Invite: " + (ps.isPartyInviteToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
+		settingsInventory.setItem(3, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND_SWORD, 1), ChatColor.GREEN + "Toggle Duel Request", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Duel Request: " + (ps.isDuelRequestToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
+		// TODO: Toggle scoreboard
+		if (pm.getPlayer().hasPermission("setting.request.delay") && ps.isDuelRequestToggled()) {
+			settingsInventory.setItem(8, ItemBuilder.createNewItemStack(new ItemStack(Material.WATCH, 1), ChatColor.GREEN + "Request Delay", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Actual value: " + ChatColor.GREEN + ps.getSecondsBeforeRerequest() + "seconds", ChatColor.GRAY + "(Click to change)"})));
+		}
 		return settingsInventory;
 	}
 	
@@ -263,9 +270,31 @@ public class InventoryManager {
 		return this.offlineInventories;
 	}
 	
-	public Inventory getCustomLadderKitSelectionInventory(PlayerManager pm, Ladders ladder) {
-		// TODO
-		return null;
+	public Inventory getKitEditingLayout(PlayerManager pm, Ladders ladder) {
+		final Inventory inventory = Bukkit.createInventory(null, 36, ladder.getName() + " Edit Layout");
+		if (inventory.firstEmpty() == -1) {
+			inventory.clear();
+		}
+		this.fillWithGlass(inventory);
+		int i = 1;
+		while (i <= 7) {
+			final EditedLadderKit customKit = pm.getCustomLadderKitFromSlot(ladder, i);
+			if (customKit == null) {
+				inventory.setItem(i, ItemBuilder.createNewItemStack(new ItemStack(Material.CHEST), ChatColor.GREEN + "Create " + ladder.getName() + " #" + i));
+			} else {
+				final List<String> nameLore = new ArrayList<String>();
+				nameLore.add(ChatColor.DARK_AQUA + "Actual Name: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', customKit.getName()));
+				inventory.setItem(i, ItemBuilder.createNewItemStack(new ItemStack(Material.CHEST), ChatColor.GREEN + "Save " + ladder.getColor() + ladder.getName() + " #" + i));
+				inventory.setItem(i + 9, ItemBuilder.createNewItemStack(new ItemStack(Material.BOOK), ChatColor.GREEN + "Load/Edit"));
+				inventory.setItem(i + 18, ItemBuilder.createNewItemStack(new ItemStack(Material.NAME_TAG), ChatColor.YELLOW + "Rename", nameLore));
+				inventory.setItem(i + 27, ItemBuilder.createNewItemStack(new ItemStack(Material.WOOL, 1, (short) 14), ChatColor.RED + "Delete"));
+			}
+			if (i == 7) {
+				break;
+			}
+			i++;
+		}
+		return inventory;
 	}
 	
 	private void fillWithGlass(Inventory inv) {

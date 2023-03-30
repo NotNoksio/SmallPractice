@@ -73,7 +73,7 @@ public class DuelCommand implements CommandExecutor {
 		}
 		final Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 		if (cooldown.isActive(this.getClass().getSimpleName())) {
-			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 5) - (System.currentTimeMillis() / 1000);
+			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + ts.getSecondsBeforeRerequest()) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {
 				player.sendMessage(ChatColor.RED + "You cant sent duel request for another " + secondsLeft + " seconds!");
 				return false;

@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
@@ -23,6 +24,7 @@ import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
+import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.Request;
 import io.noks.smallpractice.objects.duel.Duel;
@@ -43,7 +45,7 @@ public class InventoryListener implements Listener {
 		if (inventory == null) {
 			return;
 		}
-		if (inventory.getType() != InventoryType.CHEST) {
+		if (inventory.getType() != InventoryType.CHEST && inventory.getType() != InventoryType.DISPENSER) {
 			return;
 		}
 		final Player player = (Player) event.getWhoClicked();
@@ -65,14 +67,15 @@ public class InventoryListener implements Listener {
 			return;
 		}
 		if (title.equals("unranked selection") || title.equals("ranked selection") || title.equals("ladder selection") || title.equals("editing selection")) {
-			if (title.startsWith("editing")) {
-				return;
-			}
 			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
 			if (!Ladders.contains(itemName)) {
 				return;
 			}
 			final Ladders ladder = Ladders.getLadderFromName(itemName);
+			if (title.startsWith("editing")) {
+				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, ladder));
+				return;
+			}
 			if (!ladder.isEnable()) {
 				player.sendMessage(ChatColor.RED + "No arena created!");
 				player.closeInventory();
@@ -133,9 +136,6 @@ public class InventoryListener implements Listener {
 		}
 		if (title.equals("arena selection")) {
 			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
-			if (this.main.getArenaManager().getArenaByName(itemName) == null) {
-				return;
-			}
 			if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
 				final Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
 				final Player target = this.main.getServer().getPlayer(request.getRequestedUUID());
@@ -145,9 +145,15 @@ public class InventoryListener implements Listener {
 					return;
 				} 
 				final Arena arena = (itemName.equals("random") ? this.main.getArenaManager().getRandomArena(request.getLadder()) : this.main.getArenaManager().getArenaByName(itemName));
+				if (arena == null) {
+					return;
+				}
 				this.main.getRequestManager().sendDuelRequest(arena, request.getLadder(), player, target);
 			} else if (pm.getStatus() == PlayerStatus.SPECTATE) {
 				final Arena selectedArena = this.main.getArenaManager().getArenaByName(itemName);
+				if (selectedArena == null) {
+					return;
+				}
 				for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
     				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
     				allArenas.removeSpectator(player.getUniqueId());
@@ -169,6 +175,9 @@ public class InventoryListener implements Listener {
 				playersInArena.clear();
 			} else {
 				final Arena selectedArena = this.main.getArenaManager().getArenaByName(itemName);
+				if (selectedArena == null) {
+					return;
+				}
 				player.teleport(selectedArena.getMiddle());
 				player.sendMessage(ChatColor.GREEN + "Teleported to " + selectedArena.getName() + " arena.");
 			}
@@ -179,7 +188,12 @@ public class InventoryListener implements Listener {
 			final PlayerSettings settings = pm.getSettings();
 			if (itemName.startsWith("ping")) {
 				settings.updatePingDiff();
-				player.openInventory(this.main.getInventoryManager().getSettingsInventory(settings));
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory(pm));
+				return;
+			}
+			if (itemName.equals("request delay")) {
+				settings.updateSecondsBeforeRerequest();
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory(pm));
 				return;
 			}
 			if (itemName.startsWith("toggle")) {
@@ -192,7 +206,7 @@ public class InventoryListener implements Listener {
 				if (itemName.endsWith("duel request")) {
 					settings.updateDuelRequest();
 				}
-				player.openInventory(this.main.getInventoryManager().getSettingsInventory(settings));
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory(pm));
 				return;
 			}
 			return;
@@ -206,7 +220,7 @@ public class InventoryListener implements Listener {
 			}
 			if (itemName.equals("configurate settings")) {
 				player.closeInventory();
-				player.openInventory(this.main.getInventoryManager().getSettingsInventory(pm.getSettings()));
+				player.openInventory(this.main.getInventoryManager().getSettingsInventory(pm));
 				return;
 			}
 			return;
@@ -215,6 +229,60 @@ public class InventoryListener implements Listener {
 			if (item.getType() == Material.CARPET) {
 				final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
 				player.openInventory(this.main.getInventoryManager().getLeaderboardInventory(!itemName.startsWith("1v1")));
+			}
+			return;
+		}
+		if (title.endsWith("edit layout")) {
+			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName().toLowerCase());
+			final Ladders ladder = Ladders.getLadderFromName(title.split(" ")[0]);
+			if (ladder == null) {
+				player.closeInventory();
+				return;
+			}
+			if (itemName.startsWith("create") || itemName.startsWith("save")) {
+				final boolean save = itemName.startsWith("save");
+				Inventory createdInventory = this.main.getItemManager().getFightItems(ladder);
+				if (save) {
+					final ItemStack[] defaultArmorContent = {createdInventory.getItem(36), createdInventory.getItem(37), createdInventory.getItem(38), createdInventory.getItem(39)};
+					final Inventory savedInventory = Bukkit.createInventory(null, InventoryType.PLAYER);
+					for (ItemStack items : player.getInventory().getContents()) {
+						savedInventory.addItem(items);
+					}
+					savedInventory.setItem(36, defaultArmorContent[0]);
+					savedInventory.setItem(37, defaultArmorContent[1]);
+					savedInventory.setItem(38, defaultArmorContent[2]);
+					savedInventory.setItem(39, defaultArmorContent[3]);
+					createdInventory = savedInventory;
+				}
+				pm.saveCustomLadderKit(ladder, event.getSlot(), createdInventory);
+				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, ladder));
+				if (save) {
+					this.main.getItemManager().giveSpawnItem(player);
+				}
+				return;
+			}
+			if (itemName.equals("delete")) {
+				pm.deleteCustomLadderKit(ladder, event.getSlot() - 27);
+				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, ladder));
+				return;
+			}
+			if (itemName.equals("rename")) {
+				player.setMetadata("renamekit", new FixedMetadataValue(this.main, pm.getCustomLadderKitFromSlot(ladder, event.getSlot() - 18)));
+				player.sendMessage(ChatColor.GRAY + "Type a name for this kit (color code allowed)");
+				player.sendMessage(ChatColor.GRAY + "Type " + ChatColor.RED.toString() + ChatColor.BOLD + "cancel" + ChatColor.GRAY + " to cancel");
+				player.closeInventory();
+				return;
+			}
+			if (itemName.equals("load/edit")) {
+				final int kitSlot = event.getSlot() - 9;
+				final EditedLadderKit editedKit = pm.getCustomLadderKitFromSlot(ladder, kitSlot);
+				if (editedKit != null) {
+					player.setMetadata("editing", new FixedMetadataValue(this.main, pm.getCustomLadderKitFromSlot(ladder, kitSlot)));
+					this.main.getItemManager().giveFightItems(player, ladder, kitSlot, false, true);
+					return;
+				}
+				player.setMetadata("editing", new FixedMetadataValue(this.main, pm.getCustomLadderKitFromSlot(ladder, kitSlot)));
+				this.main.getItemManager().giveFightItems(player, ladder, 0, false, true);
 			}
 		}
 	}
@@ -229,7 +297,7 @@ public class InventoryListener implements Listener {
 			final Player player = (Player) event.getWhoClicked();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
-			if (pm.isAllowedToBuild()) {
+			if (pm.isAllowedToBuild() || player.hasMetadata("editing")) {
 				return;
 			}
 			if (pm.getStatus() == PlayerStatus.MODERATION || pm.getStatus() != PlayerStatus.DUEL && pm.getStatus() != PlayerStatus.WAITING) {
@@ -253,6 +321,13 @@ public class InventoryListener implements Listener {
 		final Player player = (Player) event.getPlayer();
 		if (title.equals("select gamemode") && player.hasMetadata("ladder")) {
 			player.removeMetadata("ladder", this.main);
+			return;
+		}
+		if (title.endsWith("edit layout") && player.hasMetadata("editing")) {
+			Bukkit.getScheduler().runTask(this.main, () -> {
+				this.main.getItemManager().giveSpawnItem(player);
+				player.removeMetadata("editing", this.main);
+			});
 		}
 	}
 	
@@ -266,7 +341,7 @@ public class InventoryListener implements Listener {
 		if (pm.getStatus() == PlayerStatus.SPAWN || pm.getStatus() == PlayerStatus.QUEUE) {
 			final Inventory inventory = event.getInventory();
 			
-			if (inventory.getType() != InventoryType.CRAFTING && inventory.getType() != InventoryType.CHEST && inventory.getType() != InventoryType.PLAYER) {
+			if (inventory.getType() != InventoryType.CRAFTING && inventory.getType() != InventoryType.CHEST && inventory.getType() != InventoryType.PLAYER && inventory.getType() != InventoryType.DISPENSER) {
 				event.setCancelled(true);
 			}
 		}

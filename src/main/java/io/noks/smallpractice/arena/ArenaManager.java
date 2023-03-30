@@ -50,12 +50,14 @@ public class ArenaManager {
 		arenaList.add(new Arena("WoolWorld", arena11, new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), false));
 	}
 	
+	private final Random random = new Random();
 	public Arena getRandomArena(Ladders ladder) {
 		final List<Arena> arenas = this.arenaList.stream().filter((ladder == Ladders.SUMO ? Arena::isSumo : not(Arena::isSumo))).collect(Collectors.toList());
-		final int random = new Random().nextInt(arenas.size());
-		return arenas.get(random);
+		return arenas.get(this.random.nextInt(arenas.size()));
 	}
-	private <T> Predicate<T> not(Predicate<T> p) { return t -> !p.test(t); }
+	private static <T> Predicate<T> not(Predicate<T> p) { 
+		return p.negate();
+	}
 	
 	public Arena getArenaByName(String name) {
 		for (Arena arenas : this.arenaList) {

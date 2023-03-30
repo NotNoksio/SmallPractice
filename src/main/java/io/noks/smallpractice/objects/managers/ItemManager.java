@@ -2,11 +2,14 @@ package io.noks.smallpractice.objects.managers;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
@@ -14,6 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
+import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
 import io.noks.smallpractice.utils.ItemBuilder;
@@ -129,13 +133,35 @@ public class ItemManager {
 		if (player.getItemOnCursor() != null) {
 			player.setItemOnCursor(null);
 		}
-		
 		if (ladder != Ladders.SUMO) {
+			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.ENCHANTED_BOOK, ChatColor.YELLOW + ladder.getName() + " default kit"));
+			if (ladder.isEditable() && !pm.getCustomLadderKitFromLadder(ladder).isEmpty()) {
+				for (EditedLadderKit customKit : pm.getCustomLadderKitFromLadder(ladder)) {
+					player.getInventory().setItem(customKit.getSlot() + 1, ItemBuilder.createNewItemStackByMaterial(Material.ENCHANTED_BOOK, ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', customKit.getName())));
+				}
+			}
 		}
 		player.updateInventory();
 	}
-	public void giveFightItems(Player player, Ladders ladder) { // TODO: Replace by -> public PlayerInventory giveFightItems(Ladders ladder)
+	public void giveFightItems(Player player, Ladders ladder, int slot) {
+		this.giveFightItems(player, ladder, slot, true, false);
+	}
+	public void giveFightItems(Player player, Ladders ladder, int slot, boolean armor, boolean edit) {
+		player.getInventory().clear();
+		final Inventory inventory = (slot == 0 ? Main.getInstance().getItemManager().getFightItems(ladder) : PlayerManager.get(player.getUniqueId()).getCustomLadderKitFromSlot(ladder, (slot - (!edit ? 1 : 0))).getInventory());
+		if (armor) {
+			player.getInventory().setArmorContents(new ItemStack[] {inventory.getItem(36), inventory.getItem(37), inventory.getItem(38), inventory.getItem(39)});
+		}
+		for (ItemStack items : inventory.getContents()) {
+			if (items == null) continue;
+			player.getInventory().addItem(items);
+		}
+        player.sendMessage(ChatColor.GREEN.toString() + ladder.getName() + " kit successfully given.");
+        player.updateInventory();
+	}
+	public Inventory getFightItems(Ladders ladder) {
+		final Inventory inventory = Bukkit.createInventory(null, InventoryType.PLAYER);
 		ItemStack attackItem = new ItemStack(Material.DIAMOND_SWORD, 1);
 		ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET, 1);
 		ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
@@ -166,17 +192,17 @@ public class ItemManager {
 			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 			final ItemStack fire = new ItemStack(Material.POTION, 1, (short) 8259);
 			
-			while (player.getInventory().firstEmpty() != -1) {
-				player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
+			while (inventory.firstEmpty() != -1) {
+				inventory.addItem(new ItemStack(Material.POTION, 1, (short) 16421));
 			}
 			
-			player.getInventory().setItem(1, pearl);
-			player.getInventory().setItem(2, speed);
-			player.getInventory().setItem(3, fire);
-			player.getInventory().setItem(8, steak);
+			inventory.setItem(1, pearl);
+			inventory.setItem(2, speed);
+			inventory.setItem(3, fire);
+			inventory.setItem(8, steak);
 			
-			player.getInventory().setItem(17, speed);
-			player.getInventory().setItem(26, speed);
+			inventory.setItem(17, speed);
+			inventory.setItem(26, speed);
 			break;
 		}
 		case ARCHER: {
@@ -199,8 +225,8 @@ public class ItemManager {
 			final ItemStack carrots = new ItemStack(Material.GOLDEN_CARROT, 16);
 			final ItemStack arrow = new ItemStack(Material.ARROW, 1);
 			
-			player.getInventory().setItem(1, carrots);
-			player.getInventory().setItem(2, arrow);
+			inventory.setItem(1, carrots);
+			inventory.setItem(2, arrow);
 			break;
 		}
 		case AXE: {
@@ -215,17 +241,17 @@ public class ItemManager {
 			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 			final ItemStack heal = new ItemStack(Material.POTION, 1, (short) 16421);
 			
-			player.getInventory().setItem(1, apples);
-			player.getInventory().setItem(2, speed);
-			player.getInventory().setItem(3, heal);
-			player.getInventory().setItem(4, heal);
-			player.getInventory().setItem(5, heal);
-			player.getInventory().setItem(6, heal);
-			player.getInventory().setItem(7, heal);
-			player.getInventory().setItem(8, heal);
+			inventory.setItem(1, apples);
+			inventory.setItem(2, speed);
+			inventory.setItem(3, heal);
+			inventory.setItem(4, heal);
+			inventory.setItem(5, heal);
+			inventory.setItem(6, heal);
+			inventory.setItem(7, heal);
+			inventory.setItem(8, heal);
 			
-			player.getInventory().setItem(34, heal);
-			player.getInventory().setItem(35, speed);
+			inventory.setItem(34, heal);
+			inventory.setItem(35, speed);
 			break;
 		}
 		case SOUP: {
@@ -236,15 +262,15 @@ public class ItemManager {
 			
 			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 			
-			while (player.getInventory().firstEmpty() != -1) {
-				player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
+			while (inventory.firstEmpty() != -1) {
+				inventory.addItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
 			}
 			
-			player.getInventory().setItem(1, speed);
+			inventory.setItem(1, speed);
 			
-			player.getInventory().setItem(17, speed);
-			player.getInventory().setItem(26, speed);
-			player.getInventory().setItem(35, speed);
+			inventory.setItem(17, speed);
+			inventory.setItem(26, speed);
+			inventory.setItem(35, speed);
 			break;
 		}
 		case EARLY_HG: {
@@ -254,11 +280,11 @@ public class ItemManager {
 			attackItem.setItemMeta(im);
 			
 			helmet = chestplate = leggings = boots = null;
-			player.getInventory().setItem(14, new ItemStack(Material.BOWL, 32));
-			player.getInventory().setItem(13, new ItemStack(Material.RED_MUSHROOM, 32));
-			player.getInventory().setItem(15, new ItemStack(Material.BROWN_MUSHROOM, 32));
-			while (player.getInventory().firstEmpty() != -1) {
-				player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
+			inventory.setItem(14, new ItemStack(Material.BOWL, 32));
+			inventory.setItem(13, new ItemStack(Material.RED_MUSHROOM, 32));
+			inventory.setItem(15, new ItemStack(Material.BROWN_MUSHROOM, 32));
+			while (inventory.firstEmpty() != -1) {
+				inventory.addItem(new ItemStack(Material.MUSHROOM_SOUP));
 			} 
 			break;
 		}
@@ -276,13 +302,13 @@ public class ItemManager {
 			boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
 			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 			
-			player.getInventory().setItem(1, new ItemStack(Material.GOLDEN_APPLE, 64, (short) 1));
-			player.getInventory().setItem(2, helmet);
-			player.getInventory().setItem(3, chestplate);
-			player.getInventory().setItem(4, leggings);
-			player.getInventory().setItem(5, boots);
-			player.getInventory().setItem(7, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Speed II",PotionEffectType.SPEED, 480, 1));
-			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Force II", PotionEffectType.INCREASE_DAMAGE, 480, 1));
+			inventory.setItem(1, new ItemStack(Material.GOLDEN_APPLE, 64, (short) 1));
+			inventory.setItem(2, helmet);
+			inventory.setItem(3, chestplate);
+			inventory.setItem(4, leggings);
+			inventory.setItem(5, boots);
+			inventory.setItem(7, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Speed II",PotionEffectType.SPEED, 480, 1));
+			inventory.setItem(8, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Force II", PotionEffectType.INCREASE_DAMAGE, 480, 1));
 			break;
 		}
 		case COMBO: {
@@ -299,13 +325,13 @@ public class ItemManager {
 			boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 4);
 			boots.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 			
-			player.getInventory().setItem(1, new ItemStack(Material.GOLDEN_APPLE, 64, (short) 1));
-			player.getInventory().setItem(2, helmet);
-			player.getInventory().setItem(3, chestplate);
-			player.getInventory().setItem(4, leggings);
-			player.getInventory().setItem(5, boots);
-			player.getInventory().setItem(7, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Speed II", PotionEffectType.SPEED, 480, 1));
-			player.getInventory().setItem(8, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Force I", PotionEffectType.INCREASE_DAMAGE, 480, 0));
+			inventory.setItem(1, new ItemStack(Material.GOLDEN_APPLE, 64, (short) 1));
+			inventory.setItem(2, helmet);
+			inventory.setItem(3, chestplate);
+			inventory.setItem(4, leggings);
+			inventory.setItem(5, boots);
+			inventory.setItem(7, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Speed II", PotionEffectType.SPEED, 480, 1));
+			inventory.setItem(8, ItemBuilder.createCustomPotionItem(ChatColor.YELLOW + "Potion of Force I", PotionEffectType.INCREASE_DAMAGE, 480, 0));
 			break;
 		}
 		case BOXING: {
@@ -321,16 +347,16 @@ public class ItemManager {
 			final ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
 			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);
 			
-			while (player.getInventory().firstEmpty() != -1) {
-				player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16421));
+			while (inventory.firstEmpty() != -1) {
+				inventory.addItem(new ItemStack(Material.POTION, 1, (short) 16421));
 			}
 			
-			player.getInventory().setItem(1, pearl);
-			player.getInventory().setItem(2, speed);
-			player.getInventory().setItem(8, steak);
+			inventory.setItem(1, pearl);
+			inventory.setItem(2, speed);
+			inventory.setItem(8, steak);
 			
-			player.getInventory().setItem(17, speed);
-			player.getInventory().setItem(26, speed);
+			inventory.setItem(17, speed);
+			inventory.setItem(26, speed);
 			break;
 		}
 		case CLASSIC: {
@@ -340,20 +366,22 @@ public class ItemManager {
 			final ItemStack rod = new ItemStack(Material.FISHING_ROD, 1);
 			final ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
 			
-			player.getInventory().setItem(1, bow);
-			player.getInventory().setItem(2, rod);
-			player.getInventory().setItem(3, gapple);
-			player.getInventory().setItem(8, steak);
+			inventory.setItem(1, bow);
+			inventory.setItem(2, rod);
+			inventory.setItem(3, gapple);
+			inventory.setItem(8, steak);
 			
-			player.getInventory().setItem(17, arrow);
+			inventory.setItem(17, arrow);
 			break;
 		}
 		default:
 			break;
 		}
-		player.getInventory().setArmorContents(new ItemStack[] {boots, leggings, chestplate, helmet});
-		player.getInventory().setItem(0, attackItem);
-		
-		player.updateInventory();
+		inventory.setItem(36, boots);
+		inventory.setItem(37, leggings);
+		inventory.setItem(38, chestplate);
+		inventory.setItem(39, helmet);
+		inventory.setItem(0, attackItem);
+		return inventory;
 	}
 }

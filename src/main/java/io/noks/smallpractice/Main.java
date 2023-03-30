@@ -46,7 +46,6 @@ import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.objects.managers.QueueManager;
 import io.noks.smallpractice.objects.managers.RequestManager;
 import io.noks.smallpractice.party.PartyManager;
-import io.noks.smallpractice.tasks.EPCooldownBarTask;
 import io.noks.smallpractice.utils.DBUtils;
 
 public class Main extends JavaPlugin {
@@ -59,7 +58,6 @@ public class Main extends JavaPlugin {
 	private RequestManager requestManager;
 	private PartyManager partyManager;
 	private DBUtils database;
-	private EPCooldownBarTask enderpearlCooldownTask;
 	
 	private static Main instance;
 	public static Main getInstance() {
@@ -74,7 +72,6 @@ public class Main extends JavaPlugin {
 		this.getConfig().options().copyDefaults(true);
 		this.saveDefaultConfig();
 		
-		this.enderpearlCooldownTask = new EPCooldownBarTask(this);
 		this.arenaManager = new ArenaManager();
 		this.partyManager = new PartyManager();
 		this.duelManager = new DuelManager(this);
@@ -94,6 +91,7 @@ public class Main extends JavaPlugin {
 		this.inventoryManager.getOfflineInventories().clear();
 		for (Duel duels : this.duelManager.getAllDuels()) {
 			if (duels == null) continue;
+			duels.cancelTask();
 			this.duelManager.finishDuel(duels, true);
 		}
 		final World world = Bukkit.getWorld("world");
@@ -173,10 +171,6 @@ public class Main extends JavaPlugin {
 	
 	public DBUtils getDatabaseUtil() {
 		return this.database;
-	}
-	
-	public EPCooldownBarTask getEnderpearlCooldownTask() {
-		return this.enderpearlCooldownTask;
 	}
 	
 	public ArenaManager getArenaManager() {

@@ -10,6 +10,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import io.noks.smallpractice.Main;
+import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
@@ -22,8 +23,22 @@ public class ChatListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onStaffOrPartyChat(AsyncPlayerChatEvent event) {
+	public void onChat(AsyncPlayerChatEvent event) {
 		final Player player = event.getPlayer();
+		if (player.hasMetadata("renamekit")) {
+			event.setCancelled(true);
+			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
+			final EditedLadderKit editedKit = (EditedLadderKit) player.getMetadata("renamekit").get(0).value();
+			if (event.getMessage().toLowerCase().equals("cancel")) {
+				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, editedKit.getLadder()));
+				player.removeMetadata("renamekit", this.main);
+				return;
+			}
+			editedKit.rename(event.getMessage());
+			player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, editedKit.getLadder()));
+			player.removeMetadata("renamekit", this.main);
+			return;
+		}
 		if (event.getMessage().charAt(0) == '@' && player.hasPermission("chat.staff")) {
 			String message = event.getMessage();
 	      

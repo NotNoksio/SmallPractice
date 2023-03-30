@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -135,6 +136,13 @@ public class PlayerListener implements Listener {
             } else {
             	this.main.getPartyManager().leaveParty(playerUUID);
             }
+        }
+        final Player player = Bukkit.getPlayer(playerUUID);
+        if (player.hasMetadata("renamekit")) {
+        	player.removeMetadata("renamekit", this.main);
+        }
+        if (player.hasMetadata("editing")) {
+        	player.removeMetadata("editing", this.main);
         }
         final PlayerManager pm = PlayerManager.get(playerUUID);
         if (pm != null) {
@@ -451,8 +459,7 @@ public class PlayerListener implements Listener {
 					// TODO: SUPPOSED TO BE WORKING (NEED CHECK)
 					event.setUseItemInHand(Result.DENY);
 					if (currentParty.getPartyState() != PartyState.DUELING) {
-						player.getItemInHand().setType(null);
-						player.updateInventory();
+						this.main.getItemManager().giveSpawnItem(player);
 						break;
 					}
 					for (UUID uuid : currentParty.getMembersIncludingLeader()) {
@@ -475,15 +482,22 @@ public class PlayerListener implements Listener {
 	            }
 				break;
 			case WAITING:
-				if (item.getType() == Material.ENCHANTED_BOOK && itemName.contains("default kit")) {
-					this.giveFightItems(player, item.getItemMeta().getDisplayName());
-					break;
-	            }
+				if (item.getType() == Material.ENCHANTED_BOOK) {
+					final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
+					if (duel == null) {
+						break;
+					}
+					this.main.getItemManager().giveFightItems(player, duel.getLadder(), player.getInventory().getHeldItemSlot());
+				}
 				break;
 			case DUEL:
-				if (item.getType() == Material.ENCHANTED_BOOK && itemName.contains("default kit")) {
-					this.giveFightItems(player, item.getItemMeta().getDisplayName());
-	            }
+				if (item.getType() == Material.ENCHANTED_BOOK) {
+					final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
+					if (duel == null) {
+						break;
+					}
+					this.main.getItemManager().giveFightItems(player, duel.getLadder(), player.getInventory().getHeldItemSlot());
+				}
 				break;
 			case SPECTATE:
 				event.setCancelled(true);
@@ -589,7 +603,7 @@ public class PlayerListener implements Listener {
 	            }
 				if (item.getType() == Material.WATCH && itemName.equals(ChatColor.RED + "see random player")) {
 	                event.setCancelled(true);
-	                List<Player> online = Lists.newArrayList(this.main.getServer().getOnlinePlayers());
+	                final List<Player> online = Lists.newArrayList(this.main.getServer().getOnlinePlayers());
 	                if (online.size() <= 1) {
 	                	return;
 	                }
@@ -599,13 +613,13 @@ public class PlayerListener implements Listener {
 	                	if (onlinePlayers == player) continue;
 	                	
 	                	final PlayerManager om = PlayerManager.get(onlinePlayers.getUniqueId());
-	                	if (om.getStatus() == PlayerStatus.MODERATION || om.getStatus() == PlayerStatus.SPAWN || om.getStatus() == PlayerStatus.QUEUE) continue;
+	                	if (om.getStatus() == PlayerStatus.MODERATION || om.getStatus() == PlayerStatus.SPAWN || om.getStatus() == PlayerStatus.QUEUE || om.getStatus() ==  PlayerStatus.BUILD) continue;
 	                	
 	                	tooked = onlinePlayers;
 	                	break;
 	                }
 	                if (tooked == null) {
-	                	player.sendMessage(ChatColor.RED + "No player to agree.");
+	                	player.sendMessage(ChatColor.RED + "There's no player in duel!");
 	                	return;
 	                }
 	                player.teleport(tooked.getLocation().clone().add(0, 2, 0));
@@ -617,13 +631,6 @@ public class PlayerListener implements Listener {
 				break;
 			}
         }
-	}
-	
-	private void giveFightItems(Player player, String name) {
-		player.getInventory().clear();
-		final String[] ladderName = ChatColor.stripColor(name).split(" ");
-		this.main.getItemManager().giveFightItems(player, Ladders.getLadderFromName(ladderName[0]));
-        player.sendMessage(ChatColor.GREEN.toString() + ladderName[0] + " kit successfully given.");
 	}
 	
 	@EventHandler

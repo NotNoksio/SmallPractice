@@ -152,7 +152,7 @@ public class DBUtils {
 			statement.setString(1, uuid.toString());
 			result = statement.executeQuery();
 			if (result.next()) {
-				settings = new PlayerSettings(result.getInt("pingdiff"), result.getBoolean("tpm"), result.getBoolean("invite"), result.getBoolean("request"));
+				settings = new PlayerSettings(result.getInt("pingdiff"), result.getBoolean("tpm"), result.getBoolean("invite"), result.getBoolean("request"), 5 /* TODO */);
 			}
 			result.close();
 			statement.close();
@@ -227,7 +227,7 @@ public class DBUtils {
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(SAVE);
+			final PreparedStatement statement = connection.prepareStatement(SAVE);
 			
 			statement.setInt(1, pm.getEloManager().getFrom(ladder));
 			statement.setInt(2, pm.getEloManager().getGlobal());
@@ -257,7 +257,7 @@ public class DBUtils {
 		final UUID uuid2 = (isDuoExist(party.getLeader(), party.getPartner()) ? party.getPartner() : party.getLeader());
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(SAVE);
+			final PreparedStatement statement = connection.prepareStatement(SAVE);
 			
 			statement.setInt(1, party.getPartyEloManager().getFrom(ladder));
 			statement.setInt(2, party.getPartyEloManager().getGlobal());
@@ -287,8 +287,8 @@ public class DBUtils {
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(selectLine);
-			ResultSet result = statement.executeQuery();
+			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			final ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				final UUID uuid = UUID.fromString(result.getString("uuid"));
 				final int elo = result.getInt(ladder.getName().toLowerCase());
@@ -319,8 +319,8 @@ public class DBUtils {
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(selectLine);
-			ResultSet result = statement.executeQuery();
+			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			final ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				final UUID uuid = UUID.fromString(result.getString("uuid"));
 				final int elo = result.getInt("global");
@@ -351,8 +351,8 @@ public class DBUtils {
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(selectLine);
-			ResultSet result = statement.executeQuery();
+			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			final ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				final UUID uuid1 = UUID.fromString(result.getString("uuid1"));
 				final UUID uuid2 = UUID.fromString(result.getString("uuid2"));
@@ -383,8 +383,8 @@ public class DBUtils {
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(selectLine);
-			ResultSet result = statement.executeQuery();
+			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			final ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				final UUID uuid1 = UUID.fromString(result.getString("uuid1"));
 				final UUID uuid2 = UUID.fromString(result.getString("uuid2"));
@@ -437,7 +437,7 @@ public class DBUtils {
 			statement = connection.prepareStatement(selectLine);
 			statement.setString(1, uuid1.toString());
 			statement.setString(2, uuid2.toString());
-			ResultSet result = statement.executeQuery();
+			final ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				final List<Integer> elos = Lists.newArrayList();
 				for (Ladders ladders : Ladders.values()) {
@@ -469,17 +469,16 @@ public class DBUtils {
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(selectLine);
+			final PreparedStatement statement = connection.prepareStatement(selectLine);
 			statement.setString(1, uuid1.toString());
 			statement.setString(2, uuid2.toString());
-			ResultSet resultSet = statement.executeQuery();
+			final ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
             	int count = resultSet.getInt(1);
             	return count == 1;
             }
             resultSet.close();
             statement.close();
-            return false;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

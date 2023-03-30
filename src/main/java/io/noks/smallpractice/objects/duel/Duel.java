@@ -8,12 +8,16 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.google.common.collect.Lists;
 
+import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
@@ -29,6 +33,7 @@ public class Duel {
 	private List<UUID> spectators;
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
+	protected BukkitTask xpBarRunnable;
 	
 	public Duel(Arena arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
 		this.arena = arena;
@@ -37,6 +42,7 @@ public class Duel {
 		this.spectators = Lists.newArrayList();
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
+		this.xpBarRunnable = this.initXpBarRunnable();
 	}
 	
 	public Duel(Arena arena, Ladders ladder, FFADuel ffaDuel) {
@@ -46,6 +52,7 @@ public class Duel {
 		this.spectators = Lists.newArrayList();
 		this.drops = Sets.newHashSet();
 		this.ranked = false;
+		this.xpBarRunnable = this.initXpBarRunnable();
     }
 	
 	public Arena getArena() {
@@ -286,8 +293,40 @@ public class Duel {
 		final Iterator<Entity> it = world.getEntities().iterator();
 		while (it.hasNext()) {
 			Entity entities = it.next();
-			if (entities == null || !(entities instanceof Item) && !this.drops.contains(entities.getUniqueId())) continue;
+			if (entities == null || (!(entities instanceof Item) && !(entities instanceof Arrow)) && !this.drops.contains(entities.getUniqueId())) continue;
 			entities.remove();
 		}
+	}
+	
+	private BukkitTask initXpBarRunnable() {
+		if (this.ladder != Ladders.NODEBUFF && this.ladder != Ladders.NOENCHANT) {
+			return null;
+		}
+		return new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				for (UUID uuids : Duel.this.getAllAliveTeams()) {
+					final PlayerManager pm = PlayerManager.get(uuids);
+					
+					if (pm == null) continue;
+					if (!pm.getMatchStats().isEnderPearlCooldownActive()) continue;
+					Duel.this.updateXpBar(pm);
+				}
+			}
+		}.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
+	}
+	
+	public void cancelTask() {
+		if (this.xpBarRunnable == null) {
+			return;
+		}
+		this.xpBarRunnable.cancel();
+	}
+	
+	private void updateXpBar(PlayerManager pm) {
+		final Player player = pm.getPlayer();
+	    final float xpPercentage = Math.max(0.0f, Math.min(99.9f, ((float) pm.getMatchStats().getEnderPearlCooldown() / (14 * 1000)) * 100));
+	    player.setExp(xpPercentage / 100);
 	}
 }

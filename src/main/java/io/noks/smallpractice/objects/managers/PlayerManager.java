@@ -306,8 +306,28 @@ public class PlayerManager {
 		return customKitsFromLadder.isEmpty() ? Collections.emptyList() : customKitsFromLadder;
 	}
 	
-	public void saveCustomLadderKit(Ladders ladder, String name, int slot, PlayerInventory inventory) {
-		this.customLadderKit.add(new EditedLadderKit(ladder, name, slot, inventory));
+	public EditedLadderKit getCustomLadderKitFromSlot(Ladders ladder, int slot) {
+		if (getCustomLadderKitFromLadder(ladder).isEmpty()) {
+			return null;
+		}
+		for (EditedLadderKit customKit : getCustomLadderKitFromLadder(ladder)) {
+			if (customKit.getSlot() == slot) {
+				return customKit;
+			}
+		}
+		return null;
+	}
+	
+	public void saveCustomLadderKit(Ladders ladder, int slot, Inventory inventory) {
+		final EditedLadderKit kit = getCustomLadderKitFromSlot(ladder, slot);
+		if (kit != null) {
+			this.customLadderKit.remove(kit);
+		}
+		this.customLadderKit.add(new EditedLadderKit(ladder, slot, inventory));
+	}
+	
+	public void deleteCustomLadderKit(Ladders ladder, int slot) {
+		this.customLadderKit.remove(getCustomLadderKitFromSlot(ladder, slot));
 	}
 	
 	public PlayerSettings getSettings() {
