@@ -10,18 +10,17 @@ public enum Ladders {
 	AXE("Axe", ChatColor.LIGHT_PURPLE, new ItemStack(Material.IRON_AXE, 1), false, true, true),
 	SOUP("Soup", ChatColor.GOLD, new ItemStack(Material.MUSHROOM_SOUP, 1), false, false, true),
 	EARLY_HG("EarlyHG", ChatColor.GREEN, new ItemStack(Material.STONE_SWORD, 1), false, false, true),
-	GAPPLE("Gapple", ChatColor.BLUE, new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1), false, true, true),
+	GAPPLE("Gapple", ChatColor.BLUE, new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1), true, true, true),
 	BOXING("Boxing", ChatColor.DARK_AQUA, new ItemStack(Material.NOTE_BLOCK, 1), false, false, true),
-	COMBO("Combo", ChatColor.DARK_GREEN, new ItemStack(Material.FEATHER, 1), false, true, true),
+	COMBO("Combo", ChatColor.DARK_GREEN, new ItemStack(Material.FEATHER, 1), true, true, true),
 	SUMO("Sumo", ChatColor.YELLOW, new ItemStack(Material.CLAY_BRICK, 1), false, false, false), // Disabled bc on the server where the plugin is used, there's no sumo arena :)
-	NOENCHANT("NoEnchant", ChatColor.DARK_PURPLE, new ItemStack(Material.DIAMOND_SWORD), false, true, true),
+	NOENCHANT("NoEnchant", ChatColor.DARK_PURPLE, new ItemStack(Material.DIAMOND_SWORD), true, true, true),
 	CLASSIC("Classic", ChatColor.DARK_RED, new ItemStack(Material.FISHING_ROD), true, true, true);
 	
 	private String name;
 	private ChatColor color;
 	private ItemStack icon;
 	private boolean editable, needFood, enable /* This will be removed or be enabled/disabled by a command */;
-	//private PlayerInventory defaultInventory;
 	
 	Ladders(String name, ChatColor color, ItemStack icon, boolean editable, boolean needFood, boolean enable) {
 		this.name = name;
@@ -30,7 +29,6 @@ public enum Ladders {
 		this.editable = editable;
 		this.needFood = needFood;
 		this.enable = enable;
-		//this.defaultInventory = Main.getInstance().getItemManager().giveFightItems(this.);
 	}
 	
 	public String getName() {
@@ -56,10 +54,6 @@ public enum Ladders {
 	public boolean isEnable() {
 		return this.enable;
 	}
-	
-	/*public PlayerInventory getDefaultInventory() {
-		return this.defaultInventory;
-	}*/
 	
 	public static Ladders getLadderFromName(String name) {
 		for (Ladders ladders : values()) {

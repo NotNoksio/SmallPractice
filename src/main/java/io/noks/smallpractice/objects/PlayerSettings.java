@@ -2,14 +2,15 @@ package io.noks.smallpractice.objects;
 
 public class PlayerSettings {
 	private int queuePingDiff, secondsBeforeRerequest;
-	private boolean privateMessage, partyInvite, duelRequest;
+	private boolean privateMessage, partyInvite, duelRequest, scoreboard;
 	
-	public PlayerSettings(int pingDiff, boolean privateMessage, boolean partyInvite, boolean duelRequest, int seconds) {
+	public PlayerSettings(int pingDiff, boolean privateMessage, boolean partyInvite, boolean duelRequest, int seconds, boolean scoreboard) {
 		this.queuePingDiff = pingDiff;
 		this.privateMessage = privateMessage;
 		this.partyInvite = partyInvite;
 		this.duelRequest = duelRequest;
 		this.secondsBeforeRerequest = seconds;
+		this.scoreboard = scoreboard;
 	}
 	public PlayerSettings() {
 		this.queuePingDiff = 300;
@@ -17,6 +18,7 @@ public class PlayerSettings {
 		this.partyInvite = true;
 		this.duelRequest = true;
 		this.secondsBeforeRerequest = 5;
+		this.scoreboard = true;
 	}
 	
 	public int getQueuePingDiff() {
@@ -65,5 +67,13 @@ public class PlayerSettings {
 			return;
 		}
 		this.secondsBeforeRerequest += 5;
+	}
+	
+	public void updateScoreboard() {
+		this.scoreboard = !this.scoreboard;
+	}
+	
+	public boolean isScoreboardToggled() {
+		return this.scoreboard;
 	}
 }

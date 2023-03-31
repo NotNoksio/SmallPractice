@@ -17,7 +17,6 @@ import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 
@@ -46,7 +45,7 @@ public class PlayerManager {
 	private final MatchStats matchStats;
 	private final Cooldown cooldown;
 	private Inventory savedInventory;
-	private final List<EditedLadderKit> customLadderKit = Lists.newArrayList();
+	private final List<EditedLadderKit> customLadderKit;
 	private final PlayerSettings settings;
 	
 	public PlayerManager(UUID playerUUID) {
@@ -61,10 +60,11 @@ public class PlayerManager {
 	    	this.savedInventory = Main.getInstance().getInventoryManager().getOfflineInventories().get(playerUUID);
 	    	Main.getInstance().getInventoryManager().getOfflineInventories().remove(playerUUID);
 	    }
+	    this.customLadderKit = Lists.newArrayList();
 	    this.settings = new PlayerSettings();
 	    players.putIfAbsent(playerUUID, this);
 	}
-	public PlayerManager(UUID playerUUID, EloManager elo, PlayerSettings settings) {
+	public PlayerManager(UUID playerUUID, EloManager elo, PlayerSettings settings, List<EditedLadderKit> customKits) {
 	    this.playerUUID = playerUUID;
 	    this.player = Bukkit.getPlayer(this.playerUUID);
 	    this.status = PlayerStatus.SPAWN;
@@ -76,6 +76,7 @@ public class PlayerManager {
 	    	this.savedInventory = Main.getInstance().getInventoryManager().getOfflineInventories().get(playerUUID);
 	    	Main.getInstance().getInventoryManager().getOfflineInventories().remove(playerUUID);
 	    }
+	    this.customLadderKit = customKits;
 	    this.settings = settings;
 	    players.putIfAbsent(playerUUID, this);
 	}
@@ -327,6 +328,7 @@ public class PlayerManager {
 	}
 	
 	public void deleteCustomLadderKit(Ladders ladder, int slot) {
+		Main.getInstance().getDatabaseUtil().deleteCustomKit(this.playerUUID, ladder, slot);
 		this.customLadderKit.remove(getCustomLadderKitFromSlot(ladder, slot));
 	}
 	

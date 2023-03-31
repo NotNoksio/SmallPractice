@@ -2,7 +2,6 @@ package io.noks.smallpractice.objects.managers;
 
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -23,6 +22,10 @@ import io.noks.smallpractice.party.PartyState;
 import io.noks.smallpractice.utils.ItemBuilder;
 
 public class ItemManager {
+	private Main main;
+	public ItemManager(Main main) {
+		this.main = main;
+	}
 	
 	public void giveSpawnItem(Player player) {
 		player.getInventory().clear();
@@ -34,7 +37,7 @@ public class ItemManager {
 			player.setGameMode(GameMode.SURVIVAL);
 		}
 		
-		if (!Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
+		if (!this.main.getPartyManager().hasParty(player.getUniqueId())) {
 			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
 			player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
 			player.getInventory().setItem(4, ItemBuilder.createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
@@ -44,7 +47,7 @@ public class ItemManager {
 			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING) {
 				return;
 			}
-			final Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
+			final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
 			ItemStack glass = ItemBuilder.createNewItemStack(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), ChatColor.RED + "2 players needed");
 			player.getInventory().setItem(0, party.getSize() == 2 ? ItemBuilder.createNewItemStackByMaterial(Material.IRON_AXE, ChatColor.YELLOW + "2v2 Unranked Queue", true) : glass);
 			if (party.getSize() == 2) {
@@ -110,7 +113,7 @@ public class ItemManager {
 	
 	public void giveSpectatorItems(Player player) {
 		final boolean spectatingPlayer = PlayerManager.get(player.getUniqueId()).getSpectate() != null;
-		final boolean hasParty = Main.getInstance().getPartyManager().hasParty(player.getUniqueId());
+		final boolean hasParty = this.main.getPartyManager().hasParty(player.getUniqueId());
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 		if (player.getItemOnCursor() != null) {
@@ -149,9 +152,15 @@ public class ItemManager {
 	}
 	public void giveFightItems(Player player, Ladders ladder, int slot, boolean armor, boolean edit) {
 		player.getInventory().clear();
-		final Inventory inventory = (slot == 0 ? Main.getInstance().getItemManager().getFightItems(ladder) : PlayerManager.get(player.getUniqueId()).getCustomLadderKitFromSlot(ladder, (slot - (!edit ? 1 : 0))).getInventory());
+		final Inventory inventory = (slot == 0 ? this.main.getItemManager().getDefaultFightItems(ladder) : PlayerManager.get(player.getUniqueId()).getCustomLadderKitFromSlot(ladder, (slot - (!edit ? 1 : 0))).getInventory());
 		if (armor) {
 			player.getInventory().setArmorContents(new ItemStack[] {inventory.getItem(36), inventory.getItem(37), inventory.getItem(38), inventory.getItem(39)});
+		}
+		if (inventory.getItem(36) != null && inventory.getItem(37) != null && inventory.getItem(38) != null && inventory.getItem(39) != null) {
+			inventory.setItem(36,  null);
+			inventory.setItem(37,  null);
+			inventory.setItem(38,  null);
+			inventory.setItem(39,  null);
 		}
 		for (ItemStack items : inventory.getContents()) {
 			if (items == null) continue;
@@ -160,8 +169,8 @@ public class ItemManager {
         player.sendMessage(ChatColor.GREEN.toString() + ladder.getName() + " kit successfully given.");
         player.updateInventory();
 	}
-	public Inventory getFightItems(Ladders ladder) {
-		final Inventory inventory = Bukkit.createInventory(null, InventoryType.PLAYER);
+	public Inventory getDefaultFightItems(Ladders ladder) {
+		final Inventory inventory = this.main.getServer().createInventory(null, InventoryType.PLAYER);
 		ItemStack attackItem = new ItemStack(Material.DIAMOND_SWORD, 1);
 		ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET, 1);
 		ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
@@ -335,7 +344,36 @@ public class ItemManager {
 			break;
 		}
 		case BOXING: {
-			final ItemMeta swordMeta = attackItem.getItemMeta();
+			attackItem = new ItemStack(Material.WOOD_SWORD, 1);
+			ItemMeta swordMeta = attackItem.getItemMeta();
+			swordMeta.spigot().setUnbreakable(true);
+			attackItem.setItemMeta(swordMeta);
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+			inventory.setItem(1, attackItem);
+			
+			attackItem = new ItemStack(Material.STONE_SWORD, 1);
+			swordMeta = attackItem.getItemMeta();
+			swordMeta.spigot().setUnbreakable(true);
+			attackItem.setItemMeta(swordMeta);
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+			inventory.setItem(2, attackItem);
+			
+			attackItem = new ItemStack(Material.IRON_SWORD, 1);
+			swordMeta = attackItem.getItemMeta();
+			swordMeta.spigot().setUnbreakable(true);
+			attackItem.setItemMeta(swordMeta);
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+			inventory.setItem(3, attackItem);
+			
+			attackItem = new ItemStack(Material.GOLD_SWORD, 1);
+			swordMeta = attackItem.getItemMeta();
+			swordMeta.spigot().setUnbreakable(true);
+			attackItem.setItemMeta(swordMeta);
+			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+			inventory.setItem(4, attackItem);
+			
+			attackItem = new ItemStack(Material.DIAMOND_SWORD, 1);
+			swordMeta = attackItem.getItemMeta();
 			swordMeta.spigot().setUnbreakable(true);
 			attackItem.setItemMeta(swordMeta);
 			attackItem.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);

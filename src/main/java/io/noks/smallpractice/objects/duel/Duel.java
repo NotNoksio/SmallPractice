@@ -34,6 +34,7 @@ public class Duel {
 	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
 	protected BukkitTask xpBarRunnable;
+	private long startTime;
 	
 	public Duel(Arena arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
 		this.arena = arena;
@@ -43,6 +44,7 @@ public class Duel {
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
 		this.xpBarRunnable = this.initXpBarRunnable();
+		this.startTime = System.currentTimeMillis();
 	}
 	
 	public Duel(Arena arena, Ladders ladder, FFADuel ffaDuel) {
@@ -53,6 +55,7 @@ public class Duel {
 		this.drops = Sets.newHashSet();
 		this.ranked = false;
 		this.xpBarRunnable = this.initXpBarRunnable();
+		this.startTime = System.currentTimeMillis();
     }
 	
 	public Arena getArena() {
@@ -308,7 +311,6 @@ public class Duel {
 			public void run() {
 				for (UUID uuids : Duel.this.getAllAliveTeams()) {
 					final PlayerManager pm = PlayerManager.get(uuids);
-					
 					if (pm == null) continue;
 					if (!pm.getMatchStats().isEnderPearlCooldownActive()) continue;
 					Duel.this.updateXpBar(pm);
@@ -328,5 +330,9 @@ public class Duel {
 		final Player player = pm.getPlayer();
 	    final float xpPercentage = Math.max(0.0f, Math.min(99.9f, ((float) pm.getMatchStats().getEnderPearlCooldown() / (14 * 1000)) * 100));
 	    player.setExp(xpPercentage / 100);
+	}
+	
+	public long getStartTime() {
+		return this.startTime;
 	}
 }

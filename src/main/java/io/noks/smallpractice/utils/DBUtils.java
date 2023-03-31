@@ -1,5 +1,8 @@
 package io.noks.smallpractice.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,9 +14,17 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
+
 import com.zaxxer.hikari.HikariDataSource;
 
 import io.noks.smallpractice.enums.Ladders;
+import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.managers.EloManager;
 import io.noks.smallpractice.objects.managers.PlayerManager;
@@ -78,8 +89,9 @@ public class DBUtils {
 			connection = this.hikari.getConnection();
 			Statement statement = connection.createStatement();
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS elo (uuid varchar(36), " + ladder.toString() + ", global int(4), unrankedwin int(2), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS settings (uuid varchar(36), pingdiff int(3), tpm TINYINT(1), invite TINYINT(1), request TINYINT(1), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS settings (uuid varchar(36), pingdiff int(3), tpm TINYINT(1), invite TINYINT(1), request TINYINT(1), requestdelay int(2), scoreboard TINYINT(1), PRIMARY KEY(`uuid`), UNIQUE(`uuid`));");
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS duoelo (uuid1 varchar(36), uuid2 varchar(36), " + ladder.toString() + ", global int(4), PRIMARY KEY(uuid1, uuid2), CONSTRAINT unique_uuid_pair UNIQUE KEY(uuid1, uuid2), KEY(uuid1, uuid2));");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS customkits (uuid varchar(36), ladder varchar(16), slot int(1), name varchar(28), inventory LONGBLOB, PRIMARY KEY(uuid, ladder, slot));");
 			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -105,11 +117,13 @@ public class DBUtils {
 		}
 		final String INSERT_ELO = "INSERT INTO elo VALUES(?, " + questionMarks.toString() + ", ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
 		final String SELECT_ELO = "SELECT * FROM elo WHERE uuid=?";
-		final String INSERT_SETTINGS = "INSERT INTO settings VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
+		final String INSERT_SETTINGS = "INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
 		final String SELECT_SETTINGS = "SELECT * FROM settings WHERE uuid=?";
+		final String SELECT_KITS = "SELECT ladder, slot, name, inventory FROM customkits WHERE uuid=?";
 		Connection connection = null;
 		EloManager elo = null;
 		PlayerSettings settings = null;
+		final List<EditedLadderKit> customKits = Lists.newArrayList();
 		try {
 			connection = this.hikari.getConnection();
 			PreparedStatement statement = connection.prepareStatement(INSERT_ELO);
@@ -132,7 +146,9 @@ public class DBUtils {
 			statement.setBoolean(3, true);
 			statement.setBoolean(4, true);
 			statement.setBoolean(5, true);
-			statement.setString(6, uuid.toString());
+			statement.setInt(6, 5);
+			statement.setBoolean(7, true);
+			statement.setString(8, uuid.toString());
 			statement.executeUpdate();
 			statement.close();
 
@@ -147,16 +163,26 @@ public class DBUtils {
 				elo = new EloManager(elos, result.getInt("unrankedwin"));
 			}
 			result.close();
+			statement.close();
 			
 			statement = connection.prepareStatement(SELECT_SETTINGS);
 			statement.setString(1, uuid.toString());
 			result = statement.executeQuery();
 			if (result.next()) {
-				settings = new PlayerSettings(result.getInt("pingdiff"), result.getBoolean("tpm"), result.getBoolean("invite"), result.getBoolean("request"), 5 /* TODO */);
+				settings = new PlayerSettings(result.getInt("pingdiff"), result.getBoolean("tpm"), result.getBoolean("invite"), result.getBoolean("request"), result.getInt("requestdelay"), result.getBoolean("scoreboard"));
 			}
 			result.close();
 			statement.close();
-		} catch (SQLException ex) {
+			
+			statement = connection.prepareStatement(SELECT_KITS);
+			statement.setString(1, uuid.toString());
+			result = statement.executeQuery();
+			while(result.next()) {
+				customKits.add(new EditedLadderKit(Ladders.getLadderFromName(result.getString("ladder")), result.getString("name"), result.getInt("slot"), this.deserializeInventory(result.getBytes("inventory"))));
+			}
+			result.close();
+			statement.close();
+		} catch (SQLException | ClassNotFoundException | IOException ex) {
 			ex.printStackTrace();
 		} finally {
 			if (connection != null) {
@@ -166,7 +192,7 @@ public class DBUtils {
 					ex.printStackTrace();
 				}
 			}
-			new PlayerManager(uuid, elo, settings);
+			new PlayerManager(uuid, elo, settings, customKits);
 		}
 	}
 
@@ -180,7 +206,8 @@ public class DBUtils {
 			ladder.add(ladders.getName().toLowerCase() + "=?");
 		}
 		final String SAVE_ELO = "UPDATE elo SET " + ladder.toString() + ", global=?, unrankedwin=? WHERE uuid=?";
-		final String SAVE_SETTINGS = "UPDATE settings SET pingdiff=?, tpm=?, invite=?, request=? WHERE uuid=?";
+		final String SAVE_SETTINGS = "UPDATE settings SET pingdiff=?, tpm=?, invite=?, request=?, requestdelay=?, scoreboard=? WHERE uuid=?";
+		final String INSERT_KITS = "INSERT INTO customkits VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=?, inventory=?";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
@@ -202,10 +229,27 @@ public class DBUtils {
 			statement.setBoolean(2, pm.getSettings().isPrivateMessageToggled());
 			statement.setBoolean(3, pm.getSettings().isPartyInviteToggled());
 			statement.setBoolean(4, pm.getSettings().isDuelRequestToggled());
-			statement.setString(5, pm.getPlayerUUID().toString());
+			statement.setInt(5, pm.getSettings().getSecondsBeforeRerequest());
+			statement.setBoolean(6, pm.getSettings().isScoreboardToggled());
+			statement.setString(7, pm.getPlayerUUID().toString());
 			statement.execute();
 			statement.close();
-		} catch (SQLException e) {
+			
+			if (!pm.getCustomLadderKitList().isEmpty()) {
+				statement = connection.prepareStatement(INSERT_KITS);
+				for (EditedLadderKit customKits : pm.getCustomLadderKitList()) {
+					statement.setString(1, pm.getPlayerUUID().toString());
+					statement.setString(2, customKits.getLadder().getName());
+					statement.setInt(3, customKits.getSlot());
+					statement.setString(4, customKits.getName());
+					statement.setBytes(5, this.serializeInventory(customKits.getInventory()));
+					statement.setString(6, customKits.getName());
+					statement.setBytes(7, this.serializeInventory(customKits.getInventory()));
+					statement.executeUpdate();
+				}
+				statement.close();
+			}
+		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		} finally {
 			if (connection != null) {
@@ -461,6 +505,69 @@ public class DBUtils {
 		return elo;
 	}
 	
+	public void deleteCustomKit(UUID uuid, Ladders ladder, int slot) {
+		if (!isConnected()) {
+			return;
+		}
+		if (!isCustomKitLadderSlotExist(uuid, ladder, slot)) {
+			return;
+		}
+		final String deleteLine = "DELETE FROM customkits WHERE uuid=? AND ladder=? AND slot=?";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			final PreparedStatement statement = connection.prepareStatement(deleteLine);
+			statement.setString(1, uuid.toString());
+			statement.setString(2, ladder.getName());
+			statement.setInt(3, slot);
+			statement.executeUpdate();
+            statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	private boolean isCustomKitLadderSlotExist(UUID uuid, Ladders ladder, int slot) {
+		if (!isConnected()) {
+			return false;
+		}
+		final String selectLine = "SELECT COUNT(*) FROM customkits WHERE uuid=? AND ladder=? AND slot=?";
+		Connection connection = null;
+		try {
+			connection = this.hikari.getConnection();
+			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			statement.setString(1, uuid.toString());
+			statement.setString(2, ladder.getName());
+			statement.setInt(3, slot);
+			final ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+            	int count = resultSet.getInt(1);
+            	return count == 1;
+            }
+            resultSet.close();
+            statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return false;
+	}
+	
 	public boolean isDuoExist(UUID uuid1, UUID uuid2) {
 		if (!isConnected()) {
 			return false;
@@ -501,48 +608,24 @@ public class DBUtils {
 		return this.connected;
 	}
 	
-	/*
-	Player player = ... // get the player
-	Inventory inventory = player.getInventory();
-	
-	byte[] inventoryBytes = serializeInventory(inventory);
-	
 	private byte[] serializeInventory(Inventory inventory) throws IOException {
     	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     	BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
-    	dataOutput.writeInt(inventory.getSize());
-    	for (int i = 0; i < inventory.getSize(); i++) {
-        	dataOutput.writeObject(inventory.getItem(i));
+    	for (ItemStack items : inventory.getContents()) {
+    		dataOutput.writeObject(items);
     	}
     	dataOutput.close();
     	return outputStream.toByteArray();
 	}
 	
-	PreparedStatement stmt = connection.prepareStatement("INSERT INTO player_inventory (player_name, inventory) VALUES (?, ?)");
-	stmt.setString(1, player.getName());
-	stmt.setBytes(2, inventoryBytes);
-	stmt.executeUpdate();
-	
-	PreparedStatement stmt = connection.prepareStatement("SELECT inventory FROM player_inventory WHERE player_name = ?");
-	stmt.setString(1, player.getName());
-	ResultSet rs = stmt.executeQuery();
-	if (rs.next()) {
-    	byte[] inventoryBytes = rs.getBytes("inventory");
-	    Inventory inventory = deserializeInventory(inventoryBytes);
-	    player.getInventory().setContents(inventory.getContents()); // set the player's inventory from the retrieved inventory
-	}
-	
 	private Inventory deserializeInventory(byte[] inventoryBytes) throws IOException, ClassNotFoundException {
     	ByteArrayInputStream inputStream = new ByteArrayInputStream(inventoryBytes);
     	BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-    	int size = dataInput.readInt();
-    	Inventory inventory = Bukkit.getServer().createInventory(null, size);
-    	for (int i = 0; i < size; i++) {
+    	Inventory inventory = Bukkit.getServer().createInventory(null, InventoryType.PLAYER);
+    	for (int i = 0; i < inventory.getSize(); i++) {
         	inventory.setItem(i, (ItemStack) dataInput.readObject());
     	}
     	dataInput.close();
     	return inventory;
 	}
-	
-	 */
 }

@@ -168,7 +168,7 @@ public class DuelManager {
 		if (ladder == Ladders.CLASSIC || ladder == Ladders.ARCHER) {
 			final Objective life = scoreboard.registerNewObjective("life", "health");
 			life.setDisplaySlot(DisplaySlot.BELOW_NAME);
-			life.setDisplayName(ChatColor.RED + "❤");
+			life.setDisplayName(ChatColor.RED + "♥");
 		}
 		final String duelMessage = ChatColor.DARK_AQUA + "Starting" + (ffa ? " FFA party game" : " duel against " + ChatColor.YELLOW + (teamFight ? Bukkit.getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : Bukkit.getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getFrom(ladder) : (this.main.getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager() != null ? this.main.getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getFrom(ladder) : "")) + ")" : "")));
 		for (UUID teamUUID : team) {
@@ -183,6 +183,46 @@ public class DuelManager {
 			final PlayerManager pm = PlayerManager.get(teamUUID);
 			pm.clearRequest();
 			pm.setStatus(PlayerStatus.WAITING);
+			
+			if (pm.getSettings().isScoreboardToggled()) {
+				if (scoreboard.getObjective(DisplaySlot.SIDEBAR) == null) {
+					final Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy");
+					sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
+					sidebar.setDisplayName(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Practice");
+					if (scoreboard.getTeam("line1") == null) {
+						final Team line1 = scoreboard.registerNewTeam("line1");
+						line1.setPrefix(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "-------");
+						line1.addEntry("-----");
+						line1.setSuffix("-------");
+						sidebar.getScore("-----").setScore(15);
+					}
+					if (scoreboard.getTeam("opp") == null) {
+						final Team opp = scoreboard.registerNewTeam("opp");
+						opp.setPrefix(ChatColor.RED.toString() + ChatColor.BOLD + "Opp");
+						opp.addEntry("onent: " + ChatColor.RESET);
+						opp.setSuffix((enemyPartyLeaderUUID != null ? this.main.getServer().getPlayer(enemyPartyLeaderUUID).getName() : this.main.getServer().getPlayer(enemyTeam.get(0)).getName()));
+						sidebar.getScore("onent: " + ChatColor.RESET).setScore(14);
+					}
+					if (scoreboard.getTeam("time") == null) {
+						final Team time = scoreboard.registerNewTeam("time");
+						time.setPrefix(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Dura");
+						time.addEntry("tion: ");
+						time.setSuffix(ChatColor.RESET + "00:00");
+						sidebar.getScore("tion: ").setScore(13);
+					}
+					if (scoreboard.getTeam("line2") == null) {
+						final Team line2 = scoreboard.registerNewTeam("line2");
+						line2.setPrefix(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "-------");
+						line2.addEntry(ChatColor.RESET.toString() + ChatColor.GRAY + ChatColor.STRIKETHROUGH + "-----");
+						line2.setSuffix("-------");
+						sidebar.getScore(ChatColor.RESET.toString() + ChatColor.GRAY + ChatColor.STRIKETHROUGH + "-----").setScore(12);
+					}
+				}
+			} else {
+				if (scoreboard.getObjective(DisplaySlot.SIDEBAR) != null) {
+					scoreboard.getObjective(DisplaySlot.SIDEBAR).unregister();
+				}
+			}
 			
 			player.setGameMode(GameMode.SURVIVAL);
 			player.sendMessage(duelMessage);

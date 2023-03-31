@@ -62,18 +62,22 @@ public class SpectateCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "That player isn't in duel!");
 			return false;
 		}
-		if (this.main.getPartyManager().hasParty(player.getUniqueId()) && this.main.getPartyManager().hasParty(target.getUniqueId())) {
-			final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
-			final Party targetParty = this.main.getPartyManager().getParty(target.getUniqueId());
-				
-			if (party != targetParty) {
-				return false;
+		if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
+			if (this.main.getPartyManager().hasParty(target.getUniqueId())) {
+				final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
+				final Party targetParty = this.main.getPartyManager().getParty(target.getUniqueId());
+					
+				if (party != targetParty) {
+					return false;
+				}
+				if (targetParty.getPartyState() != PartyState.DUELING) {
+					return false;
+				}
+				this.setPlayerInSpectator(player, pm, target);
+				return true;
 			}
-			if (targetParty.getPartyState() != PartyState.DUELING) {
-				return false;
-			}
-			this.setPlayerInSpectator(player, pm, target);
-			return true;
+			player.sendMessage(ChatColor.RED + "You can only spectate players in your current party!");
+			return false;
 		}
 		if (pm.getStatus() != PlayerStatus.SPECTATE) {
 			pm.setStatus(PlayerStatus.SPECTATE);

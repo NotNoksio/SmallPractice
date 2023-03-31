@@ -206,6 +206,9 @@ public class InventoryListener implements Listener {
 				if (itemName.endsWith("duel request")) {
 					settings.updateDuelRequest();
 				}
+				if (itemName.endsWith("scoreboard")) {
+					settings.updateScoreboard();
+				}
 				player.openInventory(this.main.getInventoryManager().getSettingsInventory(pm));
 				return;
 			}
@@ -239,26 +242,28 @@ public class InventoryListener implements Listener {
 				player.closeInventory();
 				return;
 			}
-			if (itemName.startsWith("create") || itemName.startsWith("save")) {
-				final boolean save = itemName.startsWith("save");
-				Inventory createdInventory = this.main.getItemManager().getFightItems(ladder);
-				if (save) {
-					final ItemStack[] defaultArmorContent = {createdInventory.getItem(36), createdInventory.getItem(37), createdInventory.getItem(38), createdInventory.getItem(39)};
-					final Inventory savedInventory = Bukkit.createInventory(null, InventoryType.PLAYER);
-					for (ItemStack items : player.getInventory().getContents()) {
-						savedInventory.addItem(items);
-					}
-					savedInventory.setItem(36, defaultArmorContent[0]);
-					savedInventory.setItem(37, defaultArmorContent[1]);
-					savedInventory.setItem(38, defaultArmorContent[2]);
-					savedInventory.setItem(39, defaultArmorContent[3]);
-					createdInventory = savedInventory;
-				}
-				pm.saveCustomLadderKit(ladder, event.getSlot(), createdInventory);
+			if (itemName.startsWith("create")) {
+				pm.saveCustomLadderKit(ladder, event.getSlot(), this.main.getItemManager().getDefaultFightItems(ladder));
 				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, ladder));
-				if (save) {
-					this.main.getItemManager().giveSpawnItem(player);
+				return;
+			}
+			if (itemName.startsWith("save")) {
+				if (!player.hasMetadata("editing")) {
+					return;
 				}
+				final Inventory defaultInventory = this.main.getItemManager().getDefaultFightItems(ladder);
+				final ItemStack[] defaultArmorContent = {defaultInventory.getItem(36), defaultInventory.getItem(37), defaultInventory.getItem(38), defaultInventory.getItem(39)};
+				final Inventory savedInventory = Bukkit.createInventory(null, InventoryType.PLAYER);
+				for (ItemStack items : player.getInventory().getContents()) {
+					savedInventory.addItem(items);
+				}
+				savedInventory.setItem(36, defaultArmorContent[0]);
+				savedInventory.setItem(37, defaultArmorContent[1]);
+				savedInventory.setItem(38, defaultArmorContent[2]);
+				savedInventory.setItem(39, defaultArmorContent[3]);
+				pm.saveCustomLadderKit(ladder, event.getSlot(), savedInventory);
+				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, ladder));
+				this.main.getItemManager().giveSpawnItem(player);
 				return;
 			}
 			if (itemName.equals("delete")) {

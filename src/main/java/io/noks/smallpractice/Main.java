@@ -73,13 +73,13 @@ public class Main extends JavaPlugin {
 		this.saveDefaultConfig();
 		
 		this.arenaManager = new ArenaManager();
-		this.partyManager = new PartyManager();
+		this.partyManager = new PartyManager(this);
 		this.duelManager = new DuelManager(this);
-		this.itemManager = new ItemManager();
+		this.itemManager = new ItemManager(this);
 		this.configManager = new ConfigManager(this);
 		this.queueManager = new QueueManager(this);
-		this.requestManager = new RequestManager();
-		this.inventoryManager = new InventoryManager();
+		this.requestManager = new RequestManager(this);
+		this.inventoryManager = new InventoryManager(this);
 		
 		registerCommands();
 		registerListers();
@@ -102,7 +102,7 @@ public class Main extends JavaPlugin {
 			entities.remove();
 		}
 		for (PlayerManager pm : PlayerManager.players.values()) {
-			pm.remove();
+			this.database.savePlayer(pm);
 		}
 	}
 	

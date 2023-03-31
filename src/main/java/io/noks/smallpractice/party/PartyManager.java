@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
@@ -21,16 +20,23 @@ import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class PartyManager {
-	private Map<UUID, Party> leaderUUIDtoParty = Maps.newHashMap();
-    private Map<UUID, UUID> playerUUIDtoLeaderUUID = Maps.newHashMap();
-    private Inventory partiesInventory = Bukkit.createInventory(null, 54, "Fight other parties");
+	private Map<UUID, Party> leaderUUIDtoParty;
+    private Map<UUID, UUID> playerUUIDtoLeaderUUID;
+    private Inventory partiesInventory;
+	private Main main;
+	public PartyManager(Main main) {
+		this.main = main;
+		this.leaderUUIDtoParty = Maps.newHashMap();
+		this.playerUUIDtoLeaderUUID = Maps.newHashMap();
+		this.partiesInventory = main.getServer().createInventory(null, 54, "Fight other parties");
+	}
     
     public Party getParty(UUID player) {
         if (this.leaderUUIDtoParty.containsKey(player)) {
         	return this.leaderUUIDtoParty.get(player);
         }
         if (this.playerUUIDtoLeaderUUID.containsKey(player)) {
-            UUID leader = this.playerUUIDtoLeaderUUID.get(player);
+            final UUID leader = this.playerUUIDtoLeaderUUID.get(player);
             return this.leaderUUIDtoParty.get(leader);
         }
         return null;
@@ -45,7 +51,7 @@ public class PartyManager {
     }
     
     public Party createParty(UUID leader, String leadername) {
-        Party party = new Party(leader, leadername);
+        final Party party = new Party(leader, leadername);
         this.leaderUUIDtoParty.put(leader, party);
         addPartyToInventory(party);
         return party;
@@ -57,7 +63,7 @@ public class PartyManager {
     	if (party.getSize() > 1) {
     		UUID newLeader = party.getMembers().get(0);
     		
-    		party.setNewLeader(newLeader, Bukkit.getPlayer(newLeader).getName());
+    		party.setNewLeader(newLeader, this.main.getServer().getPlayer(newLeader).getName());
     		this.leaderUUIDtoParty.remove(actualLeader);
     		if (party.getMembers().contains(newLeader)) {
     			party.removeMember(newLeader);
@@ -78,7 +84,7 @@ public class PartyManager {
     		}
     		
     		party.notify(ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
-    		if (party.getPartyState() == PartyState.LOBBY) Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(newLeader));
+    		if (party.getPartyState() == PartyState.LOBBY) this.main.getItemManager().giveSpawnItem(this.main.getServer().getPlayer(newLeader));
     		addPartyToInventory(party);
     		return;
     	}
@@ -93,7 +99,7 @@ public class PartyManager {
         	}
         	this.playerUUIDtoLeaderUUID.remove(entry.getKey());
         	if (getParty(leader).getPartyState() != PartyState.DUELING) {
-        		Main.getInstance().getItemManager().giveSpawnItem(Bukkit.getPlayer(entry.getKey()));
+        		this.main.getItemManager().giveSpawnItem(this.main.getServer().getPlayer(entry.getKey()));
         	}
         }
         deletePartyFromInventory(this.leaderUUIDtoParty.get(leader));
@@ -124,7 +130,7 @@ public class PartyManager {
     
     
     public void addPartyToInventory(Party party) {
-        final Player player = Bukkit.getPlayer(party.getLeader());
+        final Player player = this.main.getServer().getPlayer(party.getLeader());
         final ItemStack skull = new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)(party.getPartyState() == PartyState.LOBBY ? SkullType.PLAYER.ordinal() : SkullType.WITHER.ordinal()));
         final SkullMeta skullm = (SkullMeta) skull.getItemMeta();
         if (skull.getDurability() == SkullType.PLAYER.ordinal()) {
@@ -134,10 +140,10 @@ public class PartyManager {
         if (!party.getMembers().isEmpty()) {
         	final List<String> lore = Lists.newArrayList();
         	for (UUID membersUUID : party.getMembers()) {
-        		final Player member = Bukkit.getPlayer(membersUUID);
+        		final Player member = this.main.getServer().getPlayer(membersUUID);
         		lore.add(ChatColor.GRAY + "-> " + ChatColor.YELLOW + member.getName());
         		if (PlayerManager.get(member.getUniqueId()).getStatus() == PlayerStatus.SPAWN && party.getSize() < 3) {
-                	Main.getInstance().getItemManager().giveSpawnItem(member);
+        			this.main.getItemManager().giveSpawnItem(member);
                 }
         	}
         }
@@ -146,7 +152,7 @@ public class PartyManager {
     }
     
     public void deletePartyFromInventory(Party party) {
-        final Player player = Bukkit.getPlayer(party.getLeader());
+        final Player player = this.main.getServer().getPlayer(party.getLeader());
         final String leaderName = (player == null ? party.getLeaderName() : player.getName());
         for (ItemStack itemStack : this.partiesInventory.getContents()) {
             if (itemStack == null) continue;
@@ -162,9 +168,9 @@ public class PartyManager {
         for (Party parties : this.leaderUUIDtoParty.values()) {
         	addPartyToInventory(parties);
         }
-        final Player leader = Bukkit.getPlayer(party.getLeader());
+        final Player leader = this.main.getServer().getPlayer(party.getLeader());
         if (party.getSize() < 3 && leader != null) {
-        	Main.getInstance().getItemManager().giveSpawnItem(leader);
+        	this.main.getItemManager().giveSpawnItem(leader);
         }
     }
 }

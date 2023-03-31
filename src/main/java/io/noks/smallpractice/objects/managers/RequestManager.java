@@ -15,13 +15,18 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class RequestManager {
+	private Main main;
+	public RequestManager(Main main) {
+		this.main = main;
+	}
+	
 	public void openLadderSelectionIventory(Player requester, Player requested, boolean partyFight) {
 		if (PlayerManager.get(requester.getUniqueId()).getStatus() != PlayerStatus.SPAWN || PlayerManager.get(requested.getUniqueId()).getStatus() != PlayerStatus.SPAWN) {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		Main.getInstance().getInventoryManager().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
-		requester.openInventory(Main.getInstance().getInventoryManager().getLaddersInventory());
+		this.main.getInventoryManager().setSelectingDuel(requester.getUniqueId(), requested.getUniqueId());
+		requester.openInventory(this.main.getInventoryManager().getLaddersInventory());
 	}
     
     public void sendDuelRequest(Arena arena, Ladders ladder, Player requester, Player requested) {
@@ -74,7 +79,7 @@ public class RequestManager {
 		requested.spigot().sendMessage(line);
 		requester.sendMessage(ChatColor.DARK_AQUA + "You sent a duel request to " + ChatColor.YELLOW + requested.getName());
 		requesterManager.addRequest(requested.getUniqueId(), arena, ladder);
-		Main.getInstance().getInventoryManager().removeSelectingDuel(requester.getUniqueId());
+		this.main.getInventoryManager().removeSelectingDuel(requester.getUniqueId());
 	}
 	
 	public void acceptDuelRequest(Arena arena, Ladders ladder, Player requested, Player requester) {
@@ -87,18 +92,18 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "This player doesn't sent you a duel request!");
 			return;
 		}
-		final Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
-        final Party requestedParty = Main.getInstance().getPartyManager().getParty(requested.getUniqueId());
+		final Party requesterParty = this.main.getPartyManager().getParty(requester.getUniqueId());
+        final Party requestedParty = this.main.getPartyManager().getParty(requested.getUniqueId());
         if (requesterParty != null ^ requestedParty != null) {
             requested.sendMessage(ChatColor.RED + "Either you or this player are in a party!");
             return;
         }
         requesterManager.clearRequest();
 		if (requestedParty != null && requesterParty != null) {
-			Main.getInstance().getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
+			this.main.getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
 			return;
 		}
-		Main.getInstance().getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), false);
+		this.main.getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), false);
 	}
 	
 	public void denyDuelRequest(Player requested, Player requester) {
@@ -167,16 +172,16 @@ public class RequestManager {
 			requested.sendMessage(ChatColor.RED + "This player have not invited you into his party!");
 			return;
 		}
-		final Party requesterParty = Main.getInstance().getPartyManager().getParty(requester.getUniqueId());
+		final Party requesterParty = this.main.getPartyManager().getParty(requester.getUniqueId());
 		if (requesterParty.getPartyState() != PartyState.LOBBY) {
 			requested.sendMessage(ChatColor.RED + "This party isn't currently accessible!");
 			return;
 		}
 		requesterManager.getInvites().remove(requested.getUniqueId());
-		Main.getInstance().getPartyManager().joinParty(requesterParty.getLeader(), requested.getUniqueId());
+		this.main.getPartyManager().joinParty(requesterParty.getLeader(), requested.getUniqueId());
 		requesterParty.notify(ChatColor.GREEN + requested.getName() + " has joined the party");
         requested.sendMessage(ChatColor.GREEN + "You have joined the party!");
-        Main.getInstance().getItemManager().giveSpawnItem(requested);
+        this.main.getItemManager().giveSpawnItem(requested);
 	}
 	
 	public void denyPartyInvite(Player requested, Player requester) {

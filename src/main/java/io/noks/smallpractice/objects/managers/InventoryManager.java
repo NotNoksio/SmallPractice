@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryType;
@@ -35,17 +34,19 @@ public class InventoryManager {
 	private Map<UUID, Inventory> offlineInventories;
 	private Inventory[] leaderBoardInventory;
 	
-	public InventoryManager() {
+	private Main main;
+	public InventoryManager(Main main) {
+		this.main = main;
 		this.selectingDuel = new WeakHashMap<UUID, Request>();
-		this.arenasInventory = new Inventory[] {Bukkit.createInventory(null, this.calculateSize(Main.getInstance().getArenaManager().getArenaList().size()), "Arena Selection"), Bukkit.createInventory(null, this.calculateSize(Main.getInstance().getArenaManager().getArenaList().size()), "Arena Selection"), Bukkit.createInventory(null, this.calculateSize(Main.getInstance().getArenaManager().getArenaList().size()), "Arena Selection")};
-		this.unrankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
-		this.rankedInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
-		this.laddersInventory = Bukkit.createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
-		this.editingInventory = Bukkit.createInventory(null, 9, "Editing Selection");
-		this.selectionInventory = Bukkit.createInventory(null, 27, "Selector");
-		this.partyGameInventory = Bukkit.createInventory(null, 27, "Select Gamemode");
+		this.arenasInventory = new Inventory[] {main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList().size()), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList().size()), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList().size()), "Arena Selection")};
+		this.unrankedInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
+		this.rankedInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
+		this.laddersInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
+		this.editingInventory = main.getServer().createInventory(null, 9, "Editing Selection");
+		this.selectionInventory = main.getServer().createInventory(null, 27, "Selector");
+		this.partyGameInventory = main.getServer().createInventory(null, 27, "Select Gamemode");
 		this.offlineInventories = new WeakHashMap<UUID, Inventory>();
-		this.leaderBoardInventory = new Inventory[] {Bukkit.createInventory(null, 36, "Leaderboard"), Bukkit.createInventory(null, 36, "2v2 Leaderboard")};
+		this.leaderBoardInventory = new Inventory[] {main.getServer().createInventory(null, 36, "Leaderboard"), main.getServer().createInventory(null, 36, "2v2 Leaderboard")};
 		this.setArenasInventory();
 		this.setUnrankedInventory();
 		this.setRankedInventory();
@@ -60,7 +61,7 @@ public class InventoryManager {
 		this.arenasInventory[0].clear();
 		this.arenasInventory[1].clear();
 		this.arenasInventory[2].clear();
-		for (Arena arena : Main.getInstance().getArenaManager().getArenaList()) {
+		for (Arena arena : this.main.getArenaManager().getArenaList()) {
 			final ItemStack item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName());
 			this.arenasInventory[2].addItem(item);
 			if (!arena.isSumo()) {
@@ -84,8 +85,8 @@ public class InventoryManager {
 	private void setUnrankedInventory() {
 		this.unrankedInventory.clear();
 		for (Ladders ladders : Ladders.values()) {
-			final int fighting = Main.getInstance().getDuelManager().getFightFromLadder(ladders, false);
-			final int waiting = Main.getInstance().getQueueManager().getQueuedFromLadder(ladders, false);
+			final int fighting = this.main.getDuelManager().getFightFromLadder(ladders, false);
+			final int waiting = this.main.getQueueManager().getQueuedFromLadder(ladders, false);
 			final ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), (ladders.isEnable() ? Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.YELLOW + fighting, ChatColor.DARK_AQUA + "Waiting: " + ChatColor.YELLOW + waiting}) : Arrays.asList(new String[] {ChatColor.RED + "Disabled!"})), Math.min(fighting, 64));
 			this.unrankedInventory.addItem(item);
 		}
@@ -94,8 +95,8 @@ public class InventoryManager {
 	private void setRankedInventory() {
 		this.rankedInventory.clear();
 		for (Ladders ladders : Ladders.values()) {
-			final int fighting = Main.getInstance().getDuelManager().getFightFromLadder(ladders, true);
-			final int waiting = Main.getInstance().getQueueManager().getQueuedFromLadder(ladders, true);
+			final int fighting = this.main.getDuelManager().getFightFromLadder(ladders, true);
+			final int waiting = this.main.getQueueManager().getQueuedFromLadder(ladders, true);
 			final ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), (ladders.isEnable() ? Arrays.asList(new String[] {" ", ChatColor.DARK_AQUA + "Fighting: " + ChatColor.YELLOW + fighting, ChatColor.DARK_AQUA + "Waiting: " + ChatColor.YELLOW + waiting}) : Arrays.asList(new String[] {ChatColor.RED + "Disabled!"})), Math.min(fighting, 64));
 			this.rankedInventory.addItem(item);
 		}
@@ -118,7 +119,7 @@ public class InventoryManager {
 	}
 	
 	public Inventory getSettingsInventory(PlayerManager pm) {
-		final Inventory settingsInventory = Bukkit.createInventory(null, InventoryType.DISPENSER, "Settings Configuration");
+		final Inventory settingsInventory = this.main.getServer().createInventory(null, InventoryType.DISPENSER, "Settings Configuration");
 		if (settingsInventory.firstEmpty() == -1) {
 			settingsInventory.clear();
 		}
@@ -128,9 +129,9 @@ public class InventoryManager {
 		settingsInventory.setItem(1, ItemBuilder.createNewItemStack(new ItemStack(Material.PAPER, 1), ChatColor.GREEN + "Toggle Private Message", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Private Message: " + (ps.isPrivateMessageToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
 		settingsInventory.setItem(2, ItemBuilder.createNewItemStack(new ItemStack(Material.ANVIL, 1), ChatColor.GREEN + "Toggle Party Invite", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Party Invite: " + (ps.isPartyInviteToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
 		settingsInventory.setItem(3, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND_SWORD, 1), ChatColor.GREEN + "Toggle Duel Request", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Duel Request: " + (ps.isDuelRequestToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
-		// TODO: Toggle scoreboard
+		settingsInventory.setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.SIGN, 1), ChatColor.GREEN + "Toggle Scoreboard", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Scoreboard: " + (ps.isScoreboardToggled() ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"), ChatColor.GRAY + "(Click to change)"})));
 		if (pm.getPlayer().hasPermission("setting.request.delay") && ps.isDuelRequestToggled()) {
-			settingsInventory.setItem(8, ItemBuilder.createNewItemStack(new ItemStack(Material.WATCH, 1), ChatColor.GREEN + "Request Delay", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Actual value: " + ChatColor.GREEN + ps.getSecondsBeforeRerequest() + "seconds", ChatColor.GRAY + "(Click to change)"})));
+			settingsInventory.setItem(8, ItemBuilder.createNewItemStack(new ItemStack(Material.WATCH, 1), ChatColor.GREEN + "Request Delay", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Actual value: " + ChatColor.GREEN + ps.getSecondsBeforeRerequest() + " seconds", ChatColor.GRAY + "(Click to change)"})));
 		}
 		return settingsInventory;
 	}
@@ -158,7 +159,7 @@ public class InventoryManager {
 		this.fillWithGlass(this.leaderBoardInventory[1]);
 		int i = 18;
 		for (Ladders ladders : Ladders.values()) {
-			final Map<UUID, Integer> map = Main.getInstance().getDatabaseUtil().getTopEloLadder(ladders);
+			final Map<UUID, Integer> map = this.main.getDatabaseUtil().getTopEloLadder(ladders);
 			List<String> lore = new ArrayList<String>();
 			if (map == null) {
 				lore.add(ChatColor.RED + "Database not connected!");
@@ -166,12 +167,12 @@ public class InventoryManager {
 				int rank = 1;
 				for (Map.Entry<UUID, Integer> entry : map.entrySet()) {
 					final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
-					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + Main.getInstance().getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
+					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
 					rank++;
 				}
 			}
 			this.leaderBoardInventory[0].setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), lore));
-			final Map<UUID, PartnerCache> map2 = Main.getInstance().getDatabaseUtil().getDuoTopEloLadder(ladders);
+			final Map<UUID, PartnerCache> map2 = this.main.getDatabaseUtil().getDuoTopEloLadder(ladders);
 			lore = new ArrayList<String>();
 			if (map2 == null) {
 				lore.add(ChatColor.RED + "Database not connected!");
@@ -180,14 +181,14 @@ public class InventoryManager {
 				for (Map.Entry<UUID, PartnerCache> entry : map2.entrySet()) {
 					final PartnerCache cache = entry.getValue();
 					final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
-					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + Main.getInstance().getServer().getOfflinePlayer(entry.getKey()).getName() + " & " + Main.getInstance().getServer().getOfflinePlayer(cache.getPartner()).getName() + ": " + ChatColor.YELLOW + cache.getElo());
+					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + " & " + this.main.getServer().getOfflinePlayer(cache.getPartner()).getName() + ": " + ChatColor.YELLOW + cache.getElo());
 					rank++;
 				}
 			}
 			this.leaderBoardInventory[1].setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), lore));
 			i++;
 		}
-		final Map<UUID, Integer> globalMap = Main.getInstance().getDatabaseUtil().getGlobalTopElo();
+		final Map<UUID, Integer> globalMap = this.main.getDatabaseUtil().getGlobalTopElo();
 		List<String> lore = new ArrayList<String>();
 		if (globalMap == null) {
 			lore.add(ChatColor.RED + "Database not connected!");
@@ -195,12 +196,12 @@ public class InventoryManager {
 			int rank = 1;
 			for (Map.Entry<UUID, Integer> entry : globalMap.entrySet()) {
 				final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
-				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + Main.getInstance().getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
+				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
 				rank++;
 			}
 		}
 		this.leaderBoardInventory[0].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", lore));
-		final Map<UUID, PartnerCache> map2 = Main.getInstance().getDatabaseUtil().getDuoGlobalTopElo();
+		final Map<UUID, PartnerCache> map2 = this.main.getDatabaseUtil().getDuoGlobalTopElo();
 		lore = new ArrayList<String>();
 		if (map2 == null) {
 			lore.add(ChatColor.RED + "Database not connected!");
@@ -209,7 +210,7 @@ public class InventoryManager {
 			for (Map.Entry<UUID, PartnerCache> entry : map2.entrySet()) {
 				final PartnerCache cache = entry.getValue();
 				final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
-				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + Main.getInstance().getServer().getOfflinePlayer(entry.getKey()).getName() + " & " + Main.getInstance().getServer().getOfflinePlayer(cache.getPartner()).getName() + ": " + ChatColor.YELLOW + cache.getElo());
+				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + " & " + this.main.getServer().getOfflinePlayer(cache.getPartner()).getName() + ": " + ChatColor.YELLOW + cache.getElo());
 				rank++;
 			}
 		}
@@ -271,7 +272,7 @@ public class InventoryManager {
 	}
 	
 	public Inventory getKitEditingLayout(PlayerManager pm, Ladders ladder) {
-		final Inventory inventory = Bukkit.createInventory(null, 36, ladder.getName() + " Edit Layout");
+		final Inventory inventory = this.main.getServer().createInventory(null, 36, ladder.getName() + " Edit Layout");
 		if (inventory.firstEmpty() == -1) {
 			inventory.clear();
 		}
