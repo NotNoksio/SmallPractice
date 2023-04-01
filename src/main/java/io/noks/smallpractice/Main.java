@@ -119,7 +119,7 @@ public class Main extends JavaPlugin {
 		new SpectateCommand(this);
 		getCommand("mod").setExecutor(new ModerationCommand());
 		getCommand("party").setExecutor(new PartyCommand());
-		getCommand("forceduel").setExecutor(new ForceDuelCommand());
+		new ForceDuelCommand(this);
 		for (PlayerTimeEnum pte : PlayerTimeEnum.values()) {
 			getCommand(pte.getName().toLowerCase()).setExecutor(new PlayerTimeCommand());
 		}

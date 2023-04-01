@@ -1,6 +1,5 @@
 package io.noks.smallpractice.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,12 +7,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import io.noks.smallpractice.Main;
-import io.noks.smallpractice.arena.Arena;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
 public class ForceDuelCommand implements CommandExecutor {
+	
+	private Main main;
+	public ForceDuelCommand(Main main) {
+		this.main = main;
+		main.getCommand("spectate").setExecutor(this);
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -35,11 +39,11 @@ public class ForceDuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You are not in the spawn.");
 			return false;
 		}
-		if (Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
+		if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "You are in a party!");
 			return false;
 		}
-		final Player target = Bukkit.getPlayer(args[0]);
+		final Player target = this.main.getServer().getPlayer(args[0]);
 		
 		if (target == null) {
 			player.sendMessage(ChatColor.RED + "This player is not online.");
@@ -49,7 +53,7 @@ public class ForceDuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		if (Main.getInstance().getPartyManager().hasParty(target.getUniqueId())) {
+		if (this.main.getPartyManager().hasParty(target.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "That player is in a party!");
 			return false;
 		}
@@ -63,10 +67,17 @@ public class ForceDuelCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "This player must be in queue!");
 			return false;
 		}
-		player.sendMessage(ChatColor.RED + "Code under review due to a bug :)");
-		//final Ladders ladder = Main.getInstance().getQueueManager().getQueueMap().get(target.getUniqueId()).getLadder();
-		//Main.getInstance().getDuelManager().startDuel(Arena.getInstance().getRandomArena(ladder), ladder, player.getUniqueId(), target.getUniqueId(), false);
-		// TODO: remove target from queue
+		if (this.main.getQueueManager().getQueueMap().get(target.getUniqueId()).isTO2()) {
+			player.sendMessage(ChatColor.RED + "This player is in a 2v2 queue. We don't launch the duel!");
+			return false;
+		}
+		final Ladders ladder = this.main.getQueueManager().getQueueMap().get(target.getUniqueId()).getLadder();
+		if (this.main.getQueueManager().getQueueMap().get(target.getUniqueId()).isRanked()) {
+			player.sendMessage(ChatColor.RED + "This player is in the " + ladder.getName() + " ranked queue. We don't launch the duel!");
+			return false;
+		}
+		this.main.getQueueManager().quitQueue(player, true);
+		this.main.getDuelManager().startDuel(this.main.getArenaManager().getRandomArena(ladder), ladder, player.getUniqueId(), target.getUniqueId(), false);
 		return true;
 	}
 }

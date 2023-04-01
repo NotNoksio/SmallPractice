@@ -478,19 +478,11 @@ public class PlayerListener implements Listener {
 			case QUEUE:
 				if (item.getType() == Material.REDSTONE && itemName.equals(ChatColor.RED + "leave queue")) {
 	                event.setCancelled(true);
-	                this.main.getQueueManager().quitQueue(player);
+	                this.main.getQueueManager().quitQueue(player, false);
 	            }
 				break;
-			case WAITING:
-				if (item.getType() == Material.ENCHANTED_BOOK) {
-					final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
-					if (duel == null) {
-						break;
-					}
-					this.main.getItemManager().giveFightItems(player, duel.getLadder(), player.getInventory().getHeldItemSlot());
-				}
-				break;
 			case DUEL:
+			case WAITING:
 				if (item.getType() == Material.ENCHANTED_BOOK) {
 					final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
 					if (duel == null) {

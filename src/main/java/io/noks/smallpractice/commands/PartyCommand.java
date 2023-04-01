@@ -102,7 +102,7 @@ public class PartyCommand implements CommandExecutor {
 	        	}
 	        	final boolean isLeader = party.getLeader().equals(player.getUniqueId());
 	        	if (party.getPartyState() == PartyState.QUEUING) {
-	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()));
+	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()), false);
 	        		party.notify(ChatColor.RED + "Your party has been removed from the queue! Your " + (!isLeader ? "teammate has left your party" : "leader has left the party") + ".");
 	        	}
 	        	if (isLeader) {
@@ -124,7 +124,7 @@ public class PartyCommand implements CommandExecutor {
 	        		return false;
 	        	}
 	        	if (party.getPartyState() == PartyState.QUEUING) {
-	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()));
+	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()), false);
 	        		party.notify(ChatColor.RED + "Your party has been removed from the queue! Your leader has disband the party.");
 	        	}
 	        	Main.getInstance().getPartyManager().destroyParty(party.getLeader());

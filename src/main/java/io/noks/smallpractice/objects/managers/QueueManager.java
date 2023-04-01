@@ -118,15 +118,17 @@ public class QueueManager {
 		return false;
 	}
 	
-	public void quitQueue(Player player) {
+	public void quitQueue(Player player, boolean force) {
 		if (!this.queue.containsKey(player.getUniqueId())) {
 			return;
 		}
 		final boolean ranked = this.queue.get(player.getUniqueId()).isRanked();
 		this.queue.remove(player.getUniqueId());
-		PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
-		this.main.getItemManager().giveSpawnItem(player);
-		player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
+		if (!force) {
+			PlayerManager.get(player.getUniqueId()).setStatus(PlayerStatus.SPAWN);
+			this.main.getItemManager().giveSpawnItem(player);
+			player.sendMessage(ChatColor.RED + "You have been removed from the queue.");
+		}
 		this.main.getInventoryManager().updateQueueInventory(ranked);
 	}
 	

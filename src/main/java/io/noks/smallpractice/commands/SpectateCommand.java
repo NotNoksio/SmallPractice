@@ -23,7 +23,7 @@ public class SpectateCommand implements CommandExecutor {
 	private Main main;
 	public SpectateCommand(Main main) {
 		this.main = main;
-		this.main.getCommand("spectate").setExecutor(this);
+		main.getCommand("spectate").setExecutor(this);
 	}
 
 	@Override
