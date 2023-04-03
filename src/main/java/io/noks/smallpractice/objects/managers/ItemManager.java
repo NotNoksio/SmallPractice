@@ -153,18 +153,19 @@ public class ItemManager {
 	public void giveFightItems(Player player, Ladders ladder, int slot, boolean armor, boolean edit) {
 		player.getInventory().clear();
 		final Inventory inventory = (slot == 0 ? this.main.getItemManager().getDefaultFightItems(ladder) : PlayerManager.get(player.getUniqueId()).getCustomLadderKitFromSlot(ladder, (slot - (!edit ? 1 : 0))).getInventory());
-		if (armor) {
-			player.getInventory().setArmorContents(new ItemStack[] {inventory.getItem(36), inventory.getItem(37), inventory.getItem(38), inventory.getItem(39)});
-		}
 		if (inventory.getItem(36) != null && inventory.getItem(37) != null && inventory.getItem(38) != null && inventory.getItem(39) != null) {
-			inventory.setItem(36,  null);
-			inventory.setItem(37,  null);
-			inventory.setItem(38,  null);
-			inventory.setItem(39,  null);
+			inventory.setItem(36, null);
+			inventory.setItem(37, null);
+			inventory.setItem(38, null);
+			inventory.setItem(39, null);
 		}
 		for (ItemStack items : inventory.getContents()) {
 			if (items == null) continue;
 			player.getInventory().addItem(items);
+		}
+		if (armor) {
+			final Inventory defaultInventory = this.getDefaultFightItems(ladder);
+			player.getInventory().setArmorContents(new ItemStack[] {defaultInventory.getItem(36), defaultInventory.getItem(37), defaultInventory.getItem(38), defaultInventory.getItem(39)});
 		}
         player.sendMessage(ChatColor.GREEN.toString() + ladder.getName() + " kit successfully given.");
         player.updateInventory();

@@ -73,14 +73,22 @@ public class DuelCommand implements CommandExecutor {
 		}
 		final Cooldown cooldown = PlayerManager.get(player.getUniqueId()).getCooldown();
 		if (cooldown.isActive(this.getClass().getSimpleName())) {
-			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + ts.getSecondsBeforeRerequest()) - (System.currentTimeMillis() / 1000);
+			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName()) / 1000) + 5) - (System.currentTimeMillis() / 1000);
 			if (secondsLeft > 0) {
-				player.sendMessage(ChatColor.RED + "You cant sent duel request for another " + secondsLeft + " seconds!");
+				player.sendMessage(ChatColor.RED + "You can't sent duel request for another " + secondsLeft + " seconds!");
+				return false;
+			}
+		}
+		if (cooldown.isActive(this.getClass().getSimpleName() + "|" + target.getUniqueId())) {
+			final long secondsLeft = ((cooldown.getTime(this.getClass().getSimpleName() + "|" + target.getUniqueId()) / 1000) + ts.getSecondsBeforeRerequest()) - (System.currentTimeMillis() / 1000);
+			if (secondsLeft > 0) {
+				player.sendMessage(ChatColor.RED + "You can't sent another duel request to this player for another " + secondsLeft + " seconds!");
 				return false;
 			}
 		}
 		Main.getInstance().getRequestManager().openLadderSelectionIventory(player, target, partyFight);
 		cooldown.add(this.getClass().getSimpleName());
+		cooldown.add(this.getClass().getSimpleName() + "|" + target.getUniqueId());
 		return true;
 	}
 }

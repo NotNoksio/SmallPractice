@@ -45,4 +45,8 @@ public class EditedLadderKit {
 	public Inventory getInventory() {
 		return this.inventory;
 	}
+	
+	public void updateInventory(Inventory newInventory) {
+		this.inventory = newInventory;
+	}
 }

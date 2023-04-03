@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
@@ -178,7 +179,11 @@ public class InventoryListener implements Listener {
 				if (selectedArena == null) {
 					return;
 				}
-				player.teleport(selectedArena.getMiddle());
+				final Location loc = selectedArena.getMiddle();
+				if (loc.getBlock().getType() != Material.AIR) {
+					loc.add(0, 2, 0);
+				}
+				player.teleport(loc);
 				player.sendMessage(ChatColor.GREEN + "Teleported to " + selectedArena.getName() + " arena.");
 			}
 			player.closeInventory();

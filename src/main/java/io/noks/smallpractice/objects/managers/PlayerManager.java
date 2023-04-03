@@ -322,7 +322,8 @@ public class PlayerManager {
 	public void saveCustomLadderKit(Ladders ladder, int slot, Inventory inventory) {
 		final EditedLadderKit kit = getCustomLadderKitFromSlot(ladder, slot);
 		if (kit != null) {
-			this.customLadderKit.remove(kit);
+			kit.updateInventory(inventory);
+			return;
 		}
 		this.customLadderKit.add(new EditedLadderKit(ladder, slot, inventory));
 	}

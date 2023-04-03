@@ -16,7 +16,7 @@ public class ForceDuelCommand implements CommandExecutor {
 	private Main main;
 	public ForceDuelCommand(Main main) {
 		this.main = main;
-		main.getCommand("spectate").setExecutor(this);
+		main.getCommand("forceduel").setExecutor(this);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Arrow;
@@ -14,11 +15,13 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.DisplaySlot;
 
 import com.google.common.collect.Lists;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
+import io.noks.smallpractice.enums.DuelState;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.managers.PlayerManager;
@@ -31,10 +34,9 @@ public class Duel {
 	private FFADuel ffaDuel;
 	private boolean ranked;
 	private List<UUID> spectators;
-	private int timeBeforeDuel = 5;
 	private Set<UUID> drops;
-	protected BukkitTask xpBarRunnable;
-	private long startTime;
+	private DuelState state;
+	protected BukkitTask task;
 	
 	public Duel(Arena arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
 		this.arena = arena;
@@ -43,8 +45,7 @@ public class Duel {
 		this.spectators = Lists.newArrayList();
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
-		this.xpBarRunnable = this.initXpBarRunnable();
-		this.startTime = System.currentTimeMillis();
+		this.state = DuelState.WAITING;
 	}
 	
 	public Duel(Arena arena, Ladders ladder, FFADuel ffaDuel) {
@@ -54,8 +55,7 @@ public class Duel {
 		this.spectators = Lists.newArrayList();
 		this.drops = Sets.newHashSet();
 		this.ranked = false;
-		this.xpBarRunnable = this.initXpBarRunnable();
-		this.startTime = System.currentTimeMillis();
+		this.state = DuelState.WAITING;
     }
 	
 	public Arena getArena() {
@@ -178,10 +178,7 @@ public class Duel {
 		duelPlayers.clear();
 	}
 	
-	public void showDuelMates() {
-		if (!isValid()) {
-			return;
-		}
+	private void showDuelMates() {
 		if (this.simpleDuel == null) {
 			return;
 		}
@@ -212,9 +209,6 @@ public class Duel {
 	}
 	
 	public void showDuelPlayer() {
-		if (!isValid()) {
-			return;
-		}
 		if (this.simpleDuel != null) {
 			if (!this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty()) {
 				for (UUID firstUUID : this.simpleDuel.firstTeamAlive) {
@@ -226,6 +220,7 @@ public class Duel {
 					}
 				}
 			}
+			return;
 		}
 		if (this.ffaDuel != null) {
 			if (!this.ffaDuel.getFfaAlivePlayers().isEmpty()) {
@@ -255,25 +250,11 @@ public class Duel {
 		return false;
 	}
 	
-	public boolean isValid() {
-		if (this.simpleDuel != null) {
-			return (!this.simpleDuel.firstTeam.isEmpty() && !this.simpleDuel.secondTeam.isEmpty() && !this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty());
-		}
-		if (this.ffaDuel != null) {
-			return (!this.ffaDuel.getFfaPlayers().isEmpty() && !this.ffaDuel.getFfaAlivePlayers().isEmpty());
-		}
-		return false;
-	}
-	
 	public void setDuelPlayersStatusTo(PlayerStatus status) {
 		for (UUID playersUUID : getAllTeams()) {
 			if (Bukkit.getPlayer(playersUUID) == null) continue;
 			PlayerManager.get(playersUUID).setStatus(status);
 		}
-	}
-	
-	public int getTimeBeforeDuel() {
-		return this.timeBeforeDuel;
 	}
 	
 	public void addDrops(UUID uuid) {
@@ -288,6 +269,10 @@ public class Duel {
 		return this.drops.contains(uuid);
 	}
 	
+	public void updateState(DuelState state) {
+		this.state = state;
+	}
+	
 	public void clearDrops() {
 		if (this.drops.isEmpty()) {
 			return;
@@ -295,44 +280,91 @@ public class Duel {
 		final World world = Bukkit.getWorld("world");
 		final Iterator<Entity> it = world.getEntities().iterator();
 		while (it.hasNext()) {
-			Entity entities = it.next();
+			final Entity entities = it.next();
 			if (entities == null || (!(entities instanceof Item) && !(entities instanceof Arrow)) && !this.drops.contains(entities.getUniqueId())) continue;
 			entities.remove();
 		}
 	}
 	
-	private BukkitTask initXpBarRunnable() {
-		if (this.ladder != Ladders.NODEBUFF && this.ladder != Ladders.NOENCHANT) {
-			return null;
-		}
+	public void launchCountdownTask() {
+		this.task = this.initCountdownTask();
+	}
+	private BukkitTask initCountdownTask() {
 		return new BukkitRunnable() {
+			private int timeBeforeDuel = 5;
 			
 			@Override
 			public void run() {
-				for (UUID uuids : Duel.this.getAllAliveTeams()) {
+				if (Duel.this.state != DuelState.WAITING) {
+					return;
+				}
+				if (this.timeBeforeDuel <= 0) {
+					Duel.this.sendSoundedMessage(ChatColor.GREEN + "Duel has started!", Sound.FIREWORK_BLAST);
+					Duel.this.showDuelPlayer();
+					Duel.this.setDuelPlayersStatusTo(PlayerStatus.DUEL);
+					Duel.this.updateState(DuelState.STARTED);
+					this.cancel();
+					Duel.this.task = Duel.this.initDuelTask();
+					return;
+				}
+				if (this.timeBeforeDuel == 5) {
+					Duel.this.showDuelMates();
+				}
+				if (this.timeBeforeDuel > 0) {
+					Duel.this.sendSoundedMessage(ChatColor.DARK_AQUA + "Duel start in " + ChatColor.YELLOW + this.timeBeforeDuel + ChatColor.DARK_AQUA + " second" + (this.timeBeforeDuel > 1 ? "s.." : ".."), Sound.NOTE_PLING);
+					this.timeBeforeDuel--;
+				}
+			}
+		}.runTaskTimer(Main.getInstance(), 10, 20);
+	}
+	private BukkitTask initDuelTask() {
+		return new BukkitRunnable() {
+			private int tick = 0;
+			private long startTime = -1;
+			
+			private void updateXpBar(PlayerManager pm) {
+			    final float xpPercentage = Math.max(0.0f, Math.min(99.9f, ((float) pm.getMatchStats().getEnderPearlCooldown() / (14 * 1000)) * 100));
+			    pm.getPlayer().setExp(xpPercentage / 100);
+			}
+			
+			private String format(int sec) {
+				return String.format("%02d:%02d", new Object[] { Integer.valueOf(sec / 60), Integer.valueOf(sec % 60) });
+			}
+			
+			@Override
+			public void run() {
+				if (Duel.this.state != DuelState.STARTED) {
+					return;
+				}
+				if (this.startTime == -1) {
+					this.startTime = System.currentTimeMillis();
+				}
+				this.tick++;
+				for (UUID uuids : Duel.this.getAllAliveTeamsAndSpectators()) {
 					final PlayerManager pm = PlayerManager.get(uuids);
-					if (pm == null) continue;
+					if (pm == null) {
+						continue;
+					}
+					if (pm.getSettings().isScoreboardToggled() && pm.getPlayer().getScoreboard() != null && pm.getPlayer().getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null && this.tick == 10) {
+						pm.getPlayer().getScoreboard().getTeam("time").setSuffix(ChatColor.RESET + this.format((int)((System.currentTimeMillis() - this.startTime) / 1000.0D)));
+					}
+					if (Duel.this.ladder != Ladders.NODEBUFF && Duel.this.ladder != Ladders.NOENCHANT || Duel.this.spectators.contains(uuids)) {
+						continue;
+					}
 					if (!pm.getMatchStats().isEnderPearlCooldownActive()) continue;
-					Duel.this.updateXpBar(pm);
+					this.updateXpBar(pm);
+				}
+				if (tick == 10) {
+					this.tick = 0;
 				}
 			}
 		}.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
 	}
 	
 	public void cancelTask() {
-		if (this.xpBarRunnable == null) {
+		if (this.task == null) {
 			return;
 		}
-		this.xpBarRunnable.cancel();
-	}
-	
-	private void updateXpBar(PlayerManager pm) {
-		final Player player = pm.getPlayer();
-	    final float xpPercentage = Math.max(0.0f, Math.min(99.9f, ((float) pm.getMatchStats().getEnderPearlCooldown() / (14 * 1000)) * 100));
-	    player.setExp(xpPercentage / 100);
-	}
-	
-	public long getStartTime() {
-		return this.startTime;
+		this.task.cancel();
 	}
 }
