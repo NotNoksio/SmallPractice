@@ -80,7 +80,11 @@ public class ArenaManager {
 		return null;
 	}
 	
-	public List<Arena> getArenaList() {
+	public List<Arena> getFullArenaList() {
 		return this.arenaList;
+	}
+	
+	public List<Arena> getArenaList(boolean sumo) {
+		return this.arenaList.stream().filter((sumo ? Arena::isSumo : not(Arena::isSumo))).collect(Collectors.toList());
 	}
 }

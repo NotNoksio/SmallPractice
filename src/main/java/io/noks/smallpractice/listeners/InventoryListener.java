@@ -31,6 +31,7 @@ import io.noks.smallpractice.objects.Request;
 import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 import io.noks.smallpractice.party.Party;
+import io.noks.smallpractice.party.PartyEvents;
 import net.minecraft.util.com.google.common.collect.Sets;
 
 public class InventoryListener implements Listener {
@@ -105,20 +106,25 @@ public class InventoryListener implements Listener {
 			}
 			final Ladders ladder = Ladders.getLadderFromName(player.getMetadata("ladder").get(0).asString());
 			final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
-			if (item.getType() == Material.SHEARS) {
+			final String itemName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+			final PartyEvents events = PartyEvents.getByName(itemName);
+			// TODO: arena selection for party event
+			switch (events) {
+			case SPLIT_TEAM:
 				this.main.getDuelManager().createSplitTeamsDuel(party, ladder);
 				player.closeInventory();
 				player.removeMetadata("ladder", this.main);
-				return;
-			}
-			if (item.getType() == Material.DIAMOND_SWORD && item.getItemMeta().getDisplayName().toLowerCase().contains("ffa")) {
+				break;
+			case FFA:
 				this.main.getDuelManager().startDuel(this.main.getArenaManager().getRandomArena(ladder), ladder, player.getUniqueId(), party.getMembersIncludingLeader());
 				player.closeInventory();
 				player.removeMetadata("ladder", this.main);
-				return;
-			}
-			if (item.getType() == Material.WOOL) {
-				player.sendMessage(ChatColor.RED + "Coming SOON..");
+				break;
+			case REDROVER:
+				player.sendMessage(ChatColor.RED + "Coming for season 2!!! :)");
+				break;
+			default:
+				break;
 			}
 		}
 		if (title.equals("fight other parties")) {
@@ -155,7 +161,7 @@ public class InventoryListener implements Listener {
 				if (selectedArena == null) {
 					return;
 				}
-				for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
+				for (Arena allArenas : this.main.getArenaManager().getFullArenaList()) {
     				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
     				allArenas.removeSpectator(player.getUniqueId());
     			}

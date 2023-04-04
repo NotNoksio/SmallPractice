@@ -147,7 +147,7 @@ public class PlayerListener implements Listener {
         final PlayerManager pm = PlayerManager.get(playerUUID);
         if (pm != null) {
 			if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
-				for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
+				for (Arena allArenas : this.main.getArenaManager().getFullArenaList()) {
 					if (!allArenas.getAllSpectators().contains(playerUUID)) continue;
 					allArenas.removeSpectator(playerUUID);
 					break;
@@ -504,7 +504,7 @@ public class PlayerListener implements Listener {
 		                }
 		                pm.setSpectate(null);
 	                } else {
-	                	for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
+	                	for (Arena allArenas : this.main.getArenaManager().getFullArenaList()) {
 	        				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
 	        				allArenas.removeSpectator(player.getUniqueId());
 	        			}

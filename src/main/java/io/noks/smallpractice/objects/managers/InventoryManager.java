@@ -19,6 +19,7 @@ import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.objects.PlayerSettings;
 import io.noks.smallpractice.objects.Request;
+import io.noks.smallpractice.party.PartyEvents;
 import io.noks.smallpractice.utils.ItemBuilder;
 import io.noks.smallpractice.utils.PartnerCache;
 
@@ -38,7 +39,7 @@ public class InventoryManager {
 	public InventoryManager(Main main) {
 		this.main = main;
 		this.selectingDuel = new WeakHashMap<UUID, Request>();
-		this.arenasInventory = new Inventory[] {main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList().size()), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList().size()), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList().size()), "Arena Selection")};
+		this.arenasInventory = new Inventory[] {main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList(false).size() + 1), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList(true).size() + 1), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getFullArenaList().size()), "Arena Selection")};
 		this.unrankedInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
 		this.rankedInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
 		this.laddersInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
@@ -61,7 +62,7 @@ public class InventoryManager {
 		this.arenasInventory[0].clear();
 		this.arenasInventory[1].clear();
 		this.arenasInventory[2].clear();
-		for (Arena arena : this.main.getArenaManager().getArenaList()) {
+		for (Arena arena : this.main.getArenaManager().getFullArenaList()) {
 			final ItemStack item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName());
 			this.arenasInventory[2].addItem(item);
 			if (!arena.isSumo()) {
@@ -146,9 +147,11 @@ public class InventoryManager {
 	private void setPartyGameInventory() {
 		this.partyGameInventory.clear();
 		this.fillWithGlass(this.partyGameInventory);
-		this.partyGameInventory.setItem(11, ItemBuilder.createNewItemStackByMaterial(Material.SHEARS, ChatColor.GREEN + "Split Team"));
-		this.partyGameInventory.setItem(13, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.GREEN + "FFA"));
-		this.partyGameInventory.setItem(15, ItemBuilder.createNewItemStack(new ItemStack(Material.WOOL, 1, (short) 14), ChatColor.RED + "RedRover"));
+		int i = 11;
+		for (PartyEvents event : PartyEvents.values()) {
+			this.partyGameInventory.setItem(i, ItemBuilder.createNewItemStack(event.icon(), ChatColor.GREEN + event.getName(), Arrays.asList(event.lore())));
+			i++;
+		}
 	}
 	
 	// TODO: THIS IS UGLY ASF

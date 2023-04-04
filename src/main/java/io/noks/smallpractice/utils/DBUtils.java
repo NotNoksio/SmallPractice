@@ -40,12 +40,24 @@ public class DBUtils {
 
 	private HikariDataSource hikari;
 	
+	private final String SAVE_ELO;
+	private final String INSERT_ELO;
+	private final String INSERT_DUOELO;
 	public DBUtils(String address, String name, String user, String password) {
 		this.address = address;
 		this.name = name;
 		this.username = user;
 		this.password = password;
 		this.connectDatabase();
+		final StringJoiner ladder = new StringJoiner(", ");
+		final StringJoiner questionMarks = new StringJoiner(", ");
+		for (Ladders ladders : Ladders.values()) {
+			ladder.add(ladders.getName().toLowerCase() + "=?");
+			questionMarks.add("?");
+		}
+		this.SAVE_ELO = "UPDATE elo SET " + ladder.toString() + ", global=?, unrankedwin=? WHERE uuid=?";
+		this.INSERT_ELO = "INSERT INTO elo VALUES(?, " + questionMarks.toString() + ", ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
+		this.INSERT_DUOELO = "INSERT INTO duoelo VALUES(?, ?, " + questionMarks.toString() + ", ?) ON DUPLICATE KEY UPDATE uuid1=?";
 	}
 	
 	public void connectDatabase() {
@@ -106,20 +118,15 @@ public class DBUtils {
 		}
 	}
 
+	private final String SELECT_ELO = "SELECT * FROM elo WHERE uuid=?";
+	private final String INSERT_SETTINGS = "INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
+	private final String SELECT_SETTINGS = "SELECT * FROM settings WHERE uuid=?";
+	private final String SELECT_KITS = "SELECT ladder, slot, name, inventory FROM customkits WHERE uuid=?";
 	public void loadPlayer(UUID uuid) {
 		if (!isConnected()) {
 			new PlayerManager(uuid).heal(false);
 			return;
 		}
-		final StringJoiner questionMarks = new StringJoiner(", ");
-		for (int i = 0; i < Ladders.values().length; i++) {
-			questionMarks.add("?");
-		}
-		final String INSERT_ELO = "INSERT INTO elo VALUES(?, " + questionMarks.toString() + ", ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
-		final String SELECT_ELO = "SELECT * FROM elo WHERE uuid=?";
-		final String INSERT_SETTINGS = "INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
-		final String SELECT_SETTINGS = "SELECT * FROM settings WHERE uuid=?";
-		final String SELECT_KITS = "SELECT ladder, slot, name, inventory FROM customkits WHERE uuid=?";
 		Connection connection = null;
 		EloManager elo = null;
 		PlayerSettings settings = null;
@@ -196,18 +203,13 @@ public class DBUtils {
 		}
 	}
 
+	private final String SAVE_SETTINGS = "UPDATE settings SET pingdiff=?, tpm=?, invite=?, request=?, requestdelay=?, scoreboard=? WHERE uuid=?";
+	private final String INSERT_KITS = "INSERT INTO customkits VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=?, inventory=?";
 	public void savePlayer(PlayerManager pm) {
 		if (!isConnected()) {
 			pm.remove();
 			return;
 		}
-		final StringJoiner ladder = new StringJoiner(", ");
-		for (Ladders ladders : Ladders.values()) {
-			ladder.add(ladders.getName().toLowerCase() + "=?");
-		}
-		final String SAVE_ELO = "UPDATE elo SET " + ladder.toString() + ", global=?, unrankedwin=? WHERE uuid=?";
-		final String SAVE_SETTINGS = "UPDATE settings SET pingdiff=?, tpm=?, invite=?, request=?, requestdelay=?, scoreboard=? WHERE uuid=?";
-		final String INSERT_KITS = "INSERT INTO customkits VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=?, inventory=?";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
@@ -451,21 +453,16 @@ public class DBUtils {
 		return map;
 	}
 	
+	private final String SELECT_DUOELO = "SELECT * FROM duoelo WHERE uuid1=? AND uuid2=?";
 	public EloManager loadOrCreateDuo(UUID uuid1, UUID uuid2) {
 		EloManager elo = new EloManager();
 		if (!isConnected()) {
 			return elo;
 		}
-		final StringJoiner questionMarks = new StringJoiner(", ");
-		for (int i = 0; i < Ladders.values().length; i++) {
-			questionMarks.add("?");
-		}
-		final String insertLine = "INSERT INTO duoelo VALUES(?, ?, " + questionMarks.toString() + ", ?) ON DUPLICATE KEY UPDATE uuid1=?"; // TODO: ensure that this dont just change the mate
-		final String selectLine = "SELECT * FROM duoelo WHERE uuid1=? AND uuid2=?";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			PreparedStatement statement = connection.prepareStatement(insertLine);
+			PreparedStatement statement = connection.prepareStatement(this.INSERT_DUOELO);
 			statement.setString(1, uuid1.toString());
 			statement.setString(2, uuid2.toString());
 			int i = 2;
@@ -478,7 +475,7 @@ public class DBUtils {
 			statement.executeUpdate();
 			statement.close();
 			
-			statement = connection.prepareStatement(selectLine);
+			statement = connection.prepareStatement(this.SELECT_DUOELO);
 			statement.setString(1, uuid1.toString());
 			statement.setString(2, uuid2.toString());
 			final ResultSet result = statement.executeQuery();

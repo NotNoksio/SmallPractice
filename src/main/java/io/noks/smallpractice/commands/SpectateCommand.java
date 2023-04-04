@@ -85,7 +85,7 @@ public class SpectateCommand implements CommandExecutor {
 			final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(pm.getSpectate().getUniqueId());
 			duel.removeSpectator(player.getUniqueId());
 		} else {
-			for (Arena allArenas : this.main.getArenaManager().getArenaList()) {
+			for (Arena allArenas : this.main.getArenaManager().getFullArenaList()) {
 				if (!allArenas.getAllSpectators().contains(player.getUniqueId())) continue;
 				allArenas.removeSpectator(player.getUniqueId());
 			}
