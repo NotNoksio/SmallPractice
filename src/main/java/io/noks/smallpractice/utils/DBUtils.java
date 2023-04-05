@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,8 @@ import io.noks.smallpractice.party.Party;
 import net.minecraft.util.com.google.common.collect.Lists;
 
 public class DBUtils {
+	private Map<String, Map<UUID, Integer>> soloTop = new HashMap<String, Map<UUID, Integer>>(Ladders.values().length + 1);
+	private Map<String, Map<UUID, PartnerCache>> duoTop = new HashMap<String, Map<UUID, PartnerCache>>(Ladders.values().length + 1);
 	private boolean connected = false;
 	private final String address;
 	private final String name;
@@ -54,10 +58,25 @@ public class DBUtils {
 		for (Ladders ladders : Ladders.values()) {
 			ladder.add(ladders.getName().toLowerCase() + "=?");
 			questionMarks.add("?");
+			updateSoloTopLadder(ladders, ladders == Ladders.NODEBUFF);
+			updateDuoTopLadder(ladders, ladders == Ladders.NODEBUFF);
 		}
 		this.SAVE_ELO = "UPDATE elo SET " + ladder.toString() + ", global=?, unrankedwin=? WHERE uuid=?";
 		this.INSERT_ELO = "INSERT INTO elo VALUES(?, " + questionMarks.toString() + ", ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
 		this.INSERT_DUOELO = "INSERT INTO duoelo VALUES(?, ?, " + questionMarks.toString() + ", ?) ON DUPLICATE KEY UPDATE uuid1=?";
+	}
+	
+	public void updateSoloTopLadder(Ladders ladder, boolean globalUpdate) {
+		this.soloTop.put(ladder.getName(), getTopEloLadder(ladder));
+		if (globalUpdate) {
+			this.soloTop.put("Global", getGlobalTopElo());
+		}
+	}
+	public void updateDuoTopLadder(Ladders ladder, boolean globalUpdate) {
+		this.duoTop.put(ladder.getName(), getDuoTopEloLadder(ladder));
+		if (globalUpdate) {
+			this.duoTop.put("Global", getDuoGlobalTopElo());
+		}
 	}
 	
 	public void connectDatabase() {
@@ -128,8 +147,8 @@ public class DBUtils {
 			return;
 		}
 		Connection connection = null;
-		EloManager elo = null;
-		PlayerSettings settings = null;
+		EloManager elo = new EloManager();
+		PlayerSettings settings = new PlayerSettings();
 		final List<EditedLadderKit> customKits = Lists.newArrayList();
 		try {
 			connection = this.hikari.getConnection();
@@ -324,7 +343,10 @@ public class DBUtils {
 		}
 	}
 	
-	public Map<UUID, Integer> getTopEloLadder(Ladders ladder) {
+	public Map<UUID, Integer> getTopEloLadderList(Ladders ladder){
+		return this.soloTop.get(ladder.getName());
+	}
+	private Map<UUID, Integer> getTopEloLadder(Ladders ladder) {
 		if (!isConnected()) {
 			return null;
 		}
@@ -353,19 +375,21 @@ public class DBUtils {
 				}
 			}
 		}
-		return map;
+		return map.isEmpty() ? Collections.emptyMap() : map;
 	}
-	
-	public Map<UUID, Integer> getGlobalTopElo() {
+	public Map<UUID, Integer> getGlobalTopEloList(){
+		return this.soloTop.get("Global");
+	}
+	private final String SELECT_GLOBAL_TOP = "SELECT uuid,global FROM elo ORDER BY global DESC LIMIT 10";
+	private Map<UUID, Integer> getGlobalTopElo() {
 		if (!isConnected()) {
 			return null;
 		}
 		final Map<UUID, Integer> map = new LinkedHashMap<UUID, Integer>(10);
-		final String selectLine = "SELECT uuid,global FROM elo ORDER BY global DESC LIMIT 10";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			final PreparedStatement statement = connection.prepareStatement(this.SELECT_GLOBAL_TOP);
 			final ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				final UUID uuid = UUID.fromString(result.getString("uuid"));
@@ -385,10 +409,13 @@ public class DBUtils {
 				}
 			}
 		}
-		return map;
+		return map.isEmpty() ? Collections.emptyMap() : map;
 	}
 	
-	public Map<UUID, PartnerCache> getDuoTopEloLadder(Ladders ladder) {
+	public Map<UUID, PartnerCache> getDuoTopEloLadderList(Ladders ladder){
+		return this.duoTop.get(ladder.getName());
+	}
+	private Map<UUID, PartnerCache> getDuoTopEloLadder(Ladders ladder) {
 		if (!isConnected()) {
 			return null;
 		}
@@ -418,18 +445,21 @@ public class DBUtils {
 				}
 			}
 		}
-		return map;
+		return map.isEmpty() ? Collections.emptyMap() : map;
 	}
-	public Map<UUID, PartnerCache> getDuoGlobalTopElo() {
+	public Map<UUID, PartnerCache> getDuoGlobalTopEloList(){
+		return this.duoTop.get("Global");
+	}
+	private final String SELECT_GLOBAL_DUO_TOP = "SELECT uuid1,uuid2,global FROM duoelo ORDER BY global DESC LIMIT 10";
+	private Map<UUID, PartnerCache> getDuoGlobalTopElo() {
 		if (!isConnected()) {
 			return null;
 		}
 		final Map<UUID, PartnerCache> map = new LinkedHashMap<UUID, PartnerCache>(10);
-		final String selectLine = "SELECT uuid1,uuid2,global FROM duoelo ORDER BY global DESC LIMIT 10";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			final PreparedStatement statement = connection.prepareStatement(this.SELECT_GLOBAL_DUO_TOP);
 			final ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				final UUID uuid1 = UUID.fromString(result.getString("uuid1"));
@@ -450,7 +480,7 @@ public class DBUtils {
 				}
 			}
 		}
-		return map;
+		return map.isEmpty() ? Collections.emptyMap() : map;
 	}
 	
 	private final String SELECT_DUOELO = "SELECT * FROM duoelo WHERE uuid1=? AND uuid2=?";
@@ -502,6 +532,7 @@ public class DBUtils {
 		return elo;
 	}
 	
+	private final String DELETE_KIT = "DELETE FROM customkits WHERE uuid=? AND ladder=? AND slot=?";
 	public void deleteCustomKit(UUID uuid, Ladders ladder, int slot) {
 		if (!isConnected()) {
 			return;
@@ -509,11 +540,10 @@ public class DBUtils {
 		if (!isCustomKitLadderSlotExist(uuid, ladder, slot)) {
 			return;
 		}
-		final String deleteLine = "DELETE FROM customkits WHERE uuid=? AND ladder=? AND slot=?";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			final PreparedStatement statement = connection.prepareStatement(deleteLine);
+			final PreparedStatement statement = connection.prepareStatement(this.DELETE_KIT);
 			statement.setString(1, uuid.toString());
 			statement.setString(2, ladder.getName());
 			statement.setInt(3, slot);
@@ -531,16 +561,15 @@ public class DBUtils {
 			}
 		}
 	}
-	
+	private final String CUSTOM_KIT_EXIST = "SELECT COUNT(*) FROM customkits WHERE uuid=? AND ladder=? AND slot=?";
 	private boolean isCustomKitLadderSlotExist(UUID uuid, Ladders ladder, int slot) {
 		if (!isConnected()) {
 			return false;
 		}
-		final String selectLine = "SELECT COUNT(*) FROM customkits WHERE uuid=? AND ladder=? AND slot=?";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			final PreparedStatement statement = connection.prepareStatement(this.CUSTOM_KIT_EXIST);
 			statement.setString(1, uuid.toString());
 			statement.setString(2, ladder.getName());
 			statement.setInt(3, slot);
@@ -565,15 +594,15 @@ public class DBUtils {
 		return false;
 	}
 	
+	private final String SELECT_DUO_EXIST = "SELECT COUNT(*) FROM duoelo WHERE uuid1=? AND uuid2=?";
 	public boolean isDuoExist(UUID uuid1, UUID uuid2) {
 		if (!isConnected()) {
 			return false;
 		}
-		final String selectLine = "SELECT COUNT(*) FROM duoelo WHERE uuid1=? AND uuid2=?";
 		Connection connection = null;
 		try {
 			connection = this.hikari.getConnection();
-			final PreparedStatement statement = connection.prepareStatement(selectLine);
+			final PreparedStatement statement = connection.prepareStatement(this.SELECT_DUO_EXIST);
 			statement.setString(1, uuid1.toString());
 			statement.setString(2, uuid2.toString());
 			final ResultSet resultSet = statement.executeQuery();

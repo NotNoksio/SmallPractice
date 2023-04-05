@@ -274,11 +274,13 @@ public class DuelManager {
 			lm.getEloManager().removeFrom(ladder, scoreChange);
 			this.main.getDatabaseUtil().savePlayerSingleElo(wm, ladder);
 			this.main.getDatabaseUtil().savePlayerSingleElo(lm, ladder);
+			this.main.getDatabaseUtil().updateSoloTopLadder(ladder, true);
 		} else {
 			winnerParty.getPartyEloManager().addTo(ladder, scoreChange);
 			loserParty.getPartyEloManager().removeFrom(ladder, scoreChange);
 			this.main.getDatabaseUtil().saveDuoElo(winnerParty, ladder);
 			this.main.getDatabaseUtil().saveDuoElo(loserParty, ladder);
+			this.main.getDatabaseUtil().updateDuoTopLadder(ladder, true);
 		}
 		final String eloMessage = ChatColor.GOLD + "Elo Changes: " + ChatColor.GREEN + this.main.getServer().getPlayer(winnerUUID).getName() + (to2 ? ", " + this.main.getServer().getPlayer(winners.get(1)).getName() : "") +  " (+" + scoreChange + ") " + ChatColor.RED + this.main.getServer().getPlayer(loserUUID).getName() + (to2 ? ", " + this.main.getServer().getPlayer(losers.get(1)).getName() : "") + " (-" + scoreChange + ")";
 		for (UUID winnersUUID : winners) {

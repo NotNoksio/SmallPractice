@@ -265,8 +265,10 @@ public class InventoryListener implements Listener {
 				final Inventory defaultInventory = this.main.getItemManager().getDefaultFightItems(ladder);
 				final ItemStack[] defaultArmorContent = {defaultInventory.getItem(36), defaultInventory.getItem(37), defaultInventory.getItem(38), defaultInventory.getItem(39)};
 				final Inventory savedInventory = Bukkit.createInventory(null, InventoryType.PLAYER);
+				int i = 0;
 				for (ItemStack items : player.getInventory().getContents()) {
-					savedInventory.addItem(items);
+					savedInventory.setItem(i, items);
+					i++;
 				}
 				savedInventory.setItem(36, defaultArmorContent[0]);
 				savedInventory.setItem(37, defaultArmorContent[1]);

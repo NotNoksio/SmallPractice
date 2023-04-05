@@ -159,9 +159,10 @@ public class ItemManager {
 			inventory.setItem(38, null);
 			inventory.setItem(39, null);
 		}
+		int i = 0;
 		for (ItemStack items : inventory.getContents()) {
-			if (items == null) continue;
-			player.getInventory().addItem(items);
+			player.getInventory().setItem(i, items);
+			i++;
 		}
 		if (armor) {
 			final Inventory defaultInventory = this.getDefaultFightItems(ladder);

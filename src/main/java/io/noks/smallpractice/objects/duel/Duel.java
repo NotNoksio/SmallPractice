@@ -315,7 +315,7 @@ public class Duel {
 					this.timeBeforeDuel--;
 				}
 			}
-		}.runTaskTimer(Main.getInstance(), 10, 20);
+		}.runTaskTimer(Main.getInstance(), 5, 20);
 	}
 	private BukkitTask initDuelTask() {
 		return new BukkitRunnable() {

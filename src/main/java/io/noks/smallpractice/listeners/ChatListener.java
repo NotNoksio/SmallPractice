@@ -32,11 +32,13 @@ public class ChatListener implements Listener {
 			if (event.getMessage().toLowerCase().equals("cancel")) {
 				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, editedKit.getLadder()));
 				player.removeMetadata("renamekit", this.main);
+				player.sendMessage(ChatColor.RED + "You've cancelled the renaming!");
 				return;
 			}
 			editedKit.rename(event.getMessage());
 			player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, editedKit.getLadder()));
 			player.removeMetadata("renamekit", this.main);
+			player.sendMessage(ChatColor.GREEN + "Successfully changed name!");
 			return;
 		}
 		if (event.getMessage().charAt(0) == '@' && player.hasPermission("chat.staff")) {

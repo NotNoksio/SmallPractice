@@ -161,21 +161,22 @@ public class InventoryManager {
 		this.fillWithGlass(this.leaderBoardInventory[0]);
 		this.fillWithGlass(this.leaderBoardInventory[1]);
 		int i = 18;
+		ChatColor color = null;
 		for (Ladders ladders : Ladders.values()) {
-			final Map<UUID, Integer> map = this.main.getDatabaseUtil().getTopEloLadder(ladders);
+			final Map<UUID, Integer> map = this.main.getDatabaseUtil().getTopEloLadderList(ladders);
 			List<String> lore = new ArrayList<String>();
 			if (map == null) {
 				lore.add(ChatColor.RED + "Database not connected!");
 			} else {
 				int rank = 1;
 				for (Map.Entry<UUID, Integer> entry : map.entrySet()) {
-					final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
-					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
+					color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
+					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + " " + ChatColor.YELLOW + "(" + entry.getValue() + ")");
 					rank++;
 				}
 			}
 			this.leaderBoardInventory[0].setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), lore));
-			final Map<UUID, PartnerCache> map2 = this.main.getDatabaseUtil().getDuoTopEloLadder(ladders);
+			final Map<UUID, PartnerCache> map2 = this.main.getDatabaseUtil().getDuoTopEloLadderList(ladders);
 			lore = new ArrayList<String>();
 			if (map2 == null) {
 				lore.add(ChatColor.RED + "Database not connected!");
@@ -183,28 +184,28 @@ public class InventoryManager {
 				int rank = 1;
 				for (Map.Entry<UUID, PartnerCache> entry : map2.entrySet()) {
 					final PartnerCache cache = entry.getValue();
-					final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
-					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + " & " + this.main.getServer().getOfflinePlayer(cache.getPartner()).getName() + ": " + ChatColor.YELLOW + cache.getElo());
+					color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
+					lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + color + " & " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(cache.getPartner()).getName() + " " + ChatColor.YELLOW + "(" + cache.getElo() + ")");
 					rank++;
 				}
 			}
 			this.leaderBoardInventory[1].setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), lore));
 			i++;
 		}
-		final Map<UUID, Integer> globalMap = this.main.getDatabaseUtil().getGlobalTopElo();
+		final Map<UUID, Integer> globalMap = this.main.getDatabaseUtil().getGlobalTopEloList();
 		List<String> lore = new ArrayList<String>();
 		if (globalMap == null) {
 			lore.add(ChatColor.RED + "Database not connected!");
 		} else {
 			int rank = 1;
 			for (Map.Entry<UUID, Integer> entry : globalMap.entrySet()) {
-				final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
-				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + ": " + ChatColor.YELLOW + entry.getValue());
+				color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
+				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + " " + ChatColor.YELLOW + "(" + entry.getValue() + ")");
 				rank++;
 			}
 		}
 		this.leaderBoardInventory[0].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", lore));
-		final Map<UUID, PartnerCache> map2 = this.main.getDatabaseUtil().getDuoGlobalTopElo();
+		final Map<UUID, PartnerCache> map2 = this.main.getDatabaseUtil().getDuoGlobalTopEloList();
 		lore = new ArrayList<String>();
 		if (map2 == null) {
 			lore.add(ChatColor.RED + "Database not connected!");
@@ -212,8 +213,8 @@ public class InventoryManager {
 			int rank = 1;
 			for (Map.Entry<UUID, PartnerCache> entry : map2.entrySet()) {
 				final PartnerCache cache = entry.getValue();
-				final ChatColor color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
-				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + " & " + this.main.getServer().getOfflinePlayer(cache.getPartner()).getName() + ": " + ChatColor.YELLOW + cache.getElo());
+				color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
+				lore.add(color + "#" + rank + " " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(entry.getKey()).getName() + color + " & " + ChatColor.DARK_AQUA + this.main.getServer().getOfflinePlayer(cache.getPartner()).getName() + " " + ChatColor.YELLOW + "(" + cache.getElo() + ")");
 				rank++;
 			}
 		}
