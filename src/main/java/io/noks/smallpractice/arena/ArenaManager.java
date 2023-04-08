@@ -1,5 +1,6 @@
 package io.noks.smallpractice.arena;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -85,6 +86,7 @@ public class ArenaManager {
 	}
 	
 	public List<Arena> getArenaList(boolean sumo) {
-		return this.arenaList.stream().filter((sumo ? Arena::isSumo : not(Arena::isSumo))).collect(Collectors.toList());
+		final List<Arena> list = this.arenaList.stream().filter((sumo ? Arena::isSumo : not(Arena::isSumo))).collect(Collectors.toList());
+		return list.isEmpty() ? Collections.emptyList() : list;
 	}
 }

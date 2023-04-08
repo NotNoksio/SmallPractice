@@ -121,7 +121,7 @@ public class Duel {
 	public void killPlayer(UUID killedUUID) {
 		if (this.simpleDuel != null) {
 			if (this.simpleDuel.getFirstTeamAlive().contains(killedUUID)) {
-				this.simpleDuel.getFirstTeam().remove(killedUUID);
+				this.simpleDuel.getFirstTeamAlive().remove(killedUUID);
 			}
 			if (this.simpleDuel.getSecondTeamAlive().contains(killedUUID)) {
 				this.simpleDuel.getSecondTeamAlive().remove(killedUUID);
