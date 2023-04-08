@@ -28,13 +28,13 @@ import io.noks.smallpractice.objects.managers.PlayerManager;
 import net.minecraft.util.com.google.common.collect.Sets;
 
 public class Duel {
-	private Arena arena;
-	private Ladders ladder;
+	private final Arena arena;
+	private final Ladders ladder;
 	private SimpleDuel simpleDuel;
 	private FFADuel ffaDuel;
-	private boolean ranked;
-	private List<UUID> spectators;
-	private Set<UUID> drops;
+	private final boolean ranked;
+	private final List<UUID> spectators;
+	private final Set<UUID> drops;
 	private DuelState state;
 	protected BukkitTask task;
 	
@@ -77,11 +77,11 @@ public class Duel {
 	public List<UUID> getAllTeams() {
 		List<UUID> teams = Lists.newArrayList();
 		if (this.simpleDuel != null) {
-			if (!this.simpleDuel.firstTeam.isEmpty()) {
-				teams.addAll(this.simpleDuel.firstTeam);
+			if (!this.simpleDuel.getFirstTeam().isEmpty()) {
+				teams.addAll(this.simpleDuel.getFirstTeam());
 			}
-			if (!this.simpleDuel.secondTeam.isEmpty()) {
-				teams.addAll(this.simpleDuel.secondTeam);
+			if (!this.simpleDuel.getSecondTeam().isEmpty()) {
+				teams.addAll(this.simpleDuel.getSecondTeam());
 			}
 		}
 		if (this.ffaDuel != null) {
@@ -95,11 +95,11 @@ public class Duel {
 	public List<UUID> getAllAliveTeams() {
 		List<UUID> teams = Lists.newArrayList();
 		if (this.simpleDuel != null) {
-			if (!this.simpleDuel.firstTeamAlive.isEmpty()) {
-				teams.addAll(this.simpleDuel.firstTeamAlive);
+			if (!this.simpleDuel.getFirstTeamAlive().isEmpty()) {
+				teams.addAll(this.simpleDuel.getFirstTeamAlive());
 			}
-			if (!this.simpleDuel.secondTeamAlive.isEmpty()) {
-				teams.addAll(this.simpleDuel.secondTeamAlive);
+			if (!this.simpleDuel.getSecondTeamAlive().isEmpty()) {
+				teams.addAll(this.simpleDuel.getSecondTeamAlive());
 			}
 		}
 		if (this.ffaDuel != null) {
@@ -120,11 +120,11 @@ public class Duel {
 	
 	public void killPlayer(UUID killedUUID) {
 		if (this.simpleDuel != null) {
-			if (this.simpleDuel.firstTeamAlive.contains(killedUUID)) {
-				this.simpleDuel.firstTeamAlive.remove(killedUUID);
+			if (this.simpleDuel.getFirstTeamAlive().contains(killedUUID)) {
+				this.simpleDuel.getFirstTeam().remove(killedUUID);
 			}
-			if (this.simpleDuel.secondTeamAlive.contains(killedUUID)) {
-				this.simpleDuel.secondTeamAlive.remove(killedUUID);
+			if (this.simpleDuel.getSecondTeamAlive().contains(killedUUID)) {
+				this.simpleDuel.getSecondTeamAlive().remove(killedUUID);
 			}
 			return;
 		}
@@ -135,10 +135,6 @@ public class Duel {
 
 	public boolean isRanked() {
 		return ranked;
-	}
-
-	public void setRanked(boolean ranked) {
-		this.ranked = ranked;
 	}
 	
 	public void addSpectator(UUID spec) {
@@ -182,11 +178,11 @@ public class Duel {
 		if (this.simpleDuel == null) {
 			return;
 		}
-		if (!this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty()) {
-			if (this.simpleDuel.firstTeamAlive.size() > 1) {
-				for (UUID firstUUID : this.simpleDuel.firstTeamAlive) {
+		if (!this.simpleDuel.getFirstTeamAlive().isEmpty() && !this.simpleDuel.getSecondTeamAlive().isEmpty()) {
+			if (this.simpleDuel.getFirstTeamAlive().size() > 1) {
+				for (UUID firstUUID : this.simpleDuel.getFirstTeamAlive()) {
 					final Player first = Bukkit.getPlayer(firstUUID);
-					for (UUID firstSecondUUID : this.simpleDuel.firstTeamAlive) {
+					for (UUID firstSecondUUID : this.simpleDuel.getFirstTeamAlive()) {
 						if (firstUUID == firstSecondUUID) continue;
 			            final Player second = Bukkit.getPlayer(firstSecondUUID);
 			            first.showPlayer(second);
@@ -194,10 +190,10 @@ public class Duel {
 					}
 				}
 			}
-			if (this.simpleDuel.secondTeamAlive.size() > 1) {
-				for (UUID firstUUID : this.simpleDuel.secondTeamAlive) {
+			if (this.simpleDuel.getSecondTeamAlive().size() > 1) {
+				for (UUID firstUUID : this.simpleDuel.getSecondTeamAlive()) {
 					final Player first = Bukkit.getPlayer(firstUUID);
-					for (UUID firstSecondUUID : this.simpleDuel.secondTeamAlive) {
+					for (UUID firstSecondUUID : this.simpleDuel.getSecondTeamAlive()) {
 						if (firstUUID == firstSecondUUID) continue;
 			            final Player second = Bukkit.getPlayer(firstSecondUUID);
 			            first.showPlayer(second);
@@ -210,10 +206,10 @@ public class Duel {
 	
 	public void showDuelPlayer() {
 		if (this.simpleDuel != null) {
-			if (!this.simpleDuel.firstTeamAlive.isEmpty() && !this.simpleDuel.secondTeamAlive.isEmpty()) {
-				for (UUID firstUUID : this.simpleDuel.firstTeamAlive) {
+			if (!this.simpleDuel.getFirstTeamAlive().isEmpty() && !this.simpleDuel.getSecondTeamAlive().isEmpty()) {
+				for (UUID firstUUID : this.simpleDuel.getFirstTeamAlive()) {
 					final Player first = Bukkit.getPlayer(firstUUID);
-					for (UUID secondUUID : this.simpleDuel.secondTeamAlive) {
+					for (UUID secondUUID : this.simpleDuel.getSecondTeamAlive()) {
 		                final Player second = Bukkit.getPlayer(secondUUID);
 						first.showPlayer(second);
 						second.showPlayer(first);
@@ -242,7 +238,7 @@ public class Duel {
 			return false;
 		}
 		if (this.simpleDuel != null) {
-			return (this.simpleDuel.firstTeam.contains(player.getUniqueId()) || this.simpleDuel.secondTeam.contains(player.getUniqueId()));
+			return (this.simpleDuel.getFirstTeam().contains(player.getUniqueId()) || this.simpleDuel.getSecondTeam().contains(player.getUniqueId()));
 		}
 		if (this.ffaDuel != null) {
 			return this.ffaDuel.getFfaPlayers().contains(player.getUniqueId());

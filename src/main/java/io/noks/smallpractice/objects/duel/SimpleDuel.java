@@ -6,12 +6,12 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 
 public class SimpleDuel {
-	public UUID firstTeamPartyLeaderUUID;
-	public UUID secondTeamPartyLeaderUUID;
-	public List<UUID> firstTeam;
-	public List<UUID> secondTeam;
-	public List<UUID> firstTeamAlive;
-	public List<UUID> secondTeamAlive;
+	private final UUID firstTeamPartyLeaderUUID;
+	private final UUID secondTeamPartyLeaderUUID;
+	private final List<UUID> firstTeam;
+	private final List<UUID> secondTeam;
+	private final List<UUID> firstTeamAlive;
+	private final List<UUID> secondTeamAlive;
 	
 	public SimpleDuel(UUID firstTeamLeaderUUID, UUID secondTeamLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam) {
 		this.firstTeamPartyLeaderUUID = firstTeamLeaderUUID;
@@ -20,5 +20,26 @@ public class SimpleDuel {
 		this.secondTeam = Lists.newArrayList(secondTeam);
 		this.firstTeamAlive = Lists.newArrayList(firstTeam);
 		this.secondTeamAlive = Lists.newArrayList(secondTeam);
+	}
+	
+	public UUID getFirstTeamPartyLeaderUUID() {
+		return this.firstTeamPartyLeaderUUID;
+	}
+	public UUID getSecondTeamPartyLeaderUUID() {
+		return this.secondTeamPartyLeaderUUID;
+	}
+	
+	public List<UUID> getFirstTeam(){
+		return this.firstTeam;
+	}
+	public List<UUID> getSecondTeam(){
+		return this.secondTeam;
+	}
+	
+	public List<UUID> getFirstTeamAlive(){
+		return this.firstTeamAlive;
+	}
+	public List<UUID> getSecondTeamAlive(){
+		return this.secondTeamAlive;
 	}
 }

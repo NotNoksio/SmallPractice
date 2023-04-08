@@ -17,12 +17,6 @@
 			<artifactId>HikariCP</artifactId>
 			<version>4.0.3</version>
 		</dependency>
-		<dependency>
-			<groupId>com.lunarclient</groupId>
-			<artifactId>bukkitapi</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
     </dependencies>
     <build>
         <plugins>

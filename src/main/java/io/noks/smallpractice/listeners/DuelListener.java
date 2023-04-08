@@ -157,6 +157,9 @@ public class DuelListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
+		if (this.main.getArenaManager().getArenaList(true).isEmpty()) { // Dont run event if we dont need it
+			return;
+		}
 		if (this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0) { // Dont run event if we dont need it
 			return;
 		}
