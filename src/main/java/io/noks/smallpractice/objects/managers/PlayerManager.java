@@ -202,7 +202,6 @@ public class PlayerManager {
 	}
 	
 	public void heal(boolean forFight) {
-		//if (!isAlive()) getPlayer().spigot().respawn();
 		this.player.setHealth(20.0D);
 		this.player.extinguish();
 		if (!this.player.getActivePotionEffects().isEmpty()) {
@@ -213,8 +212,18 @@ public class PlayerManager {
 		if (this.player.getArrowsStuck() != 0) {
 			this.player.setArrowsStuck(0);
 		}
-		this.player.setFoodLevel(20);
-		this.player.setSaturation(forFight ? 20F : 1000F);
+		if (this.player.getFoodLevel() != 20) {
+			this.player.setFoodLevel(20);
+		}
+		if (!forFight) {
+			if (this.player.getSaturation() > 500F) {
+				Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+					this.player.setSaturation(1000F);
+				});
+			}
+		} else {
+			this.player.setSaturation(20F);
+		}
 		if (!forFight && this.status != PlayerStatus.WAITING && this.status != PlayerStatus.DUEL && this.player.getKnockbackReduction() > 0.0D) {
 			this.player.setKnockbackReduction(0.0f);
 		}

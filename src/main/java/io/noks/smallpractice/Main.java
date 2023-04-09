@@ -10,10 +10,9 @@ import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import io.noks.smallpractice.arena.ArenaManager;
-import io.noks.smallpractice.commands.AcceptCommand;
 import io.noks.smallpractice.commands.ArenasCommand;
 import io.noks.smallpractice.commands.BuildCommand;
-import io.noks.smallpractice.commands.DenyCommand;
+import io.noks.smallpractice.commands.DecisionsCommand;
 import io.noks.smallpractice.commands.DuelCommand;
 import io.noks.smallpractice.commands.ForceDuelCommand;
 import io.noks.smallpractice.commands.FreezeCommand;
@@ -108,8 +107,7 @@ public class Main extends JavaPlugin {
 	
 	private void registerCommands() {
 		getCommand("duel").setExecutor(new DuelCommand());
-		getCommand("accept").setExecutor(new AcceptCommand());
-		getCommand("deny").setExecutor(new DenyCommand());
+		new DecisionsCommand(this);
 		getCommand("build").setExecutor(new BuildCommand());
 		getCommand("ping").setExecutor(new PingCommand());
 		getCommand("inventory").setExecutor(new InventoryCommand());

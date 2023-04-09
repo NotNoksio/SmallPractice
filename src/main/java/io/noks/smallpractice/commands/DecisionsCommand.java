@@ -1,6 +1,5 @@
 package io.noks.smallpractice.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,36 +10,49 @@ import io.noks.smallpractice.Main;
 import io.noks.smallpractice.objects.Request;
 import io.noks.smallpractice.objects.managers.PlayerManager;
 
-public class AcceptCommand implements CommandExecutor {
+public class DecisionsCommand implements CommandExecutor {
+	private Main main;
+	public DecisionsCommand(Main main) {
+		this.main = main;
+		main.getCommand("accept").setExecutor(this);
+		main.getCommand("deny").setExecutor(this);
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!(sender instanceof Player)) {
 			return false;
 		}
-		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Usage: /accept <player>");
+		if (!command.getName().equalsIgnoreCase("accept") && !command.getName().equalsIgnoreCase("deny")) {
 			return false;
 		}
-		Player dueler = Bukkit.getPlayer(args[0]);
+		if (args.length != 1) {
+			sender.sendMessage(ChatColor.RED + "Usage: /" + command.getName().toLowerCase() + " <player>");
+			return false;
+		}
+		final Player dueler = this.main.getServer().getPlayer(args[0]);
 			
 		if (dueler == null) {
 			sender.sendMessage(ChatColor.RED + "This player is not online.");
 			return false;
 		}
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		
 		if (dueler == player) {
 			player.sendMessage(ChatColor.RED + "You can't execute that command on yourself!");
 			return false;
 		}
-		PlayerManager dm = PlayerManager.get(dueler.getUniqueId());
+		final PlayerManager dm = PlayerManager.get(dueler.getUniqueId());
 		if (!dm.hasRequested(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "No request found!");
 			return false;
 		}
-		Request request = dm.getRequests().get(player.getUniqueId());
-		Main.getInstance().getRequestManager().acceptDuelRequest(request.getArena(), request.getLadder(), player, dueler);
+		if (command.getName().equalsIgnoreCase("accept")) {
+			final Request request = dm.getRequests().get(player.getUniqueId());
+			this.main.getRequestManager().acceptDuelRequest(request.getArena(), request.getLadder(), player, dueler);
+			return true;
+		}
+		this.main.getRequestManager().denyDuelRequest(player, dueler);
 		return true;
 	}
 }

@@ -628,13 +628,41 @@ public class DuelManager {
 			}
 		}
 		if (duel.getSimpleDuel() != null && duel.getSimpleDuel().getFirstTeamPartyLeaderUUID() != null && duel.getSimpleDuel().getSecondTeamPartyLeaderUUID() != null || duel.getFFADuel() != null && duel.getFFADuel().getFfaPartyLeaderUUID() != null) {
-			final List<Party> partyList = duel.getSimpleDuel() != null ? Lists.newArrayList(this.main.getPartyManager().getParty(duel.getSimpleDuel().getFirstTeamPartyLeaderUUID()), this.main.getPartyManager().getParty(duel.getSimpleDuel().getSecondTeamPartyLeaderUUID())) : Lists.newArrayList(this.main.getPartyManager().getParty(duel.getFFADuel().getFfaPartyLeaderUUID()));
-			for (Party parties : partyList) {
-            	if (parties == null) continue;
-            	parties.setPartyState(PartyState.LOBBY);
-            	this.main.getPartyManager().updatePartyInventory(parties);
-            }
-            partyList.clear();
+			final List<Party> partyList = Lists.newArrayList();
+			if (duel.getSimpleDuel() != null) {
+				final SimpleDuel sd = duel.getSimpleDuel();
+				UUID firstUUID = sd.getFirstTeamPartyLeaderUUID();
+				if (!sd.getFirstTeam().isEmpty() && this.main.getServer().getPlayer(firstUUID) == null && firstUUID != sd.getFirstTeam().get(0)) {
+					firstUUID = sd.getFirstTeam().get(0);
+				}
+				if (this.main.getPartyManager().getParty(firstUUID) != null) {
+					partyList.add(this.main.getPartyManager().getParty(firstUUID));
+				}
+				UUID secondUUID = sd.getSecondTeamPartyLeaderUUID();
+				if (!sd.getSecondTeam().isEmpty() && this.main.getServer().getPlayer(secondUUID) == null && secondUUID != sd.getSecondTeam().get(0)) {
+					secondUUID = sd.getSecondTeam().get(0);
+				}
+				if (this.main.getPartyManager().getParty(secondUUID) != null) {
+					partyList.add(this.main.getPartyManager().getParty(secondUUID));
+				}
+			} else if (duel.getFFADuel() != null) {
+				final FFADuel ffad = duel.getFFADuel();
+				UUID uuid = ffad.getFfaPartyLeaderUUID();
+				if (ffad.getFfaPlayers().size() > 1 && this.main.getServer().getPlayer(uuid) == null) {
+					uuid = ffad.getFfaPlayers().get(0);
+				}
+				if (this.main.getPartyManager().getParty(uuid) != null) {
+					partyList.add(this.main.getPartyManager().getParty(uuid));
+				}
+			}
+			if (!partyList.isEmpty()) {
+				for (Party parties : partyList) {
+	            	if (parties == null) continue;
+	            	parties.setPartyState(PartyState.LOBBY);
+	            	this.main.getPartyManager().updatePartyInventory(parties);
+	            }
+	            partyList.clear();
+			}
         }
         if (duel.getSimpleDuel() != null && duel.getSimpleDuel().getFirstTeam().size() == 1 && duel.getSimpleDuel().getSecondTeam().size() == 1 && (duel.getSimpleDuel().getFirstTeamPartyLeaderUUID() == null && duel.getSimpleDuel().getSecondTeamPartyLeaderUUID() == null)) {
         	this.main.getInventoryManager().updateQueueInventory(duel.isRanked());
