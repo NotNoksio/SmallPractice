@@ -116,7 +116,7 @@ public class Main extends JavaPlugin {
 		getCommand("report").setExecutor(new ReportCommand());
 		new SpectateCommand(this);
 		getCommand("mod").setExecutor(new ModerationCommand());
-		getCommand("party").setExecutor(new PartyCommand());
+		new PartyCommand(this);
 		new ForceDuelCommand(this);
 		for (PlayerTimeEnum pte : PlayerTimeEnum.values()) {
 			getCommand(pte.getName().toLowerCase()).setExecutor(new PlayerTimeCommand());

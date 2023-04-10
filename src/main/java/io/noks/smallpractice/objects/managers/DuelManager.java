@@ -195,7 +195,7 @@ public class DuelManager {
 						line1.setSuffix("-------");
 						sidebar.getScore("-----").setScore(15);
 					}
-					if (scoreboard.getTeam("opp") == null) {
+					if (!ffa && scoreboard.getTeam("opp") == null) {
 						final Team opp = scoreboard.registerNewTeam("opp");
 						opp.setPrefix(ChatColor.RED.toString() + ChatColor.BOLD + "Opp");
 						opp.addEntry("onent: " + ChatColor.RESET);
@@ -305,7 +305,6 @@ public class DuelManager {
 		this.main.getInventoryManager().setLeaderboardInventory();
 	}
 	
-	// TODO: Sometimes there's an NULLPOINTEREXCEPTION appear (IS IT UP TO DATE?)
 	private void deathMessage(Duel duel, int winningTeamNumber) {
 		if (winningTeamNumber == 0) {
 			return;

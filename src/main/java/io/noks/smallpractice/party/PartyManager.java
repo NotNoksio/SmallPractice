@@ -146,6 +146,7 @@ public class PartyManager {
         			this.main.getItemManager().giveSpawnItem(member);
                 }
         	}
+        	skullm.setLore(lore);
         }
         skull.setItemMeta(skullm);
         this.partiesInventory.addItem(skull);

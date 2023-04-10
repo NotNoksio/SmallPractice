@@ -3,7 +3,6 @@ package io.noks.smallpractice.commands;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,24 +17,29 @@ import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
 
 public class PartyCommand implements CommandExecutor {
-	
-    private String[] HELP_COMMAND = new String[] {
-            ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
-            ChatColor.RED.toString() + ChatColor.BOLD + "Party Commands:",
-            ChatColor.GREEN + "-> /party help " + ChatColor.GRAY + "- Displays the help menu",
-            ChatColor.GREEN + "-> /party create " + ChatColor.GRAY + "- Creates a party instance",
-            ChatColor.GREEN + "-> /party leave " + ChatColor.GRAY + "- Leave your current party",
-            ChatColor.GREEN + "-> /party info [<player>]" + ChatColor.GRAY + "- Displays your party information",
-            ChatColor.GREEN + "-> /party join <player> " + ChatColor.GRAY + "- Join a party (invited or unlocked)",
-            ChatColor.GREEN + "-> /party deny <player> " + ChatColor.GRAY + "- Deny a party invite",
-            "",
-            ChatColor.RED.toString() + ChatColor.BOLD + "Leader Commands:",
-            ChatColor.GREEN + "-> /party open " + ChatColor.GRAY + "- Open your party for others to join",
-            ChatColor.GREEN + "-> /party lock/close " + ChatColor.GRAY + "- Lock your party for others to join",
-            ChatColor.GREEN + "-> /party invite <player> " + ChatColor.GRAY + "- Invites a player to your party",
-            ChatColor.GREEN + "-> /party kick <player> " + ChatColor.GRAY + "- Kicks a player from your party",
-            ChatColor.GREEN + "-> /party confirm " + ChatColor.GRAY + "- Register your party to access ranked matches",
-            ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
+	private Main main;
+    private String[] HELP_COMMAND;
+    public PartyCommand(Main main) {
+    	this.main = main;
+    	main.getCommand("party").setExecutor(this);
+    	this.HELP_COMMAND = new String[] {
+                ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
+                ChatColor.RED.toString() + ChatColor.BOLD + "Party Commands:",
+                ChatColor.GREEN + "-> /party help " + ChatColor.GRAY + "- Displays the help menu",
+                ChatColor.GREEN + "-> /party create " + ChatColor.GRAY + "- Creates a party instance",
+                ChatColor.GREEN + "-> /party leave " + ChatColor.GRAY + "- Leave your current party",
+                ChatColor.GREEN + "-> /party info [<player>]" + ChatColor.GRAY + "- Displays your party information",
+                ChatColor.GREEN + "-> /party join <player> " + ChatColor.GRAY + "- Join a party (invited or unlocked)",
+                ChatColor.GREEN + "-> /party deny <player> " + ChatColor.GRAY + "- Deny a party invite",
+                "",
+                ChatColor.RED.toString() + ChatColor.BOLD + "Leader Commands:",
+                ChatColor.GREEN + "-> /party open " + ChatColor.GRAY + "- Open your party for others to join",
+                ChatColor.GREEN + "-> /party lock/close " + ChatColor.GRAY + "- Lock your party for others to join",
+                ChatColor.GREEN + "-> /party invite <player> " + ChatColor.GRAY + "- Invites a player to your party",
+                ChatColor.GREEN + "-> /party kick <player> " + ChatColor.GRAY + "- Kicks a player from your party",
+                ChatColor.GREEN + "-> /party confirm " + ChatColor.GRAY + "- Register your party to access ranked matches",
+                ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"};
+    }
     
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -53,7 +57,7 @@ public class PartyCommand implements CommandExecutor {
         	player.sendMessage(ChatColor.RED + "You cant do this command in your current state!");
         	return false;
         }
-        final Party party = Main.getInstance().getPartyManager().getParty(player.getUniqueId());
+        final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
         
         if (args[0].equalsIgnoreCase("help")) {
         	player.sendMessage(this.HELP_COMMAND);
@@ -64,9 +68,9 @@ public class PartyCommand implements CommandExecutor {
         		player.sendMessage(ChatColor.RED + "You are already in a party!");
         		return false;
         	}
-        	Main.getInstance().getPartyManager().createParty(player.getUniqueId(), player.getName());
+        	this.main.getPartyManager().createParty(player.getUniqueId(), player.getName());
         	player.sendMessage(ChatColor.GREEN + "Party successfully created.");
-        	Main.getInstance().getItemManager().giveSpawnItem(player);
+        	this.main.getItemManager().giveSpawnItem(player);
         	return true;
         }
         if (args.length == 1) {
@@ -75,12 +79,12 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "You are not in a party!");
 	        		return false;
 	        	}
-	        	final Player leader = Bukkit.getPlayer(party.getLeader());
+	        	final Player leader = this.main.getServer().getPlayer(party.getLeader());
 	        	final StringJoiner members = new StringJoiner(", ");
 	
 	            members.add(leader.getName());
 	            for (UUID memberUUID : party.getMembers()) {
-	                Player member = Bukkit.getPlayer(memberUUID);
+	                Player member = this.main.getServer().getPlayer(memberUUID);
 	                members.add(member.getName());
 	            }
 	
@@ -102,16 +106,16 @@ public class PartyCommand implements CommandExecutor {
 	        	}
 	        	final boolean isLeader = party.getLeader().equals(player.getUniqueId());
 	        	if (party.getPartyState() == PartyState.QUEUING) {
-	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()), false);
+	        		this.main.getQueueManager().quitQueue(this.main.getServer().getPlayer(party.getLeader()), false);
 	        		party.notify(ChatColor.RED + "Your party has been removed from the queue! Your " + (!isLeader ? "teammate has left your party" : "leader has left the party") + ".");
 	        	}
 	        	if (isLeader) {
-	        		Main.getInstance().getPartyManager().transferLeader(player.getUniqueId());
+	        		this.main.getPartyManager().transferLeader(player.getUniqueId());
 	            } else {
 	            	party.notify(ChatColor.RED + player.getName() + " has left the party");
-	            	Main.getInstance().getPartyManager().leaveParty(player.getUniqueId());
+	            	this.main.getPartyManager().leaveParty(player.getUniqueId());
 	            }
-	        	Main.getInstance().getItemManager().giveSpawnItem(player);
+	        	this.main.getItemManager().giveSpawnItem(player);
 	        	return true;
 	        }
 	        if (args[0].equalsIgnoreCase("disband")) {
@@ -124,11 +128,11 @@ public class PartyCommand implements CommandExecutor {
 	        		return false;
 	        	}
 	        	if (party.getPartyState() == PartyState.QUEUING) {
-	        		Main.getInstance().getQueueManager().quitQueue(Bukkit.getPlayer(party.getLeader()), false);
+	        		this.main.getQueueManager().quitQueue(this.main.getServer().getPlayer(party.getLeader()), false);
 	        		party.notify(ChatColor.RED + "Your party has been removed from the queue! Your leader has disband the party.");
 	        	}
-	        	Main.getInstance().getPartyManager().destroyParty(party.getLeader());
-	        	Main.getInstance().getItemManager().giveSpawnItem(player);
+	        	this.main.getPartyManager().destroyParty(party.getLeader());
+	        	this.main.getItemManager().giveSpawnItem(player);
 	        	return true;
 	        }
 	        if (args[0].equalsIgnoreCase("open")) {
@@ -190,7 +194,7 @@ public class PartyCommand implements CommandExecutor {
 	        return false;
         }
         if (args.length == 2) {
-        	final Player target = Bukkit.getPlayer(args[1]);
+        	final Player target = this.main.getServer().getPlayer(args[1]);
             
             if (target == null) {
             	player.sendMessage(ChatColor.RED + "This player isnt online!");
@@ -201,29 +205,29 @@ public class PartyCommand implements CommandExecutor {
             	return false;
             }
             final PlayerManager tm = PlayerManager.get(target.getUniqueId());
-            final Party targetParty = Main.getInstance().getPartyManager().getParty(target.getUniqueId());
+            final Party targetParty = this.main.getPartyManager().getParty(target.getUniqueId());
             
             if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("accept")) {
             	if (targetParty == null) {
             		player.sendMessage(ChatColor.RED + "This party has expired!");
                 	return false;
             	}
-            	if (Main.getInstance().getPartyManager().hasParty(player.getUniqueId())) {
+            	if (this.main.getPartyManager().hasParty(player.getUniqueId())) {
             		player.sendMessage(ChatColor.RED + "You are already in a party!");
                 	return false;
                 }
             	if (targetParty.isOpen()) {
-            		Main.getInstance().getPartyManager().joinParty(targetParty.getLeader(), player.getUniqueId());
+            		this.main.getPartyManager().joinParty(targetParty.getLeader(), player.getUniqueId());
             		targetParty.notify(ChatColor.GREEN + player.getName() + " has joined the party");
                     player.sendMessage(ChatColor.GREEN + "You have joined the party!");
-                    Main.getInstance().getItemManager().giveSpawnItem(target);
+                    this.main.getItemManager().giveSpawnItem(player);
             		return true;
             	}
             	if (!tm.hasInvited(player.getUniqueId())) {
             		player.sendMessage(ChatColor.RED + "You are not invited to this party!");
             		return false;
             	}
-            	Main.getInstance().getRequestManager().acceptPartyInvite(player, target);
+            	this.main.getRequestManager().acceptPartyInvite(player, target);
                 return true;
             }
             if (args[0].equalsIgnoreCase("invite")) {
@@ -236,11 +240,11 @@ public class PartyCommand implements CommandExecutor {
         			sender.sendMessage(ChatColor.RED + "This player doesn't allow party invite!");
         			return false;
         		}
-            	if (Main.getInstance().getPartyManager().hasParty(target.getUniqueId())) {
+            	if (this.main.getPartyManager().hasParty(target.getUniqueId())) {
             		player.sendMessage(ChatColor.RED + "This player is already in a party!");
                 	return false;
                 }
-            	Main.getInstance().getRequestManager().sendPartyInvite(party, target);
+            	this.main.getRequestManager().sendPartyInvite(party, target);
             	return true;
             }
             if (args[0].equalsIgnoreCase("deny")) {
@@ -248,7 +252,7 @@ public class PartyCommand implements CommandExecutor {
             		player.sendMessage(ChatColor.RED + "This party has expired!");
                 	return false;
             	}
-            	Main.getInstance().getRequestManager().denyPartyInvite(player, target);
+            	this.main.getRequestManager().denyPartyInvite(player, target);
             	return true;
             }
             if (args[0].equalsIgnoreCase("kick")) {
@@ -269,8 +273,8 @@ public class PartyCommand implements CommandExecutor {
             		return false;
             	}
             	party.notify(ChatColor.RED + target.getName() + " has been kicked from the party!");
-            	Main.getInstance().getPartyManager().leaveParty(target.getUniqueId());
-                Main.getInstance().getItemManager().giveSpawnItem(target);
+            	this.main.getPartyManager().leaveParty(target.getUniqueId());
+            	this.main.getItemManager().giveSpawnItem(target);
             	return true;
             }
             if (args[0].equalsIgnoreCase("info")) {
@@ -278,12 +282,12 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "This player is not in a party!");
 	        		return false;
 	        	}
-	        	final Player leader = Bukkit.getPlayer(targetParty.getLeader());
+	        	final Player leader = this.main.getServer().getPlayer(targetParty.getLeader());
 	        	final StringJoiner members = new StringJoiner(", ");
 	
 	            members.add(leader.getName());
 	            for (UUID memberUUID : targetParty.getMembers()) {
-	                Player member = Bukkit.getPlayer(memberUUID);
+	                Player member = this.main.getServer().getPlayer(memberUUID);
 	                members.add(member.getName());
 	            }
 	
