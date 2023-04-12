@@ -29,6 +29,10 @@ public class ChatListener implements Listener {
 			event.setCancelled(true);
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			final EditedLadderKit editedKit = (EditedLadderKit) player.getMetadata("renamekit").get(0).value();
+			if (event.getMessage().length() > 28) {
+				player.sendMessage(ChatColor.RED + "The name length must be under 28 character!");
+				return;
+			}
 			if (event.getMessage().toLowerCase().equals("cancel")) {
 				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, editedKit.getLadder()));
 				player.removeMetadata("renamekit", this.main);

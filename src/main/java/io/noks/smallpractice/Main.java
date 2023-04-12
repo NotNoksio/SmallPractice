@@ -86,8 +86,10 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		this.queueManager.getQueueMap().clear();
-		this.inventoryManager.getOfflineInventories().clear();
+		this.queueManager.clearCache();
+		this.inventoryManager.clearCache();
+		this.itemManager.clearCache();
+		this.database.clearCache();
 		for (Duel duels : this.duelManager.getAllDuels()) {
 			if (duels == null) continue;
 			duels.cancelTask();

@@ -93,6 +93,9 @@ public class PlayerManager {
 		if (this.savedInventory != null) {
 			Main.getInstance().getInventoryManager().getOfflineInventories().put(this.playerUUID, this.savedInventory);
 		}
+		this.request.clear();
+		this.invite.clear();
+		this.customLadderKit.clear();
 		players.remove(this.playerUUID);
 	}
 

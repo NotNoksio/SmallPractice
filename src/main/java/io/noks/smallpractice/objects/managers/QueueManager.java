@@ -25,6 +25,10 @@ public class QueueManager {
 		this.main = main;
 		this.queue = Maps.newConcurrentMap();
 	}
+	public void clearCache() {
+		this.queue.clear();
+		this.lastUpdated.clear();
+	}
 	
 	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked, boolean to2, int pingDiffParam) {
 		final Party party = (to2 ? this.main.getPartyManager().getParty(uuid) : null);

@@ -65,6 +65,10 @@ public class DBUtils {
 		this.INSERT_ELO = "INSERT INTO elo VALUES(?, " + questionMarks.toString() + ", ?, ?) ON DUPLICATE KEY UPDATE uuid=?";
 		this.INSERT_DUOELO = "INSERT INTO duoelo VALUES(?, ?, " + questionMarks.toString() + ", ?) ON DUPLICATE KEY UPDATE uuid1=?";
 	}
+	public void clearCache() {
+		this.soloTop.clear();
+		this.duoTop.clear();
+	}
 	
 	public void updateSoloTopLadder(Ladders ladder, boolean globalUpdate) {
 		this.soloTop.put(ladder.getName(), getTopEloLadder(ladder));

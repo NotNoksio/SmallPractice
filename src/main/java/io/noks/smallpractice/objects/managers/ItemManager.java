@@ -1,5 +1,7 @@
 package io.noks.smallpractice.objects.managers;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
@@ -20,11 +22,20 @@ import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
 import io.noks.smallpractice.utils.ItemBuilder;
+import net.minecraft.util.com.google.common.collect.Maps;
 
 public class ItemManager {
 	private Main main;
+	private Map<Ladders, Inventory> DEFAULT_LADDER_INVENTORIES = Maps.newHashMap();
 	public ItemManager(Main main) {
 		this.main = main;
+		for (Ladders ladders : Ladders.values()) {
+			this.DEFAULT_LADDER_INVENTORIES.putIfAbsent(ladders, getDefaultFightItems(ladders));
+		}
+		Collections.unmodifiableMap(this.DEFAULT_LADDER_INVENTORIES);
+	}
+	public void clearCache() {
+		this.DEFAULT_LADDER_INVENTORIES.clear();
 	}
 	
 	public void giveSpawnItem(Player player) {
@@ -96,8 +107,9 @@ public class ItemManager {
 		if (player.getItemOnCursor() != null) {
 			player.setItemOnCursor(null);
 		}
-		
-		player.setGameMode(GameMode.CREATIVE);
+		if (player.getGameMode() != GameMode.CREATIVE) {
+			player.setGameMode(GameMode.CREATIVE);
+		}
 		
 		final ItemStack s = ItemBuilder.createNewItemStackByMaterial(Material.WOOD_SWORD, ChatColor.RED + "Knockback V", true);
 		s.addUnsafeEnchantment(Enchantment.KNOCKBACK, 5);
@@ -152,26 +164,30 @@ public class ItemManager {
 	}
 	public void giveFightItems(Player player, Ladders ladder, int slot, boolean armor, boolean edit) {
 		player.getInventory().clear();
-		final Inventory inventory = (slot == 0 ? this.main.getItemManager().getDefaultFightItems(ladder) : PlayerManager.get(player.getUniqueId()).getCustomLadderKitFromSlot(ladder, (slot - (!edit ? 1 : 0))).getInventory());
-		if (inventory.getItem(36) != null && inventory.getItem(37) != null && inventory.getItem(38) != null && inventory.getItem(39) != null) {
-			inventory.setItem(36, null);
-			inventory.setItem(37, null);
-			inventory.setItem(38, null);
-			inventory.setItem(39, null);
-		}
+		final EditedLadderKit customKit = PlayerManager.get(player.getUniqueId()).getCustomLadderKitFromSlot(ladder, (slot - (!edit ? 1 : 0)));
+		Inventory inventory = (slot == 0 ? this.main.getItemManager().getDefaultFightItems(ladder) : customKit.getInventory());
+		final boolean isDefault = inventory.getContents() == this.getDefaultFightItems(ladder).getContents();
 		int i = 0;
 		for (ItemStack items : inventory.getContents()) {
 			player.getInventory().setItem(i, items);
 			i++;
+			if (i >= 36) break; // cut the loop
+		}
+		if (!edit) {
+			player.sendMessage(ChatColor.GREEN.toString() + "You equipped the " + (isDefault ? "default" : ChatColor.translateAlternateColorCodes('&', customKit.getName())) + ChatColor.GREEN + " kit for " + ladder.getName() + ".");
 		}
 		if (armor) {
-			final Inventory defaultInventory = this.getDefaultFightItems(ladder);
-			player.getInventory().setArmorContents(new ItemStack[] {defaultInventory.getItem(36), defaultInventory.getItem(37), defaultInventory.getItem(38), defaultInventory.getItem(39)});
+			if (!isDefault) {
+				inventory = this.getDefaultFightItems(ladder);
+			}
+			player.getInventory().setArmorContents(new ItemStack[] {inventory.getItem(36), inventory.getItem(37), inventory.getItem(38), inventory.getItem(39)});
 		}
-        player.sendMessage(ChatColor.GREEN.toString() + ladder.getName() + " kit successfully given.");
         player.updateInventory();
 	}
 	public Inventory getDefaultFightItems(Ladders ladder) {
+		if (this.DEFAULT_LADDER_INVENTORIES.containsKey(ladder)) {
+			return this.DEFAULT_LADDER_INVENTORIES.get(ladder);
+		}
 		final Inventory inventory = this.main.getServer().createInventory(null, InventoryType.PLAYER);
 		ItemStack attackItem = new ItemStack(Material.DIAMOND_SWORD, 1);
 		ItemStack helmet = new ItemStack(Material.DIAMOND_HELMET, 1);

@@ -57,6 +57,10 @@ public class InventoryManager {
 		this.setPartyGameInventory();
 		setLeaderboardInventory();
 	}
+	public void clearCache() {
+		this.selectingDuel.clear();
+		this.offlineInventories.clear();
+	}
 	
 	private void setArenasInventory() {
 		this.arenasInventory[0].clear();
