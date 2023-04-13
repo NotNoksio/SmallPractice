@@ -58,8 +58,12 @@ public class InventoryManager {
 		setLeaderboardInventory();
 	}
 	public void clearCache() {
-		this.selectingDuel.clear();
-		this.offlineInventories.clear();
+		if (!this.selectingDuel.isEmpty()) {
+			this.selectingDuel.clear();
+		}
+		if (!this.offlineInventories.isEmpty()) {
+			this.offlineInventories.clear();
+		}
 	}
 	
 	private void setArenasInventory() {

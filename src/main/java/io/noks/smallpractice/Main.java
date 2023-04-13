@@ -90,10 +90,13 @@ public class Main extends JavaPlugin {
 		this.inventoryManager.clearCache();
 		this.itemManager.clearCache();
 		this.database.clearCache();
-		for (Duel duels : this.duelManager.getAllDuels()) {
-			if (duels == null) continue;
-			duels.cancelTask();
-			this.duelManager.finishDuel(duels, true);
+		if (!this.duelManager.getAllDuels().isEmpty()) {
+			Duel lastCheck = null;
+			for (Duel duels : this.duelManager.getAllDuels()) {
+				if (duels == null || lastCheck == duels) continue;
+				lastCheck = duels;
+				this.duelManager.finishDuel(duels, true);
+			}
 		}
 		final World world = Bukkit.getWorld("world");
 		final Iterator<Entity> it = world.getEntities().iterator();
@@ -102,8 +105,10 @@ public class Main extends JavaPlugin {
 			if (entities == null || !(entities instanceof Item) || !(entities instanceof Arrow)) continue;
 			entities.remove();
 		}
-		for (PlayerManager pm : PlayerManager.players.values()) {
-			this.database.savePlayer(pm);
+		if (!PlayerManager.players.isEmpty()) {
+			for (PlayerManager pm : PlayerManager.players.values()) {
+				this.database.savePlayer(pm);
+			}
 		}
 	}
 	

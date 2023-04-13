@@ -215,18 +215,8 @@ public class PlayerManager {
 		if (this.player.getArrowsStuck() != 0) {
 			this.player.setArrowsStuck(0);
 		}
-		if (this.player.getFoodLevel() != 20) {
-			this.player.setFoodLevel(20);
-		}
-		if (!forFight) {
-			if (this.player.getSaturation() > 500F) {
-				Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
-					this.player.setSaturation(1000F);
-				});
-			}
-		} else {
-			this.player.setSaturation(20F);
-		}
+		this.player.setFoodLevel(20);
+		this.player.setSaturation(!forFight ? 1000F : 20F);
 		if (!forFight && this.status != PlayerStatus.WAITING && this.status != PlayerStatus.DUEL && this.player.getKnockbackReduction() > 0.0D) {
 			this.player.setKnockbackReduction(0.0f);
 		}

@@ -26,8 +26,12 @@ public class QueueManager {
 		this.queue = Maps.newConcurrentMap();
 	}
 	public void clearCache() {
-		this.queue.clear();
-		this.lastUpdated.clear();
+		if (!this.queue.isEmpty()) {
+			this.queue.clear();
+		}
+		if (!this.lastUpdated.isEmpty()) {
+			this.lastUpdated.clear();
+		}
 	}
 	
 	public void addToQueue(UUID uuid, Ladders ladder, boolean ranked, boolean to2, int pingDiffParam) {

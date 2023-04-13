@@ -669,6 +669,9 @@ public class DuelManager {
 	}
 	
 	public void finishDuel(Duel duel, boolean cancelled) {
+		if (cancelled) {
+			duel.cancelTask();
+		}
 		duel.clearDrops();
 		for (UUID dpUUID : duel.getAllTeams()) {
 			final Player duelPlayer = this.main.getServer().getPlayer(dpUUID);
