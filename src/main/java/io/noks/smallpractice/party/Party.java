@@ -121,21 +121,6 @@ public class Party {
     public int getSize() {
         return (this.getMembers().size() + 1);
     }
-
-    public List<UUID> getAllMembersOnline() {
-        List<UUID> membersOnline = Lists.newArrayList();
-
-        for(UUID memberUUID : this.memberUUIDs) {
-            Player member = Bukkit.getPlayer(memberUUID);
-
-            if(member == null) {
-            	continue;
-            }
-            membersOnline.add(member.getUniqueId());
-        }
-        membersOnline.add(partyLeader);
-        return membersOnline;
-    }
     
     public void notify(String message) {
         Player leaderPlayer = Bukkit.getPlayer(this.partyLeader);

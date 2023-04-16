@@ -100,7 +100,7 @@ public class RequestManager {
         }
         requesterManager.clearRequest();
 		if (requestedParty != null && requesterParty != null) {
-			this.main.getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getAllMembersOnline(), requestedParty.getAllMembersOnline(), false);
+			this.main.getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), requesterParty.getMembersIncludingLeader(), requestedParty.getMembersIncludingLeader(), false);
 			return;
 		}
 		this.main.getDuelManager().startDuel(arena, ladder, requester.getUniqueId(), requested.getUniqueId(), false);

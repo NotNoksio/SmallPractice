@@ -105,11 +105,8 @@ public class DuelManager {
 			this.main.getServer().getPlayer(player2).sendMessage(ChatColor.RED + "MATCH ERROR!!!");
 			return;
 		}
-		final List<UUID> firstTeam = Lists.newArrayList();
-		firstTeam.add(player1);
-		final List<UUID> secondTeam = Lists.newArrayList();
-		secondTeam.add(player2);
-		startDuel(arena, ladder, null, null, firstTeam, secondTeam, ranked);
+		// TODO: Check if it does shit
+		startDuel(arena, ladder, null, null, Collections.singletonList(player1), Collections.singletonList(player2), ranked);
 	}
 	
 	public void startDuel(Arena arena, Ladders ladder, UUID firstPartyLeaderUUID, UUID secondPartyLeaderUUID, List<UUID> firstTeam, List<UUID> secondTeam, boolean ranked) { // SIMPLEDUEL
@@ -119,7 +116,8 @@ public class DuelManager {
 			for (UUID uuids : allTeam) {
 				final Player player = this.main.getServer().getPlayer(uuids);
 				
-				if (allTeam.isEmpty() || player == null) continue;
+				if (allTeam.isEmpty()) return;
+				if (player == null) continue;
 				
 				PlayerManager pm = PlayerManager.get(uuids);
 				pm.clearRequest();
@@ -173,11 +171,11 @@ public class DuelManager {
 		for (UUID teamUUID : team) {
 			final Player player = this.main.getServer().getPlayer(teamUUID);
 			
+			if (team.isEmpty()) return;
 			if (player == null) {
 				team.remove(teamUUID);
 				continue;
 			}
-			if (team.isEmpty()) continue;
 			
 			final PlayerManager pm = PlayerManager.get(teamUUID);
 			pm.clearRequest();
@@ -243,7 +241,7 @@ public class DuelManager {
 				return;
 			}
 		}
-		final List<UUID> shuffle = Lists.newArrayList(party.getAllMembersOnline());
+		final List<UUID> shuffle = Lists.newArrayList(party.getMembersIncludingLeader());
         Collections.shuffle(shuffle);
         final List<UUID> firstTeam = shuffle.subList(0, (int)(shuffle.size() / 2.0));
         final List<UUID> secondTeam = shuffle.subList((int)(shuffle.size() / 2.0), shuffle.size());
@@ -424,7 +422,7 @@ public class DuelManager {
 				
 				if (duel.getLadder() == Ladders.COMBO) {
 					first.setMaximumNoDamageTicks(4);
-					first.setKnockbackReduction(0.05f);
+					first.setKnockbackReduction(0.175f);
 				}
 				if (duel.getLadder() == Ladders.BOXING) {
 					first.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
@@ -449,7 +447,7 @@ public class DuelManager {
 				
 				if (duel.getLadder() == Ladders.COMBO) {
 					second.setMaximumNoDamageTicks(4);
-					second.setKnockbackReduction(0.05f);
+					second.setKnockbackReduction(0.175f);
 				}
 				if (duel.getLadder() == Ladders.BOXING) {
 					second.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));

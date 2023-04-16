@@ -7,6 +7,8 @@ public class Queue {
 	private boolean ranked;
 	private boolean teamOf2;
 	private int pingDiff;
+	
+	// TODO: add eloRange
 		
 	public Queue(Ladders ladder, boolean ranked, boolean to2, int pingDiff) {
 		this.ladder = ladder;

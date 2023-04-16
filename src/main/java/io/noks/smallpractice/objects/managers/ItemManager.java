@@ -165,8 +165,8 @@ public class ItemManager {
 	public void giveFightItems(Player player, Ladders ladder, int slot, boolean armor, boolean edit) {
 		player.getInventory().clear();
 		final EditedLadderKit customKit = PlayerManager.get(player.getUniqueId()).getCustomLadderKitFromSlot(ladder, (slot - (!edit ? 1 : 0)));
-		Inventory inventory = (slot == 0 ? this.main.getItemManager().getDefaultFightItems(ladder) : customKit.getInventory());
-		final boolean isDefault = inventory.getContents() == this.getDefaultFightItems(ladder).getContents();
+		final boolean isDefault = slot == 0;
+		Inventory inventory = (isDefault ? this.main.getItemManager().getDefaultFightItems(ladder) : customKit.getInventory());
 		int i = 0;
 		for (ItemStack items : inventory.getContents()) {
 			player.getInventory().setItem(i, items);
