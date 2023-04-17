@@ -272,7 +272,7 @@ public class PlayerManager {
 				final int realtime = pe.getDuration() / 20;
 				final String emp = convertToRoman(pe.getAmplifier() + 1);
           
-				potionEffectLore.add(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.YELLOW + convertToPotionFormat(realtime));
+				potionEffectLore.add(ChatColor.GRAY + "-> " + ChatColor.DARK_AQUA + WordUtils.capitalizeFully(pe.getType().getName().replaceAll("_", " ")) + " " + emp + " for " + ChatColor.YELLOW + (realtime / 60 < 15 ? convertToPotionFormat(realtime) : "Infinite"));
 			}
 		}
 		pem.setLore(potionEffectLore);
