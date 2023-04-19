@@ -142,6 +142,10 @@ public class PartyManager {
         	for (UUID membersUUID : party.getMembers()) {
         		final Player member = this.main.getServer().getPlayer(membersUUID);
         		lore.add(ChatColor.GRAY + "-> " + ChatColor.YELLOW + member.getName());
+        		if (lore.size() >= 15) {
+        			lore.add(ChatColor.GRAY + "..and " + (party.getMembers().size() - 15) + ChatColor.GRAY + " more..");
+        			break;
+        		}
         		if (PlayerManager.get(member.getUniqueId()).getStatus() == PlayerStatus.SPAWN && party.getSize() < 3) {
         			this.main.getItemManager().giveSpawnItem(member);
                 }

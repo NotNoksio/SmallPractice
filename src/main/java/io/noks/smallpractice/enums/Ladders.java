@@ -15,7 +15,8 @@ public enum Ladders {
 	COMBO("Combo", ChatColor.DARK_GREEN, new ItemStack(Material.FEATHER, 1), true, true, true),
 	SUMO("Sumo", ChatColor.YELLOW, new ItemStack(Material.CLAY_BRICK, 1), false, false, false), // Disabled bc on the server where the plugin is used, there's no sumo arena :)
 	NOENCHANT("NoEnchant", ChatColor.DARK_PURPLE, new ItemStack(Material.DIAMOND_SWORD), true, true, true),
-	CLASSIC("Classic", ChatColor.DARK_RED, new ItemStack(Material.FISHING_ROD), true, true, true);
+	CLASSIC("Classic", ChatColor.DARK_RED, new ItemStack(Material.FISHING_ROD), true, true, true),
+	SPLEEF("Spleef", ChatColor.WHITE, new ItemStack(Material.DIAMOND_SPADE), false, true, false);
 	
 	private String name;
 	private ChatColor color;

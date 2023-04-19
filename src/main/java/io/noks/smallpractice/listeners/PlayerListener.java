@@ -23,6 +23,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -633,12 +634,20 @@ public class PlayerListener implements Listener {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			final Player player = event.getPlayer();
 			if (!player.isDead() && player.getItemInHand().getType() == Material.MUSHROOM_SOUP && player.getHealth() < player.getMaxHealth()) {
+				event.setUseItemInHand(Result.DENY);
 				final double newHealth = Math.min(player.getHealth() + 7.0D, player.getMaxHealth());
 				player.setHealth(newHealth);
 				player.getItemInHand().setType(Material.BOWL);
 				player.updateInventory();
 			} 
 		} 
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onConsumeSoup(PlayerItemConsumeEvent event) {
+		if (event.getItem().getType() == Material.MUSHROOM_SOUP) {
+			event.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOW)

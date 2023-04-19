@@ -25,6 +25,7 @@ import io.noks.smallpractice.enums.DuelState;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.managers.PlayerManager;
+import io.noks.smallpractice.utils.BlockStorage;
 import net.minecraft.util.com.google.common.collect.Sets;
 
 public class Duel {
@@ -37,6 +38,7 @@ public class Duel {
 	private final Set<UUID> drops;
 	private DuelState state;
 	protected BukkitTask task;
+	private BlockStorage blockStorage;
 	
 	public Duel(Arena arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
 		this.arena = arena;
@@ -46,6 +48,9 @@ public class Duel {
 		this.ranked = ranked;
 		this.drops = Sets.newHashSet();
 		this.state = DuelState.WAITING;
+		if (ladder == Ladders.SPLEEF) {
+			this.blockStorage = new BlockStorage();
+		}
 	}
 	
 	public Duel(Arena arena, Ladders ladder, FFADuel ffaDuel) {
@@ -56,6 +61,9 @@ public class Duel {
 		this.drops = Sets.newHashSet();
 		this.ranked = false;
 		this.state = DuelState.WAITING;
+		if (ladder == Ladders.SPLEEF) {
+			this.blockStorage = new BlockStorage();
+		}
     }
 	
 	public Arena getArena() {
@@ -355,6 +363,10 @@ public class Duel {
 				}
 			}
 		}.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
+	}
+	
+	public BlockStorage getBlockStorage() {
+		return this.blockStorage;
 	}
 	
 	public void cancelTask() {

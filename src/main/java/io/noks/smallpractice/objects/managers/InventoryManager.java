@@ -2,6 +2,7 @@ package io.noks.smallpractice.objects.managers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import io.noks.smallpractice.objects.Request;
 import io.noks.smallpractice.party.PartyEvents;
 import io.noks.smallpractice.utils.ItemBuilder;
 import io.noks.smallpractice.utils.PartnerCache;
+import net.minecraft.util.com.google.common.collect.Lists;
 
 public class InventoryManager {
 	private Inventory[] arenasInventory;
@@ -172,10 +174,11 @@ public class InventoryManager {
 		ChatColor color = null;
 		for (Ladders ladders : Ladders.values()) {
 			final Map<UUID, Integer> map = this.main.getDatabaseUtil().getTopEloLadderList(ladders);
-			List<String> lore = new ArrayList<String>();
+			List<String> lore;
 			if (map == null) {
-				lore.add(ChatColor.RED + "Database not connected!");
+				lore = Collections.singletonList(ChatColor.RED + "Database not connected!");
 			} else {
+				lore = new ArrayList<>(10);
 				int rank = 1;
 				for (Map.Entry<UUID, Integer> entry : map.entrySet()) {
 					color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
@@ -185,10 +188,10 @@ public class InventoryManager {
 			}
 			this.leaderBoardInventory[0].setItem(i, ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), lore));
 			final Map<UUID, PartnerCache> map2 = this.main.getDatabaseUtil().getDuoTopEloLadderList(ladders);
-			lore = new ArrayList<String>();
 			if (map2 == null) {
-				lore.add(ChatColor.RED + "Database not connected!");
+				lore = Collections.singletonList(ChatColor.RED + "Database not connected!");
 			} else {
+				lore = new ArrayList<>(10);
 				int rank = 1;
 				for (Map.Entry<UUID, PartnerCache> entry : map2.entrySet()) {
 					final PartnerCache cache = entry.getValue();
@@ -201,10 +204,11 @@ public class InventoryManager {
 			i++;
 		}
 		final Map<UUID, Integer> globalMap = this.main.getDatabaseUtil().getGlobalTopEloList();
-		List<String> lore = new ArrayList<String>();
+		List<String> lore;
 		if (globalMap == null) {
-			lore.add(ChatColor.RED + "Database not connected!");
+			lore = Collections.singletonList(ChatColor.RED + "Database not connected!");
 		} else {
+			lore = new ArrayList<>(10);
 			int rank = 1;
 			for (Map.Entry<UUID, Integer> entry : globalMap.entrySet()) {
 				color = (rank == 1 ? ChatColor.AQUA : (rank == 2 ? ChatColor.GOLD : (rank == 3 ? ChatColor.GREEN : ChatColor.GRAY)));
@@ -214,10 +218,10 @@ public class InventoryManager {
 		}
 		this.leaderBoardInventory[0].setItem(4, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND, 1), ChatColor.DARK_AQUA + "Global Top", lore));
 		final Map<UUID, PartnerCache> map2 = this.main.getDatabaseUtil().getDuoGlobalTopEloList();
-		lore = new ArrayList<String>();
 		if (map2 == null) {
-			lore.add(ChatColor.RED + "Database not connected!");
+			lore = Collections.singletonList(ChatColor.RED + "Database not connected!");
 		} else {
+			lore = new ArrayList<>(10);
 			int rank = 1;
 			for (Map.Entry<UUID, PartnerCache> entry : map2.entrySet()) {
 				final PartnerCache cache = entry.getValue();
@@ -295,8 +299,7 @@ public class InventoryManager {
 			if (customKit == null) {
 				inventory.setItem(i, ItemBuilder.createNewItemStack(new ItemStack(Material.CHEST), ChatColor.GREEN + "Create " + ladder.getName() + " #" + i));
 			} else {
-				final List<String> nameLore = new ArrayList<String>();
-				nameLore.add(ChatColor.DARK_AQUA + "Actual Name: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', customKit.getName()));
+				final List<String> nameLore = Collections.singletonList(ChatColor.DARK_AQUA + "Actual Name: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', customKit.getName()));
 				inventory.setItem(i, ItemBuilder.createNewItemStack(new ItemStack(Material.CHEST), ChatColor.GREEN + "Save " + ladder.getColor() + ladder.getName() + " #" + i));
 				inventory.setItem(i + 9, ItemBuilder.createNewItemStack(new ItemStack(Material.BOOK), ChatColor.GREEN + "Load/Edit"));
 				inventory.setItem(i + 18, ItemBuilder.createNewItemStack(new ItemStack(Material.NAME_TAG), ChatColor.YELLOW + "Rename", nameLore));
@@ -320,6 +323,6 @@ public class InventoryManager {
 		if ((size % 9) != 0) {
 			sizeNeeded += 1;
 		}
-		return (sizeNeeded * 9);
+		return Math.min((sizeNeeded * 9), 54);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,7 +21,10 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import io.noks.smallpractice.Main;
+import io.noks.smallpractice.enums.PlayerStatus;
+import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
+import io.noks.smallpractice.utils.BlockStorage;
 import net.md_5.bungee.api.ChatColor;
 
 public class ServerListeners implements Listener {
@@ -35,6 +39,7 @@ public class ServerListeners implements Listener {
 		final UUID playerUUID = event.getPlayer().getUniqueId();
 		final PlayerManager pm = PlayerManager.get(playerUUID);
 		
+		// TODO: register blocks in duel if BUILDUHC
 		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);
 		}
@@ -45,6 +50,23 @@ public class ServerListeners implements Listener {
 		final UUID playerUUID = event.getPlayer().getUniqueId();
 		final PlayerManager pm = PlayerManager.get(playerUUID);
 		
+		if (pm.getStatus() == PlayerStatus.DUEL) {
+			final Block block = event.getBlock();
+			if (block.getType() == Material.SNOW_BLOCK) {
+				final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
+				
+				if (duel != null && duel.getBlockStorage() != null) {
+					final BlockStorage storage = duel.getBlockStorage();
+					storage.addAir(block.getLocation());
+					
+					for (UUID uuids : duel.getAllAliveTeamsAndSpectators()) {
+						final Player duelPlayers = this.main.getServer().getPlayer(uuids);
+						if (duelPlayers == null) continue;
+						block.getChunk().createFakeBlockUpdate(storage.getAllLocations(), storage.getAllIds(), storage.getAllDatas()).sendTo(duelPlayers);
+					}
+				}
+			}
+		}
 		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);
 		}
