@@ -352,7 +352,7 @@ public class Duel {
 					if (tick == 10 && pm.getSettings().isScoreboardToggled() && pm.getPlayer().getScoreboard() != null && pm.getPlayer().getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) {
 						pm.getPlayer().getScoreboard().getTeam("time").setSuffix(ChatColor.RESET + this.format((int)((System.currentTimeMillis() - this.startTime) / 1000.0D)));
 					}
-					if (Duel.this.ladder != Ladders.NODEBUFF && Duel.this.ladder != Ladders.NOENCHANT || Duel.this.spectators.contains(uuids)) {
+					if (!Duel.this.ladder.containsEnderpearl() || Duel.this.spectators.contains(uuids)) {
 						continue;
 					}
 					if (!pm.getMatchStats().isEnderPearlCooldownActive()) continue;

@@ -157,14 +157,14 @@ public class DuelListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		if (this.main.getArenaManager().getArenaList(true).isEmpty()) { // Dont run event if we dont need it
+		if (this.main.getArenaManager().getArenaList(true, true).isEmpty()) { // Dont run event if we dont need it
 			return;
 		}
-		if (this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0) { // Dont run event if we dont need it
+		if (this.needMoveEventTrigger()) { // Dont run event if we dont need it
 			return;
 		}
 		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);
-		if (duel != null && duel.getLadder() == Ladders.SUMO) {
+		if (duel != null && (duel.getLadder() == Ladders.SUMO || duel.getLadder() == Ladders.SPLEEF)) {
 			if (!duel.getAllAliveTeams().contains(uuid)) {
 				return;
 			}
@@ -174,9 +174,17 @@ public class DuelListener implements Listener {
 				return;
 			}
 			final Arena arena = duel.getArena();
+			if (arena.isSpleef() && player.getLocation().getBlock().isLiquid()) {
+				this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.KILLED);
+				return;
+			}
 			if (player.getLocation().getBlockY() < arena.getMiddle().getBlockY() || player.getLocation().distance(arena.getMiddle()) > 10 || player.getLocation().getBlock().isLiquid()) { // Put multiple end check
 				this.main.getDuelManager().removePlayerFromDuel(player, RemoveReason.KILLED);
 			}
 		}
+	}
+	
+	private boolean needMoveEventTrigger() {
+		return !(this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0 || this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0);
 	}
 }

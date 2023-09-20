@@ -3,6 +3,8 @@ package io.noks.smallpractice.party;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -19,7 +21,7 @@ public class Party {
     private String leaderName;
     private PartyState partyState;
     private boolean open;
-    private EloManager partyEloManager;
+    private @Nullable EloManager partyEloManager;
     
     public Party(UUID partyLeader, String leaderName) {
         this.memberUUIDs = Lists.newArrayList();

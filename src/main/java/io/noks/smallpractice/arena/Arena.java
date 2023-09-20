@@ -13,14 +13,15 @@ public class Arena {
 	private String name;
 	private Location[] locations;
 	private ItemStack icon;
-	private boolean sumo;
+	private boolean sumo, spleef;
 	private Set<UUID> spectators;
 
-	public Arena(String name, Location[] locations, ItemStack icon, boolean sumo) {
+	public Arena(String name, Location[] locations, ItemStack icon, boolean sumo, boolean spleef) {
 		this.name = name;
 		this.locations = locations;
 		this.icon = icon;
 		this.sumo = sumo;
+		this.spleef = spleef;
 		this.spectators = Sets.newHashSet();
 	}
 
@@ -42,6 +43,10 @@ public class Arena {
 
 	public boolean isSumo() {
 		return this.sumo;
+	}
+	
+	public boolean isSpleef() {
+		return this.spleef;
 	}
 
 	public void addSpectator(UUID uuid) {

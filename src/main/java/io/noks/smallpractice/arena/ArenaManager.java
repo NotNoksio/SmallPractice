@@ -44,23 +44,23 @@ public class ArenaManager {
 		final Location[] arena16 = {new Location(world, -257.5D, 88.5D, 1458.5D, 146.0F, 0.0F), new Location(world, -290.5D, 88.5D, 1389.5D, -26.0F, 0.0F)};
 		final Location[] arena17 = {new Location(world, -446.5D, 72.5D, 2215.5D, -180.0F, 0.0F), new Location(world, -446.5D, 72.5D, 2130.5D, 0.0F, 0.0F)};
 		    
-		arenaList.add(new Arena("River", arena1, new ItemStack(Material.WATER_BUCKET, 1), false));
-		arenaList.add(new Arena("Mine", arena2, new ItemStack(Material.COAL_ORE, 1), false));
-		arenaList.add(new Arena("Hearth", arena3, new ItemStack(Material.GOLDEN_APPLE, 1), false));
-		arenaList.add(new Arena("Stalagmites", arena4, new ItemStack(Material.BEDROCK, 1), false));
-		arenaList.add(new Arena("Rock", arena5, new ItemStack(Material.COBBLESTONE, 1), false));
-		arenaList.add(new Arena("Sphinx", arena6, new ItemStack(Material.SAND, 1), false));
-		arenaList.add(new Arena("American Foot", arena7, new ItemStack(Material.GRASS, 1), false));
-		arenaList.add(new Arena("Lava", arena8, new ItemStack(Material.LAVA_BUCKET, 1), false));
-		arenaList.add(new Arena("Book", arena9, new ItemStack(Material.BOOK, 1), false));
-		arenaList.add(new Arena("End", arena10, new ItemStack(Material.ENDER_STONE, 1), false));
-		arenaList.add(new Arena("WoolWorld", arena11, new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), false));
-		arenaList.add(new Arena("Pac-Man", arena12, new ItemStack(Material.GOLD_BLOCK, 1), false));
-		arenaList.add(new Arena("Plastic World", arena13, new ItemStack(Material.CLAY, 1), false));
-		arenaList.add(new Arena("Meteor", arena14, new ItemStack(Material.NETHERRACK, 1), false));
-		arenaList.add(new Arena("Boat", arena15, new ItemStack(Material.BOAT, 1), false));
-		arenaList.add(new Arena("Lost Island", arena16, new ItemStack(Material.FISHING_ROD, 1), false));
-		arenaList.add(new Arena("Zen Garden", arena17, new ItemStack(Material.RED_ROSE, 1), false));
+		arenaList.add(new Arena("River", arena1, new ItemStack(Material.WATER_BUCKET, 1), false, false));
+		arenaList.add(new Arena("Mine", arena2, new ItemStack(Material.COAL_ORE, 1), false, false));
+		arenaList.add(new Arena("Hearth", arena3, new ItemStack(Material.GOLDEN_APPLE, 1), false, false));
+		arenaList.add(new Arena("Stalagmites", arena4, new ItemStack(Material.BEDROCK, 1), false, false));
+		arenaList.add(new Arena("Rock", arena5, new ItemStack(Material.COBBLESTONE, 1), false, false));
+		arenaList.add(new Arena("Sphinx", arena6, new ItemStack(Material.SAND, 1), false, false));
+		arenaList.add(new Arena("American Foot", arena7, new ItemStack(Material.GRASS, 1), false, false));
+		arenaList.add(new Arena("Lava", arena8, new ItemStack(Material.LAVA_BUCKET, 1), false, false));
+		arenaList.add(new Arena("Book", arena9, new ItemStack(Material.BOOK, 1), false, false));
+		arenaList.add(new Arena("End", arena10, new ItemStack(Material.ENDER_STONE, 1), false, false));
+		arenaList.add(new Arena("WoolWorld", arena11, new ItemStack(Material.WOOL, 1, (short) new Random().nextInt(15)), false, false));
+		arenaList.add(new Arena("Pac-Man", arena12, new ItemStack(Material.GOLD_BLOCK, 1), false, false));
+		arenaList.add(new Arena("Plastic World", arena13, new ItemStack(Material.CLAY, 1), false, false));
+		arenaList.add(new Arena("Meteor", arena14, new ItemStack(Material.NETHERRACK, 1), false, false));
+		arenaList.add(new Arena("Boat", arena15, new ItemStack(Material.BOAT, 1), false, false));
+		arenaList.add(new Arena("Lost Island", arena16, new ItemStack(Material.FISHING_ROD, 1), false, false));
+		arenaList.add(new Arena("Zen Garden", arena17, new ItemStack(Material.RED_ROSE, 1), false, false));
 	}
 	
 	private final Random random = new Random();
@@ -85,8 +85,8 @@ public class ArenaManager {
 		return this.arenaList;
 	}
 	
-	public List<Arena> getArenaList(boolean sumo) {
-		final List<Arena> list = this.arenaList.stream().filter((sumo ? Arena::isSumo : not(Arena::isSumo))).collect(Collectors.toList());
+	public List<Arena> getArenaList(boolean sumo, boolean spleef) {
+		final List<Arena> list = this.arenaList.stream().filter((sumo ? Arena::isSumo : not(Arena::isSumo))).filter((sumo ? Arena::isSpleef : not(Arena::isSpleef))).collect(Collectors.toList());
 		return list.isEmpty() ? Collections.emptyList() : list;
 	}
 }

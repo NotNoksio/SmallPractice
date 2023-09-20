@@ -87,7 +87,7 @@ public class InventoryListener implements Listener {
 				if (this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId()) != null) {
 					Request request = this.main.getInventoryManager().getSelectingDuelPlayerUUID(player.getUniqueId());
 					request.setLadder(ladder);
-					player.openInventory(this.main.getInventoryManager().getArenasInventory(ladder == Ladders.SUMO));
+					player.openInventory(this.main.getInventoryManager().getArenasInventory(ladder == Ladders.SUMO, ladder == Ladders.SPLEEF));
 					return;
 				}
 				player.openInventory(this.main.getInventoryManager().getPartyGameInventory());
