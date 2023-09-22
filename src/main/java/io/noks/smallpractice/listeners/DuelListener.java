@@ -185,6 +185,6 @@ public class DuelListener implements Listener {
 	}
 	
 	private boolean needMoveEventTrigger() {
-		return !(this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0 || this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0);
+		return !(this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SUMO, true) == 0 || this.main.getDuelManager().getFightFromLadder(Ladders.SPLEEF, false) == 0 && this.main.getDuelManager().getFightFromLadder(Ladders.SPLEEF, true) == 0);
 	}
 }
