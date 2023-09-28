@@ -129,6 +129,7 @@ public class InventoryManager {
 		this.editingInventory.clear();
 		for (Ladders ladders : Ladders.values()) {
 			if (!ladders.isEditable()) continue;
+			if (!ladders.isEnable()) continue;
 			final ItemStack item = ItemBuilder.createNewItemStack(ladders.getIcon(), ladders.getColor() + ladders.getName(), Arrays.asList(new String[] {ChatColor.GREEN + "Click to configurate"}));
 			this.editingInventory.addItem(item);
 		}
@@ -141,7 +142,7 @@ public class InventoryManager {
 		}
 		final PlayerSettings ps = pm.getSettings();
 		this.fillWithGlass(settingsInventory);
-		settingsInventory.setItem(0, ItemBuilder.createNewItemStack(new ItemStack(Material.FEATHER, 1), ChatColor.GREEN + "Ping Difference", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Actual value: " + ChatColor.GREEN + ps.getQueuePingDiff() + "ms", ChatColor.GRAY + "(Click to change)"})));
+		settingsInventory.setItem(0, ItemBuilder.createNewItemStack(new ItemStack(Material.FEATHER, 1), ChatColor.GREEN + "Ping Difference", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Actual value: " + (ps.getQueuePingDiff() == 300 ? ChatColor.RED.toString() + "Unlimited" : ChatColor.GREEN.toString() + ps.getQueuePingDiff() + "ms"), ChatColor.GRAY + "(Click to change)"})));
 		settingsInventory.setItem(1, ItemBuilder.createNewItemStack(new ItemStack(Material.PAPER, 1), ChatColor.GREEN + "Toggle Private Message", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Private Message: " + (ps.isPrivateMessageToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
 		settingsInventory.setItem(2, ItemBuilder.createNewItemStack(new ItemStack(Material.ANVIL, 1), ChatColor.GREEN + "Toggle Party Invite", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Party Invite: " + (ps.isPartyInviteToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));
 		settingsInventory.setItem(3, ItemBuilder.createNewItemStack(new ItemStack(Material.DIAMOND_SWORD, 1), ChatColor.GREEN + "Toggle Duel Request", Arrays.asList(new String[] {ChatColor.DARK_AQUA + "Duel Request: " + (ps.isDuelRequestToggled() ? ChatColor.GREEN + "Allowed" : ChatColor.RED + "Disallowed"), ChatColor.GRAY + "(Click to change)"})));

@@ -79,7 +79,7 @@ public class InventoryListener implements Listener {
 				return;
 			}
 			if (!ladder.isEnable()) {
-				player.sendMessage(ChatColor.RED + "No arena created!");
+				player.sendMessage(ChatColor.RED + "No arena created or Gamemode disabled!");
 				player.closeInventory();
 				return;
 			}

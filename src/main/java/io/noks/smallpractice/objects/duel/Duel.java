@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -38,7 +39,7 @@ public class Duel {
 	private final Set<UUID> drops;
 	private DuelState state;
 	protected BukkitTask task;
-	private BlockStorage blockStorage;
+	private @Nullable BlockStorage blockStorage;
 	
 	public Duel(Arena arena, Ladders ladder, SimpleDuel simpleDuel, boolean ranked) {
 		this.arena = arena;
@@ -281,8 +282,7 @@ public class Duel {
 		if (this.drops.isEmpty()) {
 			return;
 		}
-		final World world = Bukkit.getWorld("world");
-		final Iterator<Entity> it = world.getEntities().iterator();
+		final Iterator<Entity> it = this.arena.getLocations()[0].getWorld().getEntities().iterator();
 		while (it.hasNext()) {
 			final Entity entities = it.next();
 			if (entities == null || (!(entities instanceof Item) && !(entities instanceof Arrow)) && !this.drops.contains(entities.getUniqueId())) continue;
