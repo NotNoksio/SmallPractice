@@ -247,7 +247,7 @@ public class InventoryManager {
 	}
 	
 	public Inventory getAllArenasInInventory() {
-		return this.arenasInventory[2];
+		return this.arenasInventory[3];
 	}
 	public Inventory getArenasInventory(boolean sumo, boolean spleef) {
 		if (sumo) {
