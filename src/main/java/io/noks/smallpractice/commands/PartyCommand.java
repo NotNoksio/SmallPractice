@@ -92,7 +92,7 @@ public class PartyCommand implements CommandExecutor {
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 	                    ChatColor.RED + "Your party informations:",
 	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
-	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getPartyEloManager() != null ? ChatColor.DARK_GRAY + " (" + party.getPartyEloManager().getGlobal() + ")" : ""),
+	                    ChatColor.DARK_AQUA + "Members (" + (party.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getEloManager() != null ? ChatColor.DARK_GRAY + " (" + party.getEloManager().getGlobal() + ")" : ""),
 	                    ChatColor.DARK_AQUA + "Privacy: " + (party.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
 	            };
@@ -105,7 +105,7 @@ public class PartyCommand implements CommandExecutor {
 	        		return false;
 	        	}
 	        	final boolean isLeader = party.getLeader().equals(player.getUniqueId());
-	        	if (party.getPartyState() == PartyState.QUEUING) {
+	        	if (party.getState() == PartyState.QUEUING) {
 	        		this.main.getQueueManager().quitQueue(this.main.getServer().getPlayer(party.getLeader()), false);
 	        		party.notify(ChatColor.RED + "Your party has been removed from the queue! Your " + (!isLeader ? "teammate has left your party" : "leader has left the party") + ".");
 	        	}
@@ -127,7 +127,7 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
 	        		return false;
 	        	}
-	        	if (party.getPartyState() == PartyState.QUEUING) {
+	        	if (party.getState() == PartyState.QUEUING) {
 	        		this.main.getQueueManager().quitQueue(this.main.getServer().getPlayer(party.getLeader()), false);
 	        		party.notify(ChatColor.RED + "Your party has been removed from the queue! Your leader has disband the party.");
 	        	}
@@ -182,7 +182,7 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "Your party must contain only 2 players!");
 	        		return false;
 	        	}
-	        	if (party.getPartyEloManager() != null) {
+	        	if (party.getEloManager() != null) {
 	        		player.sendMessage(ChatColor.RED + "Your party has already been confirmed!");
 	        		return false;
 	        	}
@@ -264,7 +264,7 @@ public class PartyCommand implements CommandExecutor {
 	        		player.sendMessage(ChatColor.RED + "You are not the leader of the party!");
 	        		return false;
 	        	}
-            	if (party.getPartyState() == PartyState.QUEUING) {
+            	if (party.getState() == PartyState.QUEUING) {
             		player.sendMessage(ChatColor.RED + "You can't do that while queuing!");
             		return false;
             	}
@@ -295,7 +295,7 @@ public class PartyCommand implements CommandExecutor {
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------",
 	                    ChatColor.RED + leader.getName() + "'s party informations:",
 	                    ChatColor.DARK_AQUA + "Leader: " + ChatColor.YELLOW + leader.getName(),
-	                    ChatColor.DARK_AQUA + "Members (" + (targetParty.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + targetParty.getPartyEloManager().getGlobal() + ")" : ""),
+	                    ChatColor.DARK_AQUA + "Members (" + (targetParty.getSize()) + "): " + ChatColor.GRAY + members.toString() + (party.getSize() == 2 ? ChatColor.DARK_GRAY + " (" + targetParty.getEloManager().getGlobal() + ")" : ""),
 	                    ChatColor.DARK_AQUA + "Privacy: " + (targetParty.isOpen() ? ChatColor.GREEN + "Open" : ChatColor.RED + "Invite-Only"),
 	                    ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------------------"
 	            };

@@ -70,7 +70,7 @@ public class SpectateCommand implements CommandExecutor {
 				if (party != targetParty) {
 					return false;
 				}
-				if (targetParty.getPartyState() != PartyState.DUELING) {
+				if (targetParty.getState() != PartyState.DUELING) {
 					return false;
 				}
 				this.setPlayerInSpectator(player, pm, target);

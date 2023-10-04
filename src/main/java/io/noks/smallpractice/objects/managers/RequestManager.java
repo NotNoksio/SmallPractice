@@ -128,7 +128,7 @@ public class RequestManager {
 			requester.sendMessage(ChatColor.RED + "Either you or this player are not in the spawn!");
 			return;
 		}
-		if (party.getPartyState() != PartyState.LOBBY) {
+		if (party.getState() != PartyState.LOBBY) {
 			requester.sendMessage(ChatColor.RED + "You can't do that in your current state!");
 			return;
 		}
@@ -173,7 +173,7 @@ public class RequestManager {
 			return;
 		}
 		final Party requesterParty = this.main.getPartyManager().getParty(requester.getUniqueId());
-		if (requesterParty.getPartyState() != PartyState.LOBBY) {
+		if (requesterParty.getState() != PartyState.LOBBY) {
 			requested.sendMessage(ChatColor.RED + "This party isn't currently accessible!");
 			return;
 		}

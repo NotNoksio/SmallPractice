@@ -167,7 +167,7 @@ public class DuelManager {
 			life.setDisplaySlot(DisplaySlot.BELOW_NAME);
 			life.setDisplayName(ChatColor.RED.toString() + String.valueOf("❤"));
 		}
-		final String duelMessage = ChatColor.DARK_AQUA + "Starting" + (ffa ? " FFA party game" : " duel against " + ChatColor.YELLOW + (teamFight ? this.main.getServer().getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : this.main.getServer().getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getFrom(ladder) : (this.main.getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager() != null ? this.main.getPartyManager().getParty(enemyPartyLeaderUUID).getPartyEloManager().getFrom(ladder) : "")) + ")" : "")));
+		final String duelMessage = ChatColor.DARK_AQUA + "Starting" + (ffa ? " FFA party game" : " duel against " + ChatColor.YELLOW + (teamFight ? this.main.getServer().getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : this.main.getServer().getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getFrom(ladder) : (this.main.getPartyManager().getParty(enemyPartyLeaderUUID).getEloManager() != null ? this.main.getPartyManager().getParty(enemyPartyLeaderUUID).getEloManager().getFrom(ladder) : "")) + ")" : "")));
 		for (UUID teamUUID : team) {
 			final Player player = this.main.getServer().getPlayer(teamUUID);
 			
@@ -259,8 +259,8 @@ public class DuelManager {
 		final Party winnerParty = this.main.getPartyManager().getParty(winnerUUID);
 		final Party loserParty = this.main.getPartyManager().getParty(loserUUID);
 		if (winners.size() == 2 && losers.size() == 2) {
-			winnersElo = winnerParty.getPartyEloManager().getFrom(ladder);
-			losersElo = loserParty.getPartyEloManager().getFrom(ladder);
+			winnersElo = winnerParty.getEloManager().getFrom(ladder);
+			losersElo = loserParty.getEloManager().getFrom(ladder);
 			to2 = true;
 		}
 		// Rinny - K-Factor = 32, Scale Factor = 400 & Exponent Base = 10 = FULL RATING SYSTEM IN 2 LINES
@@ -274,8 +274,8 @@ public class DuelManager {
 			this.main.getDatabaseUtil().savePlayerSingleElo(lm, ladder);
 			this.main.getDatabaseUtil().updateSoloTopLadder(ladder, true);
 		} else {
-			winnerParty.getPartyEloManager().addTo(ladder, scoreChange);
-			loserParty.getPartyEloManager().removeFrom(ladder, scoreChange);
+			winnerParty.getEloManager().addTo(ladder, scoreChange);
+			loserParty.getEloManager().removeFrom(ladder, scoreChange);
 			this.main.getDatabaseUtil().saveDuoElo(winnerParty, ladder);
 			this.main.getDatabaseUtil().saveDuoElo(loserParty, ladder);
 			this.main.getDatabaseUtil().updateDuoTopLadder(ladder, true);

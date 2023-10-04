@@ -53,7 +53,7 @@ public class DuelCommand implements CommandExecutor {
 				player.sendMessage(ChatColor.RED + "This player is not in a party!");
 				return false;
 			}
-			if (targetParty.getPartyState() == PartyState.DUELING) {
+			if (targetParty.getState() == PartyState.DUELING) {
 				player.sendMessage(ChatColor.RED + "This party is currently busy.");
 				return false;
 			}

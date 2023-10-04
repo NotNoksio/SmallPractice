@@ -328,8 +328,8 @@ public class DBUtils {
 			connection = this.hikari.getConnection();
 			final PreparedStatement statement = connection.prepareStatement(SAVE);
 			
-			statement.setInt(1, party.getPartyEloManager().getFrom(ladder));
-			statement.setInt(2, party.getPartyEloManager().getGlobal());
+			statement.setInt(1, party.getEloManager().getFrom(ladder));
+			statement.setInt(2, party.getEloManager().getGlobal());
 			statement.setString(3, uuid1.toString());
 			statement.setString(4, uuid2.toString());
 			statement.execute();

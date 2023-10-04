@@ -40,7 +40,10 @@ public class InventoryManager {
 	public InventoryManager(Main main) {
 		this.main = main;
 		this.selectingDuel = new WeakHashMap<UUID, Request>();
-		this.arenasInventory = new Inventory[] {main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList(false, false).size() + 1), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList(true, false).size() + 1), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList(false, true).size() + 1), "Arena Selection"), main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getFullArenaList().size()), "Arena Selection")};
+		this.arenasInventory = new Inventory[] {main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList(false, false).size() + 1), "Arena Selection"), // Non sumo and spleef arena
+												main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList(true, false).size() + 1), "Arena Selection"), // Sumo arena
+												main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getArenaList(false, true).size() + 1), "Arena Selection"), // Spleef arena
+												main.getServer().createInventory(null, this.calculateSize(main.getArenaManager().getFullArenaList().size()), "Arena Selection")}; // All arena
 		this.unrankedInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Unranked Selection");
 		this.rankedInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Ranked Selection");
 		this.laddersInventory = main.getServer().createInventory(null, this.calculateSize(Ladders.values().length), "Ladder Selection");
@@ -48,7 +51,8 @@ public class InventoryManager {
 		this.selectionInventory = main.getServer().createInventory(null, 27, "Selector");
 		this.partyGameInventory = main.getServer().createInventory(null, 27, "Select Gamemode");
 		this.offlineInventories = new WeakHashMap<UUID, Inventory>();
-		this.leaderBoardInventory = new Inventory[] {main.getServer().createInventory(null, 36, "Leaderboard"), main.getServer().createInventory(null, 36, "2v2 Leaderboard")};
+		this.leaderBoardInventory = new Inventory[] {main.getServer().createInventory(null, 36, "Leaderboard"),
+													 main.getServer().createInventory(null, 36, "2v2 Leaderboard")};
 		this.setArenasInventory();
 		this.setUnrankedInventory();
 		this.setRankedInventory();

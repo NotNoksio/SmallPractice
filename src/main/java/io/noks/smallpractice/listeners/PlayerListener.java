@@ -400,7 +400,7 @@ public class PlayerListener implements Listener {
 						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
 						break;
 					}
-					if (currentParty.getPartyState() == PartyState.DUELING) {
+					if (currentParty.getState() == PartyState.DUELING) {
 						player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
 						break;
 					}
@@ -417,11 +417,11 @@ public class PlayerListener implements Listener {
 						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
 						break;
 					}
-					if (!currentParty.getPartyEloManager().canAccessRanked()) {
-						player.sendMessage(ChatColor.RED + "You need to win another " + (10 - currentParty.getPartyEloManager().getWinnedUnranked()) + " unranked game to access ranked!");
+					if (!currentParty.getEloManager().canAccessRanked()) {
+						player.sendMessage(ChatColor.RED + "You need to win another " + (10 - currentParty.getEloManager().getWinnedUnranked()) + " unranked game to access ranked!");
 						break;
 					}
-					if (currentParty.getPartyState() == PartyState.DUELING) {
+					if (currentParty.getState() == PartyState.DUELING) {
 						player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
 						break;
 					}
@@ -437,7 +437,7 @@ public class PlayerListener implements Listener {
 						player.sendMessage(ChatColor.RED + "You are not the leader of this party!");
 						break;
 					}
-					if (currentParty.getPartyState() == PartyState.DUELING) {
+					if (currentParty.getState() == PartyState.DUELING) {
 						player.sendMessage(ChatColor.RED + "Your party is currently busy and cannot fight.");
 						break;
 					}
@@ -459,7 +459,7 @@ public class PlayerListener implements Listener {
 				if (item.getType() == Material.EYE_OF_ENDER && itemName.equals(ChatColor.YELLOW + "spectate actual match")) {
 					// TODO: SUPPOSED TO BE WORKING (NEED CHECK)
 					event.setUseItemInHand(Result.DENY);
-					if (currentParty.getPartyState() != PartyState.DUELING) {
+					if (currentParty.getState() != PartyState.DUELING) {
 						this.main.getItemManager().giveSpawnItem(player);
 						break;
 					}

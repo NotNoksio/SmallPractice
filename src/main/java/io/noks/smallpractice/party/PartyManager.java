@@ -84,7 +84,7 @@ public class PartyManager {
     		}
     		
     		party.notify(ChatColor.RED + "Your party leader has left, so the new party leader is " + party.getLeaderName());
-    		if (party.getPartyState() == PartyState.LOBBY) this.main.getItemManager().giveSpawnItem(this.main.getServer().getPlayer(newLeader));
+    		if (party.getState() == PartyState.LOBBY) this.main.getItemManager().giveSpawnItem(this.main.getServer().getPlayer(newLeader));
     		addPartyToInventory(party);
     		return;
     	}
@@ -98,7 +98,7 @@ public class PartyManager {
         		continue;
         	}
         	this.playerUUIDtoLeaderUUID.remove(entry.getKey());
-        	if (getParty(leader).getPartyState() != PartyState.DUELING) {
+        	if (getParty(leader).getState() != PartyState.DUELING) {
         		this.main.getItemManager().giveSpawnItem(this.main.getServer().getPlayer(entry.getKey()));
         	}
         }
@@ -131,7 +131,7 @@ public class PartyManager {
     
     public void addPartyToInventory(Party party) {
         final Player player = this.main.getServer().getPlayer(party.getLeader());
-        final ItemStack skull = new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)(party.getPartyState() == PartyState.LOBBY ? SkullType.PLAYER.ordinal() : SkullType.WITHER.ordinal()));
+        final ItemStack skull = new ItemStack(Material.SKULL_ITEM, party.getSize(), (short)(party.getState() == PartyState.LOBBY ? SkullType.PLAYER.ordinal() : SkullType.WITHER.ordinal()));
         final SkullMeta skullm = (SkullMeta) skull.getItemMeta();
         if (skull.getDurability() == SkullType.PLAYER.ordinal()) {
         	skullm.setOwner(player.getName());
