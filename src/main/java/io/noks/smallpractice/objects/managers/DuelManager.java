@@ -422,7 +422,7 @@ public class DuelManager {
 				
 				if (duel.getLadder() == Ladders.COMBO) {
 					first.setMaximumNoDamageTicks(4);
-					first.setKnockbackReduction(0.175f);
+					first.setVerticalKnockbackReduction(0.175f);
 				}
 				if (duel.getLadder() == Ladders.BOXING) {
 					first.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
@@ -447,7 +447,7 @@ public class DuelManager {
 				
 				if (duel.getLadder() == Ladders.COMBO) {
 					second.setMaximumNoDamageTicks(4);
-					second.setKnockbackReduction(0.175f);
+					second.setVerticalKnockbackReduction(0.175f);
 				}
 				if (duel.getLadder() == Ladders.BOXING) {
 					second.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
@@ -526,8 +526,8 @@ public class DuelManager {
 		if (player.getMaximumNoDamageTicks() != 20) {
 			player.setMaximumNoDamageTicks(20);
 		}
-		if (player.getKnockbackReduction() != 0.0f) {
-			player.setKnockbackReduction(0.0f);
+		if (player.getVerticalKnockbackReduction() != 0.0f) {
+			player.setVerticalKnockbackReduction(0.0f);
 		}
 		if (player.getLevel() != 0) {
 			player.setLevel(0);
@@ -703,8 +703,8 @@ public class DuelManager {
         if (player.getMaximumNoDamageTicks() != 20) {
         	player.setMaximumNoDamageTicks(20);
         }
-        if (player.getKnockbackReduction() != 0.0f) {
-			player.setKnockbackReduction(0.0f);
+        if (player.getVerticalKnockbackReduction() != 0.0f) {
+			player.setVerticalKnockbackReduction(0.0f);
 		}
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);

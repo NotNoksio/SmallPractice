@@ -62,12 +62,9 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent event) {
 		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP && this.main.getServer().getOnlinePlayers().size() > 1) {
-			for (Player opPlayers : this.main.getServer().getOnlinePlayers()) {
-				if (!opPlayers.isOp()) {
-					continue;
-				}
-				opPlayers.sendMessage(event.getJoinMessage());
-			}
+		    this.main.getServer().getOnlinePlayers().stream()
+		        .filter(opPlayers -> opPlayers.isOp())
+		        .forEach(opPlayers -> opPlayers.sendMessage(event.getJoinMessage()));
 		}
 		event.setJoinMessage(null);
 		final Player player = event.getPlayer();
@@ -78,7 +75,7 @@ public class PlayerListener implements Listener {
 		player.setLevel(0);
 		player.setFlySpeed(0.1f);
 		player.setWalkSpeed(0.2f);
-		player.setKnockbackReduction(0.0f);
+		player.setVerticalKnockbackReduction(0.0f);
 		
 		player.setAllowFlight(false);
 		player.setFlying(false);
@@ -103,12 +100,9 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onQuit(PlayerQuitEvent event) {
 		if (this.main.getConfigManager().sendJoinAndQuitMessageToOP && this.main.getServer().getOnlinePlayers().size() > 1) {
-			for (Player opPlayers : this.main.getServer().getOnlinePlayers()) {
-				if (!opPlayers.isOp()) {
-					continue;
-				}
-				opPlayers.sendMessage(event.getQuitMessage());
-			}
+		    this.main.getServer().getOnlinePlayers().stream()
+		        .filter(opPlayers -> opPlayers.isOp())
+		        .forEach(opPlayers -> opPlayers.sendMessage(event.getQuitMessage()));
 		}
 		event.setQuitMessage(null);
 		this.doDisconectionAction(event.getPlayer().getUniqueId());

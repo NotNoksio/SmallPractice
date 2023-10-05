@@ -217,8 +217,8 @@ public class PlayerManager {
 		}
 		this.player.setFoodLevel(20);
 		this.player.setSaturation(!forFight ? 1000F : 20F);
-		if (!forFight && this.status != PlayerStatus.WAITING && this.status != PlayerStatus.DUEL && this.player.getKnockbackReduction() > 0.0D) {
-			this.player.setKnockbackReduction(0.0f);
+		if (!forFight && this.status != PlayerStatus.WAITING && this.status != PlayerStatus.DUEL && this.player.getVerticalKnockbackReduction() > 0.0D) {
+			this.player.setVerticalKnockbackReduction(0.0f);
 		}
 	}
 	
