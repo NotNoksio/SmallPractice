@@ -671,6 +671,7 @@ public class DuelManager {
 			duel.cancelTask();
 		}
 		duel.clearDrops();
+		duel.replaceBlockFromStorage();
 		for (UUID dpUUID : duel.getAllTeams()) {
 			final Player duelPlayer = this.main.getServer().getPlayer(dpUUID);
 			if (duelPlayer == null) continue;

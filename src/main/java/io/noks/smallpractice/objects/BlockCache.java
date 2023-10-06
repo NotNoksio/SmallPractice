@@ -4,13 +4,15 @@ import org.bukkit.Location;
 
 public class BlockCache {
 	private Location location;
-	private int id;
-	private int data;
+	private int id, oldID;
+	private int data, oldDATA;
 
-	public BlockCache(Location loc, int id, int data) {
+	public BlockCache(Location loc, int id, int data, int oldID, int oldDATA) {
 		this.location = loc;
 		this.id = id;
 		this.data = data;
+		this.oldID = oldID;
+		this.oldDATA = oldDATA;
 	}
 	
 	public Location location() {
@@ -23,5 +25,13 @@ public class BlockCache {
 	
 	public int data() {
 		return this.data;
+	}
+	
+	public int oldID() {
+		return this.oldID;
+	}
+	
+	public int oldDATA() {
+		return this.oldDATA;
 	}
 }

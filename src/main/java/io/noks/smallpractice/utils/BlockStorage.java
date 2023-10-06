@@ -15,16 +15,29 @@ public class BlockStorage {
 		this.blocks = Lists.newLinkedList();
 	}
 	
-	public void add(Block block) {
-		this.blocks.add(new BlockCache(block.getLocation(), block.getTypeId(), block.getData()));
+	public void add(Block block, Block oldBlock) {
+		this.blocks.add(new BlockCache(block.getLocation(), block.getTypeId(), block.getData(), oldBlock.getTypeId(), oldBlock.getData()));
 	}
 	
-	public void addAir(Location loc) {
-		this.blocks.add(new BlockCache(loc, 0, 0));
+	public void addAir(Location loc, Block oldBlock) {
+		this.blocks.add(new BlockCache(loc, 0, 0, oldBlock.getTypeId(), oldBlock.getData()));
+	}
+	
+	public boolean contains(Location loc) {
+		for (BlockCache cache : this.blocks) {
+			if (cache.location() == loc) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void clearCache() {
 		this.blocks.clear();
+	}
+	
+	public List<BlockCache> blocksList() {
+		return this.blocks;
 	}
 	
 	public Location[] getAllLocations() {
@@ -37,5 +50,13 @@ public class BlockStorage {
 	
 	public int[] getAllDatas() {
 	    return this.blocks.stream().mapToInt(BlockCache::data).toArray();
+	}
+	
+	public int[] getAllOldIds() {
+	    return this.blocks.stream().mapToInt(BlockCache::oldID).toArray();
+	}
+	
+	public int[] getAllOldDatas() {
+	    return this.blocks.stream().mapToInt(BlockCache::oldDATA).toArray();
 	}
 }

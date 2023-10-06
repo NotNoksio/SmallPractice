@@ -151,6 +151,10 @@ public class Duel {
 	}
 	
 	public void removeSpectator(UUID spec) {
+		if (this.blockStorage != null) {
+			final Player player = Bukkit.getPlayer(spec);
+			this.arena.getLocations()[0].getChunk().createFakeBlockUpdate(this.blockStorage.getAllLocations(), this.blockStorage.getAllOldIds(), this.blockStorage.getAllOldDatas()).sendTo(player);
+		}
 		this.spectators.remove(spec);
 	}
 	
@@ -287,6 +291,14 @@ public class Duel {
 			final Entity entities = it.next();
 			if (entities == null || (!(entities instanceof Item) && !(entities instanceof Arrow)) && !this.drops.contains(entities.getUniqueId())) continue;
 			entities.remove();
+		}
+	}
+	
+	public void replaceBlockFromStorage() {
+		for (UUID uuids : this.getAllAliveTeamsAndSpectators()) {
+			final Player duelPlayers = Bukkit.getServer().getPlayer(uuids);
+			if (duelPlayers == null) continue;
+			this.arena.getLocations()[0].getChunk().createFakeBlockUpdate(this.blockStorage.getAllLocations(), this.blockStorage.getAllOldIds(), this.blockStorage.getAllOldDatas()).sendTo(duelPlayers);
 		}
 	}
 	

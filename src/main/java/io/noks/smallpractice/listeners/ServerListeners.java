@@ -22,6 +22,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import io.noks.smallpractice.Main;
+import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
@@ -40,7 +41,22 @@ public class ServerListeners implements Listener {
 		final UUID playerUUID = event.getPlayer().getUniqueId();
 		final PlayerManager pm = PlayerManager.get(playerUUID);
 		
-		// TODO: register blocks in duel if BUILDUHC
+		if (pm.getStatus() == PlayerStatus.DUEL) {
+			final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
+			
+			if (duel != null && duel.getBlockStorage() != null && duel.getLadder() == Ladders.BUILDUHC) {
+				final Block block = event.getBlock();
+				final Block placedBlock = event.getBlockPlaced();
+				final BlockStorage storage = duel.getBlockStorage();
+				storage.add(placedBlock, block);
+					
+				for (UUID uuids : duel.getAllAliveTeamsAndSpectators()) {
+					final Player duelPlayers = this.main.getServer().getPlayer(uuids);
+					if (duelPlayers == null) continue;
+					block.getChunk().createFakeBlockUpdate(storage.getAllLocations(), storage.getAllIds(), storage.getAllDatas()).sendTo(duelPlayers);
+				}
+			}
+		}
 		if (!pm.isAllowedToBuild()) {
 			event.setCancelled(true);
 		}
@@ -53,18 +69,20 @@ public class ServerListeners implements Listener {
 		
 		if (pm.getStatus() == PlayerStatus.DUEL) {
 			final Block block = event.getBlock();
-			if (block.getType() == Material.SNOW_BLOCK) {
-				final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
+			final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
 				
-				if (duel != null && duel.getBlockStorage() != null) {
-					final BlockStorage storage = duel.getBlockStorage();
-					storage.addAir(block.getLocation());
+			if (duel != null && duel.getBlockStorage() != null) {
+				final BlockStorage storage = duel.getBlockStorage();
+				if (duel.getLadder() == Ladders.SPLEEF) {
+					storage.addAir(block.getLocation(), block);
+				} else if (duel.getLadder() == Ladders.BUILDUHC && storage.contains(block.getLocation())) {
+					storage.addAir(block.getLocation(), block);
+				}
 					
-					for (UUID uuids : duel.getAllAliveTeamsAndSpectators()) {
-						final Player duelPlayers = this.main.getServer().getPlayer(uuids);
-						if (duelPlayers == null) continue;
-						block.getChunk().createFakeBlockUpdate(storage.getAllLocations(), storage.getAllIds(), storage.getAllDatas()).sendTo(duelPlayers);
-					}
+				for (UUID uuids : duel.getAllAliveTeamsAndSpectators()) {
+					final Player duelPlayers = this.main.getServer().getPlayer(uuids);
+					if (duelPlayers == null) continue;
+					block.getChunk().createFakeBlockUpdate(storage.getAllLocations(), storage.getAllIds(), storage.getAllDatas()).sendTo(duelPlayers);
 				}
 			}
 		}
