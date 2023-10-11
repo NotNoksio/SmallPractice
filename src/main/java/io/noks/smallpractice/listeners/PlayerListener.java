@@ -165,8 +165,9 @@ public class PlayerListener implements Listener {
 		
 		if (event.getEntity() instanceof Player) {
 			final Player killed = event.getEntity();
+			final PlayerManager km = PlayerManager.get(killed.getUniqueId());
 			
-			if (this.main.getDuelManager().getDuelFromPlayerUUID(killed.getUniqueId()) == null) {
+			if ((km.getStatus() != PlayerStatus.DUEL || km.getStatus() != PlayerStatus.WAITING) && this.main.getDuelManager().getDuelFromPlayerUUID(killed.getUniqueId()) == null) {
 				return;
 			}
 			// WE NEED TO DO THIS TO FIRE DuelListener::onEntitySpawnInWorld

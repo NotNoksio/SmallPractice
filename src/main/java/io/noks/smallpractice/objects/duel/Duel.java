@@ -295,6 +295,9 @@ public class Duel {
 	}
 	
 	public void replaceBlockFromStorage() {
+		if (this.blockStorage == null) {
+			return;
+		}
 		for (UUID uuids : this.getAllAliveTeamsAndSpectators()) {
 			final Player duelPlayers = Bukkit.getServer().getPlayer(uuids);
 			if (duelPlayers == null) continue;
