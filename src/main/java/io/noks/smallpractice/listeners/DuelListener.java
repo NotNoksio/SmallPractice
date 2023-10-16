@@ -2,6 +2,8 @@ package io.noks.smallpractice.listeners;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
@@ -14,6 +16,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
@@ -23,6 +26,7 @@ import io.noks.smallpractice.enums.RemoveReason;
 import io.noks.smallpractice.objects.MatchStats;
 import io.noks.smallpractice.objects.duel.Duel;
 import io.noks.smallpractice.objects.managers.PlayerManager;
+import io.noks.smallpractice.utils.Cuboid;
 
 public class DuelListener implements Listener {
 	private Main main;
@@ -149,12 +153,30 @@ public class DuelListener implements Listener {
 		}
 	}
 	
+	private final Cuboid cube1 = new Cuboid(new Location(Bukkit.getWorld("world"), -14, 77, 48), new Location(Bukkit.getWorld("world"), -18, 81, 52));
+	private final Cuboid cube2 = new Cuboid(new Location(Bukkit.getWorld("world"), -25, 77, 53), new Location(Bukkit.getWorld("world"), -7, 81, 65));
 	// My PlayerMoveEvent is not like everyone event (be careful)
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onMove(PlayerMoveEvent event) {
 		final UUID uuid = event.getPlayer().getUniqueId();
-		if (PlayerManager.get(uuid).isFrozen()) {
+		final PlayerManager pm = PlayerManager.get(uuid);
+		if (pm.isFrozen()) {
 			event.setCancelled(true);
+			return;
+		}
+		if (pm.getStatus() == PlayerStatus.SPAWN && !pm.isAllowedToBuild()) {
+			final Player player = event.getPlayer();
+			if (cube1.isIn(player) || cube2.isIn(player)) {
+				if (!player.hasMetadata("pack")) {
+					player.setMetadata("pack", new FixedMetadataValue(this.main, Boolean.valueOf(true)));
+					this.main.getItemManager().giveFightItems(player, Ladders.BOXING, 0);
+				}
+			} else {
+				if (player.hasMetadata("pack")) {
+					player.removeMetadata("pack", this.main);
+					this.main.getItemManager().giveSpawnItem(player);
+				}
+			}
 			return;
 		}
 		if (this.main.getArenaManager().getArenaList(true, true).isEmpty()) { // Dont run event if we dont need it

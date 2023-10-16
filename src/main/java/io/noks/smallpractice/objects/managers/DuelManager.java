@@ -176,7 +176,9 @@ public class DuelManager {
 				team.remove(teamUUID);
 				continue;
 			}
-			
+			if (player.hasMetadata("pack")) {
+	        	player.removeMetadata("pack", this.main);
+	        }
 			final PlayerManager pm = PlayerManager.get(teamUUID);
 			pm.clearRequest();
 			pm.setStatus(PlayerStatus.WAITING);

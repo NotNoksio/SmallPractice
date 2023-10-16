@@ -139,6 +139,9 @@ public class PlayerListener implements Listener {
         if (player.hasMetadata("editing")) {
         	player.removeMetadata("editing", this.main);
         }
+        if (player.hasMetadata("pack")) {
+        	player.removeMetadata("pack", this.main);
+        }
         final PlayerManager pm = PlayerManager.get(playerUUID);
         if (pm != null) {
 			if (pm.getStatus() == PlayerStatus.SPECTATE && pm.getSpectate() == null) {
@@ -168,6 +171,7 @@ public class PlayerListener implements Listener {
 			final PlayerManager km = PlayerManager.get(killed.getUniqueId());
 			
 			if ((km.getStatus() != PlayerStatus.DUEL || km.getStatus() != PlayerStatus.WAITING) && this.main.getDuelManager().getDuelFromPlayerUUID(killed.getUniqueId()) == null) {
+				event.getDrops().clear();
 				return;
 			}
 			// WE NEED TO DO THIS TO FIRE DuelListener::onEntitySpawnInWorld
@@ -227,6 +231,9 @@ public class PlayerListener implements Listener {
 					event.setDamage(0.0D);
 					break;
 				case FIRE:
+					event.setCancelled(true);
+					break;
+				case FIRE_TICK:
 					event.setCancelled(true);
 					break;
 				case DROWNING:

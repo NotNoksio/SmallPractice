@@ -5,19 +5,24 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
@@ -155,5 +160,34 @@ public class ServerListeners implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBlockChangeByEntity(EntityChangeBlockEvent event) {
 		event.setCancelled(true);
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onBlockIgnite(BlockIgniteEvent event) {
+		if (event.getCause() == IgniteCause.FLINT_AND_STEEL) {
+			return;
+		}
+		event.setCancelled(true);
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onInteractWithItemFrame(PlayerInteractEntityEvent event) {
+		if (event.getRightClicked().getType() == EntityType.ITEM_FRAME) {
+			final Player interactor = event.getPlayer();
+			if (PlayerManager.get(interactor.getUniqueId()).isAllowedToBuild()) {
+				return;
+			}
+			event.setCancelled(true);
+		}
+	}
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onDamageItemFrame(EntityDamageByEntityEvent  event) {
+		if (event.getEntityType() == EntityType.ITEM_FRAME && event.getDamager() instanceof Player) {
+			final Player interactor = (Player) event.getDamager();
+			if (PlayerManager.get(interactor.getUniqueId()).isAllowedToBuild()) {
+				return;
+			}
+			event.setCancelled(true);
+		}
 	}
 }

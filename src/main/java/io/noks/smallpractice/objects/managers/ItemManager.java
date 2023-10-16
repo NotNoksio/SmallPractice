@@ -27,13 +27,25 @@ import net.minecraft.util.com.google.common.collect.Maps;
 public class ItemManager {
 	private Main main;
 	private Map<Ladders, Inventory> DEFAULT_LADDER_INVENTORIES = Maps.newHashMap();
+	private final ItemStack[] spawnItems;
+	
 	public ItemManager(Main main) {
 		this.main = main;
 		for (Ladders ladders : Ladders.values()) {
 			this.DEFAULT_LADDER_INVENTORIES.putIfAbsent(ladders, getDefaultFightItems(ladders));
 		}
 		Collections.unmodifiableMap(this.DEFAULT_LADDER_INVENTORIES);
+		this.spawnItems = new ItemStack[] {ItemBuilder.createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true),
+										   ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true),
+										   null,
+										   null,
+										   ItemBuilder.createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"),
+										   ItemBuilder.createNewItemStackByMaterial(Material.EMERALD, ChatColor.YELLOW + "Leaderboards"),
+										   null,
+										   null,
+										   ItemBuilder.createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings")};
 	}
+	
 	public void clearCache() {
 		this.DEFAULT_LADDER_INVENTORIES.clear();
 	}
@@ -49,11 +61,9 @@ public class ItemManager {
 		}
 		
 		if (!this.main.getPartyManager().hasParty(player.getUniqueId())) {
-			player.getInventory().setItem(0, ItemBuilder.createNewItemStackByMaterial(Material.IRON_SWORD, ChatColor.YELLOW + "Unranked Queue", true));
-			player.getInventory().setItem(1, ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SWORD, ChatColor.YELLOW + "Ranked Queue", true));
-			player.getInventory().setItem(4, ItemBuilder.createNewItemStackByMaterial(Material.NAME_TAG, ChatColor.YELLOW + "Create Party"));
-			player.getInventory().setItem(5, ItemBuilder.createNewItemStackByMaterial(Material.EMERALD, ChatColor.YELLOW + "Leaderboards"));
-			player.getInventory().setItem(8, ItemBuilder.createNewItemStackByMaterial(Material.BOOK, ChatColor.YELLOW + "Kit Creator/Settings"));
+			for (int i = 0; i < this.spawnItems.length; i++) {
+				player.getInventory().setItem(i, this.spawnItems[i]); 
+			}
 		} else {
 			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.DUEL || PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING) {
 				return;

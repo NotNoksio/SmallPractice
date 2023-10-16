@@ -100,6 +100,9 @@ public class SpectateCommand implements CommandExecutor {
 		player.setScoreboard(target.getScoreboard());
 		
 		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(target.getUniqueId());
+		if (duel == null) {
+			return;
+		}
 		duel.addSpectator(player.getUniqueId());
 		
 		player.setAllowFlight(true);
