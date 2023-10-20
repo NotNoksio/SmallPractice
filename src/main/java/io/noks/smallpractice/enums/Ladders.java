@@ -13,7 +13,7 @@ public enum Ladders {
 	GAPPLE("Gapple", ChatColor.BLUE, new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1), true, true, true, false),
 	BOXING("Boxing", ChatColor.DARK_AQUA, new ItemStack(Material.NOTE_BLOCK, 1), false, false, true, false),
 	COMBO("Combo", ChatColor.DARK_GREEN, new ItemStack(Material.FEATHER, 1), true, true, true, false),
-	SUMO("Sumo", ChatColor.YELLOW, new ItemStack(Material.CLAY_BRICK, 1), false, false, false, false), // Disabled bc on the server where the plugin is used, there's no sumo arena :)
+	SUMO("Sumo", ChatColor.YELLOW, new ItemStack(Material.CLAY_BRICK, 1), false, false, true, false),
 	NOENCHANT("NoEnchant", ChatColor.DARK_PURPLE, new ItemStack(Material.DIAMOND_SWORD), true, true, true, true),
 	CLASSIC("Classic", ChatColor.DARK_RED, new ItemStack(Material.FISHING_ROD), true, true, true, false),
 	SPLEEF("Spleef", ChatColor.WHITE, new ItemStack(Material.DIAMOND_SPADE), false, false, false, false),

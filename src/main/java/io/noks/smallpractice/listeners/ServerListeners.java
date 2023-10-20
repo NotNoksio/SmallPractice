@@ -12,9 +12,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -162,6 +163,13 @@ public class ServerListeners implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBlockIgnite(BlockIgniteEvent event) {
 		if (event.getCause() == IgniteCause.FLINT_AND_STEEL) {
+			return;
+		}
+		event.setCancelled(true);
+	}
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onBlockSpread(BlockSpreadEvent event) {
+		if (event.getBlock().getType() != Material.VINE) {
 			return;
 		}
 		event.setCancelled(true);

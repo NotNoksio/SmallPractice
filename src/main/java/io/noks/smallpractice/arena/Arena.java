@@ -25,7 +25,7 @@ public class Arena {
 		this.spectators = Sets.newHashSet();
 	}
 
-	public World getWorld() { // In case we need someday
+	public World getWorld() {
 		return this.locations[0].getWorld();
 	}
 

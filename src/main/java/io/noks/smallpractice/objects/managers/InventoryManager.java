@@ -77,8 +77,9 @@ public class InventoryManager {
 		this.arenasInventory[2].clear();
 		this.arenasInventory[3].clear();
 		for (Arena arena : this.main.getArenaManager().getFullArenaList()) {
-			final ItemStack item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName());
+			ItemStack item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName(), Arrays.asList(ChatColor.GREEN + "Arena Type: " + ChatColor.YELLOW +  (arena.isSumo() ? "Sumo" : (arena.isSpleef() ? "Spleef" : "Potion & BuildUHC"))));
 			this.arenasInventory[3].addItem(item); // All arena
+			item = ItemBuilder.createNewItemStack(arena.getIcon(), ChatColor.GOLD + arena.getName());
 			if (!arena.isSumo() && !arena.isSpleef()) {
 				this.arenasInventory[0].addItem(item); // Non sumo and spleef
 				continue;
