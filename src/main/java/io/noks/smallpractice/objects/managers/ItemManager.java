@@ -1,6 +1,7 @@
 package io.noks.smallpractice.objects.managers;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -22,11 +23,10 @@ import io.noks.smallpractice.objects.EditedLadderKit;
 import io.noks.smallpractice.party.Party;
 import io.noks.smallpractice.party.PartyState;
 import io.noks.smallpractice.utils.ItemBuilder;
-import net.minecraft.util.com.google.common.collect.Maps;
 
 public class ItemManager {
 	private Main main;
-	private Map<Ladders, Inventory> DEFAULT_LADDER_INVENTORIES = Maps.newHashMap();
+	private Map<Ladders, Inventory> DEFAULT_LADDER_INVENTORIES = new HashMap<Ladders, Inventory>(Ladders.values().length);
 	private final ItemStack[] spawnItems;
 	
 	public ItemManager(Main main) {
@@ -438,6 +438,27 @@ public class ItemManager {
 			inventory.setItem(8, steak);
 			
 			inventory.setItem(17, arrow);
+			break;
+		}
+		case SPLEEF: {
+			helmet = null;
+			chestplate = null;
+			leggings = null;
+			boots = null;
+			
+			final ItemStack ball = new ItemStack(Material.SNOW_BALL, 16);
+			inventory.setItem(1, ball);
+			
+			attackItem = ItemBuilder.createNewItemStackByMaterial(Material.DIAMOND_SPADE, null, true);
+			attackItem.addUnsafeEnchantment(Enchantment.DIG_SPEED, 5);
+			break;
+		}
+		case SUMO: {
+			helmet = null;
+			chestplate = null;
+			leggings = null;
+			boots = null;
+			attackItem = null;
 			break;
 		}
 		default:

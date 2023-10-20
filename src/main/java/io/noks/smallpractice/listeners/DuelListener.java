@@ -153,8 +153,8 @@ public class DuelListener implements Listener {
 		}
 	}
 	
-	private final Cuboid cube1 = new Cuboid(new Location(Bukkit.getWorld("world"), -14, 77, 48), new Location(Bukkit.getWorld("world"), -18, 81, 52));
-	private final Cuboid cube2 = new Cuboid(new Location(Bukkit.getWorld("world"), -25, 77, 53), new Location(Bukkit.getWorld("world"), -7, 81, 65));
+	private final Cuboid cube1 = new Cuboid(new Location(Bukkit.getWorld("world"), -13, 77, 48), new Location(Bukkit.getWorld("world"), -17, 81, 51));
+	private final Cuboid cube2 = new Cuboid(new Location(Bukkit.getWorld("world"), -25, 67, 52), new Location(Bukkit.getWorld("world"), 13, 81, 68));
 	// My PlayerMoveEvent is not like everyone event (be careful)
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onMove(PlayerMoveEvent event) {
@@ -167,7 +167,7 @@ public class DuelListener implements Listener {
 		if (pm.getStatus() == PlayerStatus.SPAWN && !pm.isAllowedToBuild()) {
 			final Player player = event.getPlayer();
 			if (cube1.isIn(player) || cube2.isIn(player)) {
-				if (!player.hasMetadata("pack")) {
+				if (!player.hasMetadata("pack") && player.getLocation().add(0, 6, 0).getBlock().getType() != Material.AIR) {
 					player.setMetadata("pack", new FixedMetadataValue(this.main, Boolean.valueOf(true)));
 					this.main.getItemManager().giveFightItems(player, Ladders.BOXING, 0);
 				}
@@ -179,10 +179,7 @@ public class DuelListener implements Listener {
 			}
 			return;
 		}
-		if (this.main.getArenaManager().getArenaList(true, true).isEmpty()) { // Dont run event if we dont need it
-			return;
-		}
-		if (this.needMoveEventTrigger()) { // Dont run event if we dont need it
+		if (this.main.getArenaManager().getArenaList(true, true).isEmpty() || !this.needMoveEventTrigger()) { // Dont run event if we dont need it
 			return;
 		}
 		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);

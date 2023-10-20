@@ -287,7 +287,7 @@ public class PlayerListener implements Listener {
 					return;
 				}
 				double damage = event.getDamage();
-				if (currentDuel.getArena().isSumo() || currentDuel.getLadder() == Ladders.BOXING) {
+				if ((currentDuel.getArena().isSumo() || currentDuel.getLadder() == Ladders.BOXING) || (currentDuel.getArena().isSpleef() || currentDuel.getLadder() == Ladders.SPLEEF)) {
 					damage = 0.0D;
 				}
 				if (currentDuel.getLadder() == Ladders.EARLY_HG) {
@@ -663,7 +663,8 @@ public class PlayerListener implements Listener {
 			}
 			final Player target = (Player)event.getRightClicked();
 			if (player.getItemInHand().getType() == Material.BOOK && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "inspection tool")) {
-				this.main.getServer().dispatchCommand(player, "inspect " + target.getName());
+				//this.main.getServer().dispatchCommand(player, "inspect " + target.getName());
+				player.sendMessage(ChatColor.RED + "NOT IMPLEMENTED YET!"); // TODO
 				return;
 			}
 			if (player.getItemInHand().getType() == Material.PACKED_ICE && player.getItemInHand().getItemMeta().getDisplayName().toLowerCase().equals(ChatColor.RED + "freeze someone")) {

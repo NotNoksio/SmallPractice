@@ -46,6 +46,9 @@ public class ServerListeners implements Listener {
 		final UUID playerUUID = event.getPlayer().getUniqueId();
 		final PlayerManager pm = PlayerManager.get(playerUUID);
 		
+		if (!pm.isAllowedToBuild()) {
+			event.setCancelled(true);
+		}
 		if (pm.getStatus() == PlayerStatus.DUEL) {
 			final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
 			
@@ -62,9 +65,6 @@ public class ServerListeners implements Listener {
 				}
 			}
 		}
-		if (!pm.isAllowedToBuild()) {
-			event.setCancelled(true);
-		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
@@ -72,27 +72,24 @@ public class ServerListeners implements Listener {
 		final UUID playerUUID = event.getPlayer().getUniqueId();
 		final PlayerManager pm = PlayerManager.get(playerUUID);
 		
+		if (!pm.isAllowedToBuild()) {
+			event.setCancelled(true);
+		}
 		if (pm.getStatus() == PlayerStatus.DUEL) {
 			final Block block = event.getBlock();
 			final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(playerUUID);
 				
 			if (duel != null && duel.getBlockStorage() != null) {
 				final BlockStorage storage = duel.getBlockStorage();
-				if (duel.getLadder() == Ladders.SPLEEF) {
-					storage.addAir(block.getLocation(), block);
-				} else if (duel.getLadder() == Ladders.BUILDUHC && storage.contains(block.getLocation())) {
+				if (storage.contains(block.getLocation()) && duel.getLadder() == Ladders.BUILDUHC || block.getType() == Material.SNOW_BLOCK && duel.getLadder() == Ladders.SPLEEF) {
 					storage.addAir(block.getLocation(), block);
 				}
-					
 				for (UUID uuids : duel.getAllAliveTeamsAndSpectators()) {
 					final Player duelPlayers = this.main.getServer().getPlayer(uuids);
 					if (duelPlayers == null) continue;
 					block.getChunk().createFakeBlockUpdate(storage.getAllLocations(), storage.getAllIds(), storage.getAllDatas()).sendTo(duelPlayers);
 				}
 			}
-		}
-		if (!pm.isAllowedToBuild()) {
-			event.setCancelled(true);
 		}
 	}
 	
