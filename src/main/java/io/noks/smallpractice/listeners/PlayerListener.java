@@ -248,6 +248,22 @@ public class PlayerListener implements Listener {
 				default:
 					break;
 				}
+				return;
+			}
+			if (pm.getStatus() == PlayerStatus.WAITING || pm.getStatus() == PlayerStatus.DUEL) {
+				final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(player.getUniqueId());
+				
+				if (duel == null) {
+					return;
+				}
+					
+				switch (event.getCause()) {
+				case FALL:
+					event.setCancelled(true);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}

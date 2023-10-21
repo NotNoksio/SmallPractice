@@ -169,7 +169,7 @@ public class ServerListeners implements Listener {
 	}
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onBlockSpread(BlockSpreadEvent event) {
-		if (event.getBlock().getType() != Material.VINE) {
+		if (event.getSource().getType() != Material.VINE) {
 			return;
 		}
 		event.setCancelled(true);

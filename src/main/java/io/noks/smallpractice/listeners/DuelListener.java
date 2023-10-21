@@ -184,11 +184,19 @@ public class DuelListener implements Listener {
 		}
 		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);
 		if (duel != null && (duel.getLadder() == Ladders.SUMO || duel.getLadder() == Ladders.SPLEEF)) {
+			if (duel.getAllSpectators().contains(uuid)) {
+				final Player player = event.getPlayer();
+				final Arena arena = duel.getArena();
+				if (player.getLocation().distance(arena.getMiddle()) > 30) {
+					player.teleport(arena.getMiddle());
+				}
+				return;
+			}
 			if (!duel.getAllAliveTeams().contains(uuid)) {
 				return;
 			}
 			final Player player = event.getPlayer();
-			if (PlayerManager.get(player.getUniqueId()).getStatus() == PlayerStatus.WAITING) {
+			if (pm.getStatus() == PlayerStatus.WAITING) {
 				event.setCancelled(true);
 				return;
 			}
