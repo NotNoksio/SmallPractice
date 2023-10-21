@@ -36,6 +36,7 @@ import com.google.common.collect.Lists;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
+import io.noks.smallpractice.arena.ArenaManager;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.enums.RemoveReason;
@@ -256,7 +257,10 @@ public class PlayerListener implements Listener {
 				if (duel == null) {
 					return;
 				}
-					
+				final Arena arena = duel.getArena();
+				if (!arena.isSpleef() && !arena.isSumo()) {
+					return;
+				}
 				switch (event.getCause()) {
 				case FALL:
 					event.setCancelled(true);
