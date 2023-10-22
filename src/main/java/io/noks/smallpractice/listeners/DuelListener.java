@@ -182,7 +182,7 @@ public class DuelListener implements Listener {
 		if (!this.needMoveEventTrigger()) {
 			return;
 		}
-		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(uuid);
+		final Duel duel = this.main.getDuelManager().getDuelFromPlayerUUID(pm.getStatus() == PlayerStatus.SPECTATE ? pm.getSpectate().getUniqueId() : uuid);
 		if (duel != null && (duel.getLadder() == Ladders.SUMO || duel.getLadder() == Ladders.SPLEEF)) {
 			if (duel.getAllSpectators().contains(uuid)) {
 				final Player player = event.getPlayer();

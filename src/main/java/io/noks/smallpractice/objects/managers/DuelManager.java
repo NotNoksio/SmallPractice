@@ -165,7 +165,7 @@ public class DuelManager {
 		if (ladder == Ladders.CLASSIC || ladder == Ladders.ARCHER) {
 			final Objective life = scoreboard.registerNewObjective("life", "health");
 			life.setDisplaySlot(DisplaySlot.BELOW_NAME);
-			life.setDisplayName(ChatColor.RED.toString() + String.valueOf("❤"));
+			life.setDisplayName(ChatColor.RED.toString() + "❤");
 		}
 		final String duelMessage = ChatColor.DARK_AQUA + "Starting" + (ffa ? " FFA party game" : " duel against " + ChatColor.YELLOW + (teamFight ? this.main.getServer().getPlayer(enemyPartyLeaderUUID).getName() + "'s party" : this.main.getServer().getPlayer(enemyTeam.get(0)).getName() + (ranked ? ChatColor.GRAY + " (" + (!teamFight ? PlayerManager.get(enemyTeam.get(0)).getEloManager().getFrom(ladder) : (this.main.getPartyManager().getParty(enemyPartyLeaderUUID).getEloManager() != null ? this.main.getPartyManager().getParty(enemyPartyLeaderUUID).getEloManager().getFrom(ladder) : "")) + ")" : "")));
 		for (UUID teamUUID : team) {
@@ -474,6 +474,10 @@ public class DuelManager {
 				pm.hideAllPlayer();
 				this.main.getItemManager().giveKitSelectionItems(player, duel.getLadder());
 				
+				if (duel.getLadder() == Ladders.COMBO) {
+					player.setMaximumNoDamageTicks(4);
+					player.setVerticalKnockbackReduction(0.175f);
+				}
 				if (duel.getLadder() == Ladders.BOXING) {
 					player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
 				}

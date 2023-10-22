@@ -409,6 +409,7 @@ public class ItemManager {
 			break;
 		}
 		case NOENCHANT: {
+			boots.addUnsafeEnchantment(Enchantment.PROTECTION_FALL, 4);
 			final ItemStack pearl = new ItemStack(Material.ENDER_PEARL, 16);
 			final ItemStack steak = new ItemStack(Material.COOKED_BEEF, 64);
 			final ItemStack speed = new ItemStack(Material.POTION, 1, (short) 8226);

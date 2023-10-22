@@ -36,7 +36,6 @@ import com.google.common.collect.Lists;
 
 import io.noks.smallpractice.Main;
 import io.noks.smallpractice.arena.Arena;
-import io.noks.smallpractice.arena.ArenaManager;
 import io.noks.smallpractice.enums.Ladders;
 import io.noks.smallpractice.enums.PlayerStatus;
 import io.noks.smallpractice.enums.RemoveReason;
@@ -77,6 +76,7 @@ public class PlayerListener implements Listener {
 		player.setFlySpeed(0.1f);
 		player.setWalkSpeed(0.2f);
 		player.setVerticalKnockbackReduction(0.0f);
+		player.setMaximumNoDamageTicks(20);
 		
 		player.setAllowFlight(false);
 		player.setFlying(false);
@@ -215,6 +215,10 @@ public class PlayerListener implements Listener {
 			final Player player = (Player) event.getEntity();
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			
+			if (pm.isFrozen()) {
+				event.setCancelled(true);
+				return;
+			}
 			if (pm.getStatus() == PlayerStatus.SPECTATE) {
 				event.setCancelled(true);
 				return;
@@ -291,12 +295,13 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			final Player attacked = (Player) event.getEntity();
-			if (PlayerManager.get(attacked.getUniqueId()).isFrozen()) {
+			final PlayerManager attackedManager = PlayerManager.get(attacked.getUniqueId());
+			if (attackedManager.isFrozen()) {
 				attacked.sendMessage(ChatColor.RED + "This player is frozen, please wait :)");
 				event.setCancelled(true);
 				return;
 			}
-			if (attackerManager.getStatus() == PlayerStatus.SPECTATE || attackerManager.getStatus() != PlayerStatus.DUEL && PlayerManager.get(attacked.getUniqueId()).getStatus() != PlayerStatus.DUEL) {
+			if (attackerManager.getStatus() == PlayerStatus.SPECTATE || attackerManager.getStatus() != PlayerStatus.DUEL && attackedManager.getStatus() != PlayerStatus.DUEL) {
 				event.setCancelled(true);
 				return;
 			}
@@ -311,7 +316,7 @@ public class PlayerListener implements Listener {
 					damage = 0.0D;
 				}
 				if (currentDuel.getLadder() == Ladders.EARLY_HG) {
-					ItemStack handItem = attacker.getItemInHand();
+					final ItemStack handItem = attacker.getItemInHand();
 					if (handItem.getType() == Material.MUSHROOM_SOUP) {
 						return;
 					}
