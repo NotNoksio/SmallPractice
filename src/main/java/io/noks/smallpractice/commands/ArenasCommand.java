@@ -16,7 +16,7 @@ public class ArenasCommand implements CommandExecutor {
 		if (!(sender instanceof Player)) {
 			return false;
 		}
-		if (!sender.isOp()) {
+		if (!sender.hasPermission("command.arenas")) {
 			return false;
 		}
 		if (args.length > 0) {

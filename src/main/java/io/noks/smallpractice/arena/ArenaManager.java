@@ -43,8 +43,9 @@ public class ArenaManager {
 		final Location[] arena15 = {new Location(world, -1975.5D, 83.5D, 2159.5D, 180.0F, 0.0F), new Location(world, -1975.5D, 83.5D, 2088.5D, 0.0F, 0.0F)};
 		final Location[] arena16 = {new Location(world, -257.5D, 88.5D, 1458.5D, 146.0F, 0.0F), new Location(world, -290.5D, 88.5D, 1389.5D, -26.0F, 0.0F)};
 		final Location[] arena17 = {new Location(world, -446.5D, 72.5D, 2215.5D, -180.0F, 0.0F), new Location(world, -446.5D, 72.5D, 2130.5D, 0.0F, 0.0F)};
-		final Location[] spleefArena1 = {new Location(world, 17.5D, 146.5D, 301.5D, 90.0F, 0.0F), new Location(world, -26.5D, 146.5D, 301.5D, -90.0F, 0.0F)};
-		final Location[] sumoArena1 = {new Location(world, -369.5D, 142.5D, -2.5D, -90.0F, 0.0F), new Location(world, -361.5D, 142.5D, -2.5D, 90.0F, 0.0F)};
+		final Location[] spleefArena1 = {new Location(world, 17.5D, 146.5D, 301.5D, 90.0F, 0.0F), new Location(world, -26.5D, 146.5D, 301.5D, -90.0F, 0.0F)}; // Faiblesse & Taikoo_
+		final Location[] sumoArena1 = {new Location(world, -369.5D, 142D, -2.5D, -90.0F, 0.0F), new Location(world, -361.5D, 142D, -2.5D, 90.0F, 0.0F)}; // Faiblesse
+		final Location[] sumoArena2 = {new Location(world, -54.5D, 34D, 521.5D, 90.0F, 0.0F), new Location(world, -64.5D, 34D, 521.5D, -90.0F, 0.0F)}; // Teikoo_ & Faiblesse
 		    
 		arenaList.add(new Arena("River", arena1, new ItemStack(Material.WATER_BUCKET, 1), false, false));
 		arenaList.add(new Arena("Mine", arena2, new ItemStack(Material.COAL_ORE, 1), false, false));
@@ -63,8 +64,9 @@ public class ArenaManager {
 		arenaList.add(new Arena("Boat", arena15, new ItemStack(Material.BOAT, 1), false, false));
 		arenaList.add(new Arena("Lost Island", arena16, new ItemStack(Material.FISHING_ROD, 1), false, false));
 		arenaList.add(new Arena("Zen Garden", arena17, new ItemStack(Material.RED_ROSE, 1), false, false));
-		arenaList.add(new Arena("Stadium", spleefArena1, new ItemStack(Material.SMOOTH_STAIRS, 1), false, true));
+		arenaList.add(new Arena("Frostbite", spleefArena1, new ItemStack(Material.ICE, 1), false, true));
 		arenaList.add(new Arena("Halloween", sumoArena1, new ItemStack(Material.JACK_O_LANTERN, 1), true, false));
+		arenaList.add(new Arena("Cave", sumoArena2, new ItemStack(Material.MOSSY_COBBLESTONE, 1), true, false));
 	}
 	
 	private final Random random = new Random();

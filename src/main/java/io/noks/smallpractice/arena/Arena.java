@@ -3,6 +3,8 @@ package io.noks.smallpractice.arena;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +16,8 @@ public class Arena {
 	private Location[] locations;
 	private ItemStack icon;
 	private boolean sumo, spleef;
-	private Set<UUID> spectators;
+	private Set<UUID> spectators; 
+	private @Nullable String[] builders;
 
 	public Arena(String name, Location[] locations, ItemStack icon, boolean sumo, boolean spleef) {
 		this.name = name;
