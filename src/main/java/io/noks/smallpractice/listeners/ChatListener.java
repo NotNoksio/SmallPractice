@@ -25,51 +25,51 @@ public class ChatListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onChat(AsyncPlayerChatEvent event) {
 		final Player player = event.getPlayer();
+		String message = event.getMessage();
 		if (player.hasMetadata("renamekit")) {
 			event.setCancelled(true);
 			final PlayerManager pm = PlayerManager.get(player.getUniqueId());
 			final EditedLadderKit editedKit = (EditedLadderKit) player.getMetadata("renamekit").get(0).value();
-			if (event.getMessage().length() > 28) {
+			if (message.length() > 28) {
 				player.sendMessage(ChatColor.RED + "The name length must be under 28 character!");
 				return;
 			}
-			if (event.getMessage().toLowerCase().equals("cancel")) {
+			if (message.toLowerCase().equals("cancel")) {
 				player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, editedKit.getLadder()));
 				player.removeMetadata("renamekit", this.main);
 				player.sendMessage(ChatColor.RED + "You've cancelled the renaming!");
 				return;
 			}
-			editedKit.rename(event.getMessage());
+			editedKit.rename(message);
 			player.openInventory(this.main.getInventoryManager().getKitEditingLayout(pm, editedKit.getLadder()));
 			player.removeMetadata("renamekit", this.main);
 			player.sendMessage(ChatColor.GREEN + "Successfully changed name!");
 			return;
 		}
-		if (event.getMessage().charAt(0) == '@' && player.hasPermission("chat.staff")) {
-			String message = event.getMessage();
-	      
-			if (message.length() == 1) {
+		switch (message.charAt(0)) {
+			case '@': {
+				if (message.length() == 1) {
+					return;
+				}
+				message = message.replaceFirst("@", "");
+				event.setCancelled(true);
+				for (Player staff : Bukkit.getOnlinePlayers()) {
+					if (staff.hasPermission("chat.staff")) {
+						staff.sendMessage(ChatColor.GREEN + "(" + ChatColor.RED + "Staff" + ChatColor.GREEN + ") " + player.getDisplayName() + ChatColor.GOLD + " ï¿½ " + message);
+					}
+				}
 				return;
 			}
-			message = message.replaceFirst("@", "");
-			event.setCancelled(true);
-			for (Player staff : Bukkit.getOnlinePlayers()) {
-				if (staff.hasPermission("chat.staff")) {
-					staff.sendMessage(ChatColor.GREEN + "(" + ChatColor.RED + "Staff" + ChatColor.GREEN + ") " + player.getDisplayName() + ChatColor.GOLD + " » " + message);
+			case '!': {
+				if (message.length() == 1) {
+					return;
 				}
+				event.setCancelled(true);
+				message = message.replaceFirst("!", "");
+				final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
+				party.notify(ChatColor.YELLOW + "(" + ChatColor.RED + "Party" + ChatColor.YELLOW + ") " + player.getDisplayName() + ChatColor.GOLD + " ï¿½ " + message);
 			}
 			return;
-		}
-		if (event.getMessage().charAt(0) == '!' && this.main.getPartyManager().hasParty(player.getUniqueId())) {
-			String message = event.getMessage();
-	      
-			if (message.length() == 1) {
-				return;
-			}
-			event.setCancelled(true);
-			message = message.replaceFirst("!", "");
-			final Party party = this.main.getPartyManager().getParty(player.getUniqueId());
-			party.notify(ChatColor.YELLOW + "(" + ChatColor.RED + "Party" + ChatColor.YELLOW + ") " + player.getDisplayName() + ChatColor.GOLD + " » " + message);
 		}
 	}
 	
