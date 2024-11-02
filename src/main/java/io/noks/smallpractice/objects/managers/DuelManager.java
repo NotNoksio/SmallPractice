@@ -96,7 +96,7 @@ public class DuelManager {
 		
         party.setPartyState(PartyState.DUELING);
         this.main.getPartyManager().updatePartyInventory(party);
-		this.teleportToArena(new Duel(arena, ladder, new FFADuel(partyLeaderUUID, ffaPlayers)));
+		this.teleportToArena(new FFADuel(arena, ladder, partyLeaderUUID, ffaPlayers));
 	}
 	
 	public void startDuel(Arena arena, Ladders ladder, UUID player1, UUID player2, boolean ranked) { // DUEL -> SimpleDuel
@@ -158,7 +158,7 @@ public class DuelManager {
         if (firstTeam.size() == 1 && secondTeam.size() == 1 && (firstPartyLeaderUUID == null && secondPartyLeaderUUID == null)) {
         	this.main.getInventoryManager().updateQueueInventory(ranked);
         }
-		this.teleportToArena(new Duel(arena, ladder, new SimpleDuel(firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam), ranked));
+		this.teleportToArena(new SimpleDuel(arena, ladder, firstPartyLeaderUUID, secondPartyLeaderUUID, firstTeam, secondTeam, ranked));
 	}
 	
 	private void setupTeam(List<UUID> team, UUID enemyPartyLeaderUUID, List<UUID> enemyTeam, Ladders ladder, Scoreboard scoreboard, Team team1, Team team2, boolean teamFight, boolean ranked, boolean ffa) {
@@ -309,26 +309,23 @@ public class DuelManager {
 		if (winningTeamNumber == 0) {
 			return;
 		}
-		List<UUID> winnerTeam = null;
-		List<UUID> loserTeam = null;
-		switch (winningTeamNumber) {
-		case 1:
-			winnerTeam = duel.getSimpleDuel().getFirstTeam();
-			loserTeam = duel.getSimpleDuel().getSecondTeam();
-			break;
-		case 2:
-			winnerTeam = duel.getSimpleDuel().getSecondTeam();
-			loserTeam = duel.getSimpleDuel().getFirstTeam();
-			break;
-		case 3:
-			winnerTeam = duel.getFFADuel().getFfaAlivePlayers();
-			final List<UUID> losers = Lists.newArrayList(duel.getFFADuel().getFfaPlayers());
-			losers.remove(duel.getFFADuel().getFfaAlivePlayers().get(0));
-			loserTeam = losers;
-		default:
-			break;
-		}
-		final boolean partyFight = (duel.getSimpleDuel() != null && duel.getSimpleDuel().getFirstTeamPartyLeaderUUID() != null && duel.getSimpleDuel().getSecondTeamPartyLeaderUUID() != null || duel.getFFADuel() != null);
+		final List<UUID> winnerTeam = switch (winningTeamNumber) {
+			case 1 -> ((SimpleDuel) duel).getFirstTeam();
+			case 2 -> ((SimpleDuel) duel).getSecondTeam();
+			case 3 -> ((FFADuel) duel).getFfaAlivePlayers();
+			default -> null;
+		};
+		final List<UUID> loserTeam = switch (winningTeamNumber) {
+			case 1 -> ((SimpleDuel) duel).getSecondTeam();
+			case 2 -> ((SimpleDuel) duel).getFirstTeam();
+			case 3 -> {
+				final List<UUID> losers = Lists.newArrayList(((FFADuel) duel).getFfaPlayers());
+				losers.remove(((FFADuel) duel).getFfaAlivePlayers().get(0));
+				yield losers;
+			}
+			default -> null;
+		};
+		final boolean partyFight = (duel instanceof SimpleDuel && ((SimpleDuel)duel).getFirstTeamPartyLeaderUUID() != null && ((SimpleDuel)duel).getSecondTeamPartyLeaderUUID() != null || duel instanceof FFADuel);
 		final String winnerMessage = ChatColor.DARK_AQUA + "Winner: " + ChatColor.YELLOW + this.main.getServer().getOfflinePlayer(winnerTeam.get(0)).getName() + (partyFight ? "'s party" : "");
 			
 		final TextComponent invTxt = new TextComponent("Inventories (Click): ");
@@ -362,7 +359,7 @@ public class DuelManager {
 				joiner.add(ltxt);
 			}
 		} else {
-			final FFADuel ffaDuel = duel.getFFADuel();
+			final FFADuel ffaDuel = (FFADuel) duel;
 			for (UUID uuids : ffaDuel.getFfaPlayers()) {
 				final OfflinePlayer player = this.main.getServer().getOfflinePlayer(uuids);
 				final TextComponent txt = new TextComponent(player.getName());
@@ -406,9 +403,11 @@ public class DuelManager {
         	finishDuel(duel, true);
         	return;
         }*/
+		final Arena arena = duel.getArena();
 		
-		if (duel.getSimpleDuel() != null) {
-			for (UUID firstUUID : duel.getSimpleDuel().getFirstTeam()) {
+		if (duel instanceof SimpleDuel) {
+			final SimpleDuel sDuel = (SimpleDuel) duel;
+			for (UUID firstUUID : sDuel.getFirstTeam()) {
 				final Player first = this.main.getServer().getPlayer(firstUUID);
 				
 				if (first == null) continue;
@@ -430,10 +429,10 @@ public class DuelManager {
 					first.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
 				}
 				
-				first.teleport(duel.getArena().getLocations()[0]);
+				first.teleport(arena.getLocations()[0]);
 				first.setSneaking(false);
 			}
-			for (UUID secondUUID : duel.getSimpleDuel().getSecondTeam()) {
+			for (UUID secondUUID : sDuel.getSecondTeam()) {
 				final Player second = this.main.getServer().getPlayer(secondUUID);
 				
 				if (second == null) continue;
@@ -455,12 +454,29 @@ public class DuelManager {
 					second.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
 				}
 				
-				second.teleport(duel.getArena().getLocations()[1]);
+				second.teleport(arena.getLocations()[1]);
 				second.setSneaking(false);
 			}
+			if (arena.hasSpectators()) {
+				for (UUID firstUUID : sDuel.getFirstTeamAlive()) {
+					final Player first = this.main.getServer().getPlayer(firstUUID);
+					for (UUID spectatorsUUID : arena.getAllSpectators()) {
+						final Player spectator = this.main.getServer().getPlayer(spectatorsUUID);
+						spectator.showPlayer(first);
+					}
+				}
+				for (UUID firstSecondUUID : sDuel.getSecondTeamAlive()) {
+					final Player firstSecond = this.main.getServer().getPlayer(firstSecondUUID);
+					for (UUID spectatorsUUID : arena.getAllSpectators()) {
+						final Player spectator = this.main.getServer().getPlayer(spectatorsUUID);
+						spectator.showPlayer(firstSecond);
+					}
+				}
+			}
 		}
-		if (duel.getFFADuel() != null) {
-			for (UUID uuids : duel.getFFADuel().getFfaPlayers()) {
+		if (duel instanceof FFADuel) {
+			final FFADuel fDuel = (FFADuel) duel;
+			for (UUID uuids : fDuel.getFfaPlayers()) {
 				final Player player = this.main.getServer().getPlayer(uuids);
 				
 				if (player == null) continue;
@@ -483,42 +499,20 @@ public class DuelManager {
 				}
 				
 				int i = new Random().nextInt(3);
-				player.teleport(i < 2 ? duel.getArena().getLocations()[i] : duel.getArena().getMiddle());
+				player.teleport(i < 2 ? arena.getLocations()[i] : arena.getMiddle());
 				player.setSneaking(false);
+			}
+			if (arena.hasSpectators()) {
+				for (UUID firstUUID : fDuel.getFfaAlivePlayers()) {
+					final Player first = this.main.getServer().getPlayer(firstUUID);
+					for (UUID spectatorsUUID : arena.getAllSpectators()) {
+						final Player spectator = this.main.getServer().getPlayer(spectatorsUUID);
+						spectator.showPlayer(first);
+					}
+				}
 			}
 		}
 		duel.launchCountdownTask();
-		final Arena arena = duel.getArena();
-		if (duel.getSimpleDuel() != null) {
-			if (arena.hasSpectators()) {
-				for (UUID firstUUID : duel.getSimpleDuel().getFirstTeamAlive()) {
-					final Player first = this.main.getServer().getPlayer(firstUUID);
-					for (UUID spectatorsUUID : arena.getAllSpectators()) {
-						final Player spectator = this.main.getServer().getPlayer(spectatorsUUID);
-						spectator.showPlayer(first);
-					}
-				}
-				for (UUID firstSecondUUID : duel.getSimpleDuel().getSecondTeamAlive()) {
-					final Player firstSecond = this.main.getServer().getPlayer(firstSecondUUID);
-					for (UUID spectatorsUUID : arena.getAllSpectators()) {
-						final Player spectator = this.main.getServer().getPlayer(spectatorsUUID);
-						spectator.showPlayer(firstSecond);
-					}
-				}
-			}
-			return;
-		}
-		if (duel.getFFADuel() != null) {
-			if (arena.hasSpectators()) {
-				for (UUID firstUUID : duel.getFFADuel().getFfaAlivePlayers()) {
-					final Player first = this.main.getServer().getPlayer(firstUUID);
-					for (UUID spectatorsUUID : arena.getAllSpectators()) {
-						final Player spectator = this.main.getServer().getPlayer(spectatorsUUID);
-						spectator.showPlayer(first);
-					}
-				}
-			}
-		}
 	}
 	
 	// TODO: SETTING > RESPAWN AS A SPECTATOR
@@ -548,18 +542,20 @@ public class DuelManager {
 		
 		pm.setStatus(PlayerStatus.SPAWN);
 		int winningTeamNumber = 0;
-		if (currentDuel.getSimpleDuel() != null) {
-			if (!currentDuel.getSimpleDuel().getFirstTeamAlive().isEmpty() && !currentDuel.getSimpleDuel().getSecondTeamAlive().isEmpty()) {
+		if (currentDuel instanceof SimpleDuel) {
+			final SimpleDuel sDuel = (SimpleDuel) currentDuel;
+			if (!sDuel.getFirstTeamAlive().isEmpty() && !sDuel.getSecondTeamAlive().isEmpty()) {
 				return;
 			}
-			if (currentDuel.getSimpleDuel().getFirstTeamAlive().isEmpty()) {
+			if (sDuel.getFirstTeamAlive().isEmpty()) {
 				winningTeamNumber = 2;
-			} else if (currentDuel.getSimpleDuel().getSecondTeamAlive().isEmpty()) {
+			} else if (sDuel.getSecondTeamAlive().isEmpty()) {
 				winningTeamNumber = 1;
 			}
 		}
-		if (currentDuel.getFFADuel() != null) {
-			if (currentDuel.getFFADuel().getFfaAlivePlayers().size() != 1) {
+		if (currentDuel instanceof FFADuel) {
+			final FFADuel fDuel = (FFADuel) currentDuel;
+			if (fDuel.getFfaAlivePlayers().size() != 1) {
 				return;
 			}
 			winningTeamNumber = 3;
@@ -567,7 +563,7 @@ public class DuelManager {
 		if (winningTeamNumber == 0) {
 			return;
 		}
-		for (UUID lastPlayersUUID : (winningTeamNumber == 1 ? currentDuel.getSimpleDuel().getFirstTeamAlive() : (winningTeamNumber == 2 ? currentDuel.getSimpleDuel().getSecondTeamAlive() : currentDuel.getFFADuel().getFfaAlivePlayers()))) {
+		for (UUID lastPlayersUUID : (winningTeamNumber == 1 ? ((SimpleDuel)currentDuel).getFirstTeamAlive() : (winningTeamNumber == 2 ? ((SimpleDuel)currentDuel).getSecondTeamAlive() : ((FFADuel)currentDuel).getFfaAlivePlayers()))) {
 			final Player lastPlayers = this.main.getServer().getPlayer(lastPlayersUUID);
 			this.doEndDuelAction(lastPlayers);
     			
@@ -603,8 +599,16 @@ public class DuelManager {
 		duel.updateState(DuelState.ENDED);
 		duel.cancelTask();
 		if (duel.isRanked() && !forceEnding) {
-			final List<UUID> winnersList = (winningTeamNumber == 1 ? duel.getSimpleDuel().getFirstTeam() : duel.getSimpleDuel().getSecondTeam());
-			final List<UUID> losersList = (winnersList == duel.getSimpleDuel().getFirstTeam() ? duel.getSimpleDuel().getSecondTeam() : duel.getSimpleDuel().getFirstTeam());
+			final List<UUID> winnersList = switch (winningTeamNumber) {
+				case 1 -> ((SimpleDuel) duel).getFirstTeam();
+				case 2 -> ((SimpleDuel) duel).getSecondTeam();
+				default -> null;
+			};
+			final List<UUID> losersList = switch (winningTeamNumber) {
+				case 1 -> ((SimpleDuel) duel).getSecondTeam();
+				case 2 -> ((SimpleDuel) duel).getFirstTeam();
+				default -> null;
+			};
 			
 			this.tranferElo(winnersList, losersList, duel.getLadder(), duel.getAllSpectators());
 		}
@@ -630,10 +634,10 @@ public class DuelManager {
 				specIt.remove();
 			}
 		}
-		if (duel.getSimpleDuel() != null && duel.getSimpleDuel().getFirstTeamPartyLeaderUUID() != null && duel.getSimpleDuel().getSecondTeamPartyLeaderUUID() != null || duel.getFFADuel() != null && duel.getFFADuel().getFfaPartyLeaderUUID() != null) {
+		if (duel instanceof SimpleDuel && ((SimpleDuel)duel).getFirstTeamPartyLeaderUUID() != null && ((SimpleDuel)duel).getSecondTeamPartyLeaderUUID() != null || duel instanceof FFADuel && ((FFADuel)duel).getFfaPartyLeaderUUID() != null) {
 			final List<Party> partyList = Lists.newArrayList();
-			if (duel.getSimpleDuel() != null) {
-				final SimpleDuel sd = duel.getSimpleDuel();
+			if (duel instanceof SimpleDuel) {
+				final SimpleDuel sd = (SimpleDuel) duel;
 				UUID firstUUID = sd.getFirstTeamPartyLeaderUUID();
 				if (!sd.getFirstTeam().isEmpty() && this.main.getServer().getPlayer(firstUUID) == null && firstUUID != sd.getFirstTeam().get(0)) {
 					firstUUID = sd.getFirstTeam().get(0);
@@ -648,8 +652,8 @@ public class DuelManager {
 				if (this.main.getPartyManager().getParty(secondUUID) != null) {
 					partyList.add(this.main.getPartyManager().getParty(secondUUID));
 				}
-			} else if (duel.getFFADuel() != null) {
-				final FFADuel ffad = duel.getFFADuel();
+			} else if (duel instanceof FFADuel) {
+				final FFADuel ffad = (FFADuel) duel;
 				UUID uuid = ffad.getFfaPartyLeaderUUID();
 				if (ffad.getFfaPlayers().size() > 1 && this.main.getServer().getPlayer(uuid) == null) {
 					uuid = ffad.getFfaPlayers().get(0);
@@ -667,7 +671,7 @@ public class DuelManager {
 	            partyList.clear();
 			}
         }
-        if (duel.getSimpleDuel() != null && duel.getSimpleDuel().getFirstTeam().size() == 1 && duel.getSimpleDuel().getSecondTeam().size() == 1 && (duel.getSimpleDuel().getFirstTeamPartyLeaderUUID() == null && duel.getSimpleDuel().getSecondTeamPartyLeaderUUID() == null)) {
+        if (duel instanceof SimpleDuel && ((SimpleDuel) duel).getFirstTeam().size() == 1 && ((SimpleDuel) duel).getSecondTeam().size() == 1 && (((SimpleDuel) duel).getFirstTeamPartyLeaderUUID() == null && ((SimpleDuel) duel).getSecondTeamPartyLeaderUUID() == null)) {
         	this.main.getInventoryManager().updateQueueInventory(duel.isRanked());
         }
 	}
